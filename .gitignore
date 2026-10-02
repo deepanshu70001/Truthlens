@@ -1,0 +1,120 @@
+# ========================
+# TruthLens .gitignore
+# ========================
+
+# --- Environment & Secrets ---
+.env
+.env.local
+.env.production
+.env.staging
+*.pem
+*.key
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# --- ML / Models ---
+models/weights/
+models/cache/
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.bin
+!requirements*.txt
+*.h5
+*.hdf5
+*.tflite
+*.pb
+
+# Hugging Face cache
+.cache/
+huggingface/
+
+# --- Node.js / Frontend ---
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+*.tsbuildinfo
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --- Docker ---
+docker-compose.override.yml
+
+# --- Database ---
+*.db
+*.sqlite3
+*.sql.bak
+data/postgres/
+data/redis/
+
+# --- Uploads & Artifacts ---
+uploads/
+artifacts/
+storage/
+temp/
+tmp/
+
+# --- Logs ---
+logs/
+*.log
+
+# --- Test & Coverage ---
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+coverage.xml
+*.cover
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- Distribution ---
+*.tar.gz
+*.zip
