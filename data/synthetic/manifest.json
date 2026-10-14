@@ -1,0 +1,84 @@
+{
+  "project": "TruthLens",
+  "dataset_status": "SYNTHETIC_DEMO_ONLY",
+  "generated_at_utc": "2026-10-14T05:41:30.238967+00:00",
+  "generation_seed": 20261014,
+  "methodology_version": "synthetic-v1.0",
+  "records_per_dataset": 500,
+  "datasets": {
+    "virality_scenarios.csv": {
+      "record_count": 500,
+      "is_synthetic": true,
+      "columns": [
+        "record_id",
+        "dataset_type",
+        "data_source",
+        "is_synthetic",
+        "generation_seed",
+        "methodology_version",
+        "is_real_world_observation",
+        "region",
+        "content_language",
+        "content_category",
+        "urgency_language",
+        "emotional_language",
+        "has_claims",
+        "has_faces",
+        "multiple_objects",
+        "hypothetical_audience_exposure",
+        "hypothetical_share_rate",
+        "illustrative_scenario_score",
+        "score_interpretation"
+      ]
+    },
+    "regional_spread_scenarios.csv": {
+      "record_count": 500,
+      "is_synthetic": true,
+      "columns": [
+        "record_id",
+        "dataset_type",
+        "data_source",
+        "is_synthetic",
+        "generation_seed",
+        "methodology_version",
+        "is_real_world_observation",
+        "region",
+        "content_language",
+        "synthetic_language_compatibility",
+        "synthetic_connectivity_index",
+        "illustrative_scenario_score",
+        "score_interpretation"
+      ]
+    },
+    "social_impact_scenarios.csv": {
+      "record_count": 500,
+      "is_synthetic": true,
+      "columns": [
+        "record_id",
+        "dataset_type",
+        "data_source",
+        "is_synthetic",
+        "generation_seed",
+        "methodology_version",
+        "is_real_world_observation",
+        "region",
+        "content_language",
+        "content_category",
+        "sensitivity_level",
+        "hypothetical_audience_exposure",
+        "urgency_language",
+        "emotional_language",
+        "illustrative_scenario_score",
+        "actual_harm_observed",
+        "score_interpretation"
+      ]
+    }
+  },
+  "limitations": [
+    "These records are simulated, not real-world observations.",
+    "Scores are illustrative formulas, not trained predictions.",
+    "Synthetic scores must not be reported as real virality or harm.",
+    "Random regional inputs do not represent actual state-level data.",
+    "Do not use this data alone to claim model accuracy."
+  ]
+}

@@ -1,0 +1,501 @@
+﻿record_id,dataset_type,data_source,is_synthetic,generation_seed,methodology_version,is_real_world_observation,region,content_language,content_category,sensitivity_level,hypothetical_audience_exposure,urgency_language,emotional_language,illustrative_scenario_score,actual_harm_observed,score_interpretation
+IMP-000001,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,mr,public_safety,3,97370,0,1,0.7934,False,simulated_only_not_a_prediction
+IMP-000002,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,te,public_safety,1,85335,1,0,0.53,False,simulated_only_not_a_prediction
+IMP-000003,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,mr,politics,3,40555,1,0,0.6514,False,simulated_only_not_a_prediction
+IMP-000004,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,ml,general_news,3,8129,0,1,0.5703,False,simulated_only_not_a_prediction
+IMP-000005,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,en,celebrity,0,98856,0,0,0.2471,False,simulated_only_not_a_prediction
+IMP-000006,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,ta,politics,2,43514,1,1,0.7421,False,simulated_only_not_a_prediction
+IMP-000007,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,gu,celebrity,2,74856,0,1,0.6205,False,simulated_only_not_a_prediction
+IMP-000008,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,pa,public_safety,1,59496,0,1,0.4654,False,simulated_only_not_a_prediction
+IMP-000009,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,gu,natural_disaster,1,98910,0,1,0.5639,False,simulated_only_not_a_prediction
+IMP-000010,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,bn,politics,2,9241,1,1,0.6564,False,simulated_only_not_a_prediction
+IMP-000011,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,mr,celebrity,1,36489,0,0,0.2079,False,simulated_only_not_a_prediction
+IMP-000012,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,ta,public_safety,3,70530,0,0,0.5263,False,simulated_only_not_a_prediction
+IMP-000013,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,or,natural_disaster,3,16588,0,1,0.5915,False,simulated_only_not_a_prediction
+IMP-000014,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,pa,public_safety,1,88447,0,0,0.3378,False,simulated_only_not_a_prediction
+IMP-000015,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,gu,public_safety,3,80436,0,1,0.7511,False,simulated_only_not_a_prediction
+IMP-000016,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,ta,celebrity,1,50629,0,1,0.4432,False,simulated_only_not_a_prediction
+IMP-000017,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,bn,health,2,25333,0,1,0.4967,False,simulated_only_not_a_prediction
+IMP-000018,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,pa,public_safety,0,60192,0,1,0.3505,False,simulated_only_not_a_prediction
+IMP-000019,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,ta,general_news,3,93586,1,0,0.784,False,simulated_only_not_a_prediction
+IMP-000020,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,gu,public_safety,1,66750,0,0,0.2835,False,simulated_only_not_a_prediction
+IMP-000021,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,ur,politics,1,70197,1,0,0.4922,False,simulated_only_not_a_prediction
+IMP-000022,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,or,celebrity,0,61735,0,0,0.1543,False,simulated_only_not_a_prediction
+IMP-000023,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,mr,celebrity,3,81684,0,0,0.5542,False,simulated_only_not_a_prediction
+IMP-000024,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,gu,politics,0,98192,1,0,0.4455,False,simulated_only_not_a_prediction
+IMP-000025,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,ml,public_safety,3,17583,1,0,0.594,False,simulated_only_not_a_prediction
+IMP-000026,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,bn,politics,2,3577,1,1,0.6423,False,simulated_only_not_a_prediction
+IMP-000027,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,gu,celebrity,0,95376,0,1,0.4384,False,simulated_only_not_a_prediction
+IMP-000028,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,gu,public_safety,1,89678,1,0,0.5409,False,simulated_only_not_a_prediction
+IMP-000029,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,ta,general_news,0,54936,1,1,0.5373,False,simulated_only_not_a_prediction
+IMP-000030,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,ml,celebrity,1,19784,0,1,0.3661,False,simulated_only_not_a_prediction
+IMP-000031,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,pa,politics,3,15540,1,1,0.7889,False,simulated_only_not_a_prediction
+IMP-000032,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,bn,general_news,0,93717,0,1,0.4343,False,simulated_only_not_a_prediction
+IMP-000033,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,kn,natural_disaster,1,66308,0,0,0.2824,False,simulated_only_not_a_prediction
+IMP-000034,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,kn,public_safety,2,43063,1,0,0.541,False,simulated_only_not_a_prediction
+IMP-000035,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,ta,public_safety,2,29126,1,0,0.5061,False,simulated_only_not_a_prediction
+IMP-000036,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,te,public_safety,1,70322,1,0,0.4925,False,simulated_only_not_a_prediction
+IMP-000037,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,ur,health,0,15127,0,0,0.0378,False,simulated_only_not_a_prediction
+IMP-000038,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,ml,public_safety,2,57994,1,0,0.5783,False,simulated_only_not_a_prediction
+IMP-000039,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,te,general_news,1,75722,0,0,0.306,False,simulated_only_not_a_prediction
+IMP-000040,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,or,general_news,0,55872,0,1,0.3397,False,simulated_only_not_a_prediction
+IMP-000041,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,te,public_safety,2,95172,1,0,0.6713,False,simulated_only_not_a_prediction
+IMP-000042,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,bn,public_safety,1,71081,1,0,0.4944,False,simulated_only_not_a_prediction
+IMP-000043,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,ur,health,1,90122,1,1,0.742,False,simulated_only_not_a_prediction
+IMP-000044,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,en,politics,2,68260,1,1,0.804,False,simulated_only_not_a_prediction
+IMP-000045,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,or,natural_disaster,3,164,1,1,0.7504,False,simulated_only_not_a_prediction
+IMP-000046,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,kn,health,1,82933,0,0,0.324,False,simulated_only_not_a_prediction
+IMP-000047,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,or,public_safety,2,15017,1,1,0.6709,False,simulated_only_not_a_prediction
+IMP-000048,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,en,public_safety,3,84412,1,1,0.961,False,simulated_only_not_a_prediction
+IMP-000049,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,te,natural_disaster,0,93356,0,0,0.2334,False,simulated_only_not_a_prediction
+IMP-000050,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,kn,health,1,66324,0,0,0.2825,False,simulated_only_not_a_prediction
+IMP-000051,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,te,health,0,18739,0,1,0.2468,False,simulated_only_not_a_prediction
+IMP-000052,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,bn,natural_disaster,3,92743,1,0,0.7819,False,simulated_only_not_a_prediction
+IMP-000053,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,en,general_news,0,14237,1,0,0.2356,False,simulated_only_not_a_prediction
+IMP-000054,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,en,health,2,19364,1,0,0.4817,False,simulated_only_not_a_prediction
+IMP-000055,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,kn,health,1,14957,0,1,0.3541,False,simulated_only_not_a_prediction
+IMP-000056,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,hi,general_news,0,15083,1,1,0.4377,False,simulated_only_not_a_prediction
+IMP-000057,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,ur,public_safety,2,64109,1,1,0.7936,False,simulated_only_not_a_prediction
+IMP-000058,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,mr,general_news,0,71628,1,0,0.3791,False,simulated_only_not_a_prediction
+IMP-000059,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,ur,natural_disaster,1,89821,0,1,0.5412,False,simulated_only_not_a_prediction
+IMP-000060,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,pa,general_news,1,4848,1,1,0.5288,False,simulated_only_not_a_prediction
+IMP-000061,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,bn,health,3,17619,1,1,0.794,False,simulated_only_not_a_prediction
+IMP-000062,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,te,public_safety,0,78463,0,0,0.1962,False,simulated_only_not_a_prediction
+IMP-000063,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,mr,politics,2,28171,0,0,0.3038,False,simulated_only_not_a_prediction
+IMP-000064,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,kn,general_news,3,26786,1,0,0.617,False,simulated_only_not_a_prediction
+IMP-000065,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,en,politics,2,48869,0,1,0.5555,False,simulated_only_not_a_prediction
+IMP-000066,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,te,health,2,12423,0,0,0.2644,False,simulated_only_not_a_prediction
+IMP-000067,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,pa,public_safety,3,22910,0,1,0.6073,False,simulated_only_not_a_prediction
+IMP-000068,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,hi,public_safety,3,95915,0,0,0.5898,False,simulated_only_not_a_prediction
+IMP-000069,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,gu,celebrity,2,1082,1,1,0.636,False,simulated_only_not_a_prediction
+IMP-000070,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,en,general_news,1,90643,0,1,0.5433,False,simulated_only_not_a_prediction
+IMP-000071,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,kn,politics,0,95457,0,1,0.4386,False,simulated_only_not_a_prediction
+IMP-000072,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,kn,general_news,2,18573,0,0,0.2798,False,simulated_only_not_a_prediction
+IMP-000073,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,mr,celebrity,1,57879,1,0,0.4614,False,simulated_only_not_a_prediction
+IMP-000074,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,ta,natural_disaster,1,2275,0,1,0.3224,False,simulated_only_not_a_prediction
+IMP-000075,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,te,public_safety,3,41344,0,1,0.6534,False,simulated_only_not_a_prediction
+IMP-000076,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,ta,natural_disaster,3,71782,1,1,0.9295,False,simulated_only_not_a_prediction
+IMP-000077,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,kn,public_safety,1,98439,0,1,0.5628,False,simulated_only_not_a_prediction
+IMP-000078,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,en,general_news,2,88436,1,0,0.6544,False,simulated_only_not_a_prediction
+IMP-000079,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,mr,natural_disaster,2,95222,0,0,0.4714,False,simulated_only_not_a_prediction
+IMP-000080,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,ml,general_news,2,18466,0,0,0.2795,False,simulated_only_not_a_prediction
+IMP-000081,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,mr,public_safety,1,7900,0,1,0.3364,False,simulated_only_not_a_prediction
+IMP-000082,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,mr,general_news,3,67676,0,0,0.5192,False,simulated_only_not_a_prediction
+IMP-000083,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,ml,politics,2,46998,1,0,0.5508,False,simulated_only_not_a_prediction
+IMP-000084,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,te,public_safety,0,30132,0,0,0.0753,False,simulated_only_not_a_prediction
+IMP-000085,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,bn,politics,1,6477,1,0,0.3329,False,simulated_only_not_a_prediction
+IMP-000086,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,kn,health,1,58707,1,0,0.4634,False,simulated_only_not_a_prediction
+IMP-000087,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,en,celebrity,3,42590,1,0,0.6565,False,simulated_only_not_a_prediction
+IMP-000088,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,mr,politics,3,71222,1,1,0.9281,False,simulated_only_not_a_prediction
+IMP-000089,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,hi,politics,1,42409,0,1,0.4227,False,simulated_only_not_a_prediction
+IMP-000090,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,ur,natural_disaster,2,63305,1,1,0.7916,False,simulated_only_not_a_prediction
+IMP-000091,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,ml,health,0,16556,0,0,0.0414,False,simulated_only_not_a_prediction
+IMP-000092,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,hi,celebrity,0,91443,0,0,0.2286,False,simulated_only_not_a_prediction
+IMP-000093,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,or,celebrity,0,51911,0,1,0.3298,False,simulated_only_not_a_prediction
+IMP-000094,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,ml,celebrity,1,414,0,0,0.1177,False,simulated_only_not_a_prediction
+IMP-000095,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,mr,celebrity,1,27111,0,1,0.3844,False,simulated_only_not_a_prediction
+IMP-000096,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,gu,public_safety,0,64526,1,0,0.3613,False,simulated_only_not_a_prediction
+IMP-000097,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,pa,general_news,0,84783,0,1,0.412,False,simulated_only_not_a_prediction
+IMP-000098,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,or,natural_disaster,3,84873,1,1,0.9622,False,simulated_only_not_a_prediction
+IMP-000099,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,ta,health,1,7673,0,0,0.1358,False,simulated_only_not_a_prediction
+IMP-000100,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,te,public_safety,1,90036,1,0,0.5418,False,simulated_only_not_a_prediction
+IMP-000101,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,pa,public_safety,0,72128,1,0,0.3803,False,simulated_only_not_a_prediction
+IMP-000102,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,ml,celebrity,3,53134,0,1,0.6828,False,simulated_only_not_a_prediction
+IMP-000103,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,te,health,3,81969,1,0,0.7549,False,simulated_only_not_a_prediction
+IMP-000104,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,te,general_news,2,34767,1,0,0.5203,False,simulated_only_not_a_prediction
+IMP-000105,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,ml,politics,1,56365,0,0,0.2576,False,simulated_only_not_a_prediction
+IMP-000106,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,ta,celebrity,2,78601,0,0,0.4298,False,simulated_only_not_a_prediction
+IMP-000107,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,te,natural_disaster,3,47200,0,0,0.468,False,simulated_only_not_a_prediction
+IMP-000108,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,gu,general_news,3,4876,0,0,0.3622,False,simulated_only_not_a_prediction
+IMP-000109,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,or,general_news,0,24739,1,1,0.4618,False,simulated_only_not_a_prediction
+IMP-000110,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,te,celebrity,3,86259,0,0,0.5656,False,simulated_only_not_a_prediction
+IMP-000111,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,ml,health,2,34853,1,0,0.5205,False,simulated_only_not_a_prediction
+IMP-000112,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,ta,natural_disaster,1,2932,1,0,0.324,False,simulated_only_not_a_prediction
+IMP-000113,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,bn,celebrity,0,49368,1,0,0.3234,False,simulated_only_not_a_prediction
+IMP-000114,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,gu,general_news,1,91083,0,1,0.5444,False,simulated_only_not_a_prediction
+IMP-000115,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,pa,politics,3,67799,0,1,0.7195,False,simulated_only_not_a_prediction
+IMP-000116,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,ur,public_safety,3,13865,1,1,0.7847,False,simulated_only_not_a_prediction
+IMP-000117,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,ta,health,1,305,1,1,0.5174,False,simulated_only_not_a_prediction
+IMP-000118,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,te,health,1,23564,0,0,0.1756,False,simulated_only_not_a_prediction
+IMP-000119,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,gu,public_safety,0,97406,1,0,0.4435,False,simulated_only_not_a_prediction
+IMP-000120,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,te,health,2,24927,1,0,0.4957,False,simulated_only_not_a_prediction
+IMP-000121,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,hi,public_safety,1,98842,1,0,0.5638,False,simulated_only_not_a_prediction
+IMP-000122,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,kn,politics,1,10753,0,1,0.3435,False,simulated_only_not_a_prediction
+IMP-000123,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,kn,politics,1,42252,0,1,0.4223,False,simulated_only_not_a_prediction
+IMP-000124,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,te,general_news,1,59137,1,0,0.4645,False,simulated_only_not_a_prediction
+IMP-000125,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,pa,celebrity,0,10260,0,0,0.0256,False,simulated_only_not_a_prediction
+IMP-000126,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,bn,politics,1,87077,1,1,0.7344,False,simulated_only_not_a_prediction
+IMP-000127,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,mr,celebrity,1,70654,1,0,0.4933,False,simulated_only_not_a_prediction
+IMP-000128,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,kn,public_safety,1,45126,1,0,0.4295,False,simulated_only_not_a_prediction
+IMP-000129,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,pa,politics,1,3063,0,1,0.3243,False,simulated_only_not_a_prediction
+IMP-000130,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,mr,health,1,66999,0,1,0.4842,False,simulated_only_not_a_prediction
+IMP-000131,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,ta,health,0,26278,0,1,0.2657,False,simulated_only_not_a_prediction
+IMP-000132,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,kn,celebrity,0,82880,0,0,0.2072,False,simulated_only_not_a_prediction
+IMP-000133,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,gu,public_safety,0,84147,0,1,0.4104,False,simulated_only_not_a_prediction
+IMP-000134,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,ta,general_news,0,24940,1,0,0.2624,False,simulated_only_not_a_prediction
+IMP-000135,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,en,natural_disaster,3,31891,1,0,0.6297,False,simulated_only_not_a_prediction
+IMP-000136,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,mr,celebrity,1,94097,0,1,0.5519,False,simulated_only_not_a_prediction
+IMP-000137,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,ta,public_safety,1,33299,1,1,0.5999,False,simulated_only_not_a_prediction
+IMP-000138,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,en,natural_disaster,3,69117,0,0,0.5228,False,simulated_only_not_a_prediction
+IMP-000139,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,mr,politics,3,16605,1,0,0.5915,False,simulated_only_not_a_prediction
+IMP-000140,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,mr,celebrity,3,86600,0,0,0.5665,False,simulated_only_not_a_prediction
+IMP-000141,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,ur,health,2,8783,1,0,0.4553,False,simulated_only_not_a_prediction
+IMP-000142,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,gu,politics,2,55038,0,0,0.3709,False,simulated_only_not_a_prediction
+IMP-000143,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,mr,health,2,50728,1,1,0.7602,False,simulated_only_not_a_prediction
+IMP-000144,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,ml,public_safety,2,29704,0,1,0.5076,False,simulated_only_not_a_prediction
+IMP-000145,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,mr,public_safety,2,89278,0,1,0.6565,False,simulated_only_not_a_prediction
+IMP-000146,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,ur,health,0,2962,1,0,0.2074,False,simulated_only_not_a_prediction
+IMP-000147,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,pa,health,0,64478,0,1,0.3612,False,simulated_only_not_a_prediction
+IMP-000148,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,ta,celebrity,0,61189,1,0,0.353,False,simulated_only_not_a_prediction
+IMP-000149,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,ur,general_news,0,78002,0,0,0.195,False,simulated_only_not_a_prediction
+IMP-000150,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,ml,natural_disaster,2,49739,1,0,0.5577,False,simulated_only_not_a_prediction
+IMP-000151,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,hi,celebrity,2,680,1,0,0.435,False,simulated_only_not_a_prediction
+IMP-000152,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,gu,general_news,3,66043,1,0,0.7151,False,simulated_only_not_a_prediction
+IMP-000153,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,mr,health,2,30296,1,0,0.5091,False,simulated_only_not_a_prediction
+IMP-000154,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,mr,health,2,69719,0,1,0.6076,False,simulated_only_not_a_prediction
+IMP-000155,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,mr,general_news,0,73637,1,0,0.3841,False,simulated_only_not_a_prediction
+IMP-000156,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,pa,health,2,91995,0,1,0.6633,False,simulated_only_not_a_prediction
+IMP-000157,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,gu,celebrity,0,38847,0,0,0.0971,False,simulated_only_not_a_prediction
+IMP-000158,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,ta,politics,2,32464,0,0,0.3145,False,simulated_only_not_a_prediction
+IMP-000159,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,hi,celebrity,0,59446,1,1,0.5486,False,simulated_only_not_a_prediction
+IMP-000160,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,kn,celebrity,0,77777,1,0,0.3944,False,simulated_only_not_a_prediction
+IMP-000161,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,bn,health,0,21086,0,1,0.2527,False,simulated_only_not_a_prediction
+IMP-000162,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,bn,public_safety,2,61169,0,0,0.3863,False,simulated_only_not_a_prediction
+IMP-000163,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,gu,health,2,32190,0,1,0.5138,False,simulated_only_not_a_prediction
+IMP-000164,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,te,natural_disaster,1,54827,1,0,0.4537,False,simulated_only_not_a_prediction
+IMP-000165,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,mr,celebrity,1,310,0,1,0.3174,False,simulated_only_not_a_prediction
+IMP-000166,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,gu,public_safety,0,9033,0,0,0.0226,False,simulated_only_not_a_prediction
+IMP-000167,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,te,politics,2,75408,1,0,0.6219,False,simulated_only_not_a_prediction
+IMP-000168,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,mr,natural_disaster,3,921,0,1,0.5523,False,simulated_only_not_a_prediction
+IMP-000169,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,hi,public_safety,1,4537,0,1,0.328,False,simulated_only_not_a_prediction
+IMP-000170,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,en,health,3,14649,0,1,0.5866,False,simulated_only_not_a_prediction
+IMP-000171,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,hi,politics,3,57171,0,1,0.6929,False,simulated_only_not_a_prediction
+IMP-000172,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,pa,natural_disaster,3,55328,0,1,0.6883,False,simulated_only_not_a_prediction
+IMP-000173,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,te,politics,0,90427,0,0,0.2261,False,simulated_only_not_a_prediction
+IMP-000174,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,bn,politics,1,99958,1,0,0.5666,False,simulated_only_not_a_prediction
+IMP-000175,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,hi,public_safety,1,39263,0,0,0.2148,False,simulated_only_not_a_prediction
+IMP-000176,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,mr,general_news,3,65739,1,0,0.7143,False,simulated_only_not_a_prediction
+IMP-000177,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,kn,politics,3,17002,0,1,0.5925,False,simulated_only_not_a_prediction
+IMP-000178,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,gu,general_news,1,11772,0,0,0.1461,False,simulated_only_not_a_prediction
+IMP-000179,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,bn,public_safety,0,72573,1,0,0.3814,False,simulated_only_not_a_prediction
+IMP-000180,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,te,natural_disaster,3,29008,0,0,0.4225,False,simulated_only_not_a_prediction
+IMP-000181,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,ml,public_safety,2,88181,1,0,0.6538,False,simulated_only_not_a_prediction
+IMP-000182,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,kn,celebrity,2,48359,1,1,0.7542,False,simulated_only_not_a_prediction
+IMP-000183,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,ta,public_safety,3,351,1,1,0.7509,False,simulated_only_not_a_prediction
+IMP-000184,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,ta,health,2,19830,0,0,0.2829,False,simulated_only_not_a_prediction
+IMP-000185,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,te,celebrity,2,13605,1,1,0.6673,False,simulated_only_not_a_prediction
+IMP-000186,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,gu,celebrity,3,14609,1,0,0.5865,False,simulated_only_not_a_prediction
+IMP-000187,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,bn,celebrity,0,3070,1,1,0.4077,False,simulated_only_not_a_prediction
+IMP-000188,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,bn,natural_disaster,0,83055,1,1,0.6076,False,simulated_only_not_a_prediction
+IMP-000189,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,or,general_news,2,68475,1,0,0.6045,False,simulated_only_not_a_prediction
+IMP-000190,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,gu,general_news,1,85735,1,1,0.731,False,simulated_only_not_a_prediction
+IMP-000191,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,gu,general_news,2,97602,0,1,0.6773,False,simulated_only_not_a_prediction
+IMP-000192,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,bn,health,1,45253,0,1,0.4298,False,simulated_only_not_a_prediction
+IMP-000193,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,mr,health,1,33792,1,1,0.6011,False,simulated_only_not_a_prediction
+IMP-000194,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,mr,politics,3,2809,1,0,0.557,False,simulated_only_not_a_prediction
+IMP-000195,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,hi,celebrity,1,95932,1,1,0.7565,False,simulated_only_not_a_prediction
+IMP-000196,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,mr,natural_disaster,1,3711,0,0,0.1259,False,simulated_only_not_a_prediction
+IMP-000197,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,ta,politics,3,30306,0,1,0.6258,False,simulated_only_not_a_prediction
+IMP-000198,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,hi,health,0,13142,0,0,0.0329,False,simulated_only_not_a_prediction
+IMP-000199,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,kn,politics,2,49429,0,1,0.5569,False,simulated_only_not_a_prediction
+IMP-000200,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,hi,general_news,3,23911,1,1,0.8098,False,simulated_only_not_a_prediction
+IMP-000201,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,en,celebrity,0,36328,1,0,0.2908,False,simulated_only_not_a_prediction
+IMP-000202,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,gu,general_news,1,76579,1,0,0.5081,False,simulated_only_not_a_prediction
+IMP-000203,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,gu,celebrity,3,61800,0,0,0.5045,False,simulated_only_not_a_prediction
+IMP-000204,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,pa,general_news,2,47717,1,0,0.5526,False,simulated_only_not_a_prediction
+IMP-000205,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,en,health,3,99491,0,1,0.7987,False,simulated_only_not_a_prediction
+IMP-000206,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,pa,health,1,88331,0,0,0.3375,False,simulated_only_not_a_prediction
+IMP-000207,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,te,celebrity,3,62199,1,1,0.9055,False,simulated_only_not_a_prediction
+IMP-000208,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,ta,general_news,3,33980,0,1,0.6349,False,simulated_only_not_a_prediction
+IMP-000209,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,te,general_news,0,92942,0,1,0.4324,False,simulated_only_not_a_prediction
+IMP-000210,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,ml,natural_disaster,0,30838,0,0,0.0771,False,simulated_only_not_a_prediction
+IMP-000211,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,te,natural_disaster,2,92968,1,0,0.6658,False,simulated_only_not_a_prediction
+IMP-000212,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,hi,natural_disaster,3,50134,0,1,0.6753,False,simulated_only_not_a_prediction
+IMP-000213,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,mr,health,3,48698,0,1,0.6717,False,simulated_only_not_a_prediction
+IMP-000214,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,ta,public_safety,3,647,1,1,0.7516,False,simulated_only_not_a_prediction
+IMP-000215,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,mr,public_safety,3,99191,1,0,0.798,False,simulated_only_not_a_prediction
+IMP-000216,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,mr,politics,2,91091,1,0,0.6611,False,simulated_only_not_a_prediction
+IMP-000217,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,bn,general_news,0,19504,1,0,0.2488,False,simulated_only_not_a_prediction
+IMP-000218,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,ur,public_safety,2,35137,0,1,0.5212,False,simulated_only_not_a_prediction
+IMP-000219,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,pa,public_safety,1,16222,1,0,0.3572,False,simulated_only_not_a_prediction
+IMP-000220,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,mr,celebrity,2,3013,1,1,0.6409,False,simulated_only_not_a_prediction
+IMP-000221,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,gu,public_safety,3,68997,1,1,0.9225,False,simulated_only_not_a_prediction
+IMP-000222,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,te,general_news,1,77770,0,0,0.3111,False,simulated_only_not_a_prediction
+IMP-000223,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,hi,politics,1,424,1,1,0.5177,False,simulated_only_not_a_prediction
+IMP-000224,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,kn,natural_disaster,1,35930,1,0,0.4065,False,simulated_only_not_a_prediction
+IMP-000225,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,pa,general_news,2,22608,0,1,0.4899,False,simulated_only_not_a_prediction
+IMP-000226,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,hi,politics,1,32898,0,1,0.3989,False,simulated_only_not_a_prediction
+IMP-000227,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,ta,natural_disaster,0,70254,1,1,0.5756,False,simulated_only_not_a_prediction
+IMP-000228,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,bn,natural_disaster,3,95545,0,1,0.7889,False,simulated_only_not_a_prediction
+IMP-000229,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,pa,natural_disaster,1,71400,1,0,0.4952,False,simulated_only_not_a_prediction
+IMP-000230,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,bn,health,3,5917,0,1,0.5648,False,simulated_only_not_a_prediction
+IMP-000231,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,ml,celebrity,3,53860,1,1,0.8846,False,simulated_only_not_a_prediction
+IMP-000232,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,or,general_news,0,64146,0,1,0.3604,False,simulated_only_not_a_prediction
+IMP-000233,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,ta,public_safety,0,23272,1,0,0.2582,False,simulated_only_not_a_prediction
+IMP-000234,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,ur,celebrity,2,33580,1,1,0.7173,False,simulated_only_not_a_prediction
+IMP-000235,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,kn,public_safety,2,25723,1,0,0.4976,False,simulated_only_not_a_prediction
+IMP-000236,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,ur,politics,2,99303,0,1,0.6816,False,simulated_only_not_a_prediction
+IMP-000237,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,ur,politics,1,40948,1,0,0.419,False,simulated_only_not_a_prediction
+IMP-000238,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,ml,politics,0,91684,0,0,0.2292,False,simulated_only_not_a_prediction
+IMP-000239,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,bn,politics,0,63957,0,0,0.1599,False,simulated_only_not_a_prediction
+IMP-000240,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,gu,public_safety,1,70734,0,0,0.2935,False,simulated_only_not_a_prediction
+IMP-000241,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,ml,general_news,1,38673,1,0,0.4133,False,simulated_only_not_a_prediction
+IMP-000242,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,bn,natural_disaster,1,46062,0,1,0.4318,False,simulated_only_not_a_prediction
+IMP-000243,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,ml,public_safety,1,8161,1,1,0.5371,False,simulated_only_not_a_prediction
+IMP-000244,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,or,health,2,72266,0,1,0.614,False,simulated_only_not_a_prediction
+IMP-000245,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,te,celebrity,3,58488,0,0,0.4962,False,simulated_only_not_a_prediction
+IMP-000246,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,en,celebrity,1,12479,0,0,0.1479,False,simulated_only_not_a_prediction
+IMP-000247,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,gu,public_safety,2,49389,1,0,0.5568,False,simulated_only_not_a_prediction
+IMP-000248,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,or,general_news,3,65060,1,0,0.7127,False,simulated_only_not_a_prediction
+IMP-000249,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,ta,health,1,60096,0,1,0.4669,False,simulated_only_not_a_prediction
+IMP-000250,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,ta,general_news,1,39374,1,0,0.4151,False,simulated_only_not_a_prediction
+IMP-000251,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,or,health,0,92423,0,0,0.2311,False,simulated_only_not_a_prediction
+IMP-000252,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,ta,natural_disaster,1,68042,0,0,0.2868,False,simulated_only_not_a_prediction
+IMP-000253,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,hi,general_news,0,40112,0,0,0.1003,False,simulated_only_not_a_prediction
+IMP-000254,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,mr,general_news,3,61573,0,0,0.5039,False,simulated_only_not_a_prediction
+IMP-000255,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,te,public_safety,1,93616,0,1,0.5507,False,simulated_only_not_a_prediction
+IMP-000256,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,kn,general_news,2,93508,0,0,0.4671,False,simulated_only_not_a_prediction
+IMP-000257,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,te,politics,3,45543,1,0,0.6639,False,simulated_only_not_a_prediction
+IMP-000258,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,kn,general_news,1,92989,0,0,0.3491,False,simulated_only_not_a_prediction
+IMP-000259,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,ta,public_safety,1,22105,0,0,0.1719,False,simulated_only_not_a_prediction
+IMP-000260,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,kn,celebrity,0,8862,0,1,0.2222,False,simulated_only_not_a_prediction
+IMP-000261,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,ml,celebrity,2,52529,0,0,0.3647,False,simulated_only_not_a_prediction
+IMP-000262,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,ta,politics,1,23501,0,1,0.3754,False,simulated_only_not_a_prediction
+IMP-000263,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,gu,celebrity,3,89572,1,0,0.7739,False,simulated_only_not_a_prediction
+IMP-000264,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,pa,natural_disaster,2,95693,0,0,0.4726,False,simulated_only_not_a_prediction
+IMP-000265,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,ta,natural_disaster,1,48017,0,1,0.4367,False,simulated_only_not_a_prediction
+IMP-000266,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,ta,celebrity,0,48385,1,1,0.521,False,simulated_only_not_a_prediction
+IMP-000267,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,mr,celebrity,1,5094,1,0,0.3294,False,simulated_only_not_a_prediction
+IMP-000268,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,te,natural_disaster,3,99874,1,1,0.9997,False,simulated_only_not_a_prediction
+IMP-000269,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,bn,celebrity,2,8195,1,0,0.4538,False,simulated_only_not_a_prediction
+IMP-000270,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,ml,public_safety,1,71869,1,1,0.6963,False,simulated_only_not_a_prediction
+IMP-000271,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,ta,public_safety,3,15665,0,1,0.5892,False,simulated_only_not_a_prediction
+IMP-000272,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,ur,politics,1,92486,0,0,0.3479,False,simulated_only_not_a_prediction
+IMP-000273,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,pa,general_news,0,35607,1,0,0.289,False,simulated_only_not_a_prediction
+IMP-000274,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,or,natural_disaster,0,90340,0,0,0.2258,False,simulated_only_not_a_prediction
+IMP-000275,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,ml,general_news,3,91311,0,0,0.5783,False,simulated_only_not_a_prediction
+IMP-000276,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,or,health,0,19849,1,1,0.4496,False,simulated_only_not_a_prediction
+IMP-000277,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,kn,general_news,3,97069,0,1,0.7927,False,simulated_only_not_a_prediction
+IMP-000278,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,ur,public_safety,0,92933,0,1,0.4323,False,simulated_only_not_a_prediction
+IMP-000279,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,ml,natural_disaster,1,31139,1,1,0.5945,False,simulated_only_not_a_prediction
+IMP-000280,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,pa,politics,1,53254,0,0,0.2498,False,simulated_only_not_a_prediction
+IMP-000281,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,ta,public_safety,0,81396,1,0,0.4035,False,simulated_only_not_a_prediction
+IMP-000282,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,pa,politics,3,67338,1,0,0.7183,False,simulated_only_not_a_prediction
+IMP-000283,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,kn,politics,1,30740,0,0,0.1935,False,simulated_only_not_a_prediction
+IMP-000284,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,mr,public_safety,2,95076,1,0,0.671,False,simulated_only_not_a_prediction
+IMP-000285,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,ur,health,1,27971,1,0,0.3866,False,simulated_only_not_a_prediction
+IMP-000286,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,or,politics,3,99768,1,0,0.7994,False,simulated_only_not_a_prediction
+IMP-000287,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,en,general_news,0,71991,1,1,0.58,False,simulated_only_not_a_prediction
+IMP-000288,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,en,general_news,1,84208,1,0,0.5272,False,simulated_only_not_a_prediction
+IMP-000289,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,ta,natural_disaster,2,40717,1,0,0.5351,False,simulated_only_not_a_prediction
+IMP-000290,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,bn,health,1,23833,0,0,0.1762,False,simulated_only_not_a_prediction
+IMP-000291,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,or,public_safety,1,6002,0,1,0.3317,False,simulated_only_not_a_prediction
+IMP-000292,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,ta,public_safety,2,56722,0,1,0.5751,False,simulated_only_not_a_prediction
+IMP-000293,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,or,health,1,14226,1,0,0.3522,False,simulated_only_not_a_prediction
+IMP-000294,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,gu,health,3,98784,1,0,0.797,False,simulated_only_not_a_prediction
+IMP-000295,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,pa,health,1,11841,1,1,0.5463,False,simulated_only_not_a_prediction
+IMP-000296,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,or,general_news,1,19984,0,0,0.1666,False,simulated_only_not_a_prediction
+IMP-000297,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,bn,celebrity,0,83881,0,0,0.2097,False,simulated_only_not_a_prediction
+IMP-000298,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,bn,health,3,62602,0,1,0.7065,False,simulated_only_not_a_prediction
+IMP-000299,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,ur,natural_disaster,3,14398,1,1,0.786,False,simulated_only_not_a_prediction
+IMP-000300,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,en,general_news,2,55371,1,0,0.5718,False,simulated_only_not_a_prediction
+IMP-000301,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,bn,general_news,0,61014,0,0,0.1525,False,simulated_only_not_a_prediction
+IMP-000302,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,gu,natural_disaster,1,77242,1,0,0.5098,False,simulated_only_not_a_prediction
+IMP-000303,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,kn,natural_disaster,1,61238,1,0,0.4698,False,simulated_only_not_a_prediction
+IMP-000304,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,or,general_news,2,34410,1,0,0.5194,False,simulated_only_not_a_prediction
+IMP-000305,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,or,general_news,1,52899,1,1,0.6489,False,simulated_only_not_a_prediction
+IMP-000306,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,te,public_safety,2,44467,1,0,0.5445,False,simulated_only_not_a_prediction
+IMP-000307,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,te,natural_disaster,1,3045,1,0,0.3243,False,simulated_only_not_a_prediction
+IMP-000308,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,en,health,2,60197,0,1,0.5838,False,simulated_only_not_a_prediction
+IMP-000309,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,mr,celebrity,1,98956,0,1,0.5641,False,simulated_only_not_a_prediction
+IMP-000310,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,ta,natural_disaster,2,23665,0,0,0.2925,False,simulated_only_not_a_prediction
+IMP-000311,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,en,public_safety,2,19733,0,0,0.2827,False,simulated_only_not_a_prediction
+IMP-000312,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,en,natural_disaster,3,52597,0,0,0.4815,False,simulated_only_not_a_prediction
+IMP-000313,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,en,natural_disaster,3,3035,0,1,0.5576,False,simulated_only_not_a_prediction
+IMP-000314,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,or,general_news,2,64205,0,1,0.5938,False,simulated_only_not_a_prediction
+IMP-000315,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,ml,natural_disaster,2,57516,1,1,0.7771,False,simulated_only_not_a_prediction
+IMP-000316,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,hi,celebrity,2,46567,1,1,0.7498,False,simulated_only_not_a_prediction
+IMP-000317,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,ta,celebrity,2,38039,0,0,0.3284,False,simulated_only_not_a_prediction
+IMP-000318,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,pa,politics,1,28985,1,0,0.3891,False,simulated_only_not_a_prediction
+IMP-000319,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,en,natural_disaster,2,12568,1,1,0.6648,False,simulated_only_not_a_prediction
+IMP-000320,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,en,health,1,10753,1,0,0.3435,False,simulated_only_not_a_prediction
+IMP-000321,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,or,general_news,0,70505,1,0,0.3763,False,simulated_only_not_a_prediction
+IMP-000322,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,bn,celebrity,0,43977,1,0,0.3099,False,simulated_only_not_a_prediction
+IMP-000323,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,kn,health,3,74520,1,1,0.9363,False,simulated_only_not_a_prediction
+IMP-000324,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,kn,natural_disaster,1,42307,0,1,0.4224,False,simulated_only_not_a_prediction
+IMP-000325,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,ur,public_safety,0,68775,1,0,0.3719,False,simulated_only_not_a_prediction
+IMP-000326,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,mr,general_news,1,90450,0,0,0.3428,False,simulated_only_not_a_prediction
+IMP-000327,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,hi,natural_disaster,0,7086,0,0,0.0177,False,simulated_only_not_a_prediction
+IMP-000328,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,te,natural_disaster,0,31380,0,0,0.0785,False,simulated_only_not_a_prediction
+IMP-000329,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,ml,politics,2,25017,1,0,0.4959,False,simulated_only_not_a_prediction
+IMP-000330,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,ta,general_news,3,20929,1,1,0.8023,False,simulated_only_not_a_prediction
+IMP-000331,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,mr,celebrity,1,65804,0,1,0.4812,False,simulated_only_not_a_prediction
+IMP-000332,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,en,public_safety,2,70373,0,1,0.6093,False,simulated_only_not_a_prediction
+IMP-000333,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,pa,health,3,39595,1,1,0.849,False,simulated_only_not_a_prediction
+IMP-000334,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,kn,health,2,68329,0,0,0.4042,False,simulated_only_not_a_prediction
+IMP-000335,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,or,public_safety,2,64363,0,0,0.3942,False,simulated_only_not_a_prediction
+IMP-000336,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,ta,general_news,1,27320,0,0,0.185,False,simulated_only_not_a_prediction
+IMP-000337,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,ur,public_safety,3,25247,1,1,0.8131,False,simulated_only_not_a_prediction
+IMP-000338,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,or,public_safety,1,1839,1,1,0.5213,False,simulated_only_not_a_prediction
+IMP-000339,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,pa,celebrity,0,82367,0,0,0.2059,False,simulated_only_not_a_prediction
+IMP-000340,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,hi,celebrity,3,5147,1,0,0.5629,False,simulated_only_not_a_prediction
+IMP-000341,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,hi,general_news,0,44725,0,1,0.3118,False,simulated_only_not_a_prediction
+IMP-000342,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,te,politics,2,39147,1,0,0.5312,False,simulated_only_not_a_prediction
+IMP-000343,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,mr,natural_disaster,3,65189,0,1,0.713,False,simulated_only_not_a_prediction
+IMP-000344,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,ml,general_news,0,11855,1,1,0.4296,False,simulated_only_not_a_prediction
+IMP-000345,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,ta,politics,3,71087,1,0,0.7277,False,simulated_only_not_a_prediction
+IMP-000346,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,pa,general_news,1,46510,0,1,0.4329,False,simulated_only_not_a_prediction
+IMP-000347,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,te,general_news,2,36015,0,0,0.3234,False,simulated_only_not_a_prediction
+IMP-000348,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,bn,natural_disaster,1,65375,0,1,0.4801,False,simulated_only_not_a_prediction
+IMP-000349,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,en,celebrity,0,4414,0,0,0.011,False,simulated_only_not_a_prediction
+IMP-000350,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,mr,natural_disaster,2,36802,1,1,0.7253,False,simulated_only_not_a_prediction
+IMP-000351,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,bn,natural_disaster,1,69991,1,1,0.6916,False,simulated_only_not_a_prediction
+IMP-000352,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,gu,general_news,1,71322,1,1,0.695,False,simulated_only_not_a_prediction
+IMP-000353,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,mr,general_news,3,98577,0,0,0.5964,False,simulated_only_not_a_prediction
+IMP-000354,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,gu,politics,0,90885,1,1,0.6272,False,simulated_only_not_a_prediction
+IMP-000355,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,ur,general_news,2,61816,0,0,0.3879,False,simulated_only_not_a_prediction
+IMP-000356,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,pa,public_safety,0,54677,1,0,0.3367,False,simulated_only_not_a_prediction
+IMP-000357,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,te,celebrity,3,79227,1,0,0.7481,False,simulated_only_not_a_prediction
+IMP-000358,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,bn,general_news,1,88939,1,1,0.739,False,simulated_only_not_a_prediction
+IMP-000359,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,en,general_news,2,70868,1,1,0.8105,False,simulated_only_not_a_prediction
+IMP-000360,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,ml,natural_disaster,2,73689,0,1,0.6176,False,simulated_only_not_a_prediction
+IMP-000361,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,ta,general_news,1,71547,0,1,0.4955,False,simulated_only_not_a_prediction
+IMP-000362,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,te,public_safety,2,9615,0,1,0.4574,False,simulated_only_not_a_prediction
+IMP-000363,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,bn,politics,3,23740,0,1,0.6094,False,simulated_only_not_a_prediction
+IMP-000364,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,ml,general_news,0,63183,1,0,0.358,False,simulated_only_not_a_prediction
+IMP-000365,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,pa,general_news,2,49153,1,0,0.5562,False,simulated_only_not_a_prediction
+IMP-000366,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,ml,health,2,9959,0,1,0.4582,False,simulated_only_not_a_prediction
+IMP-000367,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,en,politics,3,18950,1,1,0.7974,False,simulated_only_not_a_prediction
+IMP-000368,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,ml,general_news,2,71244,1,0,0.6114,False,simulated_only_not_a_prediction
+IMP-000369,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,te,politics,0,36984,0,0,0.0925,False,simulated_only_not_a_prediction
+IMP-000370,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,hi,celebrity,1,11468,0,1,0.3453,False,simulated_only_not_a_prediction
+IMP-000371,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,en,politics,2,36182,1,0,0.5238,False,simulated_only_not_a_prediction
+IMP-000372,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,gu,celebrity,0,818,0,0,0.002,False,simulated_only_not_a_prediction
+IMP-000373,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,ta,politics,2,29965,1,1,0.7082,False,simulated_only_not_a_prediction
+IMP-000374,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,ta,celebrity,2,88632,1,0,0.6549,False,simulated_only_not_a_prediction
+IMP-000375,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,gu,general_news,0,41464,0,0,0.1037,False,simulated_only_not_a_prediction
+IMP-000376,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,te,politics,3,50901,1,0,0.6773,False,simulated_only_not_a_prediction
+IMP-000377,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,gu,general_news,2,23115,0,1,0.4911,False,simulated_only_not_a_prediction
+IMP-000378,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,kn,natural_disaster,1,82170,0,0,0.3221,False,simulated_only_not_a_prediction
+IMP-000379,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,mr,celebrity,1,24939,1,0,0.379,False,simulated_only_not_a_prediction
+IMP-000380,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,te,celebrity,0,70854,1,1,0.5771,False,simulated_only_not_a_prediction
+IMP-000381,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,bn,natural_disaster,1,17997,1,0,0.3617,False,simulated_only_not_a_prediction
+IMP-000382,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,gu,celebrity,3,61657,1,0,0.7041,False,simulated_only_not_a_prediction
+IMP-000383,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,kn,celebrity,0,54529,0,0,0.1363,False,simulated_only_not_a_prediction
+IMP-000384,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,ur,public_safety,0,15713,0,1,0.2393,False,simulated_only_not_a_prediction
+IMP-000385,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,gu,natural_disaster,2,31667,0,0,0.3125,False,simulated_only_not_a_prediction
+IMP-000386,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,hi,general_news,1,12705,0,1,0.3484,False,simulated_only_not_a_prediction
+IMP-000387,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,mr,natural_disaster,2,42475,1,1,0.7395,False,simulated_only_not_a_prediction
+IMP-000388,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,en,public_safety,1,77192,0,1,0.5096,False,simulated_only_not_a_prediction
+IMP-000389,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,hi,general_news,0,35138,0,1,0.2878,False,simulated_only_not_a_prediction
+IMP-000390,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,or,public_safety,1,81807,1,0,0.5212,False,simulated_only_not_a_prediction
+IMP-000391,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,ur,public_safety,1,95486,1,1,0.7554,False,simulated_only_not_a_prediction
+IMP-000392,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,pa,celebrity,2,3640,1,0,0.4424,False,simulated_only_not_a_prediction
+IMP-000393,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,or,natural_disaster,2,27012,0,1,0.5009,False,simulated_only_not_a_prediction
+IMP-000394,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,ur,celebrity,2,11514,0,0,0.2621,False,simulated_only_not_a_prediction
+IMP-000395,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,mr,general_news,3,79652,1,1,0.9491,False,simulated_only_not_a_prediction
+IMP-000396,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,bn,health,0,66365,0,0,0.1659,False,simulated_only_not_a_prediction
+IMP-000397,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,ta,health,1,8136,1,1,0.537,False,simulated_only_not_a_prediction
+IMP-000398,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,bn,health,0,90409,1,0,0.426,False,simulated_only_not_a_prediction
+IMP-000399,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,kn,health,3,73773,1,1,0.9344,False,simulated_only_not_a_prediction
+IMP-000400,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,kn,health,1,60876,0,0,0.2689,False,simulated_only_not_a_prediction
+IMP-000401,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,ta,natural_disaster,1,56607,0,1,0.4582,False,simulated_only_not_a_prediction
+IMP-000402,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,gu,general_news,0,5683,1,1,0.4142,False,simulated_only_not_a_prediction
+IMP-000403,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,mr,natural_disaster,0,70328,1,0,0.3758,False,simulated_only_not_a_prediction
+IMP-000404,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,mr,public_safety,1,2669,0,0,0.1233,False,simulated_only_not_a_prediction
+IMP-000405,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,kn,natural_disaster,3,48064,1,1,0.8702,False,simulated_only_not_a_prediction
+IMP-000406,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,gu,health,3,6293,0,0,0.3657,False,simulated_only_not_a_prediction
+IMP-000407,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,hi,health,2,30965,0,1,0.5107,False,simulated_only_not_a_prediction
+IMP-000408,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,en,public_safety,3,69477,0,1,0.7237,False,simulated_only_not_a_prediction
+IMP-000409,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,kn,health,0,49262,1,0,0.3232,False,simulated_only_not_a_prediction
+IMP-000410,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,ta,health,3,19725,1,1,0.7993,False,simulated_only_not_a_prediction
+IMP-000411,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,mr,celebrity,0,28977,1,1,0.4724,False,simulated_only_not_a_prediction
+IMP-000412,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,gu,politics,1,66253,0,0,0.2823,False,simulated_only_not_a_prediction
+IMP-000413,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,pa,celebrity,2,73440,0,0,0.4169,False,simulated_only_not_a_prediction
+IMP-000414,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,te,natural_disaster,1,91029,1,0,0.5442,False,simulated_only_not_a_prediction
+IMP-000415,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,kn,celebrity,1,31102,0,1,0.3944,False,simulated_only_not_a_prediction
+IMP-000416,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,te,natural_disaster,0,16793,0,1,0.242,False,simulated_only_not_a_prediction
+IMP-000417,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,en,health,2,81846,0,1,0.6379,False,simulated_only_not_a_prediction
+IMP-000418,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,en,public_safety,0,5657,1,1,0.4141,False,simulated_only_not_a_prediction
+IMP-000419,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,ml,general_news,2,20077,0,1,0.4835,False,simulated_only_not_a_prediction
+IMP-000420,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,or,natural_disaster,2,45799,1,0,0.5478,False,simulated_only_not_a_prediction
+IMP-000421,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,te,politics,1,9866,0,1,0.3413,False,simulated_only_not_a_prediction
+IMP-000422,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,ta,health,2,45790,0,0,0.3478,False,simulated_only_not_a_prediction
+IMP-000423,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,bn,natural_disaster,3,82265,1,1,0.9557,False,simulated_only_not_a_prediction
+IMP-000424,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,ml,public_safety,1,40968,1,1,0.6191,False,simulated_only_not_a_prediction
+IMP-000425,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,ta,politics,3,49321,1,1,0.8733,False,simulated_only_not_a_prediction
+IMP-000426,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,mr,politics,1,15676,0,1,0.3559,False,simulated_only_not_a_prediction
+IMP-000427,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,en,politics,0,83803,1,0,0.4095,False,simulated_only_not_a_prediction
+IMP-000428,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,pa,celebrity,1,35966,1,0,0.4066,False,simulated_only_not_a_prediction
+IMP-000429,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,hi,public_safety,2,42835,0,0,0.3404,False,simulated_only_not_a_prediction
+IMP-000430,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,hi,public_safety,2,61684,0,0,0.3875,False,simulated_only_not_a_prediction
+IMP-000431,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,ur,general_news,1,91902,0,1,0.5464,False,simulated_only_not_a_prediction
+IMP-000432,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,bn,politics,2,20636,1,1,0.6849,False,simulated_only_not_a_prediction
+IMP-000433,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,kn,politics,2,97659,1,1,0.8775,False,simulated_only_not_a_prediction
+IMP-000434,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,ur,celebrity,2,74285,1,0,0.619,False,simulated_only_not_a_prediction
+IMP-000435,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,ml,celebrity,2,80866,0,1,0.6355,False,simulated_only_not_a_prediction
+IMP-000436,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,kn,natural_disaster,1,76757,1,1,0.7086,False,simulated_only_not_a_prediction
+IMP-000437,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,ml,general_news,3,68494,0,1,0.7212,False,simulated_only_not_a_prediction
+IMP-000438,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,or,politics,0,44277,1,1,0.5107,False,simulated_only_not_a_prediction
+IMP-000439,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,en,public_safety,3,47644,1,0,0.6691,False,simulated_only_not_a_prediction
+IMP-000440,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,en,public_safety,0,15494,1,0,0.2387,False,simulated_only_not_a_prediction
+IMP-000441,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,kn,public_safety,1,73950,0,1,0.5015,False,simulated_only_not_a_prediction
+IMP-000442,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,kn,celebrity,2,55419,1,0,0.5719,False,simulated_only_not_a_prediction
+IMP-000443,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,ur,general_news,0,86983,1,1,0.6175,False,simulated_only_not_a_prediction
+IMP-000444,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,pa,general_news,0,28706,1,0,0.2718,False,simulated_only_not_a_prediction
+IMP-000445,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,bn,health,0,90302,0,1,0.4258,False,simulated_only_not_a_prediction
+IMP-000446,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,or,public_safety,3,80302,1,1,0.9508,False,simulated_only_not_a_prediction
+IMP-000447,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,en,health,3,89788,1,0,0.7745,False,simulated_only_not_a_prediction
+IMP-000448,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,hi,health,3,59443,0,0,0.4986,False,simulated_only_not_a_prediction
+IMP-000449,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,te,celebrity,1,22686,0,0,0.1734,False,simulated_only_not_a_prediction
+IMP-000450,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,or,health,2,6165,1,0,0.4487,False,simulated_only_not_a_prediction
+IMP-000451,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,bn,public_safety,3,88867,1,1,0.9722,False,simulated_only_not_a_prediction
+IMP-000452,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,kn,politics,0,61022,1,0,0.3526,False,simulated_only_not_a_prediction
+IMP-000453,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,hi,natural_disaster,3,4915,0,1,0.5623,False,simulated_only_not_a_prediction
+IMP-000454,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,gu,health,3,5570,0,1,0.5639,False,simulated_only_not_a_prediction
+IMP-000455,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,pa,natural_disaster,2,78585,1,1,0.8298,False,simulated_only_not_a_prediction
+IMP-000456,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,ta,celebrity,0,73290,0,0,0.1832,False,simulated_only_not_a_prediction
+IMP-000457,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,or,celebrity,3,38874,1,1,0.8472,False,simulated_only_not_a_prediction
+IMP-000458,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,bn,celebrity,2,50506,1,0,0.5596,False,simulated_only_not_a_prediction
+IMP-000459,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,ml,celebrity,0,93918,0,1,0.4348,False,simulated_only_not_a_prediction
+IMP-000460,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,gu,celebrity,2,1976,1,0,0.4383,False,simulated_only_not_a_prediction
+IMP-000461,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,ta,general_news,1,32361,1,1,0.5976,False,simulated_only_not_a_prediction
+IMP-000462,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,mr,health,2,75224,0,1,0.6214,False,simulated_only_not_a_prediction
+IMP-000463,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,ta,politics,2,41848,0,1,0.538,False,simulated_only_not_a_prediction
+IMP-000464,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,hi,natural_disaster,2,87450,0,0,0.452,False,simulated_only_not_a_prediction
+IMP-000465,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,gu,politics,1,27998,1,0,0.3867,False,simulated_only_not_a_prediction
+IMP-000466,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,te,celebrity,2,69356,0,1,0.6067,False,simulated_only_not_a_prediction
+IMP-000467,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,ml,general_news,3,83608,0,0,0.559,False,simulated_only_not_a_prediction
+IMP-000468,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,mr,politics,1,77052,0,1,0.5093,False,simulated_only_not_a_prediction
+IMP-000469,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,hi,health,2,33089,0,1,0.5161,False,simulated_only_not_a_prediction
+IMP-000470,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,mr,public_safety,1,11108,0,1,0.3444,False,simulated_only_not_a_prediction
+IMP-000471,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,ta,natural_disaster,2,75790,1,0,0.6228,False,simulated_only_not_a_prediction
+IMP-000472,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,hi,general_news,1,72478,0,1,0.4979,False,simulated_only_not_a_prediction
+IMP-000473,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,gu,celebrity,1,29914,0,0,0.1915,False,simulated_only_not_a_prediction
+IMP-000474,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,ur,natural_disaster,0,59969,0,0,0.1499,False,simulated_only_not_a_prediction
+IMP-000475,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,hi,natural_disaster,3,34628,0,0,0.4366,False,simulated_only_not_a_prediction
+IMP-000476,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,mr,health,0,83514,1,0,0.4088,False,simulated_only_not_a_prediction
+IMP-000477,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,ta,celebrity,1,58003,1,1,0.6617,False,simulated_only_not_a_prediction
+IMP-000478,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,or,politics,2,9186,0,0,0.2563,False,simulated_only_not_a_prediction
+IMP-000479,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,ta,celebrity,0,70501,0,0,0.1763,False,simulated_only_not_a_prediction
+IMP-000480,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,ur,public_safety,0,69623,0,0,0.1741,False,simulated_only_not_a_prediction
+IMP-000481,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,en,natural_disaster,1,47875,1,1,0.6364,False,simulated_only_not_a_prediction
+IMP-000482,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,ml,natural_disaster,2,70303,0,1,0.6091,False,simulated_only_not_a_prediction
+IMP-000483,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,hi,celebrity,3,89918,0,1,0.7748,False,simulated_only_not_a_prediction
+IMP-000484,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,kn,politics,1,87369,1,1,0.7351,False,simulated_only_not_a_prediction
+IMP-000485,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,ml,public_safety,3,38731,0,1,0.6468,False,simulated_only_not_a_prediction
+IMP-000486,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,ta,natural_disaster,0,13696,1,0,0.2342,False,simulated_only_not_a_prediction
+IMP-000487,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,te,natural_disaster,0,19028,1,0,0.2476,False,simulated_only_not_a_prediction
+IMP-000488,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,pa,general_news,2,39305,0,0,0.3316,False,simulated_only_not_a_prediction
+IMP-000489,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,mr,natural_disaster,1,25520,0,1,0.3805,False,simulated_only_not_a_prediction
+IMP-000490,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,te,natural_disaster,0,36618,0,0,0.0915,False,simulated_only_not_a_prediction
+IMP-000491,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,ta,health,3,83323,0,0,0.5583,False,simulated_only_not_a_prediction
+IMP-000492,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,gu,health,1,55036,1,1,0.6543,False,simulated_only_not_a_prediction
+IMP-000493,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,pa,natural_disaster,0,54402,1,0,0.336,False,simulated_only_not_a_prediction
+IMP-000494,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,ur,general_news,1,83617,1,0,0.5257,False,simulated_only_not_a_prediction
+IMP-000495,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,or,celebrity,2,56829,0,0,0.3754,False,simulated_only_not_a_prediction
+IMP-000496,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,mr,politics,1,72299,1,0,0.4974,False,simulated_only_not_a_prediction
+IMP-000497,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,pa,celebrity,1,24422,0,0,0.1777,False,simulated_only_not_a_prediction
+IMP-000498,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,en,celebrity,1,83863,1,1,0.7263,False,simulated_only_not_a_prediction
+IMP-000499,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,or,public_safety,1,17016,0,1,0.3592,False,simulated_only_not_a_prediction
+IMP-000500,social_impact_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,pa,politics,1,84799,1,1,0.7287,False,simulated_only_not_a_prediction

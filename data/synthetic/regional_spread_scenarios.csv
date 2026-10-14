@@ -1,0 +1,501 @@
+﻿record_id,dataset_type,data_source,is_synthetic,generation_seed,methodology_version,is_real_world_observation,region,content_language,synthetic_language_compatibility,synthetic_connectivity_index,illustrative_scenario_score,score_interpretation
+REG-000001,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,or,0.5552,0.6964,0.6117,simulated_only_not_a_prediction
+REG-000002,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,ur,0.6585,0.0925,0.4321,simulated_only_not_a_prediction
+REG-000003,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,te,0.9952,0.5859,0.8315,simulated_only_not_a_prediction
+REG-000004,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,kn,0.9962,0.718,0.8849,simulated_only_not_a_prediction
+REG-000005,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,pa,0.6823,0.8808,0.7617,simulated_only_not_a_prediction
+REG-000006,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,kn,0.3042,0.6832,0.4558,simulated_only_not_a_prediction
+REG-000007,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,te,0.9488,0.8358,0.9036,simulated_only_not_a_prediction
+REG-000008,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,pa,0.8461,0.3058,0.63,simulated_only_not_a_prediction
+REG-000009,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,te,0.8328,0.1604,0.5638,simulated_only_not_a_prediction
+REG-000010,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,pa,0.4053,0.9458,0.6215,simulated_only_not_a_prediction
+REG-000011,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,mr,0.3291,0.1612,0.2619,simulated_only_not_a_prediction
+REG-000012,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,gu,0.0168,0.8832,0.3634,simulated_only_not_a_prediction
+REG-000013,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,hi,0.7065,0.3202,0.552,simulated_only_not_a_prediction
+REG-000014,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,ta,0.4637,0.4592,0.4619,simulated_only_not_a_prediction
+REG-000015,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,en,0.8458,0.6451,0.7655,simulated_only_not_a_prediction
+REG-000016,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,or,0.4844,0.7191,0.5783,simulated_only_not_a_prediction
+REG-000017,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,kn,0.1919,0.6195,0.3629,simulated_only_not_a_prediction
+REG-000018,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,hi,0.145,0.9681,0.4742,simulated_only_not_a_prediction
+REG-000019,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,gu,0.9981,0.7014,0.8794,simulated_only_not_a_prediction
+REG-000020,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,or,0.8782,0.5165,0.7335,simulated_only_not_a_prediction
+REG-000021,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,ur,0.9634,0.6011,0.8185,simulated_only_not_a_prediction
+REG-000022,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,kn,0.0829,0.4335,0.2231,simulated_only_not_a_prediction
+REG-000023,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,ta,0.644,0.2944,0.5042,simulated_only_not_a_prediction
+REG-000024,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,te,0.9066,0.4359,0.7183,simulated_only_not_a_prediction
+REG-000025,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,bn,0.1803,0.5687,0.3357,simulated_only_not_a_prediction
+REG-000026,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,pa,0.1389,0.6026,0.3244,simulated_only_not_a_prediction
+REG-000027,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,gu,0.2109,0.7471,0.4254,simulated_only_not_a_prediction
+REG-000028,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,ml,0.2182,0.3539,0.2725,simulated_only_not_a_prediction
+REG-000029,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,en,0.056,0.8303,0.3657,simulated_only_not_a_prediction
+REG-000030,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,hi,0.5467,0.4165,0.4946,simulated_only_not_a_prediction
+REG-000031,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,en,0.9151,0.6365,0.8037,simulated_only_not_a_prediction
+REG-000032,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,kn,0.8577,0.6307,0.7669,simulated_only_not_a_prediction
+REG-000033,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,ta,0.5951,0.9843,0.7508,simulated_only_not_a_prediction
+REG-000034,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,gu,0.3568,0.0829,0.2472,simulated_only_not_a_prediction
+REG-000035,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,pa,0.9723,0.4495,0.7632,simulated_only_not_a_prediction
+REG-000036,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,kn,0.0428,0.699,0.3053,simulated_only_not_a_prediction
+REG-000037,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,gu,0.4396,0.6637,0.5292,simulated_only_not_a_prediction
+REG-000038,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,ml,0.5406,0.8339,0.6579,simulated_only_not_a_prediction
+REG-000039,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,pa,0.1052,0.0923,0.1,simulated_only_not_a_prediction
+REG-000040,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,bn,0.5239,0.1058,0.3567,simulated_only_not_a_prediction
+REG-000041,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,gu,0.6567,0.8972,0.7529,simulated_only_not_a_prediction
+REG-000042,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,ml,0.9064,0.0211,0.5523,simulated_only_not_a_prediction
+REG-000043,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,kn,0.8064,0.7893,0.7996,simulated_only_not_a_prediction
+REG-000044,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,bn,0.0604,0.8763,0.3868,simulated_only_not_a_prediction
+REG-000045,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,en,0.3068,0.7261,0.4745,simulated_only_not_a_prediction
+REG-000046,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,ml,0.7239,0.6811,0.7068,simulated_only_not_a_prediction
+REG-000047,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,bn,0.7676,0.5533,0.6819,simulated_only_not_a_prediction
+REG-000048,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,ml,0.1507,0.6667,0.3571,simulated_only_not_a_prediction
+REG-000049,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,hi,0.8419,0.4889,0.7007,simulated_only_not_a_prediction
+REG-000050,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,bn,0.0116,0.7965,0.3256,simulated_only_not_a_prediction
+REG-000051,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,te,0.7806,0.6125,0.7134,simulated_only_not_a_prediction
+REG-000052,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,ml,0.5425,0.0544,0.3473,simulated_only_not_a_prediction
+REG-000053,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,ur,0.108,0.9519,0.4456,simulated_only_not_a_prediction
+REG-000054,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,en,0.2929,0.4459,0.3541,simulated_only_not_a_prediction
+REG-000055,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,kn,0.5996,0.5966,0.5984,simulated_only_not_a_prediction
+REG-000056,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,kn,0.6272,0.6716,0.645,simulated_only_not_a_prediction
+REG-000057,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,kn,0.3992,0.0153,0.2456,simulated_only_not_a_prediction
+REG-000058,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,pa,0.0738,0.0225,0.0533,simulated_only_not_a_prediction
+REG-000059,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,mr,0.7818,0.8998,0.829,simulated_only_not_a_prediction
+REG-000060,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,ml,0.0943,0.498,0.2558,simulated_only_not_a_prediction
+REG-000061,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,te,0.8712,0.6409,0.7791,simulated_only_not_a_prediction
+REG-000062,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,bn,0.0042,0.5201,0.2106,simulated_only_not_a_prediction
+REG-000063,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,gu,0.4147,0.8686,0.5963,simulated_only_not_a_prediction
+REG-000064,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,ta,0.0591,0.2987,0.1549,simulated_only_not_a_prediction
+REG-000065,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,mr,0.2885,0.3152,0.2992,simulated_only_not_a_prediction
+REG-000066,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,mr,0.6752,0.3686,0.5526,simulated_only_not_a_prediction
+REG-000067,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,or,0.2876,0.6323,0.4255,simulated_only_not_a_prediction
+REG-000068,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,hi,0.7613,0.5134,0.6621,simulated_only_not_a_prediction
+REG-000069,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,ml,0.0924,0.4931,0.2527,simulated_only_not_a_prediction
+REG-000070,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,bn,0.3188,0.9988,0.5908,simulated_only_not_a_prediction
+REG-000071,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,te,0.6439,0.8415,0.7229,simulated_only_not_a_prediction
+REG-000072,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,ml,0.9055,0.0831,0.5765,simulated_only_not_a_prediction
+REG-000073,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,bn,0.1274,0.2531,0.1777,simulated_only_not_a_prediction
+REG-000074,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,ur,0.397,0.0311,0.2506,simulated_only_not_a_prediction
+REG-000075,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,ta,0.1827,0.8324,0.4426,simulated_only_not_a_prediction
+REG-000076,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,gu,0.7471,0.6791,0.7199,simulated_only_not_a_prediction
+REG-000077,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,ur,0.3726,0.6257,0.4738,simulated_only_not_a_prediction
+REG-000078,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,mr,0.9946,0.0345,0.6106,simulated_only_not_a_prediction
+REG-000079,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,en,0.3703,0.416,0.3886,simulated_only_not_a_prediction
+REG-000080,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,en,0.9248,0.9798,0.9468,simulated_only_not_a_prediction
+REG-000081,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,gu,0.8144,0.8786,0.8401,simulated_only_not_a_prediction
+REG-000082,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,kn,0.7364,0.0301,0.4539,simulated_only_not_a_prediction
+REG-000083,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,en,0.4294,0.692,0.5344,simulated_only_not_a_prediction
+REG-000084,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,hi,0.1762,0.3899,0.2617,simulated_only_not_a_prediction
+REG-000085,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,pa,0.174,0.3526,0.2454,simulated_only_not_a_prediction
+REG-000086,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,te,0.3315,0.5814,0.4315,simulated_only_not_a_prediction
+REG-000087,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,gu,0.1862,0.1906,0.188,simulated_only_not_a_prediction
+REG-000088,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,pa,0.0581,0.5127,0.2399,simulated_only_not_a_prediction
+REG-000089,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,gu,0.8555,0.1126,0.5583,simulated_only_not_a_prediction
+REG-000090,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,ta,0.2414,0.9685,0.5322,simulated_only_not_a_prediction
+REG-000091,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,ur,0.2974,0.8026,0.4995,simulated_only_not_a_prediction
+REG-000092,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,bn,0.4814,0.599,0.5284,simulated_only_not_a_prediction
+REG-000093,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,gu,0.8938,0.3809,0.6886,simulated_only_not_a_prediction
+REG-000094,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,gu,0.479,0.2187,0.3749,simulated_only_not_a_prediction
+REG-000095,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,kn,0.0615,0.9569,0.4197,simulated_only_not_a_prediction
+REG-000096,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,bn,0.1178,0.6389,0.3262,simulated_only_not_a_prediction
+REG-000097,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,bn,0.2094,0.6601,0.3897,simulated_only_not_a_prediction
+REG-000098,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,te,0.6226,0.7032,0.6548,simulated_only_not_a_prediction
+REG-000099,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,gu,0.8641,0.4789,0.71,simulated_only_not_a_prediction
+REG-000100,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,en,0.1745,0.6149,0.3507,simulated_only_not_a_prediction
+REG-000101,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,pa,0.758,0.9219,0.8236,simulated_only_not_a_prediction
+REG-000102,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,pa,0.3365,0.4799,0.3939,simulated_only_not_a_prediction
+REG-000103,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,or,0.7859,0.3067,0.5942,simulated_only_not_a_prediction
+REG-000104,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,hi,0.2352,0.373,0.2903,simulated_only_not_a_prediction
+REG-000105,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,ml,0.7544,0.3366,0.5873,simulated_only_not_a_prediction
+REG-000106,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,hi,0.9426,0.3381,0.7008,simulated_only_not_a_prediction
+REG-000107,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,mr,0.0886,0.7934,0.3705,simulated_only_not_a_prediction
+REG-000108,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,kn,0.666,0.9534,0.781,simulated_only_not_a_prediction
+REG-000109,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,ml,0.8562,0.8648,0.8596,simulated_only_not_a_prediction
+REG-000110,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,en,0.9553,0.7157,0.8595,simulated_only_not_a_prediction
+REG-000111,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,pa,0.4015,0.3288,0.3724,simulated_only_not_a_prediction
+REG-000112,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,mr,0.7531,0.8213,0.7804,simulated_only_not_a_prediction
+REG-000113,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,hi,0.6454,0.8919,0.744,simulated_only_not_a_prediction
+REG-000114,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,mr,0.2442,0.4552,0.3286,simulated_only_not_a_prediction
+REG-000115,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,te,0.6983,0.0454,0.4371,simulated_only_not_a_prediction
+REG-000116,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,hi,0.1418,0.1042,0.1268,simulated_only_not_a_prediction
+REG-000117,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,pa,0.1984,0.5662,0.3455,simulated_only_not_a_prediction
+REG-000118,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,en,0.0417,0.6364,0.2796,simulated_only_not_a_prediction
+REG-000119,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,bn,0.7807,0.7572,0.7713,simulated_only_not_a_prediction
+REG-000120,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,pa,0.4702,0.3299,0.4141,simulated_only_not_a_prediction
+REG-000121,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,te,0.3745,0.9679,0.6119,simulated_only_not_a_prediction
+REG-000122,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,hi,0.5089,0.1371,0.3602,simulated_only_not_a_prediction
+REG-000123,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,mr,0.2667,0.4079,0.3232,simulated_only_not_a_prediction
+REG-000124,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,pa,0.3375,0.2317,0.2952,simulated_only_not_a_prediction
+REG-000125,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,hi,0.1279,0.2279,0.1679,simulated_only_not_a_prediction
+REG-000126,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,bn,0.6305,0.4948,0.5762,simulated_only_not_a_prediction
+REG-000127,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,pa,0.444,0.1169,0.3132,simulated_only_not_a_prediction
+REG-000128,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,ta,0.6187,0.8871,0.7261,simulated_only_not_a_prediction
+REG-000129,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,pa,0.2475,0.4877,0.3436,simulated_only_not_a_prediction
+REG-000130,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,en,0.4095,0.2366,0.3403,simulated_only_not_a_prediction
+REG-000131,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,ml,0.6495,0.3529,0.5309,simulated_only_not_a_prediction
+REG-000132,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,gu,0.1937,0.9911,0.5127,simulated_only_not_a_prediction
+REG-000133,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,hi,0.6394,0.7489,0.6832,simulated_only_not_a_prediction
+REG-000134,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,hi,0.0035,0.9784,0.3935,simulated_only_not_a_prediction
+REG-000135,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,ta,0.0003,0.9427,0.3773,simulated_only_not_a_prediction
+REG-000136,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,pa,0.7844,0.402,0.6314,simulated_only_not_a_prediction
+REG-000137,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,en,0.5546,0.9841,0.7264,simulated_only_not_a_prediction
+REG-000138,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,kn,0.3924,0.4893,0.4312,simulated_only_not_a_prediction
+REG-000139,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,bn,0.8846,0.7973,0.8497,simulated_only_not_a_prediction
+REG-000140,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,pa,0.7912,0.8039,0.7963,simulated_only_not_a_prediction
+REG-000141,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,ta,0.8495,0.7092,0.7934,simulated_only_not_a_prediction
+REG-000142,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,mr,0.4741,0.3538,0.426,simulated_only_not_a_prediction
+REG-000143,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,mr,0.9259,0.5177,0.7626,simulated_only_not_a_prediction
+REG-000144,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,kn,0.7775,0.8943,0.8242,simulated_only_not_a_prediction
+REG-000145,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,en,0.9521,0.1429,0.6284,simulated_only_not_a_prediction
+REG-000146,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,ta,0.0008,0.4173,0.1674,simulated_only_not_a_prediction
+REG-000147,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,hi,0.3796,0.9422,0.6046,simulated_only_not_a_prediction
+REG-000148,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,ta,0.3526,0.7493,0.5113,simulated_only_not_a_prediction
+REG-000149,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,or,0.8986,0.4914,0.7357,simulated_only_not_a_prediction
+REG-000150,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,en,0.0783,0.7018,0.3277,simulated_only_not_a_prediction
+REG-000151,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,pa,0.5628,0.5237,0.5472,simulated_only_not_a_prediction
+REG-000152,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,ur,0.7367,0.0225,0.451,simulated_only_not_a_prediction
+REG-000153,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,pa,0.1878,0.6798,0.3846,simulated_only_not_a_prediction
+REG-000154,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,gu,0.6288,0.0786,0.4087,simulated_only_not_a_prediction
+REG-000155,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,gu,0.149,0.3465,0.228,simulated_only_not_a_prediction
+REG-000156,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,te,0.3605,0.3168,0.343,simulated_only_not_a_prediction
+REG-000157,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,en,0.8108,0.6061,0.7289,simulated_only_not_a_prediction
+REG-000158,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,mr,0.1894,0.5187,0.3211,simulated_only_not_a_prediction
+REG-000159,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,ta,0.8606,0.5038,0.7179,simulated_only_not_a_prediction
+REG-000160,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,te,0.352,0.596,0.4496,simulated_only_not_a_prediction
+REG-000161,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,gu,0.5696,0.1533,0.4031,simulated_only_not_a_prediction
+REG-000162,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,ur,0.0929,0.9691,0.4434,simulated_only_not_a_prediction
+REG-000163,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,hi,0.6004,0.898,0.7194,simulated_only_not_a_prediction
+REG-000164,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,ta,0.7509,0.53,0.6625,simulated_only_not_a_prediction
+REG-000165,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,en,0.1541,0.2858,0.2068,simulated_only_not_a_prediction
+REG-000166,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,or,0.2526,0.5704,0.3797,simulated_only_not_a_prediction
+REG-000167,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,en,0.7511,0.0888,0.4862,simulated_only_not_a_prediction
+REG-000168,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,ta,0.2098,0.4471,0.3047,simulated_only_not_a_prediction
+REG-000169,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,en,0.5103,0.869,0.6538,simulated_only_not_a_prediction
+REG-000170,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,gu,0.5918,0.524,0.5647,simulated_only_not_a_prediction
+REG-000171,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,or,0.7666,0.6373,0.7149,simulated_only_not_a_prediction
+REG-000172,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,ml,0.8311,0.3755,0.6489,simulated_only_not_a_prediction
+REG-000173,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,te,0.3458,0.0195,0.2153,simulated_only_not_a_prediction
+REG-000174,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,mr,0.6433,0.2078,0.4691,simulated_only_not_a_prediction
+REG-000175,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,gu,0.0352,0.5731,0.2504,simulated_only_not_a_prediction
+REG-000176,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,hi,0.0858,0.1523,0.1124,simulated_only_not_a_prediction
+REG-000177,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,hi,0.4455,0.925,0.6373,simulated_only_not_a_prediction
+REG-000178,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,te,0.7134,0.4237,0.5975,simulated_only_not_a_prediction
+REG-000179,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,mr,0.9254,0.8761,0.9057,simulated_only_not_a_prediction
+REG-000180,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,gu,0.5085,0.3208,0.4334,simulated_only_not_a_prediction
+REG-000181,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,bn,0.1845,0.8651,0.4567,simulated_only_not_a_prediction
+REG-000182,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,ta,0.2674,0.1843,0.2342,simulated_only_not_a_prediction
+REG-000183,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,en,0.5181,0.5949,0.5488,simulated_only_not_a_prediction
+REG-000184,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,ml,0.4063,0.6745,0.5136,simulated_only_not_a_prediction
+REG-000185,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,mr,0.4226,0.5585,0.477,simulated_only_not_a_prediction
+REG-000186,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,pa,0.5227,0.3996,0.4735,simulated_only_not_a_prediction
+REG-000187,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,kn,0.4054,0.9477,0.6223,simulated_only_not_a_prediction
+REG-000188,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,kn,0.6322,0.8042,0.701,simulated_only_not_a_prediction
+REG-000189,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,ta,0.4152,0.989,0.6447,simulated_only_not_a_prediction
+REG-000190,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,gu,0.8,0.0821,0.5128,simulated_only_not_a_prediction
+REG-000191,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,ml,0.0148,0.8012,0.3294,simulated_only_not_a_prediction
+REG-000192,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,kn,0.2749,0.8192,0.4926,simulated_only_not_a_prediction
+REG-000193,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,te,0.0066,0.2077,0.087,simulated_only_not_a_prediction
+REG-000194,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,te,0.0338,0.6332,0.2736,simulated_only_not_a_prediction
+REG-000195,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,ml,0.4243,0.9323,0.6275,simulated_only_not_a_prediction
+REG-000196,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,pa,0.1876,0.4882,0.3078,simulated_only_not_a_prediction
+REG-000197,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,en,0.4122,0.7856,0.5616,simulated_only_not_a_prediction
+REG-000198,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,te,0.4675,0.7743,0.5902,simulated_only_not_a_prediction
+REG-000199,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,te,0.8034,0.2361,0.5765,simulated_only_not_a_prediction
+REG-000200,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,or,0.3894,0.0363,0.2482,simulated_only_not_a_prediction
+REG-000201,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,ml,0.8065,0.8386,0.8193,simulated_only_not_a_prediction
+REG-000202,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,te,0.8352,0.5744,0.7309,simulated_only_not_a_prediction
+REG-000203,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,te,0.5405,0.4029,0.4855,simulated_only_not_a_prediction
+REG-000204,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,ur,0.8685,0.4544,0.7029,simulated_only_not_a_prediction
+REG-000205,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,gu,0.9543,0.3205,0.7008,simulated_only_not_a_prediction
+REG-000206,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,ur,0.1441,0.546,0.3049,simulated_only_not_a_prediction
+REG-000207,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,ur,0.0912,0.4868,0.2494,simulated_only_not_a_prediction
+REG-000208,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,gu,0.0047,0.4668,0.1895,simulated_only_not_a_prediction
+REG-000209,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,or,0.0571,0.4245,0.2041,simulated_only_not_a_prediction
+REG-000210,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,hi,0.5086,0.0336,0.3186,simulated_only_not_a_prediction
+REG-000211,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,or,0.1215,0.585,0.3069,simulated_only_not_a_prediction
+REG-000212,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,kn,0.4278,0.188,0.3319,simulated_only_not_a_prediction
+REG-000213,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,te,0.7784,0.4228,0.6362,simulated_only_not_a_prediction
+REG-000214,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,en,0.052,0.61,0.2752,simulated_only_not_a_prediction
+REG-000215,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,or,0.8473,0.3918,0.6651,simulated_only_not_a_prediction
+REG-000216,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,pa,0.076,0.1747,0.1155,simulated_only_not_a_prediction
+REG-000217,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,bn,0.3274,0.3544,0.3382,simulated_only_not_a_prediction
+REG-000218,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,mr,0.4068,0.9261,0.6145,simulated_only_not_a_prediction
+REG-000219,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,ur,0.6795,0.686,0.6821,simulated_only_not_a_prediction
+REG-000220,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,pa,0.7546,0.035,0.4668,simulated_only_not_a_prediction
+REG-000221,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,pa,0.0538,0.7592,0.336,simulated_only_not_a_prediction
+REG-000222,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,ml,0.7948,0.9274,0.8478,simulated_only_not_a_prediction
+REG-000223,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,pa,0.9119,0.3184,0.6745,simulated_only_not_a_prediction
+REG-000224,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,hi,0.5072,0.5731,0.5336,simulated_only_not_a_prediction
+REG-000225,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,te,0.2846,0.5134,0.3761,simulated_only_not_a_prediction
+REG-000226,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,mr,0.6544,0.8028,0.7138,simulated_only_not_a_prediction
+REG-000227,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,pa,0.566,0.315,0.4656,simulated_only_not_a_prediction
+REG-000228,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,mr,0.7071,0.6537,0.6857,simulated_only_not_a_prediction
+REG-000229,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,or,0.0102,0.3068,0.1288,simulated_only_not_a_prediction
+REG-000230,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,bn,0.7367,0.3669,0.5888,simulated_only_not_a_prediction
+REG-000231,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,te,0.7354,0.7796,0.7531,simulated_only_not_a_prediction
+REG-000232,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,hi,0.6781,0.4079,0.57,simulated_only_not_a_prediction
+REG-000233,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,bn,0.0553,0.2819,0.1459,simulated_only_not_a_prediction
+REG-000234,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,ml,0.4275,0.178,0.3277,simulated_only_not_a_prediction
+REG-000235,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,bn,0.4196,0.9217,0.6204,simulated_only_not_a_prediction
+REG-000236,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,gu,0.899,0.3907,0.6957,simulated_only_not_a_prediction
+REG-000237,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,en,0.3749,0.3937,0.3824,simulated_only_not_a_prediction
+REG-000238,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,en,0.5176,0.3325,0.4436,simulated_only_not_a_prediction
+REG-000239,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,en,0.2353,0.8003,0.4613,simulated_only_not_a_prediction
+REG-000240,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,gu,0.1567,0.803,0.4152,simulated_only_not_a_prediction
+REG-000241,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,or,0.0135,0.9492,0.3878,simulated_only_not_a_prediction
+REG-000242,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,ur,0.8714,0.3415,0.6594,simulated_only_not_a_prediction
+REG-000243,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,te,0.2874,0.3972,0.3313,simulated_only_not_a_prediction
+REG-000244,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,mr,0.3229,0.3147,0.3196,simulated_only_not_a_prediction
+REG-000245,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,kn,0.1678,0.3522,0.2416,simulated_only_not_a_prediction
+REG-000246,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,hi,0.0178,0.4076,0.1737,simulated_only_not_a_prediction
+REG-000247,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,ur,0.6012,0.8585,0.7041,simulated_only_not_a_prediction
+REG-000248,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,mr,0.5397,0.135,0.3778,simulated_only_not_a_prediction
+REG-000249,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,mr,0.3919,0.8897,0.591,simulated_only_not_a_prediction
+REG-000250,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,kn,0.3212,0.7314,0.4853,simulated_only_not_a_prediction
+REG-000251,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,kn,0.8062,0.1323,0.5366,simulated_only_not_a_prediction
+REG-000252,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,ur,0.663,0.1553,0.4599,simulated_only_not_a_prediction
+REG-000253,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,ml,0.9813,0.5493,0.8085,simulated_only_not_a_prediction
+REG-000254,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,te,0.9325,0.8149,0.8855,simulated_only_not_a_prediction
+REG-000255,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,or,0.5628,0.034,0.3513,simulated_only_not_a_prediction
+REG-000256,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,bn,0.1158,0.4325,0.2425,simulated_only_not_a_prediction
+REG-000257,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,or,0.2995,0.0562,0.2022,simulated_only_not_a_prediction
+REG-000258,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,kn,0.3042,0.9704,0.5707,simulated_only_not_a_prediction
+REG-000259,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,bn,0.3843,0.8068,0.5533,simulated_only_not_a_prediction
+REG-000260,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,en,0.6729,0.0499,0.4237,simulated_only_not_a_prediction
+REG-000261,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,en,0.5142,0.1244,0.3583,simulated_only_not_a_prediction
+REG-000262,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,te,0.824,0.9805,0.8866,simulated_only_not_a_prediction
+REG-000263,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,kn,0.7934,0.2447,0.5739,simulated_only_not_a_prediction
+REG-000264,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,or,0.7814,0.9066,0.8315,simulated_only_not_a_prediction
+REG-000265,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,pa,0.0057,0.4899,0.1994,simulated_only_not_a_prediction
+REG-000266,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,ml,0.4362,0.7368,0.5564,simulated_only_not_a_prediction
+REG-000267,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,bn,0.0048,0.513,0.2081,simulated_only_not_a_prediction
+REG-000268,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,pa,0.682,0.3991,0.5688,simulated_only_not_a_prediction
+REG-000269,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,ta,0.0161,0.5004,0.2098,simulated_only_not_a_prediction
+REG-000270,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,te,0.7443,0.1411,0.503,simulated_only_not_a_prediction
+REG-000271,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,mr,0.4577,0.7732,0.5839,simulated_only_not_a_prediction
+REG-000272,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,bn,0.9118,0.8955,0.9053,simulated_only_not_a_prediction
+REG-000273,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,pa,0.3051,0.196,0.2615,simulated_only_not_a_prediction
+REG-000274,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,or,0.6,0.6165,0.6066,simulated_only_not_a_prediction
+REG-000275,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,ta,0.2469,0.3178,0.2753,simulated_only_not_a_prediction
+REG-000276,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,gu,0.6795,0.9857,0.802,simulated_only_not_a_prediction
+REG-000277,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,te,0.9947,0.6408,0.8531,simulated_only_not_a_prediction
+REG-000278,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,bn,0.0007,0.3576,0.1435,simulated_only_not_a_prediction
+REG-000279,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,gu,0.1453,0.6448,0.3451,simulated_only_not_a_prediction
+REG-000280,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,ur,0.5434,0.2823,0.439,simulated_only_not_a_prediction
+REG-000281,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,ur,0.0229,0.9734,0.4031,simulated_only_not_a_prediction
+REG-000282,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,en,0.627,0.6155,0.6224,simulated_only_not_a_prediction
+REG-000283,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,gu,0.5829,0.6546,0.6116,simulated_only_not_a_prediction
+REG-000284,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,mr,0.0488,0.9198,0.3972,simulated_only_not_a_prediction
+REG-000285,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,mr,0.2293,0.592,0.3744,simulated_only_not_a_prediction
+REG-000286,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,pa,0.3607,0.7105,0.5006,simulated_only_not_a_prediction
+REG-000287,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,mr,0.9667,0.287,0.6948,simulated_only_not_a_prediction
+REG-000288,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,pa,0.0022,0.3474,0.1403,simulated_only_not_a_prediction
+REG-000289,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,ur,0.3618,0.9668,0.6038,simulated_only_not_a_prediction
+REG-000290,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,ml,0.9958,0.7683,0.9048,simulated_only_not_a_prediction
+REG-000291,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,kn,0.1062,0.155,0.1257,simulated_only_not_a_prediction
+REG-000292,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,hi,0.9273,0.5207,0.7647,simulated_only_not_a_prediction
+REG-000293,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,gu,0.3348,0.2759,0.3112,simulated_only_not_a_prediction
+REG-000294,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,ml,0.955,0.9673,0.9599,simulated_only_not_a_prediction
+REG-000295,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,gu,0.2813,0.4873,0.3637,simulated_only_not_a_prediction
+REG-000296,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,en,0.3264,0.4681,0.3831,simulated_only_not_a_prediction
+REG-000297,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,te,0.4463,0.7823,0.5807,simulated_only_not_a_prediction
+REG-000298,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,pa,0.264,0.9706,0.5466,simulated_only_not_a_prediction
+REG-000299,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,or,0.4901,0.467,0.4809,simulated_only_not_a_prediction
+REG-000300,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,te,0.6837,0.1663,0.4767,simulated_only_not_a_prediction
+REG-000301,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,pa,0.4473,0.5132,0.4737,simulated_only_not_a_prediction
+REG-000302,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,gu,0.873,0.6419,0.7806,simulated_only_not_a_prediction
+REG-000303,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,ta,0.5017,0.6836,0.5745,simulated_only_not_a_prediction
+REG-000304,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,hi,0.4414,0.391,0.4212,simulated_only_not_a_prediction
+REG-000305,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,pa,0.2328,0.7311,0.4321,simulated_only_not_a_prediction
+REG-000306,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,kn,0.0574,0.8006,0.3547,simulated_only_not_a_prediction
+REG-000307,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,en,0.0902,0.699,0.3337,simulated_only_not_a_prediction
+REG-000308,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,hi,0.0408,0.02,0.0325,simulated_only_not_a_prediction
+REG-000309,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,pa,0.3649,0.5485,0.4383,simulated_only_not_a_prediction
+REG-000310,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,pa,0.003,0.3084,0.1252,simulated_only_not_a_prediction
+REG-000311,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,pa,0.2923,0.6741,0.445,simulated_only_not_a_prediction
+REG-000312,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,kn,0.7924,0.3815,0.628,simulated_only_not_a_prediction
+REG-000313,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,pa,0.1796,0.6491,0.3674,simulated_only_not_a_prediction
+REG-000314,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,pa,0.9882,0.9376,0.968,simulated_only_not_a_prediction
+REG-000315,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,kn,0.8376,0.1498,0.5625,simulated_only_not_a_prediction
+REG-000316,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,or,0.9554,0.3478,0.7124,simulated_only_not_a_prediction
+REG-000317,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,gu,0.8408,0.5189,0.712,simulated_only_not_a_prediction
+REG-000318,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,or,0.079,0.7115,0.332,simulated_only_not_a_prediction
+REG-000319,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,en,0.1431,0.8889,0.4414,simulated_only_not_a_prediction
+REG-000320,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,pa,0.1026,0.4491,0.2412,simulated_only_not_a_prediction
+REG-000321,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,en,0.4241,0.948,0.6337,simulated_only_not_a_prediction
+REG-000322,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,gu,0.9455,0.019,0.5749,simulated_only_not_a_prediction
+REG-000323,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,bn,0.2801,0.5724,0.397,simulated_only_not_a_prediction
+REG-000324,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,pa,0.5471,0.2677,0.4353,simulated_only_not_a_prediction
+REG-000325,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,ur,0.0356,0.4563,0.2039,simulated_only_not_a_prediction
+REG-000326,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,hi,0.424,0.1015,0.295,simulated_only_not_a_prediction
+REG-000327,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,bn,0.582,0.2232,0.4385,simulated_only_not_a_prediction
+REG-000328,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,te,0.3084,0.693,0.4622,simulated_only_not_a_prediction
+REG-000329,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,pa,0.8459,0.546,0.7259,simulated_only_not_a_prediction
+REG-000330,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,gu,0.6019,0.071,0.3895,simulated_only_not_a_prediction
+REG-000331,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,ta,0.2917,0.5004,0.3752,simulated_only_not_a_prediction
+REG-000332,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,or,0.7409,0.1236,0.494,simulated_only_not_a_prediction
+REG-000333,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,bn,0.2646,0.7133,0.4441,simulated_only_not_a_prediction
+REG-000334,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,bn,0.9596,0.6719,0.8445,simulated_only_not_a_prediction
+REG-000335,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,hi,0.3322,0.3312,0.3318,simulated_only_not_a_prediction
+REG-000336,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,hi,0.6451,0.3275,0.5181,simulated_only_not_a_prediction
+REG-000337,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,ml,0.3318,0.6967,0.4778,simulated_only_not_a_prediction
+REG-000338,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,te,0.345,0.3869,0.3618,simulated_only_not_a_prediction
+REG-000339,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,te,0.9744,0.8997,0.9445,simulated_only_not_a_prediction
+REG-000340,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,ur,0.981,0.0615,0.6132,simulated_only_not_a_prediction
+REG-000341,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,kn,0.5004,0.8249,0.6302,simulated_only_not_a_prediction
+REG-000342,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,mr,0.963,0.8239,0.9074,simulated_only_not_a_prediction
+REG-000343,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,pa,0.7654,0.7958,0.7776,simulated_only_not_a_prediction
+REG-000344,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,pa,0.8987,0.1429,0.5964,simulated_only_not_a_prediction
+REG-000345,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,kn,0.4944,0.4433,0.474,simulated_only_not_a_prediction
+REG-000346,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,bn,0.1619,0.317,0.2239,simulated_only_not_a_prediction
+REG-000347,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,or,0.2186,0.4767,0.3218,simulated_only_not_a_prediction
+REG-000348,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,or,0.7983,0.627,0.7298,simulated_only_not_a_prediction
+REG-000349,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,gu,0.0209,0.7334,0.3059,simulated_only_not_a_prediction
+REG-000350,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,hi,0.1634,0.0933,0.1354,simulated_only_not_a_prediction
+REG-000351,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,en,0.5992,0.5201,0.5676,simulated_only_not_a_prediction
+REG-000352,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,bn,0.2015,0.0049,0.1229,simulated_only_not_a_prediction
+REG-000353,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,en,0.2795,0.8348,0.5016,simulated_only_not_a_prediction
+REG-000354,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,kn,0.3931,0.7894,0.5516,simulated_only_not_a_prediction
+REG-000355,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,kn,0.0929,0.4682,0.243,simulated_only_not_a_prediction
+REG-000356,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,ur,0.2302,0.0713,0.1666,simulated_only_not_a_prediction
+REG-000357,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,en,0.471,0.9063,0.6451,simulated_only_not_a_prediction
+REG-000358,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,ur,0.0159,0.4845,0.2033,simulated_only_not_a_prediction
+REG-000359,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,mr,0.1471,0.2226,0.1773,simulated_only_not_a_prediction
+REG-000360,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,pa,0.1509,0.2497,0.1904,simulated_only_not_a_prediction
+REG-000361,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,ur,0.2842,0.3019,0.2913,simulated_only_not_a_prediction
+REG-000362,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,gu,0.9512,0.3659,0.7171,simulated_only_not_a_prediction
+REG-000363,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,ta,0.3516,0.6437,0.4684,simulated_only_not_a_prediction
+REG-000364,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,ur,0.7123,0.2144,0.5131,simulated_only_not_a_prediction
+REG-000365,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,te,0.0459,0.1795,0.0993,simulated_only_not_a_prediction
+REG-000366,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,kn,0.3881,0.0168,0.2396,simulated_only_not_a_prediction
+REG-000367,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,hi,0.1701,0.4587,0.2855,simulated_only_not_a_prediction
+REG-000368,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,ur,0.0485,0.9635,0.4145,simulated_only_not_a_prediction
+REG-000369,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,gu,0.0788,0.7333,0.3406,simulated_only_not_a_prediction
+REG-000370,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,ml,0.5621,0.3256,0.4675,simulated_only_not_a_prediction
+REG-000371,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,ta,0.6172,0.8617,0.715,simulated_only_not_a_prediction
+REG-000372,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,gu,0.4718,0.5185,0.4905,simulated_only_not_a_prediction
+REG-000373,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,ur,0.428,0.2433,0.3541,simulated_only_not_a_prediction
+REG-000374,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jharkhand,hi,0.2887,0.0937,0.2107,simulated_only_not_a_prediction
+REG-000375,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,en,0.5171,0.1394,0.366,simulated_only_not_a_prediction
+REG-000376,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,te,0.9243,0.2234,0.6439,simulated_only_not_a_prediction
+REG-000377,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,gu,0.3683,0.0562,0.2435,simulated_only_not_a_prediction
+REG-000378,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,ta,0.7132,0.8763,0.7784,simulated_only_not_a_prediction
+REG-000379,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,mr,0.469,0.9118,0.6461,simulated_only_not_a_prediction
+REG-000380,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,ur,0.1031,0.7311,0.3543,simulated_only_not_a_prediction
+REG-000381,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,ur,0.9814,0.2331,0.6821,simulated_only_not_a_prediction
+REG-000382,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,ml,0.1655,0.9143,0.465,simulated_only_not_a_prediction
+REG-000383,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,or,0.48,0.7869,0.6028,simulated_only_not_a_prediction
+REG-000384,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,gu,0.1368,0.9849,0.476,simulated_only_not_a_prediction
+REG-000385,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,hi,0.0828,0.4836,0.2431,simulated_only_not_a_prediction
+REG-000386,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,en,0.8329,0.6741,0.7694,simulated_only_not_a_prediction
+REG-000387,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,ta,0.713,0.7884,0.7432,simulated_only_not_a_prediction
+REG-000388,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,te,0.577,0.6706,0.6144,simulated_only_not_a_prediction
+REG-000389,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,ml,0.7223,0.5773,0.6643,simulated_only_not_a_prediction
+REG-000390,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,kn,0.7074,0.4608,0.6088,simulated_only_not_a_prediction
+REG-000391,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,ur,0.8445,0.928,0.8779,simulated_only_not_a_prediction
+REG-000392,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,mr,0.0352,0.7954,0.3393,simulated_only_not_a_prediction
+REG-000393,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,or,0.1068,0.5655,0.2903,simulated_only_not_a_prediction
+REG-000394,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,ta,0.473,0.1604,0.348,simulated_only_not_a_prediction
+REG-000395,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,bn,0.7087,0.5096,0.6291,simulated_only_not_a_prediction
+REG-000396,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,pa,0.9887,0.7597,0.8971,simulated_only_not_a_prediction
+REG-000397,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,kn,0.5121,0.9501,0.6873,simulated_only_not_a_prediction
+REG-000398,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,bn,0.658,0.882,0.7476,simulated_only_not_a_prediction
+REG-000399,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,hi,0.7192,0.5436,0.649,simulated_only_not_a_prediction
+REG-000400,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,mr,0.285,0.6471,0.4298,simulated_only_not_a_prediction
+REG-000401,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Lakshadweep,or,0.2511,0.3968,0.3094,simulated_only_not_a_prediction
+REG-000402,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,or,0.6507,0.7537,0.6919,simulated_only_not_a_prediction
+REG-000403,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Odisha,ur,0.552,0.7595,0.635,simulated_only_not_a_prediction
+REG-000404,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,te,0.9077,0.5343,0.7583,simulated_only_not_a_prediction
+REG-000405,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,bn,0.0983,0.9628,0.4441,simulated_only_not_a_prediction
+REG-000406,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,bn,0.8014,0.0161,0.4873,simulated_only_not_a_prediction
+REG-000407,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,te,0.0699,0.4752,0.232,simulated_only_not_a_prediction
+REG-000408,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,pa,0.7918,0.3866,0.6297,simulated_only_not_a_prediction
+REG-000409,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,en,0.8897,0.0468,0.5525,simulated_only_not_a_prediction
+REG-000410,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,bn,0.158,0.8934,0.4522,simulated_only_not_a_prediction
+REG-000411,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,kn,0.6059,0.186,0.4379,simulated_only_not_a_prediction
+REG-000412,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Manipur,mr,0.2324,0.2008,0.2198,simulated_only_not_a_prediction
+REG-000413,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,hi,0.2791,0.6339,0.421,simulated_only_not_a_prediction
+REG-000414,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Puducherry,or,0.1553,0.9948,0.4911,simulated_only_not_a_prediction
+REG-000415,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,mr,0.6962,0.3537,0.5592,simulated_only_not_a_prediction
+REG-000416,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,gu,0.0926,0.5221,0.2644,simulated_only_not_a_prediction
+REG-000417,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,ur,0.0967,0.3532,0.1993,simulated_only_not_a_prediction
+REG-000418,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,or,0.7308,0.4154,0.6046,simulated_only_not_a_prediction
+REG-000419,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,mr,0.895,0.8922,0.8939,simulated_only_not_a_prediction
+REG-000420,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,te,0.8291,0.6846,0.7713,simulated_only_not_a_prediction
+REG-000421,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,en,0.7441,0.7453,0.7446,simulated_only_not_a_prediction
+REG-000422,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Punjab,bn,0.528,0.3581,0.46,simulated_only_not_a_prediction
+REG-000423,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,bn,0.3966,0.0129,0.2431,simulated_only_not_a_prediction
+REG-000424,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,gu,0.248,0.7131,0.434,simulated_only_not_a_prediction
+REG-000425,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,gu,0.066,0.9296,0.4114,simulated_only_not_a_prediction
+REG-000426,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,en,0.9544,0.8368,0.9074,simulated_only_not_a_prediction
+REG-000427,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,ml,0.8615,0.4645,0.7027,simulated_only_not_a_prediction
+REG-000428,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,en,0.2703,0.6987,0.4417,simulated_only_not_a_prediction
+REG-000429,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,bn,0.6507,0.5857,0.6247,simulated_only_not_a_prediction
+REG-000430,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,ur,0.4123,0.5038,0.4489,simulated_only_not_a_prediction
+REG-000431,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,hi,0.5167,0.5526,0.5311,simulated_only_not_a_prediction
+REG-000432,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,gu,0.1841,0.6664,0.377,simulated_only_not_a_prediction
+REG-000433,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,pa,0.3416,0.3959,0.3633,simulated_only_not_a_prediction
+REG-000434,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,bn,0.5885,0.4124,0.5181,simulated_only_not_a_prediction
+REG-000435,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,bn,0.9834,0.8183,0.9174,simulated_only_not_a_prediction
+REG-000436,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,ta,0.0087,0.7246,0.2951,simulated_only_not_a_prediction
+REG-000437,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,pa,0.2704,0.3235,0.2916,simulated_only_not_a_prediction
+REG-000438,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Assam,ta,0.3344,0.5207,0.4089,simulated_only_not_a_prediction
+REG-000439,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,hi,0.2651,0.3457,0.2973,simulated_only_not_a_prediction
+REG-000440,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,or,0.0663,0.1736,0.1092,simulated_only_not_a_prediction
+REG-000441,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Goa,pa,0.4247,0.2712,0.3633,simulated_only_not_a_prediction
+REG-000442,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,hi,0.8157,0.7017,0.7701,simulated_only_not_a_prediction
+REG-000443,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,hi,0.3694,0.1225,0.2706,simulated_only_not_a_prediction
+REG-000444,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,gu,0.8663,0.4611,0.7042,simulated_only_not_a_prediction
+REG-000445,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,en,0.9502,0.4078,0.7332,simulated_only_not_a_prediction
+REG-000446,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andhra Pradesh,mr,0.3004,0.9885,0.5756,simulated_only_not_a_prediction
+REG-000447,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,mr,0.1944,0.7595,0.4204,simulated_only_not_a_prediction
+REG-000448,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,West Bengal,ta,0.0642,0.0837,0.072,simulated_only_not_a_prediction
+REG-000449,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,te,0.0781,0.0799,0.0788,simulated_only_not_a_prediction
+REG-000450,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,bn,0.269,0.1377,0.2165,simulated_only_not_a_prediction
+REG-000451,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,gu,0.8069,0.5429,0.7013,simulated_only_not_a_prediction
+REG-000452,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,or,0.3368,0.3945,0.3599,simulated_only_not_a_prediction
+REG-000453,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Madhya Pradesh,te,0.2256,0.7117,0.42,simulated_only_not_a_prediction
+REG-000454,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,bn,0.6999,0.3692,0.5676,simulated_only_not_a_prediction
+REG-000455,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Dadra and Nagar Haveli and Daman and Diu,kn,0.9694,0.5379,0.7968,simulated_only_not_a_prediction
+REG-000456,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,bn,0.7899,0.1363,0.5285,simulated_only_not_a_prediction
+REG-000457,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,ml,0.1187,0.8655,0.4174,simulated_only_not_a_prediction
+REG-000458,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,gu,0.9933,0.3747,0.7459,simulated_only_not_a_prediction
+REG-000459,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,ur,0.8641,0.1251,0.5685,simulated_only_not_a_prediction
+REG-000460,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,bn,0.613,0.9649,0.7538,simulated_only_not_a_prediction
+REG-000461,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,kn,0.6214,0.7314,0.6654,simulated_only_not_a_prediction
+REG-000462,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,kn,0.4213,0.0515,0.2734,simulated_only_not_a_prediction
+REG-000463,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Delhi,or,0.571,0.7599,0.6466,simulated_only_not_a_prediction
+REG-000464,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,pa,0.431,0.337,0.3934,simulated_only_not_a_prediction
+REG-000465,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Sikkim,ta,0.7128,0.4958,0.626,simulated_only_not_a_prediction
+REG-000466,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,bn,0.4296,0.8386,0.5932,simulated_only_not_a_prediction
+REG-000467,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,kn,0.5774,0.3107,0.4707,simulated_only_not_a_prediction
+REG-000468,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,ta,0.6297,0.3165,0.5044,simulated_only_not_a_prediction
+REG-000469,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,te,0.2038,0.7375,0.4173,simulated_only_not_a_prediction
+REG-000470,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tamil Nadu,or,0.2148,0.3702,0.277,simulated_only_not_a_prediction
+REG-000471,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,ml,0.5685,0.5407,0.5574,simulated_only_not_a_prediction
+REG-000472,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Haryana,te,0.3854,0.4983,0.4306,simulated_only_not_a_prediction
+REG-000473,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Kerala,or,0.7583,0.0516,0.4756,simulated_only_not_a_prediction
+REG-000474,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Arunachal Pradesh,ta,0.3035,0.5292,0.3938,simulated_only_not_a_prediction
+REG-000475,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,mr,0.3736,0.0494,0.2439,simulated_only_not_a_prediction
+REG-000476,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,mr,0.8275,0.3594,0.6403,simulated_only_not_a_prediction
+REG-000477,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Bihar,ur,0.2336,0.2436,0.2376,simulated_only_not_a_prediction
+REG-000478,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Jammu and Kashmir,ml,0.6401,0.202,0.4649,simulated_only_not_a_prediction
+REG-000479,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Meghalaya,mr,0.3433,0.0536,0.2274,simulated_only_not_a_prediction
+REG-000480,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,gu,0.4723,0.5675,0.5104,simulated_only_not_a_prediction
+REG-000481,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttar Pradesh,bn,0.3241,0.7868,0.5092,simulated_only_not_a_prediction
+REG-000482,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chhattisgarh,te,0.8563,0.2769,0.6245,simulated_only_not_a_prediction
+REG-000483,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Maharashtra,te,0.2651,0.2216,0.2477,simulated_only_not_a_prediction
+REG-000484,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Ladakh,or,0.4149,0.4775,0.4399,simulated_only_not_a_prediction
+REG-000485,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,kn,0.2789,0.581,0.3997,simulated_only_not_a_prediction
+REG-000486,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,bn,0.1842,0.2394,0.2063,simulated_only_not_a_prediction
+REG-000487,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Nagaland,bn,0.003,0.3576,0.1448,simulated_only_not_a_prediction
+REG-000488,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Gujarat,kn,0.9268,0.4884,0.7514,simulated_only_not_a_prediction
+REG-000489,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Andaman and Nicobar Islands,mr,0.4868,0.8959,0.6504,simulated_only_not_a_prediction
+REG-000490,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Karnataka,kn,0.5121,0.1731,0.3765,simulated_only_not_a_prediction
+REG-000491,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Tripura,en,0.9169,0.0231,0.5594,simulated_only_not_a_prediction
+REG-000492,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,mr,0.005,0.0049,0.005,simulated_only_not_a_prediction
+REG-000493,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,gu,0.7143,0.1418,0.4853,simulated_only_not_a_prediction
+REG-000494,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Himachal Pradesh,ta,0.0266,0.8634,0.3613,simulated_only_not_a_prediction
+REG-000495,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Rajasthan,ta,0.3258,0.5808,0.4278,simulated_only_not_a_prediction
+REG-000496,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,bn,0.1231,0.944,0.4515,simulated_only_not_a_prediction
+REG-000497,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Telangana,or,0.1852,0.7637,0.4166,simulated_only_not_a_prediction
+REG-000498,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Mizoram,bn,0.9653,0.4367,0.7539,simulated_only_not_a_prediction
+REG-000499,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Chandigarh,hi,0.7598,0.5453,0.674,simulated_only_not_a_prediction
+REG-000500,regional_spread_scenario,synthetic_simulation,True,20261014,synthetic-v1.0,False,Uttarakhand,ta,0.9212,0.008,0.5559,simulated_only_not_a_prediction

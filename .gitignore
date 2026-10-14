@@ -118,3 +118,22 @@ coverage.xml
 # --- Distribution ---
 *.tar.gz
 *.zip
+data/external/cifake/train/
+data/external/cifake/test/
+
+# --- Runtime image storage (keep local, do not publish) ---
+/data/originals/
+/data/processed/
+/data/thumbnails/
+/data/heatmaps/
+/data/reports/
+/data/artifacts/
+
+# --- Generated test image artifacts ---
+/test_data/originals/
+/test_data/processed/
+/test_data/thumbnails/
+/test_data/heatmaps/
+
+# --- Local inspection reports ---
+/PROJECT_INSPECTION.txt
