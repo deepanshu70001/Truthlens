@@ -11,8 +11,8 @@ import pandas as pd
 from sklearn.metrics import roc_curve
 
 ROOT = Path(__file__).resolve().parents[2]
-ORDER = ["cnn_scratch", "resnet18_frozen"]
-LABELS = {"cnn_scratch": "CNN (scratch, baseline)", "resnet18_frozen": "ResNet-18 (ImageNet, frozen)"}
+ORDER = ["cnn_scratch", "siglip_frozen", "resnet18_frozen"]
+LABELS = {"cnn_scratch": "CNN (scratch, baseline)", "siglip_frozen": "SigLIP (frozen, linear head)", "resnet18_frozen": "ResNet-18 (ImageNet, frozen)"}
 
 
 def main():

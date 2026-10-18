@@ -1,17 +1,18 @@
 """CIFAKE real-vs-AI baselines for TruthLens.
 
-Two experiments only:
+Experiments:
   cnn      -> basic CNN trained from scratch (the BASELINE)
-  resnet18 -> ImageNet-pretrained ResNet-18, backbone frozen, new final layer trained
+  siglip   -> pretrained SigLIP vision encoder, frozen, new linear head trained
+  resnet18 -> (earlier run) ImageNet ResNet-18, backbone frozen, new head trained
 
 Usage (from repo root):
   python scripts/ml/train_baselines.py --model cnn
-  python scripts/ml/train_baselines.py --model resnet18
+  python scripts/ml/train_baselines.py --model siglip
 
 Outputs:
   results/ml/<name>.json        metrics + training history
   results/ml/<name>_preds.csv   per-image test predictions (used for ROC plots)
-  models/baselines/<name>.pt    best weights by validation accuracy (git-ignored)
+  models/baselines/<name>*.pt   best weights by validation accuracy (git-ignored)
 """
 import argparse
 import csv
@@ -34,7 +35,9 @@ POSITIVE = "ai_generated"  # positive class = fake
 DEFAULTS = {  # per-model defaults: (mode, img_size, lr, epochs)
     "cnn": ("scratch", 32, 1e-3, 20),
     "resnet18": ("frozen", 224, 1e-3, 10),
+    "siglip": ("frozen", 224, 1e-3, 50),  # only a linear head is trained, so epochs are cheap
 }
+SIGLIP_ID = "google/siglip-base-patch16-224"
 
 
 def set_seed(seed):
@@ -73,8 +76,8 @@ def build_model(name):
     return m
 
 
-def get_loaders(data_dir, size, pretrained, batch_size, workers):
-    mean, std = ((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)) if pretrained \
+def get_loaders(data_dir, size, imagenet_norm, batch_size, workers):
+    mean, std = ((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)) if imagenet_norm \
         else ((0.5,) * 3, (0.5,) * 3)
     norm = transforms.Normalize(mean, std)
     train_tf = transforms.Compose([transforms.Resize(size), transforms.RandomHorizontalFlip(),
@@ -125,6 +128,96 @@ def compute_metrics(y, p):
             "confusion_matrix": {"tn": int(tn), "fp": int(fp), "fn": int(fn), "tp": int(tp)}}
 
 
+def save_results(args, name, mode, img_size, lr, epochs, sizes, n_trainable, n_total,
+                 best_val, t0, ty_, tp_, history, test_ds, extra=None):
+    result = {"name": name, "model": args.model, "mode": mode, "img_size": img_size,
+              "lr": lr, "epochs": epochs, "seed": SEED, "sizes": sizes,
+              "trainable_params": n_trainable, "total_params": n_total,
+              "best_val_acc": best_val, "train_seconds": round(time.time() - t0, 1),
+              "test": compute_metrics(ty_, tp_), "history": history}
+    if extra:
+        result.update(extra)
+    (args.results_dir / f"{name}.json").write_text(json.dumps(result, indent=2))
+    with open(args.results_dir / f"{name}_preds.csv", "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["file", "y_true", "prob_fake"])
+        for (path, _), y, p in zip(test_ds.samples, ty_, tp_):
+            w.writerow([Path(path).name, int(y), round(float(p), 6)])
+    print(json.dumps(result["test"], indent=2))
+
+
+@torch.no_grad()
+def extract_features(backbone, loader, pos_idx, device):
+    """Run the frozen SigLIP encoder once; return (features, fake-labels)."""
+    backbone.eval()
+    feats, ys = [], []
+    for x, y in loader:
+        out = backbone(pixel_values=x.to(device))
+        feats.append(out.pooler_output.cpu())
+        ys.append(torch.as_tensor((y.numpy() == pos_idx).astype("float32")))
+    return torch.cat(feats), torch.cat(ys)
+
+
+def run_siglip(args, name, mode, img_size, lr, epochs, device):
+    from transformers import SiglipVisionModel  # imported here so cnn/resnet18 do not need it
+
+    train_dl, val_dl, test_dl, pos_idx, test_ds, sizes = get_loaders(
+        args.data_dir, img_size, False, args.batch_size, args.workers)
+    print(f"loading {args.siglip_id} ...")
+    backbone = SiglipVisionModel.from_pretrained(args.siglip_id).to(device)
+    for p in backbone.parameters():
+        p.requires_grad = False
+    head = nn.Linear(backbone.config.hidden_size, 1).to(device)
+    n_trainable = sum(p.numel() for p in head.parameters())
+    n_total = n_trainable + sum(p.numel() for p in backbone.parameters())
+
+    t0 = time.time()
+    print("extracting frozen SigLIP features (one pass over train/val/test) ...")
+    xtr, ytr = extract_features(backbone, train_dl, pos_idx, device)
+    xva, yva = extract_features(backbone, val_dl, pos_idx, device)
+    xte, yte = extract_features(backbone, test_dl, pos_idx, device)
+    xtr, ytr = xtr.to(device), ytr.to(device)
+    xva, yva, xte = xva.to(device), yva.to(device), xte.to(device)
+
+    opt = torch.optim.Adam(head.parameters(), lr=lr)
+    loss_fn = nn.BCEWithLogitsLoss()
+    args.weights_dir.mkdir(parents=True, exist_ok=True)
+    args.results_dir.mkdir(parents=True, exist_ok=True)
+    ckpt = args.weights_dir / f"{name}_head.pt"
+    gen = torch.Generator().manual_seed(SEED)
+    best_val, history = -1.0, []
+
+    for ep in range(1, epochs + 1):
+        head.train()
+        total = 0.0
+        perm = torch.randperm(len(xtr), generator=gen)
+        for i in range(0, len(perm), args.batch_size):
+            idx = perm[i:i + args.batch_size]
+            opt.zero_grad()
+            loss = loss_fn(head(xtr[idx]).squeeze(1), ytr[idx])
+            loss.backward()
+            opt.step()
+            total += loss.item() * len(idx)
+        head.eval()
+        with torch.no_grad():
+            vp = torch.sigmoid(head(xva).squeeze(1)).cpu().numpy()
+        val_acc = float(accuracy_score(yva.cpu().numpy(), vp >= 0.5))
+        history.append({"epoch": ep, "train_loss": total / sizes["train"], "val_acc": val_acc})
+        if ep == 1 or ep % 5 == 0:
+            print(f"epoch {ep:02d} loss {total / sizes['train']:.4f} val_acc {val_acc:.3f}")
+        if val_acc > best_val:  # best epoch chosen on VALIDATION only
+            best_val = val_acc
+            torch.save(head.state_dict(), ckpt)
+
+    head.load_state_dict(torch.load(ckpt, map_location=device))
+    head.eval()
+    with torch.no_grad():
+        tp_ = torch.sigmoid(head(xte).squeeze(1)).cpu().numpy()
+    save_results(args, name, mode, img_size, lr, epochs, sizes, n_trainable, n_total,
+                 best_val, t0, yte.numpy().astype(int), tp_, history, test_ds,
+                 extra={"backbone_id": args.siglip_id})
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True, choices=list(DEFAULTS))
@@ -132,6 +225,7 @@ def main():
     ap.add_argument("--lr", type=float, default=None)
     ap.add_argument("--batch-size", type=int, default=32)
     ap.add_argument("--workers", type=int, default=2)
+    ap.add_argument("--siglip-id", default=SIGLIP_ID, help="HuggingFace id of the SigLIP model")
     ap.add_argument("--data-dir", type=Path, default=ROOT / "data" / "external" / "cifake")
     ap.add_argument("--results-dir", type=Path, default=ROOT / "results" / "ml")
     ap.add_argument("--weights-dir", type=Path, default=ROOT / "models" / "baselines")
@@ -139,15 +233,18 @@ def main():
 
     mode, img_size, lr, epochs = DEFAULTS[args.model]
     lr, epochs = args.lr or lr, args.epochs or epochs
-    pretrained = args.model != "cnn"
+    imagenet_norm = args.model == "resnet18"
     name = f"{args.model}_{mode}"
 
     set_seed(SEED)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"experiment={name} device={device} img_size={img_size} lr={lr} epochs={epochs}")
 
+    if args.model == "siglip":
+        return run_siglip(args, name, mode, img_size, lr, epochs, device)
+
     train_dl, val_dl, test_dl, pos_idx, test_ds, sizes = get_loaders(
-        args.data_dir, img_size, pretrained, args.batch_size, args.workers)
+        args.data_dir, img_size, imagenet_norm, args.batch_size, args.workers)
     model = build_model(args.model).to(device)
     params = [p for p in model.parameters() if p.requires_grad]
     n_trainable = sum(p.numel() for p in params)
@@ -182,20 +279,8 @@ def main():
 
     model.load_state_dict(torch.load(ckpt, map_location=device))
     tp_, ty_ = predict(model, test_dl, pos_idx, device)
-    result = {"name": name, "model": args.model, "mode": mode, "img_size": img_size,
-              "lr": lr, "epochs": epochs, "seed": SEED, "sizes": sizes,
-              "trainable_params": n_trainable, "total_params": n_total,
-              "best_val_acc": best_val, "train_seconds": round(time.time() - t0, 1),
-              "test": compute_metrics(ty_, tp_), "history": history}
-    (args.results_dir / f"{name}.json").write_text(json.dumps(result, indent=2))
-
-    with open(args.results_dir / f"{name}_preds.csv", "w", newline="") as f:
-        w = csv.writer(f)
-        w.writerow(["file", "y_true", "prob_fake"])
-        for (path, _), y, p in zip(test_ds.samples, ty_, tp_):
-            w.writerow([Path(path).name, int(y), round(float(p), 6)])
-
-    print(json.dumps(result["test"], indent=2))
+    save_results(args, name, mode, img_size, lr, epochs, sizes, n_trainable, n_total,
+                 best_val, t0, ty_, tp_, history, test_ds)
 
 
 if __name__ == "__main__":

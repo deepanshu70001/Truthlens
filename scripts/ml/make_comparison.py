@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-ORDER = ["cnn_scratch", "resnet18_frozen"]  # baseline first
+ORDER = ["cnn_scratch", "siglip_frozen", "resnet18_frozen"]  # baseline first; missing files are skipped
 
 
 def main():
