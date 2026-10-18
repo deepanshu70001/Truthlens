@@ -1,0 +1,9 @@
+# For GPU, install torch/torchvision from https://pytorch.org first, then the rest.
+torch
+torchvision
+scikit-learn
+numpy
+pandas
+matplotlib
+pillow
+datasets
