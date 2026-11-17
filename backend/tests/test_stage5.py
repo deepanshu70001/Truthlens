@@ -26,8 +26,8 @@ class TestViralityEngine:
 
         result = estimate_virality()
         assert result.data_status == "DATA_UNAVAILABLE"
-        assert 0.0 <= result.virality_score <= 1.0
-        assert result.risk_level in ("low", "moderate", "high", "unknown")
+        assert result.virality_score is None
+        assert result.risk_level == "unknown"
 
     def test_data_unavailable_by_default(self):
         from backend.app.services.virality.engine import estimate_virality
@@ -36,17 +36,17 @@ class TestViralityEngine:
         assert result.data_status == "DATA_UNAVAILABLE"
         d = result.to_dict()
         assert "disclaimer" in d
-        assert "HEURISTIC" in d["disclaimer"]
+        assert "not a prediction" in d["disclaimer"]
 
-    def test_demo_mode(self):
+    def test_demo_flag_does_not_relabel_heuristic_as_synthetic_data(self):
         from backend.app.services.virality.engine import estimate_virality
 
         with patch.dict(os.environ, {"DEMO_MODE": "true"}):
             result = estimate_virality()
-        assert result.data_status == "DEMO"
+        assert result.data_status == "DATA_UNAVAILABLE"
         d = result.to_dict()
-        assert "DEMO DATA" in d["disclaimer"]
-        assert any("DEMO DATA" in w for w in result.warnings)
+        assert "not a prediction" in d["disclaimer"]
+        assert not any("DEMO DATA" in w for w in result.warnings)
 
     def test_urgency_features(self):
         from backend.app.services.virality.engine import estimate_virality
@@ -93,8 +93,8 @@ class TestViralityEngine:
         from backend.app.services.virality.engine import estimate_virality
 
         result = estimate_virality()
-        assert result.virality_score == 0.0
-        assert result.risk_level == "low"
+        assert result.virality_score is None
+        assert result.risk_level == "unknown"
 
     def test_claims_detected(self):
         from backend.app.services.virality.engine import estimate_virality
@@ -154,35 +154,30 @@ class TestRegionalSpread:
         assert result.data_status == "DATA_UNAVAILABLE"
         d = result.to_dict()
         assert "disclaimer" in d
-        assert "ESTIMATE" in d["disclaimer"]
+        assert "unavailable" in d["disclaimer"]
 
     def test_demo_mode(self):
         from backend.app.services.regional.engine import estimate_regional_spread
 
         with patch.dict(os.environ, {"DEMO_MODE": "true"}):
             result = estimate_regional_spread()
-        assert result.data_status == "DEMO"
+        assert result.data_status == "DATA_UNAVAILABLE"
         d = result.to_dict()
-        assert "DEMO DATA" in d["disclaimer"]
+        assert "unavailable" in d["disclaimer"]
 
     def test_hindi_content_highest_in_hindi_states(self):
         from backend.app.services.regional.engine import estimate_regional_spread
 
         result = estimate_regional_spread(content_language="hi")
-        # Hindi-speaking states should have higher risk scores
-        hindi_states = {"Uttar Pradesh", "Bihar", "Rajasthan", "Madhya Pradesh"}
-        top_regions = result.regions[:10]
-        top_names = {r.region for r in top_regions}
-        # At least some Hindi states should be in top 10
-        assert len(hindi_states & top_names) >= 2
+        assert result.top_risk_regions == []
+        assert all(r.risk_score is None for r in result.regions)
 
     def test_tamil_content_highest_in_tamil_states(self):
         from backend.app.services.regional.engine import estimate_regional_spread
 
         result = estimate_regional_spread(content_language="ta")
-        # Tamil Nadu and Puducherry should rank high
-        top_5 = [r.region for r in result.regions[:5]]
-        assert "Tamil Nadu" in top_5 or "Puducherry" in top_5
+        assert result.top_risk_regions == []
+        assert {r.region for r in result.regions} >= {"Tamil Nadu", "Puducherry"}
 
     def test_all_indian_states_covered(self):
         from backend.app.services.regional.engine import estimate_regional_spread
@@ -198,9 +193,9 @@ class TestRegionalSpread:
 
         result = estimate_regional_spread(content_language="hi")
         for region in result.regions:
-            assert 0.0 <= region.risk_score <= 1.0
-            assert 0.0 <= region.confidence <= 1.0
-            assert 0.0 <= region.language_compatibility <= 1.0
+            assert region.risk_score is None
+            assert region.confidence is None
+            assert region.language_compatibility is None
 
     def test_confidence_is_low(self):
         """Confidence should be low since this is heuristic."""
@@ -208,7 +203,7 @@ class TestRegionalSpread:
 
         result = estimate_regional_spread()
         for region in result.regions:
-            assert region.confidence <= 0.3  # Low confidence for heuristic
+            assert region.confidence is None
 
     def test_evidence_populated(self):
         from backend.app.services.regional.engine import estimate_regional_spread
@@ -236,7 +231,7 @@ class TestSocialImpact:
 
         result = assess_social_impact()
         assert result.data_status == "DATA_UNAVAILABLE"
-        assert 0.0 <= result.overall_risk <= 1.0
+        assert result.overall_risk is None
 
     def test_data_unavailable_by_default(self):
         from backend.app.services.social_impact.engine import assess_social_impact
@@ -245,16 +240,16 @@ class TestSocialImpact:
         assert result.data_status == "DATA_UNAVAILABLE"
         d = result.to_dict()
         assert "disclaimer" in d
-        assert "RULE-BASED" in d["disclaimer"]
+        assert "not establish falsity" in d["disclaimer"]
 
     def test_demo_mode(self):
         from backend.app.services.social_impact.engine import assess_social_impact
 
         with patch.dict(os.environ, {"DEMO_MODE": "true"}):
             result = assess_social_impact()
-        assert result.data_status == "DEMO"
+        assert result.data_status == "DATA_UNAVAILABLE"
         d = result.to_dict()
-        assert "DEMO DATA" in d["disclaimer"]
+        assert "not establish falsity" in d["disclaimer"]
 
     def test_communal_content_detected(self):
         from backend.app.services.social_impact.engine import assess_social_impact
@@ -264,7 +259,7 @@ class TestSocialImpact:
         )
         communal_cat = [c for c in result.categories if c.category == "communal_harmony"]
         assert len(communal_cat) == 1
-        assert communal_cat[0].risk_score > 0
+        assert communal_cat[0].indicators_found > 0
 
     def test_health_content_detected(self):
         from backend.app.services.social_impact.engine import assess_social_impact
@@ -274,7 +269,7 @@ class TestSocialImpact:
         )
         health_cat = [c for c in result.categories if c.category == "public_health"]
         assert len(health_cat) == 1
-        assert health_cat[0].risk_score > 0
+        assert health_cat[0].indicators_found > 0
 
     def test_financial_content_detected(self):
         from backend.app.services.social_impact.engine import assess_social_impact
@@ -284,14 +279,14 @@ class TestSocialImpact:
         )
         financial_cat = [c for c in result.categories if c.category == "financial_safety"]
         assert len(financial_cat) == 1
-        assert financial_cat[0].risk_score > 0
+        assert financial_cat[0].indicators_found > 0
 
     def test_no_text_low_risk(self):
         from backend.app.services.social_impact.engine import assess_social_impact
 
         result = assess_social_impact()
-        assert result.overall_risk == 0.0
-        assert result.risk_level == "low"
+        assert result.overall_risk is None
+        assert result.risk_level == "unknown"
 
     def test_misinformation_severity_fake(self):
         from backend.app.services.social_impact.engine import assess_social_impact
@@ -301,7 +296,7 @@ class TestSocialImpact:
             factcheck_status="success",
             factcheck_rating="False",
         )
-        assert result.misinformation_severity == "high"
+        assert result.misinformation_severity == "unassessed"
 
     def test_misinformation_severity_authentic(self):
         from backend.app.services.social_impact.engine import assess_social_impact
@@ -309,19 +304,19 @@ class TestSocialImpact:
         result = assess_social_impact(
             authenticity_label="likely_authentic",
         )
-        assert result.misinformation_severity == "low"
+        assert result.misinformation_severity == "unassessed"
 
     def test_audience_scale_hindi(self):
         from backend.app.services.social_impact.engine import assess_social_impact
 
         result = assess_social_impact(content_language="hi")
-        assert result.estimated_audience_scale == "broad"
+        assert result.estimated_audience_scale == "unknown"
 
     def test_audience_scale_tamil(self):
         from backend.app.services.social_impact.engine import assess_social_impact
 
         result = assess_social_impact(content_language="ta")
-        assert result.estimated_audience_scale == "moderate"
+        assert result.estimated_audience_scale == "unknown"
 
     def test_urgency_level(self):
         from backend.app.services.social_impact.engine import assess_social_impact
@@ -329,7 +324,7 @@ class TestSocialImpact:
         result = assess_social_impact(
             ocr_text="Breaking alert! Emergency now! Act immediately!",
         )
-        assert result.urgency_level in ("moderate", "high")
+        assert result.urgency_level == "indicators_present"
 
     def test_five_categories_present(self):
         from backend.app.services.social_impact.engine import assess_social_impact

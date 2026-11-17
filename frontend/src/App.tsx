@@ -2,14 +2,14 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   Shield, Upload, AlertTriangle, CheckCircle, XCircle, Clock, Loader2,
   Eye, FileText, Globe, Search, TrendingUp, MapPin, Users, Info,
-  ChevronDown, ChevronUp, Zap, AlertOctagon, HelpCircle
+  Zap, AlertOctagon, HelpCircle
 } from 'lucide-react';
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell
 } from 'recharts';
-import { MapContainer, TileLayer, GeoJSON, Tooltip as MapTooltip, CircleMarker } from 'react-leaflet';
-import { uploadImage, getAnalysisStatus, getAnalysisReport, getHeatmapUrl } from './services/api';
+import { MapContainer, TileLayer, Tooltip as MapTooltip, CircleMarker } from 'react-leaflet';
+import { uploadImage, getAnalysisStatus, getAnalysisReport, getHeatmapUrl, getAnalysisImageUrl } from './services/api';
 import './index.css';
 
 /* ────── helpers ────── */
@@ -17,10 +17,10 @@ const pct = (v?: number) => v != null ? `${(v * 100).toFixed(1)}%` : '—';
 const clsx = (...cls: (string | false | undefined)[]) => cls.filter(Boolean).join(' ');
 
 const STEPS = [
-  'Upload', 'Preprocessing', 'Authenticity', 'Forensics', 'OCR',
-  'Context', 'XAI', 'Text Norm', 'Claims', 'Fact Check',
-  'Provenance', 'Hashing', 'Evidence', 'Fusion', 'Explanation',
-  'Virality', 'Regional', 'Social Impact', 'Report'
+  'Preprocessing', 'Metadata', 'Quality', 'Authenticity', 'Forensics', 'OCR',
+  'Vision', 'XAI', 'Text Normalization', 'Claim Extraction', 'Fact Check',
+  'Provenance', 'Hashing', 'Evidence Collection', 'Fusion', 'Explanation',
+  'Virality', 'Regional Spread', 'Social Impact', 'Report Assembly'
 ];
 
 const STEP_MAP: Record<string, number> = {};
@@ -50,27 +50,16 @@ function StatusBadge({ status }: { status: string }) {
     DATA_UNAVAILABLE: { color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', label: 'Data Unavailable' },
     DEMO: { color: 'bg-purple-500/20 text-purple-400 border-purple-500/30', label: 'Demo Data' },
     unavailable: { color: 'bg-gray-500/20 text-gray-400 border-gray-500/30', label: 'Unavailable' },
-    success: { color: 'bg-green-500/20 text-green-400 border-green-500/30', label: 'Available' },
     failed: { color: 'bg-red-500/20 text-red-400 border-red-500/30', label: 'Failed' },
+    skipped: { color: 'bg-gray-500/20 text-gray-400 border-gray-500/30', label: 'Skipped' },
+    partial: { color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30', label: 'Partial' },
+    completed: { color: 'bg-green-500/20 text-green-400 border-green-500/30', label: 'Completed' },
+    running: { color: 'bg-blue-500/20 text-blue-400 border-blue-500/30', label: 'Running' },
+    success: { color: 'bg-green-500/20 text-green-400 border-green-500/30', label: 'Available' },
     no_results: { color: 'bg-gray-500/20 text-gray-400 border-gray-500/30', label: 'No Results' },
   };
   const c = cfg[status] || cfg['unavailable'];
   return <span className={`text-xs px-2.5 py-1 rounded-full border ${c.color}`}>{c.label}</span>;
-}
-
-/* ────── COLLAPSIBLE SECTION ────── */
-function Section({ title, icon: Icon, children, defaultOpen = true, badge }: {
-  title: string; icon?: any; children: React.ReactNode; defaultOpen?: boolean; badge?: React.ReactNode;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <Card title={title} icon={Icon} badge={badge}>
-      <button onClick={() => setOpen(!open)} className="absolute top-6 right-6 text-text-muted hover:text-text">
-        {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-      </button>
-      {open && children}
-    </Card>
-  );
 }
 
 /* ────── PROGRESS TRACKER ────── */
@@ -103,7 +92,7 @@ function ProgressTracker({ completed, current, failed }: {
 
 /* ────── AUTHENTICITY SECTION ────── */
 function AuthenticitySection({ data, assessment }: { data: any; assessment: any }) {
-  const label = assessment?.label || data?.label || 'inconclusive';
+  const label = assessment?.label || 'inconclusive';
   const labelCfg: Record<string, { color: string; bg: string; text: string }> = {
     likely_authentic: { color: 'text-green-400', bg: 'bg-green-500/10 border-green-500/30', text: 'Likely Authentic' },
     likely_ai_generated: { color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/30', text: 'Likely AI-Generated' },
@@ -128,6 +117,8 @@ function AuthenticitySection({ data, assessment }: { data: any; assessment: any 
           <span className="ml-2 text-xs text-yellow-400">(uncalibrated)</span>
         </p>
       )}
+      {assessment?.overall_score != null && <p className="text-sm text-text-muted mb-3">Fusion score: {pct(assessment.overall_score)} <span className="text-xs">(uncalibrated heuristic)</span></p>}
+      {assessment?.status && <p className="text-xs text-text-muted mb-2">Fusion status: {assessment.status}</p>}
       {scores.length > 0 && (
         <div className="grid grid-cols-3 gap-3 mb-4">
           {scores.map(s => (
@@ -139,6 +130,12 @@ function AuthenticitySection({ data, assessment }: { data: any; assessment: any 
         </div>
       )}
       {data?.model_name && <p className="text-xs text-text-muted">Model: {data.model_name}</p>}
+      <div className="mt-4 border-t border-border pt-3 text-sm">
+        <div className="flex items-center gap-2 mb-2"><span className="text-text-muted">Detector</span><StatusBadge status={data?.status || 'unavailable'} /></div>
+        <p className="text-text-muted">Model output: <span className="text-text">{data?.label || 'Unavailable'}</span></p>
+        {data?.decision_band && <p className="text-text-muted">Decision band: <span className="text-text">{data.decision_band}</span></p>}
+        {data?.warnings?.map((warning: string, i: number) => <p key={i} className="text-xs text-warning mt-1">{warning}</p>)}
+      </div>
       {assessment?.caveat && <p className="mt-3 text-xs text-yellow-400/80 italic">{assessment.caveat}</p>}
     </Card>
   );
@@ -169,12 +166,50 @@ function EvidenceSection({ data, explanation }: { data: any; explanation: any })
           <AlertTriangle className="w-4 h-4" /> Conflicting evidence detected — assessment reliability reduced.
         </div>
       )}
+      {data?.items?.length > 0 ? (
+        <div className="mt-4 space-y-2">
+          <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">Evidence items</p>
+          {data.items.map((item: any) => (
+            <div key={item.evidence_id || `${item.type}-${item.source}-${item.description}`} className="rounded-lg bg-surface/60 p-3">
+              <div className="flex flex-wrap items-center gap-2"><span className="text-sm font-medium text-text">{item.type || 'Evidence'}</span><StatusBadge status={item.status || 'completed'} /><span className="text-xs text-text-muted">{item.source}</span></div>
+              <p className="text-xs text-text-muted mt-1">{item.description}</p>
+            </div>
+          ))}
+        </div>
+      ) : <p className="mt-3 text-sm text-text-muted">No evidence items were available.</p>}
     </Card>
   );
 }
 
+function PipelineDetails({ stages, warnings }: { stages?: Record<string, any>; warnings?: string[] }) {
+  const entries = Object.entries(stages || {});
+  return (
+    <Card title="Pipeline status" icon={Info}>
+      {warnings?.map((warning, i) => <p key={i} className="text-xs text-warning mb-2">{warning}</p>)}
+      {entries.length ? <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        {entries.map(([name, stage]) => <div key={name} className="rounded-lg bg-surface/60 p-3">
+          <div className="flex items-center justify-between gap-2"><span className="text-sm text-text">{name.replace(/_/g, ' ')}</span><StatusBadge status={stage?.status || 'unavailable'} /></div>
+          {stage?.runtime_ms != null && <p className="text-xs text-text-muted mt-1">{stage.runtime_ms} ms</p>}
+          {stage?.error && <p className="text-xs text-warning mt-1">{stage.error}</p>}
+          {name === 'preprocessing' && stage?.result?.original_width && <p className="text-xs text-text-muted mt-1">Input {stage.result.original_width} × {stage.result.original_height}px · EXIF orientation {stage.result.orientation_corrected ? 'corrected' : 'unchanged'} · resized variants: {(stage.result.resized_variants || []).join(', ') || 'none'}</p>}
+        </div>)}
+      </div> : <p className="text-sm text-text-muted">Pipeline stage details unavailable.</p>}
+    </Card>
+  );
+}
+
+function ForensicsSection({ forensics, quality, objects, statuses }: { forensics: any; quality: any; objects: any; statuses?: any }) {
+  return <Card title="Forensics and visual analysis" icon={Eye}>
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div><p className="text-xs uppercase text-text-muted mb-1">Image quality</p>{quality ? <pre className="text-xs text-text-muted whitespace-pre-wrap">{JSON.stringify(quality, null, 2)}</pre> : <p className="text-xs text-text-muted">{statuses?.quality || 'Unavailable'}</p>}</div>
+      <div><p className="text-xs uppercase text-text-muted mb-1">Forensic signals</p>{forensics?.signals?.length ? <>{forensics.signals.map((s: any, i: number) => <p key={i} className="text-xs text-text-muted">{s.name} [{s.status}]{s.score != null ? ` · indicator ${Number(s.score).toFixed(3)}` : ''}: {s.interpretation}</p>)}<p className="text-[10px] text-text-muted mt-2">Indicators are encoding and content dependent; they are not manipulation probabilities.</p>{forensics.signals.find((s: any) => s.details?.artifact_url)?.details?.artifact_url && <a className="text-xs text-primary" href={forensics.signals.find((s: any) => s.details?.artifact_url).details.artifact_url} target="_blank" rel="noreferrer">View ELA visualization</a>}</> : <p className="text-xs text-text-muted">{statuses?.forensics || 'Unavailable'}</p>}</div>
+      <div><p className="text-xs uppercase text-text-muted mb-1">Detected objects</p>{objects?.objects?.length ? objects.objects.map((o: any, i: number) => <p key={i} className="text-xs text-text-muted">{o.class_name || o.label || 'Object'}{o.confidence != null ? ` (${pct(o.confidence)})` : ''}</p>) : <p className="text-xs text-text-muted">{statuses?.vision || 'Unavailable or none detected'}</p>}</div>
+    </div>
+  </Card>;
+}
+
 /* ────── IMAGE VIEWER ────── */
-function ImageViewer({ imageUrl, heatmapUrl }: { imageUrl?: string; heatmapUrl?: string }) {
+function ImageViewer({ imageUrl, heatmapUrl, objects, xai }: { imageUrl?: string; heatmapUrl?: string; objects?: any; xai?: any }) {
   const [view, setView] = useState<'original' | 'heatmap'>('original');
   const [heatmapOk, setHeatmapOk] = useState(true);
   return (
@@ -184,12 +219,33 @@ function ImageViewer({ imageUrl, heatmapUrl }: { imageUrl?: string; heatmapUrl?:
         {heatmapUrl && heatmapOk && <button onClick={() => setView('heatmap')} className={clsx('px-4 py-2 rounded-lg text-sm font-medium transition-colors', view === 'heatmap' ? 'bg-primary text-white' : 'bg-surface/50 text-text-muted hover:text-text')}>Heatmap</button>}
       </div>
       <div className="rounded-xl overflow-hidden bg-surface border border-border">
-        {view === 'original' && imageUrl && <img src={imageUrl} alt="Uploaded" className="w-full max-h-[500px] object-contain" />}
+        {view === 'original' && imageUrl && (objects?.status === 'completed' ? <div className="w-full max-h-[500px] overflow-auto"><svg role="img" aria-label="Uploaded image with detected object boxes" viewBox={`0 0 ${objects.image_width || 1} ${objects.image_height || 1}`} className="block w-full max-h-[500px]" style={{ aspectRatio: `${objects.image_width || 1} / ${objects.image_height || 1}` }}><image href={imageUrl} width={objects.image_width || 1} height={objects.image_height || 1} preserveAspectRatio="none" />{(objects.objects || []).map((object: any, i: number) => { const [x1, y1, x2, y2] = object.bbox || []; if (![x1, y1, x2, y2].every(Number.isFinite)) return null; return <g key={i}><rect x={x1} y={y1} width={Math.max(0, x2-x1)} height={Math.max(0, y2-y1)} fill="none" stroke="#22d3ee" strokeWidth={Math.max(2, objects.image_width/300)} /><title>{object.class_name} ({pct(object.confidence)})</title></g>; })}</svg></div> : <img src={imageUrl} alt="Uploaded" className="w-full max-h-[500px] object-contain" />)}
         {view === 'heatmap' && heatmapUrl && <img src={heatmapUrl} alt="XAI Heatmap" className="w-full max-h-[500px] object-contain" onError={() => setHeatmapOk(false)} />}
         {!imageUrl && <div className="h-64 flex items-center justify-center text-text-muted">No image available</div>}
       </div>
+      {view === 'heatmap' && <div className="mt-3 text-xs text-text-muted"><p>Grad-CAM attribution highlights image regions that influenced the selected model output. It does not show tampering or prove authenticity.</p>{xai?.target_class && <p className="mt-1">Target class: {xai.target_class}{xai.target_score != null ? ` · model score ${pct(xai.target_score)}` : ''}</p>}{xai?.suspicious_regions?.length > 0 && <p className="mt-1">High-activation regions (pixel boxes): {xai.suspicious_regions.slice(0, 5).map((region: any) => `[${(region.bbox || []).join(', ')}]`).join('; ')}</p>}</div>}
     </Card>
   );
+}
+
+function ReportSummary({ data }: { data: any }) {
+  if (!data) return null;
+  const entries = [
+    ['Authenticity', data.authenticity],
+    ['Factual claims', data.factual_claims],
+    ['Provenance', data.provenance],
+    ['Spread', data.spread],
+    ['Potential social impact', data.potential_social_impact],
+  ];
+  return <Card title="Analysis Summary" icon={FileText}>
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+      {entries.map(([title, value]: any) => <div key={title} className="rounded-lg bg-surface/60 p-3">
+        <p className="text-xs uppercase font-semibold text-text-muted">{title}</p>
+        <p className="text-sm text-text mt-1">{value?.classification || value?.status || value?.assessment_mode || 'Unavailable'}{value?.verdicts?.length ? ` · ${value.verdicts.join(', ')}` : ''}{value?.categories?.length ? ` · ${value.categories.join(', ')}` : ''}</p>
+        {value?.note && <p className="text-xs text-text-muted mt-1">{value.note}</p>}
+      </div>)}
+    </div>
+  </Card>;
 }
 
 /* ────── OCR SECTION ────── */
@@ -197,10 +253,11 @@ function OcrSection({ data }: { data: any }) {
   if (!data) return null;
   return (
     <Card title="OCR — Extracted Text" icon={FileText}>
-      {data.has_text ? (
+      <div className="flex gap-4 mb-3 text-xs text-text-muted"><span>Status: <span className="text-text">{data.status || 'unknown'}</span></span><span>Engine: <span className="text-text">{data.engine || '—'}</span></span><span>Languages: <span className="text-text">{(data.language_configuration || []).join(', ') || '—'}</span></span></div>
+      {data.status === 'failed' || data.status === 'unavailable' ? <p className="text-sm text-text-muted">OCR unavailable. {data.warnings?.join(' ')}</p> : data.has_text ? (
         <>
           <div className="flex gap-4 mb-3">
-            <span className="text-xs text-text-muted">Language: <span className="text-text font-medium">{data.language || '—'}</span></span>
+            <span className="text-xs text-text-muted">Script estimate: <span className="text-text font-medium">{data.language || '—'}</span></span>
             <span className="text-xs text-text-muted">Words: <span className="text-text font-medium">{data.word_count || 0}</span></span>
             <span className="text-xs text-text-muted">Confidence: <span className="text-text font-medium">{pct(data.total_confidence)}</span></span>
           </div>
@@ -208,7 +265,7 @@ function OcrSection({ data }: { data: any }) {
             {data.text || data.normalized_text || '(empty)'}
           </div>
         </>
-      ) : <p className="text-sm text-text-muted">No text detected in the image.</p>}
+      ) : <p className="text-sm text-text-muted">No readable text detected in the image.</p>}
     </Card>
   );
 }
@@ -243,20 +300,66 @@ function MetadataSection({ data, imageInfo }: { data: any; imageInfo: any }) {
 }
 
 /* ────── FACT CHECK SECTION ────── */
+function safeSourceUrl(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === 'https:' ? parsed.href : null;
+  } catch { return null; }
+}
+
+function ClaimsSection({ data }: { data: any }) {
+  if (!data) return null;
+  const claims = data.claims || [];
+  return (
+    <Card title="OCR Claims" icon={Search} badge={<StatusBadge status={data.status || 'completed'} />}>
+      {claims.length === 0 && <p className="text-sm text-text-muted">No candidate claims were extracted from the image text.</p>}
+      <div className="space-y-3">
+        {claims.map((claim: any) => (
+          <div key={claim.claim_id || claim.original_text} className="bg-surface rounded-xl p-4 border border-border">
+            <p className="text-sm text-text font-medium">{claim.original_text || claim.claim}</p>
+            {claim.normalized_text && claim.normalized_text !== (claim.original_text || claim.claim) && <p className="text-xs text-text-muted mt-1">Normalized: {claim.normalized_text}</p>}
+            <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-text-muted">
+              <span>Type: {claim.classification || claim.verification_eligibility || claim.claim_type || 'unknown'}</span>
+              <span>Language: {claim.language || 'unknown'}{claim.language_detection_status === 'script_estimate' ? ' · script estimate' : ''}</span>
+              {claim.ocr_confidence != null && <span>OCR confidence: {Math.round(claim.ocr_confidence * 100)}%</span>}
+            </div>
+            {claim.eligibility_reason && <p className="text-xs text-text-muted mt-1">{claim.eligibility_reason}</p>}
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
 function FactCheckSection({ data }: { data: any }) {
   if (!data) return null;
   return (
     <Card title="Fact-Check Results" icon={Search} badge={<StatusBadge status={data.status} />}>
       {data.status === 'unavailable' && <p className="text-sm text-text-muted">Fact-check API not configured. Set <code className="bg-surface px-1.5 py-0.5 rounded text-xs">FACTCHECK_API_KEY</code> or <code className="bg-surface px-1.5 py-0.5 rounded text-xs">GOOGLE_API_KEY</code> in .env.</p>}
       {data.status === 'failed' && <p className="text-sm text-danger">{data.error || 'API request failed.'}</p>}
-      {data.status === 'no_results' && <p className="text-sm text-text-muted">No matching fact-checks found for extracted claims.</p>}
-      {data.status === 'success' && data.claims?.length > 0 && (
+      {(data.status === 'no_results' || data.status === 'partial') && <p className="text-sm text-text-muted">No conclusive review was available for some or all eligible claims.</p>}
+      {data.claim_verifications?.length > 0 && (
+        <div className="space-y-3 mb-4">
+          {data.claim_verifications.map((v: any) => (
+            <div key={v.claim_id || v.original_claim} className="bg-surface rounded-xl p-4 border border-border">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-1"><span className="text-sm font-semibold text-text">{v.verdict?.replace(/_/g, ' ') || 'UNVERIFIABLE'}</span><span className="text-xs text-text-muted">{v.verification_status || ''}</span></div>
+              <p className="text-sm text-text">{v.original_claim}</p>
+              <p className="text-xs text-text-muted mt-1">{v.reasoning_summary}</p>
+              {v.limitations?.length > 0 && <p className="text-xs text-text-muted mt-1">{v.limitations.join(' ')}</p>}
+            </div>
+          ))}
+        </div>
+      )}
+      {(data.status === 'success' || data.status === 'partial') && data.claims?.length > 0 && (
         <div className="space-y-3">
           {data.claims.map((c: any, i: number) => (
             <div key={i} className="bg-surface rounded-xl p-4 border border-border">
-              <p className="text-sm text-text font-medium mb-1">"{c.claimed_text}"</p>
+              <p className="text-xs text-text-muted mb-1">Third-party review · {c.claim_match === 'strong_match' ? 'strong text match' : 'related search result; claim match unconfirmed'}</p>
+              <p className="text-sm text-text font-medium mb-1">{c.title || c.claimed_text || 'Fact-check review'}</p>
+              {c.claimed_text && <p className="text-xs text-text-muted">Reviewed statement: “{c.claimed_text}”</p>}
               <p className="text-xs text-text-muted">Rating: <span className="font-semibold text-warning">{c.textual_rating || '—'}</span></p>
-              <p className="text-xs text-text-muted">Publisher: {c.publisher_name || '—'} {c.url && <a href={c.url} target="_blank" rel="noopener" className="text-primary-light hover:underline ml-2">Source →</a>}</p>
+              <p className="text-xs text-text-muted">Publisher: {c.publisher_name || '—'} {c.review_date && `· ${c.review_date}`} {safeSourceUrl(c.url) && <a href={safeSourceUrl(c.url)!} target="_blank" rel="noopener noreferrer" className="text-primary-light hover:underline ml-2">Source →</a>}</p>
             </div>
           ))}
         </div>
@@ -282,17 +385,33 @@ function ProvenanceSection({ data }: { data: any }) {
               <p className="text-xs font-semibold text-text-muted uppercase mb-2">Matching Pages ({data.matching_pages.length})</p>
               {data.matching_pages.slice(0, 5).map((p: any, i: number) => (
                 <div key={i} className="text-xs text-text-muted py-1.5 border-b border-border/50 last:border-0">
-                  <a href={p.url} target="_blank" rel="noopener" className="text-primary-light hover:underline truncate block">{p.page_title || p.url}</a>
+                  {safeSourceUrl(p.url) ? <a href={safeSourceUrl(p.url)!} target="_blank" rel="noopener noreferrer" className="text-primary-light hover:underline truncate block">{p.page_title || p.url}</a> : <span className="truncate block">{p.page_title || 'External result URL unavailable'}</span>}
                   <span className="text-xs text-text-muted">Match: {p.match_type}</span>
                 </div>
               ))}
             </div>
           )}
+          {data.similar_images?.length > 0 && <div className="space-y-1 text-xs text-text-muted"><p className="font-semibold uppercase">Similar images</p>{data.similar_images.slice(0, 5).map((item: any, i: number) => <div key={i}>{safeSourceUrl(item.url) ? <a href={safeSourceUrl(item.url)!} target="_blank" rel="noopener noreferrer" className="text-primary-light hover:underline">Open result</a> : 'Result URL unavailable'} <span>· {item.match_type}</span></div>)}</div>}
+          {data.content_credentials && <p className="text-xs text-text-muted mt-3">Content Credentials: {data.content_credentials.status === 'unavailable' ? 'Not assessed' : data.content_credentials.status}. {data.content_credentials.reason || ''}</p>}
         </>
       )}
       {data.note && <p className="mt-3 text-xs text-yellow-400/70 italic">{data.note}</p>}
     </Card>
   );
+}
+
+function HashSection({ hashes, imageInfo }: { hashes: any; imageInfo: any }) {
+  const values = hashes || {};
+  const sha = values.sha256 || imageInfo?.sha256_hash;
+  const perceptual = values.phash || imageInfo?.perceptual_hash;
+  if (!sha && !perceptual) return null;
+  return <Card title="Image Hashes" icon={Info}>
+    <div className="space-y-2 text-xs">
+      {sha && <div><p className="text-text-muted">SHA-256 · exact file-byte fingerprint</p><code className="text-text break-all">{sha}</code></div>}
+      {perceptual && <div><p className="text-text-muted">pHash · visual similarity hint</p><code className="text-text break-all">{perceptual}</code></div>}
+      <p className="text-text-muted">A perceptual-hash match can indicate visually similar files; it does not establish identical content or authenticity.</p>
+    </div>
+  </Card>;
 }
 
 /* ────── VIRALITY SECTION ────── */
@@ -305,11 +424,11 @@ function ViralitySection({ data }: { data: any }) {
     unknown: { color: 'text-text-muted', label: 'Unknown' },
   };
   const risk = riskCfg[data.risk_level] || riskCfg.unknown;
-  const features = (data.features || []).filter((f: any) => f.present);
+  const features = (data.features || []).filter((f: any) => f.available && f.present && f.value != null);
   const chartData = features.map((f: any) => ({ name: f.name.replace(/_/g, ' '), value: Math.round(f.value * 100) }));
 
   return (
-    <Card title="Estimated Spread Risk" icon={TrendingUp} badge={<StatusBadge status={data.data_status} />}>
+    <Card title="Content Spread Indicators (Heuristic)" icon={TrendingUp} badge={<StatusBadge status={data.data_status} />}>
       {data.data_status === 'DEMO' && (
         <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3 mb-4">
           <p className="text-sm text-purple-400 font-medium">⚠️ DEMO DATA — NOT A REAL-WORLD PREDICTION</p>
@@ -317,8 +436,8 @@ function ViralitySection({ data }: { data: any }) {
       )}
       <div className="flex items-center gap-4 mb-4">
         <div className="text-center">
-          <p className={`text-3xl font-bold ${risk.color}`}>{pct(data.virality_score)}</p>
-          <p className={`text-sm font-medium ${risk.color}`}>{risk.label}</p>
+          <p className={`text-3xl font-bold ${risk.color}`}>{data.virality_score == null ? 'Unavailable' : pct(data.virality_score)}</p>
+          <p className={`text-sm font-medium ${risk.color}`}>{data.virality_score == null ? 'No assessed features' : 'Indicator level: ' + risk.label}</p>
         </div>
         {chartData.length > 0 && (
           <div className="flex-1 h-32">
@@ -377,7 +496,7 @@ const STATE_COORDS: Record<string, [number, number]> = {
 
 function RegionalSection({ data }: { data: any }) {
   if (!data) return null;
-  const topRegions = (data.regions || []).slice(0, 10);
+  const topRegions = (data.regions || []).filter((r: any) => r.risk_score != null).slice(0, 10);
   const chartData = topRegions.map((r: any) => ({ name: r.region, score: Math.round(r.risk_score * 100) }));
 
   const getColor = (score: number) => {
@@ -387,7 +506,7 @@ function RegionalSection({ data }: { data: any }) {
   };
 
   return (
-    <Card title="India — Estimated Regional Spread Risk" icon={MapPin} badge={<StatusBadge status={data.data_status} />}>
+    <Card title="India — Regional Dissemination Data" icon={MapPin} badge={<StatusBadge status={data.data_status} />}>
       {data.data_status === 'DEMO' && (
         <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3 mb-4">
           <p className="text-sm text-purple-400 font-medium">⚠️ DEMO DATA — NOT A REAL-WORLD PREDICTION</p>
@@ -395,7 +514,7 @@ function RegionalSection({ data }: { data: any }) {
       )}
       {data.data_status === 'DATA_UNAVAILABLE' && (
         <div className="bg-surface/50 border border-border rounded-lg p-3 mb-4">
-          <p className="text-sm text-text-muted">Regional spread prediction unavailable because validated regional training data is not configured. Scores are heuristics based on language compatibility.</p>
+          <p className="text-sm text-text-muted">Regional scores and rankings are unavailable because traceable state and union territory dissemination data is not configured.</p>
         </div>
       )}
       {data.content_language && <p className="text-sm text-text-muted mb-3">Content language: <span className="font-medium text-text">{data.content_language}</span></p>}
@@ -403,7 +522,7 @@ function RegionalSection({ data }: { data: any }) {
         <p className="text-sm text-text-muted mb-4">Top regions: <span className="font-medium text-text">{data.top_risk_regions.join(', ')}</span></p>
       )}
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[400px]">
+      {chartData.length > 0 && <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[400px]">
         {chartData.length > 0 && (
           <div className="h-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -428,6 +547,7 @@ function RegionalSection({ data }: { data: any }) {
             {data.regions?.map((r: any) => {
               const coords = STATE_COORDS[r.region];
               if (!coords) return null;
+              if (r.risk_score == null || r.confidence == null) return null;
               const radius = Math.max(5, r.risk_score * 20);
               const color = getColor(r.risk_score * 100);
               return (
@@ -450,7 +570,7 @@ function RegionalSection({ data }: { data: any }) {
             })}
           </MapContainer>
         </div>
-      </div>
+      </div>}
       
       {data.disclaimer && <p className="mt-4 text-xs text-yellow-400/70 italic">{data.disclaimer}</p>}
     </Card>
@@ -460,12 +580,12 @@ function RegionalSection({ data }: { data: any }) {
 /* ────── SOCIAL IMPACT SECTION ────── */
 function SocialImpactSection({ data }: { data: any }) {
   if (!data) return null;
-  const sevCfg: Record<string, string> = { low: 'text-green-400', moderate: 'text-yellow-400', high: 'text-red-400', unknown: 'text-text-muted' };
+  const sevCfg: Record<string, string> = { low: 'text-green-400', moderate: 'text-yellow-400', high: 'text-red-400', unknown: 'text-text-muted', unassessed: 'text-text-muted', indicators_present: 'text-yellow-400', no_indicators_detected: 'text-text-muted' };
   const categories = data.categories || [];
-  const radarData = categories.map((c: any) => ({ subject: c.category.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()), score: Math.round(c.risk_score * 100) }));
+  const radarData: any[] = [];
 
   return (
-    <Card title="Social Impact Assessment" icon={Users} badge={<StatusBadge status={data.data_status} />}>
+    <Card title="Potential Harm Content Categories" icon={Users} badge={<StatusBadge status={data.data_status} />}>
       {data.data_status === 'DEMO' && (
         <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3 mb-4">
           <p className="text-sm text-purple-400 font-medium">⚠️ DEMO DATA — NOT A REAL-WORLD PREDICTION</p>
@@ -474,15 +594,15 @@ function SocialImpactSection({ data }: { data: any }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <div className="bg-surface/50 rounded-xl p-3 text-center">
           <p className={`text-lg font-bold ${sevCfg[data.risk_level] || 'text-text-muted'}`}>{(data.risk_level || 'unknown').toUpperCase()}</p>
-          <p className="text-xs text-text-muted">Overall Risk</p>
+          <p className="text-xs text-text-muted">Observed harm</p>
         </div>
         <div className="bg-surface/50 rounded-xl p-3 text-center">
           <p className={`text-lg font-bold ${sevCfg[data.misinformation_severity] || 'text-text-muted'}`}>{(data.misinformation_severity || 'unknown').toUpperCase()}</p>
-          <p className="text-xs text-text-muted">Misinfo Severity</p>
+          <p className="text-xs text-text-muted">Falsity severity</p>
         </div>
         <div className="bg-surface/50 rounded-xl p-3 text-center">
           <p className="text-lg font-bold text-text">{(data.estimated_audience_scale || 'unknown').toUpperCase()}</p>
-          <p className="text-xs text-text-muted">Audience Scale</p>
+          <p className="text-xs text-text-muted">Audience reach</p>
         </div>
         <div className="bg-surface/50 rounded-xl p-3 text-center">
           <p className={`text-lg font-bold ${sevCfg[data.urgency_level] || 'text-text-muted'}`}>{(data.urgency_level || 'low').toUpperCase()}</p>
@@ -509,6 +629,7 @@ function SocialImpactSection({ data }: { data: any }) {
           ))}
         </div>
       )}
+      {categories.filter((c: any) => c.indicators_found > 0).map((c: any) => <div key={c.category} className="mt-2 text-xs text-text-muted"><strong>{c.category.replace(/_/g, ' ')}:</strong> indicators {c.indicators.join(', ') || 'none'}; claims {c.supporting_claim_ids?.join(', ') || 'not linked'}; verification {c.verification_statuses?.join(', ') || 'unassessed'}.</div>)}
       {data.disclaimer && <p className="mt-3 text-xs text-yellow-400/70 italic">{data.disclaimer}</p>}
     </Card>
   );
@@ -546,6 +667,8 @@ export default function App() {
     if (!f.type.startsWith('image/')) { setError('Please select an image file.'); return; }
     if (f.size > 20 * 1024 * 1024) { setError('File too large (max 20 MB).'); return; }
     setFile(f); setError(''); setReport(null); setStatus(null); setAnalysisId('');
+    sessionStorage.removeItem('truthlens.analysisId');
+    window.history.replaceState({}, '', window.location.pathname);
     const reader = new FileReader();
     reader.onload = (e) => setPreview(e.target?.result as string);
     reader.readAsDataURL(f);
@@ -558,7 +681,9 @@ export default function App() {
     try {
       const result = await uploadImage(file);
       setAnalysisId(result.analysis_id);
-      setStatus(result);
+      sessionStorage.setItem('truthlens.analysisId', result.analysis_id);
+      window.history.replaceState({}, '', `?analysis=${encodeURIComponent(result.analysis_id)}`);
+        setStatus(result);
       startPolling(result.analysis_id);
     } catch (e: any) {
       setError(e.response?.data?.detail || e.message || 'Upload failed.');
@@ -572,16 +697,31 @@ export default function App() {
       try {
         const s = await getAnalysisStatus(id);
         setStatus(s);
-        if (s.status === 'completed' || s.status === 'failed') {
+        if (['completed', 'partial', 'failed'].includes(s.status)) {
           clearInterval(pollRef.current!); pollRef.current = null;
-          if (s.status === 'completed') {
+          if (s.status === 'completed' || s.status === 'partial' || s.status === 'failed') {
             const r = await getAnalysisReport(id);
+            if (r.analysis_id !== id) throw new Error('The report did not match the submitted analysis.');
             setReport(r);
           }
         }
-      } catch (e: any) { console.error('Poll error:', e); }
+      } catch (e: any) { console.error('Poll error:', e); setError(e.response?.data?.detail || e.message || 'Unable to retrieve the analysis report.'); }
     }, 2000);
   };
+
+  // Restore the submitted analysis when a user refreshes the results page.
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('analysis') || sessionStorage.getItem('truthlens.analysisId');
+    if (!id || !/^[0-9a-f-]{36}$/i.test(id)) return;
+    setAnalysisId(id);
+    getAnalysisStatus(id).then(async s => {
+      setStatus(s);
+      if (['completed', 'partial', 'failed'].includes(s.status)) setReport(await getAnalysisReport(id));
+      else startPolling(id);
+    }).catch((e: any) => setError(e.response?.data?.detail || 'Saved analysis is unavailable or has expired.'));
+    // The analysis ID is intentionally read once on page load.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
 
@@ -593,7 +733,7 @@ export default function App() {
   }, [handleFile]);
 
   const isProcessing = status?.status === 'processing' || status?.status === 'queued';
-  const isCompleted = status?.status === 'completed' && report;
+  const isCompleted = ['completed', 'partial', 'failed'].includes(status?.status) && report;
   const isFailed = status?.status === 'failed';
 
   return (
@@ -659,13 +799,13 @@ export default function App() {
         {/* ── PROGRESS ── */}
         {isProcessing && status && (
           <Card title="Analysis Progress" icon={Loader2}>
-            <ProgressTracker completed={status.completed_steps || []} current={status.current_step} />
-            <p className="mt-3 text-xs text-text-muted">Processing… this may take 1-2 minutes for full analysis.</p>
+            <ProgressTracker completed={status.progress?.completed_steps || status.completed_steps || []} current={status.progress?.current_step || status.current_step} />
+            <p className="mt-3 text-xs text-text-muted">Progress reflects completed backend stages. Optional model initialization or external services can extend runtime.</p>
           </Card>
         )}
 
         {/* ── FAILED ── */}
-        {isFailed && (
+        {isFailed && !report && (
           <Card title="Analysis Failed" icon={XCircle}>
             <p className="text-sm text-danger">{status?.error_message || 'Pipeline error.'}</p>
             <button onClick={() => { setFile(null); setPreview(''); setAnalysisId(''); setStatus(null); setReport(null); }} className="mt-4 px-4 py-2 rounded-lg bg-surface border border-border text-sm text-text-muted hover:text-text">Try Again</button>
@@ -675,33 +815,39 @@ export default function App() {
         {/* ═══ REPORT ═══ */}
         {isCompleted && report && (
           <>
+            {report.status !== 'completed' && <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning">Analysis status: {report.status}. Review unavailable or failed stages below; this assessment may be incomplete.</div>}
+            <ReportSummary data={report.summary} />
             {/* New analysis button */}
             <div className="flex justify-end">
-              <button onClick={() => { setFile(null); setPreview(''); setAnalysisId(''); setStatus(null); setReport(null); }} className="px-4 py-2 rounded-lg bg-surface-2 border border-border text-sm text-text-muted hover:text-text transition-colors flex items-center gap-2">
+              <button onClick={() => { setFile(null); setPreview(''); setAnalysisId(''); sessionStorage.removeItem('truthlens.analysisId'); window.history.replaceState({}, '', window.location.pathname); setStatus(null); setReport(null); }} className="px-4 py-2 rounded-lg bg-surface-2 border border-border text-sm text-text-muted hover:text-text transition-colors flex items-center gap-2">
                 <Upload className="w-4 h-4" /> New Analysis
               </button>
             </div>
 
             {/* 1. Authenticity */}
-            <AuthenticitySection data={report.authenticity} assessment={report.assessment} />
+            <AuthenticitySection data={report.authenticity} assessment={report.fusion || report.assessment} />
 
             {/* 2. Evidence / Why */}
             <EvidenceSection data={report.evidence} explanation={report.explanation} />
+            <PipelineDetails stages={report.stages} warnings={report.warnings} />
 
             {/* 3. Image Viewer */}
-            <ImageViewer imageUrl={preview} heatmapUrl={analysisId ? getHeatmapUrl(analysisId) : undefined} />
+            <ImageViewer imageUrl={analysisId ? getAnalysisImageUrl(analysisId) : preview} heatmapUrl={analysisId && report.xai?.status === 'completed' ? getHeatmapUrl(analysisId) : undefined} xai={report.xai} objects={{...(report.objects?.status === 'completed' ? report.objects : {}), image_width: report.objects?.image_width || report.image?.width || 1, image_height: report.objects?.image_height || report.image?.height || 1}} />
 
             {/* 4. OCR */}
             <OcrSection data={report.ocr} />
 
             {/* 5. Metadata */}
             <MetadataSection data={report.metadata} imageInfo={report.image} />
+            <ForensicsSection forensics={report.forensics} quality={report.quality} objects={report.objects} statuses={report.module_statuses} />
 
             {/* 6. Fact Check */}
+            <ClaimsSection data={report.claims} />
             <FactCheckSection data={report.fact_checks} />
 
             {/* 7. Provenance */}
             <ProvenanceSection data={report.provenance} />
+            <HashSection hashes={report.hashes} imageInfo={report.image} />
 
             {/* Two-column layout for virality & social impact */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

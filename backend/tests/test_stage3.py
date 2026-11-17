@@ -12,6 +12,7 @@ Tests cover:
 
 import io
 import os
+import os
 import sys
 import time
 from pathlib import Path
@@ -61,8 +62,7 @@ class TestForensics:
         result = analyze_forensics(image_data, "JPEG")
 
         assert len(result.signals) >= 5
-        assert result.overall_anomaly_score >= 0.0
-        assert result.overall_anomaly_score <= 1.0
+        assert result.overall_anomaly_score is None
         assert result.runtime_ms >= 0
         assert result.caveat  # Always has a caveat
 
@@ -129,6 +129,7 @@ class TestForensics:
 
 # ── Authenticity Detector Tests ──────────────────────────────────
 
+@pytest.mark.skipif(os.environ.get("TRUTHLENS_REAL_MODEL_TESTS") != "1", reason="Set TRUTHLENS_REAL_MODEL_TESTS=1 to run cache-backed model smoke tests")
 class TestAuthenticity:
     """
     Tests that require the authenticity model to be downloaded.
@@ -223,6 +224,7 @@ class TestAuthenticity:
 
 # ── OCR Tests ────────────────────────────────────────────────────
 
+@pytest.mark.skipif(os.environ.get("TRUTHLENS_REAL_MODEL_TESTS") != "1", reason="Set TRUTHLENS_REAL_MODEL_TESTS=1 to run cache-backed model smoke tests")
 class TestOCR:
     @pytest.fixture(autouse=True)
     def _check_easyocr(self):
@@ -304,6 +306,7 @@ class TestOCR:
 
 # ── Vision (Object Detection) Tests ──────────────────────────────
 
+@pytest.mark.skipif(os.environ.get("TRUTHLENS_REAL_MODEL_TESTS") != "1", reason="Set TRUTHLENS_REAL_MODEL_TESTS=1 to run cache-backed model smoke tests")
 class TestVision:
     @pytest.fixture(autouse=True)
     def _check_ultralytics(self):
@@ -373,20 +376,35 @@ class TestDeviceManager:
 # ── Integration Test ─────────────────────────────────────────────
 
 class TestIntegration:
-    """Full pipeline integration test using the API."""
-
-    @pytest.fixture(autouse=True)
-    def _check_model_available(self):
-        from backend.app.config import settings
-        cache_dir = Path(settings.MODEL_CACHE_DIR)
-        if not cache_dir.exists() or not any(cache_dir.rglob("*.safetensors")):
-            pytest.skip("Models not cached — run download_models.py first")
+    """Pipeline integration test using the API and mocked detector."""
 
     @pytest.mark.asyncio
-    async def test_full_pipeline_via_api(self):
-        """Upload an image and verify the full pipeline runs."""
+    async def test_full_pipeline_via_api(self, monkeypatch):
+        """Upload an image and verify the pipeline under a deterministic mock detector."""
         import asyncio
         from httpx import AsyncClient, ASGITransport
+        from backend.app.services.authenticity.detector import AuthenticityResult
+
+        class MockDetector:
+            is_loaded = False
+
+            def load(self, device="auto"):
+                return None
+
+            def detect(self, image):
+                return AuthenticityResult(
+                    label="inconclusive", ai_generated_score=0.5,
+                    authentic_score=0.5, confidence=0.5,
+                    model_name="mock-detector", model_version="test",
+                )
+
+            def get_device(self):
+                return None
+
+        monkeypatch.setattr(
+            "backend.app.services.authenticity.detector.get_detector",
+            lambda: MockDetector(),
+        )
 
         os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./test_stage3.db"
         os.environ["APP_ENV"] = "test"
@@ -416,11 +434,20 @@ class TestIntegration:
                 await asyncio.sleep(1)
                 resp = await client.get(f"/api/v1/analysis/{analysis_id}")
                 data = resp.json()
-                if data["status"] in ("completed", "failed"):
+                if data["status"] in ("completed", "partial", "failed"):
                     break
 
-            assert data["status"] == "completed", f"Pipeline ended with status: {data['status']}"
+            assert data["status"] in ("completed", "partial"), f"Pipeline ended with status: {data['status']}"
             assert data["progress"]["completed_steps"]
+            if data["status"] == "partial":
+                report_resp = await client.get(f"/api/v1/analysis/{analysis_id}/report")
+                report = report_resp.json()
+                assert report["analysis_id"] == analysis_id
+                assert report["status"] == "partial"
+                assert report["stages"]["ocr"]["status"] in ("unavailable", "failed")
+
+        from backend.app.api.v1.endpoints.analyze import wait_for_analysis_tasks
+        await wait_for_analysis_tasks()
 
         # Cleanup
         await engine.dispose()

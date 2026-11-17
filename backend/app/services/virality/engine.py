@@ -9,8 +9,8 @@ DATA STATUS: DATA_UNAVAILABLE
   engagement data with Indian context to train a reliable model.
 - All outputs are heuristic estimates based on known correlates
   of virality from academic literature.
-- When DEMO_MODE=true, synthetic scores are generated for UI
-  demonstration purposes — these are NOT real predictions.
+- No synthetic demo score path is implemented; outputs remain content
+  indicators and historical prediction stays unavailable.
 
 Feature categories:
 - Image features (faces, text, objects, visual complexity)
@@ -24,7 +24,6 @@ References:
 
 from __future__ import annotations
 
-import os
 import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
@@ -81,27 +80,24 @@ _RELIGIOUS_KEYWORDS = {
 }
 
 
-def is_demo_mode() -> bool:
-    """Check if DEMO_MODE is enabled."""
-    return os.environ.get("DEMO_MODE", "").lower() in ("true", "1", "yes")
-
-
 @dataclass
 class ViralityFeature:
     """A single virality-related feature."""
     name: str
-    value: float  # 0.0 to 1.0
+    value: Optional[float]  # None means the feature could not be assessed
     weight: float
     present: bool
     description: str
+    available: bool = True
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "name": self.name,
-            "value": round(self.value, 4),
+            "value": round(self.value, 4) if self.value is not None else None,
             "weight": round(self.weight, 4),
             "present": self.present,
             "description": self.description,
+            "available": self.available,
         }
 
 
@@ -109,7 +105,7 @@ class ViralityFeature:
 class ViralityResult:
     """Virality estimation result."""
     data_status: str = "DATA_UNAVAILABLE"  # DATA_UNAVAILABLE | DEMO
-    virality_score: float = 0.0  # 0.0 to 1.0
+    virality_score: Optional[float] = None  # heuristic indicator only, not spread probability
     risk_level: str = "unknown"  # low | moderate | high | unknown
     features: List[ViralityFeature] = field(default_factory=list)
     contributing_factors: List[str] = field(default_factory=list)
@@ -120,7 +116,9 @@ class ViralityResult:
     def to_dict(self) -> Dict[str, Any]:
         result = {
             "data_status": self.data_status,
-            "virality_score": round(self.virality_score, 4),
+            "virality_score": round(self.virality_score, 4) if self.virality_score is not None else None,
+            "assessment_mode": "CONTENT_BASED_HEURISTIC",
+            "historical_prediction_status": "DATA_UNAVAILABLE",
             "risk_level": self.risk_level,
             "features": [f.to_dict() for f in self.features],
             "contributing_factors": self.contributing_factors,
@@ -131,10 +129,8 @@ class ViralityResult:
 
         if self.data_status == "DATA_UNAVAILABLE":
             result["disclaimer"] = (
-                "This virality score is a HEURISTIC ESTIMATE based on observable "
-                "content features. It is NOT a trained prediction model. No validated "
-                "dataset exists for image-level virality prediction in the Indian context. "
-                "This score should not be cited as a scientific prediction."
+                "This is a content indicator score, not a prediction of sharing, reach, or probability. "
+                "No validated image-level historical dissemination dataset is configured."
             )
         elif self.data_status == "DEMO":
             result["disclaimer"] = (
@@ -154,15 +150,17 @@ def _compute_text_features(
     """Compute text-based virality features."""
     features = []
     text_lower = (ocr_text or "").lower()
+    text_available = ocr_text is not None
 
     # Has text overlay
     has_text = bool(ocr_text and len(ocr_text.strip()) > 5)
     features.append(ViralityFeature(
         name="has_text_overlay",
-        value=1.0 if has_text else 0.0,
+        value=(1.0 if has_text else 0.0) if text_available else None,
         weight=_FEATURE_WEIGHTS["has_text_overlay"],
         present=has_text,
-        description="Image contains embedded text" if has_text else "No significant text detected",
+        description=("Image contains embedded text" if has_text else "No significant text detected") if text_available else "OCR text unavailable",
+        available=text_available,
     ))
 
     # Urgency language
@@ -171,10 +169,11 @@ def _compute_text_features(
     urgency_score = min(urgency_count / 3.0, 1.0)
     features.append(ViralityFeature(
         name="urgency_language",
-        value=urgency_score,
+        value=urgency_score if text_available else None,
         weight=_FEATURE_WEIGHTS["urgency_language"],
         present=urgency_present,
-        description=f"{urgency_count} urgency indicators detected" if urgency_present else "No urgency language detected",
+        description=(f"{urgency_count} urgency indicators detected" if urgency_present else "No urgency language detected") if text_available else "OCR text unavailable",
+        available=text_available,
     ))
 
     # Emotional language
@@ -183,30 +182,33 @@ def _compute_text_features(
     emotional_score = min(emotional_count / 3.0, 1.0)
     features.append(ViralityFeature(
         name="emotional_language",
-        value=emotional_score,
+        value=emotional_score if text_available else None,
         weight=_FEATURE_WEIGHTS["emotional_language"],
         present=emotional_present,
-        description=f"{emotional_count} emotional indicators detected" if emotional_present else "No emotional language detected",
+        description=(f"{emotional_count} emotional indicators detected" if emotional_present else "No emotional language detected") if text_available else "OCR text unavailable",
+        available=text_available,
     ))
 
     # Has claims
     has_claims = bool(claims and len(claims) > 0)
     features.append(ViralityFeature(
         name="has_claims",
-        value=1.0 if has_claims else 0.0,
+        value=(1.0 if has_claims else 0.0) if claims is not None else None,
         weight=_FEATURE_WEIGHTS["has_claims"],
         present=has_claims,
-        description=f"{len(claims)} verifiable claims detected" if has_claims else "No claims detected",
+        description=(f"{len(claims)} claims detected" if has_claims else "No claims detected") if claims is not None else "Claim extraction unavailable",
+        available=claims is not None,
     ))
 
     # Has numbers
     has_numbers = bool(text_normalized and text_normalized.get("detected_numbers"))
     features.append(ViralityFeature(
         name="has_numbers",
-        value=1.0 if has_numbers else 0.0,
+        value=(1.0 if has_numbers else 0.0) if text_normalized is not None else None,
         weight=_FEATURE_WEIGHTS["has_numbers"],
         present=has_numbers,
-        description="Specific numbers/statistics present" if has_numbers else "No numbers detected",
+        description=("Specific numbers/statistics present" if has_numbers else "No numbers detected") if text_normalized is not None else "Normalized text unavailable",
+        available=text_normalized is not None,
     ))
 
     # Topic sensitivity
@@ -215,15 +217,16 @@ def _compute_text_features(
         ("political", _POLITICAL_KEYWORDS, "political_topic"),
         ("religious", _RELIGIOUS_KEYWORDS, "religious_topic"),
     ]:
-        topic_count = sum(1 for w in keywords if w in text_lower)
+        topic_count = sum(1 for w in keywords if w in text_lower) if text_available else 0
         topic_present = topic_count >= 2  # Need at least 2 keywords
         topic_score = min(topic_count / 4.0, 1.0) if topic_present else 0.0
         features.append(ViralityFeature(
             name=f"{topic}_topic",
-            value=topic_score,
+            value=topic_score if text_available else None,
             weight=_FEATURE_WEIGHTS[weight_key],
             present=topic_present,
-            description=f"{topic.title()} topic indicators detected ({topic_count} keywords)" if topic_present else f"No {topic} topic indicators",
+            description=(f"{topic.title()} topic indicators detected ({topic_count} keywords)" if topic_present else f"No {topic} topic indicators") if text_available else "OCR text unavailable",
+            available=text_available,
         ))
 
     return features
@@ -236,24 +239,26 @@ def _compute_image_features(
     features = []
 
     # Has faces
-    has_people = bool(vision_result and vision_result.get("has_people"))
+    has_people = bool(vision_result and (vision_result.get("has_people") or vision_result.get("people_count", 0)))
     features.append(ViralityFeature(
         name="has_faces",
-        value=1.0 if has_people else 0.0,
+        value=(1.0 if has_people else 0.0) if vision_result is not None else None,
         weight=_FEATURE_WEIGHTS["has_faces"],
         present=has_people,
-        description="People/faces detected in image" if has_people else "No people detected",
+        description=("People/faces detected in image" if has_people else "No people detected") if vision_result is not None else "Vision analysis unavailable",
+        available=vision_result is not None,
     ))
 
     # Multiple objects (visual complexity)
-    object_count = vision_result.get("object_count", 0) if vision_result else 0
+    object_count = vision_result.get("object_count", len(vision_result.get("objects", []))) if vision_result else 0
     multiple = object_count >= 3
     features.append(ViralityFeature(
         name="multiple_objects",
-        value=min(object_count / 10.0, 1.0),
+        value=min(object_count / 10.0, 1.0) if vision_result is not None else None,
         weight=_FEATURE_WEIGHTS["multiple_objects"],
         present=multiple,
-        description=f"{object_count} objects detected" if object_count > 0 else "Few or no objects detected",
+        description=(f"{object_count} objects detected" if object_count > 0 else "Few or no objects detected") if vision_result is not None else "Vision analysis unavailable",
+        available=vision_result is not None,
     ))
 
     return features
@@ -269,12 +274,11 @@ def estimate_virality(
     Estimate virality risk based on observable content features.
 
     This is a HEURISTIC system, NOT a trained model.
-    All results carry DATA_UNAVAILABLE or DEMO status.
+    Results carry DATA_UNAVAILABLE because no historical model/data is configured.
     """
     t0 = time.time()
 
-    demo_mode = is_demo_mode()
-    data_status = "DEMO" if demo_mode else "DATA_UNAVAILABLE"
+    data_status = "DATA_UNAVAILABLE"
 
     # Compute features
     text_features = _compute_text_features(ocr_text, claims, text_normalized)
@@ -287,18 +291,19 @@ def estimate_virality(
     contributing_factors = []
 
     for feat in all_features:
-        if feat.present:
+        if feat.available and feat.value is not None:
             weighted_sum += feat.value * feat.weight
             total_weight += feat.weight
-            contributing_factors.append(feat.description)
+            if feat.present:
+                contributing_factors.append(feat.description)
 
     # Normalize to 0-1
-    max_possible = sum(_FEATURE_WEIGHTS.values())
-    virality_score = weighted_sum / max_possible if max_possible > 0 else 0.0
-    virality_score = max(0.0, min(1.0, virality_score))
+    virality_score = max(0.0, min(1.0, weighted_sum / total_weight)) if total_weight else None
 
     # Risk level
-    if virality_score >= 0.6:
+    if virality_score is None:
+        risk_level = "unknown"
+    elif virality_score >= 0.6:
         risk_level = "high"
     elif virality_score >= 0.3:
         risk_level = "moderate"
@@ -315,10 +320,6 @@ def estimate_virality(
         "image-level virality prediction in the Indian context."
     )
 
-    if demo_mode:
-        warnings.append("DEMO DATA — NOT A REAL-WORLD PREDICTION")
-        methodology = "DEMO MODE: " + methodology
-
     runtime_ms = int((time.time() - t0) * 1000)
 
     result = ViralityResult(
@@ -332,9 +333,6 @@ def estimate_virality(
         warnings=warnings,
     )
 
-    log.info(
-        "Virality estimate: score=%.3f risk=%s status=%s [%d ms]",
-        virality_score, risk_level, data_status, runtime_ms,
-    )
+    log.info("Virality content indicators computed: score=%s level=%s status=%s [%d ms]", virality_score, risk_level, data_status, runtime_ms)
 
     return result

@@ -1,0 +1,124 @@
+{
+  "created_utc": "2026-11-17T08:39:47.978336+00:00",
+  "revision": "6b72a96cb64b291eae44ddb07ca32fcd10e2935a",
+  "worktree": {
+    "dirty": true,
+    "status_sha256": "a9ca982e576ef4f261bf124bc5be28110d0adefbc6fbf693a0ad631068944568",
+    "worktree_content_sha256": "97e10b2604a4cd6af3086edae13d49d0305e20f34c47e9dc94dbb2d70f65e184"
+  },
+  "python": "3.11.9",
+  "status": "CONTROLLED_LOGIC_CHECK_ONLY",
+  "not_a_dataset": true,
+  "results": {
+    "A_model_only": {
+      "input_item_count": 1,
+      "assessment": "likely_ai_generated",
+      "score": 0.0,
+      "confidence": 0.6,
+      "conflicting": false,
+      "evidence_summary": {
+        "total": 1,
+        "authentic_signals": 0,
+        "synthetic_signals": 1,
+        "manipulated_signals": 0,
+        "neutral_signals": 0,
+        "informational_signals": 0
+      },
+      "reasoning": [
+        "Evidence suggests AI-generated content (synthetic=0.60, authentic=0.00)."
+      ]
+    },
+    "B_model_plus_forensics": {
+      "input_item_count": 2,
+      "assessment": "likely_ai_generated",
+      "score": 0.0,
+      "confidence": 0.6,
+      "conflicting": false,
+      "evidence_summary": {
+        "total": 2,
+        "authentic_signals": 0,
+        "synthetic_signals": 1,
+        "manipulated_signals": 0,
+        "neutral_signals": 0,
+        "informational_signals": 1
+      },
+      "reasoning": [
+        "Evidence suggests AI-generated content (synthetic=0.60, authentic=0.00)."
+      ]
+    },
+    "C_model_forensics_ocr": {
+      "input_item_count": 3,
+      "assessment": "likely_ai_generated",
+      "score": 0.0,
+      "confidence": 0.6,
+      "conflicting": false,
+      "evidence_summary": {
+        "total": 3,
+        "authentic_signals": 0,
+        "synthetic_signals": 1,
+        "manipulated_signals": 0,
+        "neutral_signals": 0,
+        "informational_signals": 2
+      },
+      "reasoning": [
+        "Evidence suggests AI-generated content (synthetic=0.60, authentic=0.00)."
+      ]
+    },
+    "D_plus_provenance": {
+      "input_item_count": 3,
+      "assessment": "likely_ai_generated",
+      "score": 0.0,
+      "confidence": 0.6,
+      "conflicting": false,
+      "evidence_summary": {
+        "total": 3,
+        "authentic_signals": 0,
+        "synthetic_signals": 1,
+        "manipulated_signals": 0,
+        "neutral_signals": 0,
+        "informational_signals": 2
+      },
+      "reasoning": [
+        "Evidence suggests AI-generated content (synthetic=0.60, authentic=0.00)."
+      ]
+    },
+    "E_full_with_failed_detector": {
+      "input_item_count": 4,
+      "assessment": "likely_ai_generated",
+      "score": 0.0,
+      "confidence": 0.6,
+      "conflicting": false,
+      "evidence_summary": {
+        "total": 4,
+        "authentic_signals": 0,
+        "synthetic_signals": 1,
+        "manipulated_signals": 0,
+        "neutral_signals": 0,
+        "informational_signals": 2
+      },
+      "reasoning": [
+        "Ignored failed evidence from failed_model.",
+        "Evidence suggests AI-generated content (synthetic=0.60, authentic=0.00)."
+      ]
+    },
+    "F_no_directional_signals": {
+      "input_item_count": 1,
+      "assessment": "inconclusive",
+      "score": null,
+      "confidence": null,
+      "conflicting": false,
+      "evidence_summary": {
+        "total": 1,
+        "authentic_signals": 0,
+        "synthetic_signals": 0,
+        "manipulated_signals": 0,
+        "neutral_signals": 0,
+        "informational_signals": 1
+      },
+      "reasoning": [
+        "No clear direction from available evidence."
+      ]
+    }
+  },
+  "interpretation": "Forensics/OCR/provenance evidence is informational in authenticity fusion and does not change the model-only direction; failed detector evidence is excluded. This tests code rules only, not whether the model or signals are correct."
+}

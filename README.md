@@ -1,185 +1,91 @@
 # TruthLens
 
-**AI-Assisted Image Verification, Analysis and Virality Estimation Including Social Impact**
+**AI-assisted image verification, analysis, and content-context indicators**
 
-> ⚠️ TruthLens is an AI-assisted verification system, NOT an absolute truth detector.
-> No model prediction should ever be cited as proof that an image is fake or real.
+TruthLens is an academic research prototype that combines model outputs, image-forensic cues, OCR, claim lookup, provenance evidence, and structured reporting. It is not a definitive truth detector. A model score, forensic cue, heatmap, or external match is not proof that an image or claim is true or false.
 
----
+## Current capabilities
 
-## Overview
+- Securely validated image upload, hashes, image metadata and preprocessing.
+- SigLIP2 authenticity classifier when its model dependencies and weights are available. Its softmax scores are uncalibrated; editing/manipulation classification is separate and unavailable from this detector.
+- Classical forensic indicators with per-signal limitations; compression artifacts alone do not establish manipulation.
+- OCR through EasyOCR or optional Tesseract, text normalization and heuristic claim eligibility/extraction.
+- Optional Google Fact Check Tools and Google Vision Web Detection integrations.
+- YOLO object detection when Ultralytics and its checkpoint are available; Grad-CAM where model support permits.
+- Evidence collection/fusion and a structured report with per-stage status.
+- Transparent content spread indicators and potential harm topic cues. Historical spread, state-level prediction, audience reach and observed harm outcomes are unavailable because suitable datasets are not installed.
 
-TruthLens takes an image as input and produces a comprehensive analysis covering:
+Translation, VLM analysis, C2PA parsing, authenticated multi-user access, result deletion/retention, durable jobs, and a verified demonstration corpus are not implemented. See [system audit](docs/phase5_system_audit.md) and [Phase 4 dataset inventory](docs/phase4_dataset_inventory.md).
 
-- 🔍 **Authenticity Assessment** — Is the image likely AI-generated, manipulated, or authentic? (probabilistic, multi-model ensemble)
-- 🧩 **Manipulation Detection** — Splicing, copy-move, and inpainting indicators
-- 🔬 **Visual Forensics** — Error Level Analysis (ELA), noise patterns, JPEG artifact maps
-- 📝 **OCR & Text Analysis** — Extract text, detect language, extract claims
-- 🧠 **Contextual Analysis** — Vision-language model reasoning about scene consistency
-- 🗺️ **Explainable AI** — Grad-CAM heatmaps showing which regions influenced the AI decision
-- 🔗 **Provenance Search** — Reverse image lookup for source attribution
-- ✅ **Fact-Checking** — Automated claim verification against fact-check databases
-- 📊 **Virality Estimation** — Spread risk assessment (heuristic-based)
-- 🇮🇳 **Regional Spread Risk** — India-specific geographic risk map
-- ⚖️ **Social Impact** — Potential societal impact indicators
+## Architecture and stack
 
----
+- UI: React 19, TypeScript, Vite, Tailwind, Recharts, Leaflet.
+- API: FastAPI, Pydantic, async SQLAlchemy.
+- Image/ML: Pillow, OpenCV, PyTorch/Transformers, EasyOCR optional, Ultralytics optional.
+- Database: SQLite by default; PostgreSQL supported by async URL/driver.
+- Storage: local filesystem under `STORAGE_PATH`.
+- Background processing: in-process async task; restart can interrupt active analyses.
 
-## Technology Stack
+The API owns one orchestration pipeline and one report builder. See [system architecture](docs/system_architecture.md).
 
-| Layer     | Technologies                                                    |
-| --------- | --------------------------------------------------------------- |
-| Frontend  | React, TypeScript, Vite, Tailwind CSS, Recharts, Leaflet       |
-| Backend   | Python, FastAPI, Pydantic, SQLAlchemy, Uvicorn                  |
-| ML/AI     | PyTorch, Hugging Face Transformers, timm, EasyOCR, Ultralytics |
-| Database  | PostgreSQL (Docker) / SQLite (fallback)                         |
-| Infra     | Docker, Docker Compose                                          |
+## Run locally
 
----
+Requirements: Python 3.11+, Node 22.12+ recommended for Vite 8. OCR/model dependencies and weights require additional setup; CPU works but can be slower. CUDA is optional.
 
-## System Requirements
+PowerShell, from repository root:
 
-| Component | Minimum                                        |
-| --------- | ---------------------------------------------- |
-| CPU       | 4+ cores (Intel i5 / AMD Ryzen 5 or better)   |
-| RAM       | 16 GB                                          |
-| GPU       | NVIDIA GPU with 4+ GB VRAM (CUDA 11.8+)       |
-| Storage   | 10 GB free (for model weights and artifacts)   |
-| Python    | 3.12+                                          |
-| Node.js   | 18+                                            |
-| Docker    | 20+ (for PostgreSQL)                           |
-
-> GPU is optional — the system falls back to CPU with longer inference times.
-
----
-
-## Quick Start
-
-### 1. Clone and Configure
-
-```bash
-cd "final year project"
-cp .env.example .env
-# Edit .env with your configuration
+```powershell
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r backend/requirements.txt
+Copy-Item .env.example .env
+python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 ```
 
-### 2. Install Backend Dependencies
+In a second terminal:
 
-```bash
-cd backend
-pip install -r requirements.txt
-```
-
-### 3. Start Database (Docker)
-
-```bash
-docker run -d --name truthlens-pg \
-  -e POSTGRES_PASSWORD=truthlens \
-  -e POSTGRES_DB=truthlens \
-  -p 5432:5432 \
-  postgres:16
-```
-
-### 4. Start Backend
-
-```bash
-cd backend
-uvicorn app.main:app --reload --port 8000
-```
-
-### 5. Install & Start Frontend
-
-```bash
+```powershell
 cd frontend
-npm install
-npm run dev
+npm ci
+npm run dev -- --host 127.0.0.1
 ```
 
----
+Open <http://127.0.0.1:5173>. Vite proxies `/api` to the local backend. API docs are at <http://127.0.0.1:8000/docs>; health is <http://127.0.0.1:8000/api/v1/health>. The detailed reproducible setup is in [deployment guide](docs/deployment_guide.md).
 
-## Project Structure
+## Configuration and privacy
 
-```
-truthlens/
-├── backend/           # FastAPI backend
-│   ├── app/
-│   │   ├── api/       # API endpoints
-│   │   ├── core/      # Security, logging
-│   │   ├── db/        # Database setup
-│   │   ├── models/    # SQLAlchemy ORM models
-│   │   ├── schemas/   # Pydantic schemas
-│   │   ├── services/  # Business logic
-│   │   └── utils/     # Utilities
-│   └── tests/
-├── frontend/          # React frontend
-├── models/            # ML model configs & cache
-├── storage/           # Uploads & artifacts
-├── docs/              # Documentation
-├── docker/            # Docker configuration
-└── scripts/           # Setup & utility scripts
-```
+`.env.example` documents settings. Local SQLite and no external keys are sufficient for basic startup. Optional Google integrations send image bytes (Vision) or OCR-derived claim text (Fact Check Tools) outside the application when enabled. Review provider terms and obtain consent before use. Uploaded images and generated artifacts persist under `STORAGE_PATH`; no deletion/retention endpoint exists. The unauthenticated API is for trusted local use only.
 
----
+## API and tests
 
-## Documentation
+- Actual endpoints and schemas: [API reference](docs/api_reference.md), generated OpenAPI `/openapi.json`.
+- Backend tests: `python -m pytest backend/tests -q`.
+- Frontend build: from `frontend/`, `npm ci` and `npm run build`.
+- Focused synchronous cross-phase suite: `python -m pytest --noconftest -m "not asyncio" backend/tests/test_phase1.py backend/tests/test_phase2.py backend/tests/test_phase3.py backend/tests/test_stage3.py backend/tests/test_stage4.py backend/tests/test_phase4.py backend/tests/test_phase5.py backend/tests/test_stage5.py backend/tests/test_services.py -q`.
 
-- [Architecture](docs/ARCHITECTURE.md) — System architecture and data flow
-- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Staged development roadmap
-- [Model Registry](docs/MODELS.md) — All ML models with specifications
+The Phase 6 full backend suite passed 188 tests with 10 opt-in model tests skipped. This is software verification, not model evaluation. See the [Phase 6 implementation report](docs/phase6_implementation_report.md).
 
----
+## Dataset, evaluation and research limits
 
-## API Endpoints
+The repository has no licensed, ground-truthed diverse image corpus for accuracy claims and no observed dissemination/outcome dataset for virality, regional or social-impact prediction. Existing files under `test_data/` lack source/license/ground-truth documentation and are not designated demo samples. Unit tests generate synthetic images for code paths only. Model timing and its limits are in [performance report](docs/phase5_performance_report.md). A publishable research paper requires properly licensed data, a documented protocol, baselines, statistical evaluation, and independent review; this repository does not claim those results.
 
-| Method | Endpoint                              | Description                    |
-| ------ | ------------------------------------- | ------------------------------ |
-| POST   | `/api/v1/analyze`                     | Submit image for analysis      |
-| GET    | `/api/v1/analysis/{id}`               | Get analysis results           |
-| GET    | `/api/v1/analysis/{id}/report`        | Get formatted report           |
-| GET    | `/api/v1/analysis/{id}/heatmap`       | Get heatmap overlay            |
-| POST   | `/api/v1/ocr`                         | Standalone OCR                 |
-| POST   | `/api/v1/fact-check`                  | Standalone fact-checking       |
-| POST   | `/api/v1/provenance`                  | Reverse image search           |
-| GET    | `/api/v1/models`                      | List available models          |
-| GET    | `/api/v1/health`                      | Health check                   |
-| GET    | `/api/v1/health/models`               | Model health status            |
+## Project status and team
 
----
+This is the existing CSE-AI student-team project described in the implementation prompts. Verified team-member names, institution, and paper authorship details were not present in the repository, so the paper draft leaves those fields for verification. Phase 6 prepares research-readiness materials and reproducible evaluation tooling; empirical model validation remains blocked by missing licensed labeled data and independent evaluations.
 
-## ML Models Used
+## Project documentation
 
-| Purpose                   | Model                                           | Parameters |
-| ------------------------- | ----------------------------------------------- | ---------- |
-| Authenticity Detection    | `prithivMLmods/Deepfake-Real-Class-Siglip2`     | ~86M       |
-| Forensic Detection        | `buildborderless/CommunityForensics-DeepfakeDet-ViT` | ~22M  |
-| Context Analysis (VLM)    | `Qwen/Qwen2.5-VL-3B-Instruct`                  | ~3B        |
-| Language Detection        | `papluca/xlm-roberta-base-language-detection`   | ~278M      |
-| Object Detection          | Ultralytics YOLO26s                             | ~9.5M      |
-| OCR                       | EasyOCR                                         | Varies     |
-
-> See [docs/MODELS.md](docs/MODELS.md) for complete model specifications, licenses, and VRAM requirements.
-
----
-
-## Important Disclaimers
-
-1. **Not a truth detector**: TruthLens provides AI-assisted probabilistic assessments. Model predictions can be wrong.
-2. **Concept drift**: AI-generated content detection is an evolving field. Models may become less accurate as generation technology improves.
-3. **Data transparency**: Virality estimation, regional spread, and social impact modules use heuristic methods due to lack of empirical training data. These outputs are clearly labeled as such.
-4. **Research context**: This system is designed for research and educational purposes.
-
----
-
-## License
-
-This project is developed as a final year research project.
-
----
-
-## Acknowledgments
-
-- Hugging Face for model hosting and the Transformers library
-- The CommunityForensics project for large-scale deepfake detection research
-- Alibaba Cloud for the Qwen2.5-VL model family
-- Ultralytics for the YOLO family
-- The open-source AI/ML community
+- [System architecture](docs/system_architecture.md)
+- [API reference](docs/api_reference.md)
+- [Deployment guide](docs/deployment_guide.md)
+- [Security audit](docs/phase5_security_audit.md)
+- [System audit](docs/phase5_system_audit.md)
+- [E2E test report](docs/phase5_e2e_test_report.md)
+- [Performance report](docs/phase5_performance_report.md)
+- [Phase 5 implementation report](docs/phase5_implementation_report.md)
+- [Phase 6 research readiness audit](docs/phase6_research_readiness_audit.md)
+- [Phase 6 final research report](docs/phase6_final_research_report.md)
+- [Phase 6 IEEE paper draft](docs/TruthLens_IEEE_research_paper.md)
+- [Phase 6 viva preparation](docs/phase6_viva_preparation.md)
+- [Phase 6 implementation report](docs/phase6_implementation_report.md)
+- [Phase 6 experiment tooling](experiments/README.md)

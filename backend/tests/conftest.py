@@ -6,6 +6,7 @@ import io
 import os
 import sys
 import asyncio
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -14,7 +15,7 @@ from httpx import AsyncClient, ASGITransport
 
 # Ensure we use SQLite for tests
 os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./test_truthlens.db"
-os.environ["STORAGE_PATH"] = str(Path(__file__).parent.parent.parent / "test_data")
+os.environ["STORAGE_PATH"] = str(Path(tempfile.gettempdir()) / "truthlens-phase1-tests")
 os.environ["APP_DEBUG"] = "true"
 os.environ["APP_ENV"] = "test"
 
@@ -49,12 +50,70 @@ async def setup_db():
             pass  # File may still be locked on Windows; acceptable
 
 
+@pytest.fixture
+def mock_auth_detector(monkeypatch):
+    """Keep API tests deterministic and prevent implicit checkpoint downloads."""
+    from backend.app.services.authenticity.detector import AuthenticityResult
+
+    class MockDetector:
+        is_loaded = False
+
+        def load(self, device="auto"):
+            return None
+
+        def detect(self, image):
+            return AuthenticityResult(
+                label="inconclusive",
+                ai_generated_score=0.5,
+                authentic_score=0.5,
+                confidence=0.5,
+                model_name="mock-detector",
+                model_version="test",
+            )
+
+        def get_device(self):
+            return None
+
+    mock = MockDetector()
+    monkeypatch.setattr(
+        "backend.app.services.authenticity.detector.get_detector", lambda: mock
+    )
+    return mock
+
+
 @pytest_asyncio.fixture
-async def client():
+async def client(mock_auth_detector, mock_optional_analysis_modules):
     """Async HTTP test client."""
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
+    from backend.app.api.v1.endpoints.analyze import wait_for_analysis_tasks
+    await wait_for_analysis_tasks()
+
+
+@pytest.fixture
+def mock_optional_analysis_modules(monkeypatch):
+    """Keep API/background-pipeline tests offline and independent of model caches."""
+    from backend.app.services.ocr.service import OCRResult
+    from backend.app.services.vision.detector import VisionResult
+
+    class MockOCR:
+        is_loaded = False
+        def load(self): self.is_loaded = True
+        def extract(self, image):
+            return OCRResult(status="completed", engine="mock-ocr", language_configuration=["en", "hi"])
+
+    class MockVision:
+        is_loaded = False
+        def load(self, device="auto"): self.is_loaded = True
+        def detect(self, image):
+            return VisionResult(status="completed", model_name="mock-yolov8n", image_width=image.width, image_height=image.height)
+
+    ocr = MockOCR()
+    vision = MockVision()
+    monkeypatch.setattr("backend.app.services.ocr.service.get_ocr_service", lambda **kwargs: ocr)
+    monkeypatch.setattr("backend.app.services.vision.detector.get_object_detector", lambda: vision)
+    return {"ocr": ocr, "vision": vision}
 
 
 def create_test_jpeg(width: int = 100, height: int = 100) -> bytes:

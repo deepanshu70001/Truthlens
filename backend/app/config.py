@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     # ── Storage ──────────────────────────────────────────────────
     STORAGE_PATH: str = str(_project_root() / "data")
     MAX_UPLOAD_SIZE_MB: int = 20
+    MAX_IMAGE_PIXELS: int = 40_000_000
     ALLOWED_MIME_TYPES: str = "image/jpeg,image/png,image/webp,image/gif,image/bmp,image/tiff"
 
     # ── ML / Models ──────────────────────────────────────────────
@@ -46,6 +47,11 @@ class Settings(BaseSettings):
     MODEL_CONFIG_PATH: str = str(_project_root() / "models" / "configs")
     DEVICE: str = "auto"
     HALF_PRECISION: bool = False
+    AUTHENTICITY_MODEL: str = "prithivMLmods/Deepfake-Real-Class-Siglip2"
+    VISION_MODEL: str = "yolov8n.pt"
+    OCR_LANGUAGES: str = "en,hi"
+    AI_GENERATED_THRESHOLD: float = 0.65
+    AUTHENTIC_THRESHOLD: float = 0.35
 
     # ── Hugging Face ─────────────────────────────────────────────
     HF_TOKEN: str = ""
@@ -56,6 +62,12 @@ class Settings(BaseSettings):
     GOOGLE_APPLICATION_CREDENTIALS: str = ""
     FACTCHECK_API_KEY: str = ""
     CLAIMBUSTER_API_KEY: str = ""
+    FACTCHECK_API_TIMEOUT_SECONDS: float = 10.0
+    PROVENANCE_API_TIMEOUT_SECONDS: float = 30.0
+    FACTCHECK_MAX_CLAIMS: int = 5
+    FACTCHECK_MAX_RESULTS_PER_CLAIM: int = 5
+    FACTCHECK_MAX_TOTAL_SECONDS: float = 25.0
+    FACTCHECK_RETRY_ATTEMPTS: int = 0
 
     # ── CORS ─────────────────────────────────────────────────────
     CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
@@ -65,6 +77,13 @@ class Settings(BaseSettings):
 
     # ── Rate Limiting ────────────────────────────────────────────
     RATE_LIMIT_PER_MINUTE: int = 30
+
+    @field_validator("AI_GENERATED_THRESHOLD", "AUTHENTIC_THRESHOLD")
+    @classmethod
+    def validate_detector_threshold(cls, value: float) -> float:
+        if not 0.0 <= value <= 1.0:
+            raise ValueError("Detector decision thresholds must be between 0 and 1.")
+        return value
 
     # ── Helpers ──────────────────────────────────────────────────
 

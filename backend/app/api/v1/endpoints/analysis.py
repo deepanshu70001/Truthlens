@@ -9,12 +9,16 @@ GET /api/v1/analysis/{analysis_id}/heatmap
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import List
+from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.core.exceptions import AnalysisNotFoundError
+from backend.app.config import settings
 from backend.app.db.session import get_db
 from backend.app.models import Analysis
 from backend.app.schemas import (
@@ -25,6 +29,26 @@ from backend.app.schemas import (
 )
 
 router = APIRouter()
+
+
+@router.get(
+    "/analysis/{analysis_id}/image",
+    summary="Retrieve uploaded analysis image",
+    description="Serves the validated original image for this analysis without exposing its storage path.",
+)
+async def get_analysis_image(analysis_id: str, db: AsyncSession = Depends(get_db)):
+    analysis = await db.get(Analysis, analysis_id)
+    if not analysis or not analysis.image_asset:
+        raise HTTPException(status_code=404, detail="Image not found")
+    try:
+        UUID(analysis_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Image not found")
+    asset_path = Path(analysis.image_asset.storage_path).resolve()
+    originals_root = settings.originals_dir.resolve()
+    if not asset_path.is_relative_to(originals_root) or not asset_path.is_file():
+        raise HTTPException(status_code=404, detail="Image is not available")
+    return FileResponse(asset_path, media_type=analysis.image_asset.mime_type, filename=analysis.image_asset.original_filename)
 
 
 def _parse_completed_steps(raw: str | None) -> List[str]:
@@ -52,7 +76,15 @@ async def get_analysis(
         raise AnalysisNotFoundError(analysis_id)
 
     completed_steps = _parse_completed_steps(analysis.completed_steps)
-    total_steps = 18  # Total pipeline steps (will grow with ML integration)
+    total_steps = 20
+    response_status = analysis.status.value if hasattr(analysis.status, 'value') else analysis.status
+    if response_status == "completed" and analysis.report_json:
+        try:
+            stored_report = json.loads(analysis.report_json)
+            if stored_report.get("status") == "partial":
+                response_status = "partial"
+        except (json.JSONDecodeError, TypeError):
+            pass
 
     progress = AnalysisProgress(
         current_step=analysis.current_step,
@@ -73,7 +105,7 @@ async def get_analysis(
 
     return AnalysisOut(
         analysis_id=analysis.id,
-        status=analysis.status.value if hasattr(analysis.status, 'value') else analysis.status,
+        status=response_status,
         progress=progress,
         truth_score=analysis.truth_score,
         truth_confidence=analysis.truth_confidence,
@@ -157,13 +189,44 @@ async def get_analysis_report(
 )
 async def get_analysis_heatmap(
     analysis_id: str,
+    variant: str = "overlay",
     db: AsyncSession = Depends(get_db),
 ):
     analysis = await db.get(Analysis, analysis_id)
     if not analysis:
         raise AnalysisNotFoundError(analysis_id)
 
-    return {
-        "analysis_id": analysis_id,
-        "message": "Heatmap generation will be available in Stage 3.",
-    }
+    if variant not in {"overlay", "raw"}:
+        raise HTTPException(status_code=422, detail="variant must be 'overlay' or 'raw'")
+    # The database lookup confirms the analysis; UUID validation prevents traversal.
+    try:
+        safe_id = str(UUID(analysis_id))
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Heatmap not found")
+    filename = "overlay.png" if variant == "overlay" else "attribution.png"
+    path = (settings.heatmaps_dir / safe_id / filename).resolve()
+    if not path.is_relative_to(settings.heatmaps_dir.resolve()) or not path.is_file():
+        raise HTTPException(status_code=404, detail="Heatmap is not available for this analysis")
+    return FileResponse(path, media_type="image/png", filename=filename)
+
+
+@router.get(
+    "/analysis/{analysis_id}/forensics/ela",
+    summary="Get Error Level Analysis visualization",
+)
+async def get_forensics_ela_artifact(
+    analysis_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    analysis = await db.get(Analysis, analysis_id)
+    if not analysis:
+        raise AnalysisNotFoundError(analysis_id)
+    try:
+        safe_id = str(UUID(analysis_id))
+    except ValueError:
+        raise HTTPException(status_code=404, detail="ELA artifact not found")
+    base = (settings.artifacts_dir / "forensics").resolve()
+    path = (base / f"{safe_id}_ela.png").resolve()
+    if not path.is_relative_to(base) or not path.is_file():
+        raise HTTPException(status_code=404, detail="ELA artifact is not available for this analysis")
+    return FileResponse(path, media_type="image/png", filename="ela.png")

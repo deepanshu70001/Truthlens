@@ -37,6 +37,10 @@ export function getHeatmapUrl(id: string): string {
   return `${API_BASE}/api/v1/analysis/${id}/heatmap`;
 }
 
+export function getAnalysisImageUrl(id: string): string {
+  return `${API_BASE}/api/v1/analysis/${encodeURIComponent(id)}/image`;
+}
+
 export async function getHealth(): Promise<any> {
   const { data } = await api.get('/api/v1/health');
   return data;

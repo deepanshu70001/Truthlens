@@ -87,7 +87,7 @@ def extract_metadata(image_data: bytes) -> MetadataResult:
     exif = img.getexif()
     if not exif:
         result.has_exif = False
-        result.anomalies.append("No EXIF data found (common in AI-generated images)")
+        result.anomalies.append("No EXIF metadata is present; this is common after many image-sharing or editing workflows and is not evidence of authenticity or manipulation.")
         return result
 
     result.has_exif = True

@@ -1,0 +1,19 @@
+# Phase 6 error analysis
+
+No labeled held-out corpus exists, so detector false positives/negatives and factual-verdict errors cannot be enumerated. No errors are hidden or excluded to improve a metric. The following are observed software/readiness issues, each traceable to code review or a controlled scenario.
+
+| Example/issue ID | Observed behavior | Expected behavior | Probable cause | Fixed? | Remaining limitation |
+|---|---|---|---|---|---|
+| FUSION-STATUS-01 | Prior engine allowed a failed/unavailable directional item into weighted evidence | Failed stage contributes no evidence vote | Fusion loop considered direction without stage status | Fixed in Phase 6; regression checks pass | Other future statuses must be explicitly mapped |
+| FUSION-TYPE-02 | A constructed `forensic_evidence` item with direction `authentic` could conflict with the model-only output | Classical heuristic cues stay informational until validated directional evidence is defined | Engine treated forensic type as a directional voter, contrary to the forensics builder and Phase 2 contract | Fixed: only completed/partial `model_evidence` is directional | No labeled evidence-fusion accuracy or added value measured |
+| DATA-DUP-01 | 35 `test_data/originals` files include 31 exact duplicate extra copies; dHash has 33 extra candidate copies | Independent event/source groups and splits | Derived/repeated test assets; no provenance manifest | Documented; not silently removed | Origin/rights/labels unknown; excluded from science |
+| MOD-AUTH-01 | SigLIP softmax produces a class score but no independent TruthLens accuracy result | Report score semantics and evaluate on independent labels | No licensed labeled corpus | Not fixed; metrics correctly withheld | May fail on domain/generator shift or benign edits |
+| MOD-XAI-01 | Grad-CAM artifact generation is conditional and not validated against region annotations | Correct, stable and informative attribution | No actual checkpoint visual QA/masks/participant study in the validated session | Open | Heatmap may be unstable or misleading; is not manipulation proof |
+| MOD-OCR-01 | Runtime OCR dependency/language pack may be unavailable; downstream modules can skip | Accurate supported-language transcription with traceable status | Optional engine not installed in prior runtime; limited configured language set | Status reporting exists | No CER/WER or multilingual performance result |
+| MOD-FACT-01 | Fact-check can be unavailable without credentials or matching provider review | Separate no-review/outage from unsupported/false | External provider coverage and credential dependence | Status distinctions implemented | No human-reviewed query/retrieval benchmark |
+| MOD-SOC-01 | Virality/social outputs are content cues; region scores unavailable | Clearly distinguish cues, outcomes and model predictions | No observational outcome dataset | Documented and gated | No predictive/causal claim is supported |
+| UI-UPLOAD-01 | Phase 5 browser smoke interaction submitted an already-selected image before its origin was understood | Controlled consented test image and deliberate upload | File-picker state and control interaction were not isolated | No further browser upload was attempted; event is documented in Phase 5 report | Result rendering was not visually verified; artifact remains local and excluded |
+
+## Required labeling protocol for future errors
+
+Give each reviewed item a pseudonymous example ID, source/permission record, split/group ID, expected label and adjudication note. Record actual output, expected output, stage statuses and error category without storing personal text or credentials in public artifacts. Review hard cases (compression, crop, generator shift, OCR/mistranslation, claim ambiguity, irrelevant evidence, unavailable services) before aggregate metrics. Exclusions require explicit criteria and counts.

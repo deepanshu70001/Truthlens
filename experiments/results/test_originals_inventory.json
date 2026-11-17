@@ -1,0 +1,35 @@
+{
+  "created_utc": "2026-11-17T08:39:19.946801+00:00",
+  "repository_revision": "6b72a96cb64b291eae44ddb07ca32fcd10e2935a",
+  "worktree": {
+    "dirty": true,
+    "status_sha256": "a9ca982e576ef4f261bf124bc5be28110d0adefbc6fbf693a0ad631068944568",
+    "worktree_content_sha256": "855b8b4cccbf1a619cff790c3e549ac257c6b1e86ee70c881d67a0eafd59d653"
+  },
+  "root_label": "originals",
+  "python": "3.11.9",
+  "files_found": 35,
+  "valid_images": 35,
+  "invalid_or_unreadable": 0,
+  "formats": {
+    "JPEG": 31,
+    "PNG": 4
+  },
+  "dimension_counts": {
+    "100x100": 28,
+    "320x240": 4,
+    "640x480": 3
+  },
+  "bytes": {
+    "total": 347624,
+    "min": 288,
+    "max": 106452
+  },
+  "exact_duplicate_extra_copies": 31,
+  "dhash_exact_candidate_extra_copies": 33,
+  "dhash_hamming_le_2_candidate_pairs": 496,
+  "duplicate_caveat": "dHash equality is only a candidate signal; it does not establish semantic near-duplicates. Filenames, image content, labels, source, license, and train/test independence are not inferred.",
+  "labels_available": false,
+  "license_reviewed": false,
+  "research_ready": false
+}

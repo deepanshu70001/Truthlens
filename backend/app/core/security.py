@@ -128,6 +128,18 @@ def validate_image_file(
             f"Accepted types: {', '.join(settings.allowed_mime_list)}"
         )
 
+    expected_extensions = {
+        "image/jpeg": {".jpg", ".jpeg"},
+        "image/png": {".png"},
+        "image/webp": {".webp"},
+        "image/gif": {".gif"},
+        "image/bmp": {".bmp"},
+        "image/tiff": {".tif", ".tiff"},
+    }
+    supplied_extension = Path(sanitize_filename(filename)).suffix.lower()
+    if supplied_extension and supplied_extension not in expected_extensions.get(detected_mime, set()):
+        raise ValueError("Filename extension does not match the uploaded image content.")
+
     # 4. Magic-byte validation
     if not validate_magic_bytes(data[:16], detected_mime):
         raise ValueError("File header does not match its type. Possible corruption.")
@@ -137,6 +149,12 @@ def validate_image_file(
 
     try:
         img = Image.open(BytesIO(data))
+    except Exception:
+        raise ValueError("File could not be decoded as a valid image.")
+    width, height = img.size
+    if width <= 0 or height <= 0 or width * height > settings.MAX_IMAGE_PIXELS:
+        raise ValueError("Image dimensions exceed the configured safety limit.")
+    try:
         img.verify()
     except Exception:
         raise ValueError("File could not be decoded as a valid image.")

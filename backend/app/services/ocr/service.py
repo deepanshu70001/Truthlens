@@ -1,18 +1,13 @@
-"""
-TruthLens — OCR service using EasyOCR.
-
-Supports English and Hindi/Devanagari. Language list is extensible.
-Returns raw text, normalized text, language, bounding boxes, and confidence.
-"""
-
+"""Lazy OCR with EasyOCR primary and optional, opportunistic Tesseract fallback."""
 from __future__ import annotations
 
-import io
 import re
+import shutil
+import threading
 import time
 import unicodedata
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 from PIL import Image
@@ -20,237 +15,205 @@ from PIL import Image
 from backend.app.core.logging import get_logger
 
 log = get_logger("ocr")
-
-# Languages supported — add more Indian languages by appending to this list
 DEFAULT_LANGUAGES = ["en", "hi"]
-
-# EasyOCR language codes for Indian languages (for future expansion)
-INDIAN_LANGUAGES = {
-    "hi": "Hindi (Devanagari)",
-    "mr": "Marathi",
-    "ne": "Nepali",
-    "ta": "Tamil",
-    "te": "Telugu",
-    "kn": "Kannada",
-    "gu": "Gujarati",
-    "pa": "Punjabi (Gurmukhi)",
-    "bn": "Bengali",
-    "as": "Assamese",
-}
+INDIAN_LANGUAGES = {"en": "English", "hi": "Hindi (Devanagari)"}
 
 
 @dataclass
 class OCRBlock:
-    """A single detected text block."""
     text: str
-    confidence: float
-    bbox: List[List[int]]  # [[x1,y1], [x2,y2], [x3,y3], [x4,y4]]
+    confidence: Optional[float]
+    bbox: List[List[int]]
 
 
 @dataclass
 class OCRResult:
-    """Complete OCR extraction result."""
     text: str = ""
     normalized_text: str = ""
     language: str = "unknown"
     blocks: List[OCRBlock] = field(default_factory=list)
-    total_confidence: float = 0.0
+    total_confidence: Optional[float] = None
     word_count: int = 0
     runtime_ms: int = 0
     has_text: bool = False
     warnings: List[str] = field(default_factory=list)
+    status: str = "completed"
+    engine: Optional[str] = None
+    language_configuration: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "text": self.text,
-            "normalized_text": self.normalized_text,
-            "language": self.language,
-            "blocks": [
-                {
-                    "text": b.text,
-                    "confidence": round(b.confidence, 4),
-                    "bbox": b.bbox,
-                }
-                for b in self.blocks
-            ],
-            "total_confidence": round(self.total_confidence, 4),
-            "word_count": self.word_count,
-            "runtime_ms": self.runtime_ms,
-            "has_text": self.has_text,
-            "warnings": self.warnings,
+            "status": self.status, "engine": self.engine,
+            "language_configuration": self.language_configuration,
+            "text": self.text, "raw_text": self.text,
+            "normalized_text": self.normalized_text, "language": self.language,
+            "blocks": [{"text": b.text, "confidence": round(b.confidence, 4) if b.confidence is not None else None, "bbox": b.bbox} for b in self.blocks],
+            "total_confidence": round(self.total_confidence, 4) if self.total_confidence is not None else None,
+            "word_count": self.word_count, "runtime_ms": self.runtime_ms,
+            "has_text": self.has_text, "detected": self.has_text, "warnings": self.warnings,
         }
 
 
 def _normalize_text(text: str) -> str:
-    """
-    Normalize extracted text:
-    - Unicode NFC normalization
-    - Collapse whitespace
-    - Strip leading/trailing whitespace
-    """
-    text = unicodedata.normalize("NFC", text)
-    text = re.sub(r"\s+", " ", text)
-    return text.strip()
+    """Canonicalize Unicode and whitespace only; preserve punctuation and numbers."""
+    return re.sub(r"\s+", " ", unicodedata.normalize("NFC", text)).strip()
 
 
 def _detect_primary_script(text: str) -> str:
-    """Detect primary script (Latin vs Devanagari etc.) from characters."""
-    script_counts: Dict[str, int] = {}
+    counts: Dict[str, int] = {}
     for char in text:
-        if char.isspace() or char in ".,!?;:-'\"()[]{}":
-            continue
-        cat = unicodedata.category(char)
-        name = unicodedata.name(char, "UNKNOWN")
-        if "DEVANAGARI" in name:
-            script_counts["hi"] = script_counts.get("hi", 0) + 1
-        elif "LATIN" in name or cat.startswith("L") and ord(char) < 0x0250:
-            script_counts["en"] = script_counts.get("en", 0) + 1
-        elif "TAMIL" in name:
-            script_counts["ta"] = script_counts.get("ta", 0) + 1
-        elif "TELUGU" in name:
-            script_counts["te"] = script_counts.get("te", 0) + 1
-        elif "BENGALI" in name:
-            script_counts["bn"] = script_counts.get("bn", 0) + 1
-        elif "GURMUKHI" in name:
-            script_counts["pa"] = script_counts.get("pa", 0) + 1
-        elif "GUJARATI" in name:
-            script_counts["gu"] = script_counts.get("gu", 0) + 1
-        elif "KANNADA" in name:
-            script_counts["kn"] = script_counts.get("kn", 0) + 1
+        name = unicodedata.name(char, "")
+        for marker, code in (("DEVANAGARI", "hi"), ("LATIN", "en"), ("TAMIL", "ta"), ("TELUGU", "te"), ("BENGALI", "bn"), ("GURMUKHI", "pa"), ("GUJARATI", "gu"), ("KANNADA", "kn")):
+            if marker in name:
+                counts[code] = counts.get(code, 0) + 1
+                break
+    return max(counts, key=counts.get) if counts else "unknown"
 
-    if not script_counts:
-        return "unknown"
 
-    return max(script_counts, key=script_counts.get)
+def _tesseract_languages(languages: List[str]) -> str:
+    mapping = {"en": "eng", "hi": "hin", "mr": "mar", "ne": "nep", "ta": "tam", "te": "tel", "kn": "kan", "gu": "guj", "pa": "pan", "bn": "ben"}
+    resolved = [mapping[lang] for lang in languages if lang in mapping]
+    if not resolved:
+        raise ValueError("No configured language has a Tesseract language mapping")
+    return "+".join(resolved)
 
 
 class OCRService:
-    """
-    OCR service using EasyOCR.
-
-    Lazy-loads the EasyOCR reader on first use.
-    Supports English + Hindi by default. More languages can be added.
-    """
-
     def __init__(self, languages: Optional[List[str]] = None, gpu: bool = True):
-        self._languages = languages or DEFAULT_LANGUAGES
+        self._languages = list(DEFAULT_LANGUAGES if languages is None else languages)
         self._gpu = gpu
         self._reader = None
+        self._tesseract = None
+        self._engine: Optional[str] = None
+        self._load_warnings: List[str] = []
+        self._lock = threading.RLock()
 
     @property
     def is_loaded(self) -> bool:
-        return self._reader is not None
+        return self._reader is not None or self._tesseract is not None
 
     def load(self) -> None:
-        """Load EasyOCR reader (downloads models on first use)."""
-        if self._reader is not None:
+        with self._lock:
+            self._load()
+
+    def _load(self) -> None:
+        if self.is_loaded:
             return
+        if not self._languages or any(not isinstance(code, str) or not code.strip() for code in self._languages):
+            self._load_warnings.append("OCR language configuration is invalid.")
+            return
+        try:
+            import easyocr
+            self._reader = easyocr.Reader(self._languages, gpu=self._gpu, verbose=False)
+            self._engine = "EasyOCR"
+            return
+        except Exception as exc:
+            self._load_warnings.append(f"EasyOCR unavailable ({type(exc).__name__}).")
+            log.warning("EasyOCR unavailable (%s)", type(exc).__name__)
+        self._load_tesseract()
 
-        import easyocr
-
-        log.info("Loading EasyOCR with languages: %s (GPU=%s)", self._languages, self._gpu)
-        t0 = time.time()
-
-        self._reader = easyocr.Reader(
-            self._languages,
-            gpu=self._gpu,
-            verbose=False,
-        )
-
-        elapsed = int((time.time() - t0) * 1000)
-        log.info("EasyOCR loaded in %d ms", elapsed)
+    def _load_tesseract(self) -> None:
+        try:
+            import pytesseract
+            if not shutil.which("tesseract") and not getattr(pytesseract.pytesseract, "tesseract_cmd", None):
+                raise RuntimeError("Tesseract executable not found")
+            pytesseract.get_tesseract_version()
+            self._tesseract = pytesseract
+            self._engine = "PyTesseract"
+        except Exception as exc:
+            self._load_warnings.append(f"Tesseract fallback unavailable ({type(exc).__name__}).")
 
     def unload(self) -> None:
-        """Unload reader to free memory."""
-        if self._reader is not None:
-            del self._reader
-            self._reader = None
-            log.info("EasyOCR unloaded")
+        with self._lock:
+            self._reader = self._tesseract = None
+            self._engine = None
+
+    def _run_tesseract(self, image: Image.Image) -> List[OCRBlock]:
+        data = self._tesseract.image_to_data(image.convert("RGB"), lang=_tesseract_languages(self._languages), output_type=self._tesseract.Output.DICT)
+        blocks: List[OCRBlock] = []
+        for i, text in enumerate(data.get("text", [])):
+            text = str(text).strip()
+            if not text:
+                continue
+            try:
+                x, y = int(data["left"][i]), int(data["top"][i])
+                w, h = int(data["width"][i]), int(data["height"][i])
+                conf_raw = float(data["conf"][i])
+                conf = conf_raw / 100 if np.isfinite(conf_raw) and 0 <= conf_raw <= 100 else None
+                if w <= 0 or h <= 0:
+                    continue
+                blocks.append(OCRBlock(text, conf, [[x,y],[x+w,y],[x+w,y+h],[x,y+h]]))
+            except (KeyError, ValueError, TypeError, IndexError):
+                continue
+        return blocks
 
     def extract(self, image: Image.Image) -> OCRResult:
-        """
-        Extract text from a PIL Image using EasyOCR.
+        with self._lock:
+            return self._extract(image)
 
-        Returns OCRResult with blocks, confidence, and detected language.
-        """
-        if self._reader is None:
-            raise RuntimeError("OCR reader not loaded. Call load() first.")
-
-        t0 = time.time()
-        warnings: List[str] = []
-
-        # Convert to numpy array
-        img_array = np.array(image.convert("RGB"))
-
-        # Run EasyOCR
-        try:
-            results = self._reader.readtext(img_array)
-        except Exception as e:
-            log.error("EasyOCR extraction failed: %s", e)
-            return OCRResult(
-                runtime_ms=int((time.time() - t0) * 1000),
-                warnings=[f"OCR extraction failed: {e}"],
-            )
-
-        if not results:
-            return OCRResult(
-                runtime_ms=int((time.time() - t0) * 1000),
-                has_text=False,
-            )
-
-        # Build blocks
+    def _extract(self, image: Image.Image) -> OCRResult:
+        started = time.perf_counter()
+        warnings = list(self._load_warnings)
+        if not self.is_loaded:
+            return OCRResult(status="unavailable", runtime_ms=int((time.perf_counter()-started)*1000), warnings=warnings or ["No OCR engine is available."], language_configuration=self._languages)
         blocks: List[OCRBlock] = []
-        all_text_parts: List[str] = []
-        total_conf = 0.0
+        engine = self._engine
+        try:
+            if self._reader is not None:
+                raw_results = self._reader.readtext(np.asarray(image.convert("RGB")))
+                for item in raw_results or []:
+                    try:
+                        bbox, text, confidence = item
+                        text = str(text).strip()
+                        points = np.asarray(bbox, dtype=float)
+                        conf = float(confidence)
+                        width, height = image.size
+                        if not text or points.shape != (4, 2) or not np.isfinite(points).all() or np.any(points < 0) or np.any(points[:, 0] > width) or np.any(points[:, 1] > height) or not np.isfinite(conf) or not 0 <= conf <= 1:
+                            warnings.append("An invalid EasyOCR block was discarded.")
+                            continue
+                        blocks.append(OCRBlock(text, conf, [[int(x), int(y)] for x,y in points]))
+                    except (TypeError, ValueError, IndexError):
+                        warnings.append("An invalid EasyOCR block was discarded.")
+            else:
+                blocks = self._run_tesseract(image)
+        except Exception as exc:
+            warnings.append(f"{engine} inference failed ({type(exc).__name__}).")
+            if self._reader is not None:
+                self._reader = None
+                self._load_tesseract()
+                if self._tesseract is not None:
+                    engine = self._engine
+                    try:
+                        blocks = self._run_tesseract(image)
+                    except Exception as fallback_exc:
+                        warnings.append(f"Tesseract inference failed ({type(fallback_exc).__name__}).")
+                        blocks = []
+                    else:
+                        warnings.append("OCR output was produced by the Tesseract fallback.")
+                else:
+                    engine = "EasyOCR"
+            if not blocks:
+                return OCRResult(status="failed" if engine else "unavailable", engine=engine, runtime_ms=int((time.perf_counter()-started)*1000), warnings=warnings, language_configuration=self._languages)
 
-        for bbox, text, conf in results:
-            # Convert bbox to list of [x, y] pairs
-            bbox_int = [[int(p[0]), int(p[1])] for p in bbox]
-            blocks.append(OCRBlock(
-                text=text,
-                confidence=float(conf),
-                bbox=bbox_int,
-            ))
-            all_text_parts.append(text)
-            total_conf += float(conf)
-
-        raw_text = " ".join(all_text_parts)
+        raw_text = "\n".join(block.text for block in blocks)
         normalized = _normalize_text(raw_text)
-
-        # Detect language from script
-        detected_lang = _detect_primary_script(raw_text)
-
-        avg_confidence = total_conf / len(blocks) if blocks else 0.0
-
-        runtime_ms = int((time.time() - t0) * 1000)
-
-        result = OCRResult(
-            text=raw_text,
-            normalized_text=normalized,
-            language=detected_lang,
-            blocks=blocks,
-            total_confidence=avg_confidence,
+        confidences = [b.confidence for b in blocks if b.confidence is not None]
+        mean_confidence = float(np.mean(confidences)) if confidences else None
+        return OCRResult(
+            text=raw_text, normalized_text=normalized, language=_detect_primary_script(raw_text),
+            blocks=blocks, total_confidence=mean_confidence,
             word_count=len(normalized.split()) if normalized else 0,
-            runtime_ms=runtime_ms,
-            has_text=bool(normalized),
-            warnings=warnings,
+            runtime_ms=int((time.perf_counter()-started)*1000), has_text=bool(normalized),
+            warnings=warnings, status="partial" if any("discarded" in w for w in warnings) else "completed",
+            engine=engine, language_configuration=self._languages,
         )
 
-        log.info(
-            "OCR: %d blocks, %d words, lang=%s, confidence=%.2f [%d ms]",
-            len(blocks), result.word_count, detected_lang, avg_confidence, runtime_ms,
-        )
 
-        return result
-
-
-# Module-level singleton
 _ocr_service: Optional[OCRService] = None
 
 
-def get_ocr_service(gpu: bool = True) -> OCRService:
-    """Get or create the singleton OCR service."""
+def get_ocr_service(gpu: bool = True, languages: Optional[List[str]] = None) -> OCRService:
     global _ocr_service
-    if _ocr_service is None:
-        _ocr_service = OCRService(gpu=gpu)
+    if _ocr_service is None or _ocr_service._gpu != gpu or (languages is not None and _ocr_service._languages != languages):
+        _ocr_service = OCRService(languages=languages, gpu=gpu)
     return _ocr_service

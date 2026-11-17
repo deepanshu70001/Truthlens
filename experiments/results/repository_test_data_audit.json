@@ -1,0 +1,33 @@
+{
+  "created_utc": "2026-11-17T08:17:17.643620+00:00",
+  "repository_revision": "6b72a96cb64b291eae44ddb07ca32fcd10e2935a",
+  "root_label": "test_data",
+  "python": "3.11.9",
+  "files_found": 190,
+  "valid_images": 190,
+  "invalid_or_unreadable": 0,
+  "formats": {
+    "JPEG": 172,
+    "PNG": 18
+  },
+  "dimension_counts": {
+    "100x100": 144,
+    "1024x1024": 1,
+    "224x168": 7,
+    "256x192": 7,
+    "320x240": 16,
+    "384x288": 3,
+    "640x480": 12
+  },
+  "bytes": {
+    "total": 3878619,
+    "min": 288,
+    "max": 940834
+  },
+  "exact_duplicate_extra_copies": 167,
+  "dhash_exact_candidate_extra_copies": 180,
+  "duplicate_caveat": "dHash equality is only a candidate signal; it does not establish semantic near-duplicates. Filenames, image content, labels, source, license, and train/test independence are not inferred.",
+  "labels_available": false,
+  "license_reviewed": false,
+  "research_ready": false
+}

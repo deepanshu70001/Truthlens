@@ -447,7 +447,8 @@ class TestFusion:
 
         result = fuse_evidence(EvidenceCollection())
         assert result.label == "inconclusive"
-        assert result.confidence == 0.0
+        assert result.confidence is None
+        assert result.overall_score is None
         assert not result.calibrated
 
     def test_strong_authentic(self):

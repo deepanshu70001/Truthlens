@@ -8,6 +8,8 @@ GET /api/v1/health/models
 from __future__ import annotations
 
 import time
+import importlib.util
+from pathlib import Path
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import text
@@ -57,7 +59,7 @@ async def health_check(db: AsyncSession = Depends(get_db)):
         db_status = "disconnected"
 
     return HealthResponse(
-        status="healthy",
+        status="healthy" if db_status == "connected" else "degraded",
         version=settings.APP_VERSION,
         environment=settings.APP_ENV,
         gpu=gpu,
@@ -72,8 +74,34 @@ async def health_check(db: AsyncSession = Depends(get_db)):
     description="Returns loaded/available model status. (Stub — models loaded in Stage 3.)",
 )
 async def model_health():
+    model_root = Path(settings.MODEL_CACHE_DIR)
+    authenticity_cached = (model_root / f"models--{settings.AUTHENTICITY_MODEL.replace('/', '--')}").exists()
+    yolo_path = Path(settings.VISION_MODEL)
+    if not yolo_path.is_absolute():
+        yolo_path = Path.cwd() / yolo_path
+    easyocr_installed = importlib.util.find_spec("easyocr") is not None
+    tesseract_installed = importlib.util.find_spec("pytesseract") is not None
+    ultralytics_installed = importlib.util.find_spec("ultralytics") is not None
+    from backend.app.services.authenticity.detector import get_detector
+    from backend.app.services.vision.detector import get_object_detector
+    from backend.app.services.ocr.service import get_ocr_service
+    auth_loaded = get_detector().is_loaded
+    vision_loaded = get_object_detector().is_loaded
+    ocr_languages = [code.strip() for code in settings.OCR_LANGUAGES.split(",") if code.strip()]
+    ocr_loaded = get_ocr_service(gpu=settings.DEVICE != "cpu", languages=ocr_languages).is_loaded
     return {
-        "status": "no_models_loaded",
-        "message": "ML models will be loaded in Stage 3.",
-        "models": [],
+        "status": "model_readiness_report",
+        "models": [
+            {"name": "authenticity", "model_id": settings.AUTHENTICITY_MODEL,
+             "status": "loaded" if auth_loaded else "cached_not_loaded" if authenticity_cached else "download_required",
+             "dependency_available": importlib.util.find_spec("transformers") is not None,
+             "loaded": auth_loaded},
+            {"name": "object_detection", "model_id": settings.VISION_MODEL,
+             "status": "loaded" if vision_loaded else "available_not_loaded" if ultralytics_installed and yolo_path.exists() else "unavailable_or_download_required",
+             "dependency_available": ultralytics_installed, "checkpoint_present": yolo_path.exists(), "loaded": vision_loaded},
+            {"name": "ocr", "model_id": None,
+             "status": "loaded" if ocr_loaded else "available_not_loaded" if easyocr_installed or tesseract_installed else "dependency_unavailable",
+             "easyocr_available": easyocr_installed, "tesseract_wrapper_available": tesseract_installed,
+             "loaded": ocr_loaded},
+        ],
     }

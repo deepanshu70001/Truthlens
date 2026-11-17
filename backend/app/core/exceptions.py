@@ -70,15 +70,13 @@ def register_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(Exception)
     async def generic_error_handler(request: Request, exc: Exception):
-        from backend.app.config import settings
+        from backend.app.core.logging import get_logger
 
-        detail = "An internal error occurred."
-        if settings.is_debug:
-            detail = f"{type(exc).__name__}: {exc}"
+        get_logger("api.errors").exception("Unhandled API exception")
         return JSONResponse(
             status_code=500,
             content={
-                "detail": detail,
+                "detail": "An internal error occurred.",
                 "error_code": "INTERNAL_ERROR",
             },
         )

@@ -11,6 +11,7 @@ Tests cover:
 """
 
 import io
+import json
 import os
 
 import pytest
@@ -109,6 +110,24 @@ async def test_upload_fake_mime_header(client):
     assert "detail" in data
 
 
+@pytest.mark.asyncio
+async def test_upload_empty_file_is_rejected(client):
+    resp = await client.post(
+        "/api/v1/analyze",
+        files={"image": ("empty.png", io.BytesIO(b""), "image/png")},
+    )
+    assert resp.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_upload_extension_must_match_image_content(client):
+    resp = await client.post(
+        "/api/v1/analyze",
+        files={"image": ("image.txt", io.BytesIO(create_test_jpeg()), "image/jpeg")},
+    )
+    assert resp.status_code == 422
+
+
 # ── Oversized file ───────────────────────────────────────────────
 
 @pytest.mark.asyncio
@@ -145,7 +164,7 @@ async def test_upload_oversized_file(client):
 async def test_analysis_status_lifecycle(client):
     """
     Upload an image, then GET the analysis status.
-    The stub pipeline should transition to completed.
+    The pipeline should expose a valid queued, processing, completed, or partial state.
     """
     jpeg_bytes = create_test_jpeg()
 
@@ -166,10 +185,50 @@ async def test_analysis_status_lifecycle(client):
     assert resp.status_code == 200
     data = resp.json()
     assert data["analysis_id"] == analysis_id
-    assert data["status"] in ("queued", "processing", "completed")
+    assert data["status"] in ("queued", "processing", "completed", "partial")
     assert "progress" in data
     assert "image" in data
     assert data.get("caveat") is not None  # Always present
+
+
+@pytest.mark.asyncio
+async def test_upload_to_partial_report_and_image_retrieval(client):
+    """Exercise the integrated path with optional providers unavailable."""
+    import asyncio
+
+    image_bytes = create_test_jpeg(width=160, height=120)
+    response = await client.post(
+        "/api/v1/analyze",
+        files={"image": ("traceability.jpg", io.BytesIO(image_bytes), "image/jpeg")},
+    )
+    assert response.status_code == 201
+    analysis_id = response.json()["analysis_id"]
+
+    status = None
+    for _ in range(150):
+        await asyncio.sleep(0.1)
+        status_response = await client.get(f"/api/v1/analysis/{analysis_id}")
+        assert status_response.status_code == 200
+        status = status_response.json()
+        if status["status"] in {"completed", "partial", "failed"}:
+            break
+    assert status and status["status"] in {"completed", "partial"}
+
+    report_response = await client.get(f"/api/v1/analysis/{analysis_id}/report")
+    assert report_response.status_code == 200
+    report = report_response.json()
+    assert report["analysis_id"] == analysis_id
+    assert report["stages"]["preprocessing"]["status"] == "completed"
+    assert report["preprocessing"]["original_width"] == 160
+    assert report["preprocessing"]["original_height"] == 120
+    assert len(report["stages"]) == 20
+    assert report["stages"]["preprocessing"]["correlation_id"] == analysis_id
+    assert report["summary"]["spread"]["regional_data_status"] == "DATA_UNAVAILABLE"
+    assert "storage_path" not in json.dumps(report)
+
+    image_response = await client.get(f"/api/v1/analysis/{analysis_id}/image")
+    assert image_response.status_code == 200
+    assert image_response.content == image_bytes
 
 
 @pytest.mark.asyncio
@@ -261,7 +320,7 @@ async def test_database_record_created(client):
     assert data["image"]["file_size_bytes"] > 0
 
 
-# ── Report and heatmap stubs ────────────────────────────────────
+# ── Report and heatmap artifact routes ──────────────────────────
 
 @pytest.mark.asyncio
 async def test_report_stub(client):
@@ -278,8 +337,8 @@ async def test_report_stub(client):
 
 
 @pytest.mark.asyncio
-async def test_heatmap_stub(client):
-    """GET /analysis/{id}/heatmap returns stub message."""
+async def test_heatmap_and_ela_routes_serve_analysis_artifacts(client):
+    """Artifact endpoints serve files associated with the requested analysis."""
     jpeg_bytes = create_test_jpeg()
     resp = await client.post(
         "/api/v1/analyze",
@@ -287,5 +346,31 @@ async def test_heatmap_stub(client):
     )
     analysis_id = resp.json()["analysis_id"]
 
+    # The asynchronous analysis may generate its own ELA artifact. Wait before
+    # replacing the file with a route fixture so the background task cannot
+    # race and overwrite the dimensions being asserted below.
+    from backend.app.api.v1.endpoints.analyze import wait_for_analysis_tasks
+    await wait_for_analysis_tasks()
+
+    from backend.app.config import settings
+    from PIL import Image
+
+    heatmap_dir = settings.heatmaps_dir / analysis_id
+    heatmap_dir.mkdir(parents=True, exist_ok=True)
+    Image.new("RGB", (12, 8), "red").save(heatmap_dir / "overlay.png")
+    Image.new("L", (12, 8), 128).save(heatmap_dir / "attribution.png")
     resp = await client.get(f"/api/v1/analysis/{analysis_id}/heatmap")
     assert resp.status_code == 200
+    assert resp.headers["content-type"].startswith("image/png")
+    assert Image.open(io.BytesIO(resp.content)).size == (12, 8)
+    raw = await client.get(f"/api/v1/analysis/{analysis_id}/heatmap?variant=raw")
+    assert raw.status_code == 200
+    invalid_variant = await client.get(f"/api/v1/analysis/{analysis_id}/heatmap?variant=invalid")
+    assert invalid_variant.status_code == 422
+
+    ela_dir = settings.artifacts_dir / "forensics"
+    ela_dir.mkdir(parents=True, exist_ok=True)
+    Image.new("L", (12, 8), 64).save(ela_dir / f"{analysis_id}_ela.png")
+    ela = await client.get(f"/api/v1/analysis/{analysis_id}/forensics/ela")
+    assert ela.status_code == 200
+    assert Image.open(io.BytesIO(ela.content)).size == (12, 8)

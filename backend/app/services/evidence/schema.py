@@ -27,7 +27,9 @@ to the fusion engine, which makes the final determination.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import math
 from typing import Any, Dict, List, Optional
+from uuid import uuid4
 
 
 # Valid evidence types
@@ -68,6 +70,17 @@ class EvidenceItem:
     data: Dict[str, Any] = field(default_factory=dict)
     confidence: Optional[float] = None  # Model confidence if available
     calibrated: bool = False  # Whether the confidence is calibrated
+    evidence_id: str = field(default_factory=lambda: str(uuid4()))
+    analysis_id: Optional[str] = None
+    stage_name: Optional[str] = None
+    status: str = "completed"
+    provenance: Optional[str] = None
+
+    def __post_init__(self) -> None:
+        if self.stage_name is None:
+            self.stage_name = self.type.removesuffix("_evidence")
+        if self.provenance is None:
+            self.provenance = self.source
 
     def to_dict(self) -> Dict[str, Any]:
         result = {
@@ -77,6 +90,11 @@ class EvidenceItem:
             "direction": self.direction,
             "description": self.description,
             "data": self.data,
+            "evidence_id": self.evidence_id,
+            "analysis_id": self.analysis_id,
+            "stage_name": self.stage_name,
+            "status": self.status,
+            "provenance": self.provenance,
         }
         if self.confidence is not None:
             result["confidence"] = round(self.confidence, 4)
@@ -96,9 +114,19 @@ class EvidenceCollection:
     Organized by category for easy access.
     """
     items: List[EvidenceItem] = field(default_factory=list)
+    analysis_id: Optional[str] = None
 
     def add(self, item: EvidenceItem) -> None:
         """Add an evidence item to the collection."""
+        if item.analysis_id is None:
+            item.analysis_id = self.analysis_id
+        if any(
+            existing.evidence_id == item.evidence_id
+            or (existing.type, existing.source, existing.direction, existing.description)
+            == (item.type, item.source, item.direction, item.description)
+            for existing in self.items
+        ):
+            return
         self.items.append(item)
 
     def get_by_type(self, evidence_type: str) -> List[EvidenceItem]:
@@ -187,23 +215,14 @@ def build_evidence_from_forensics(forensics_result) -> List[EvidenceItem]:
     items = []
 
     for signal in forensics_result.signals:
-        if signal.score >= 0.6:
-            strength = "medium"
-            direction = "manipulated"
-        elif signal.score >= 0.3:
-            strength = "low"
-            direction = "neutral"
-        else:
-            strength = "low"
-            direction = "authentic"
-
         items.append(EvidenceItem(
             type="forensic_evidence",
             source=f"forensics.{signal.name}",
-            strength=strength,
-            direction=direction,
+            strength="low",
+            direction="informational",
             description=signal.interpretation,
-            data=signal.details,
+            data={"status": signal.status, "indicator_score": signal.score, "score_type": "heuristic_not_probability", **signal.details},
+            status=signal.status,
         ))
 
     return items
@@ -216,28 +235,41 @@ def build_evidence_from_ocr(ocr_result, text_result=None) -> List[EvidenceItem]:
 
     items = []
 
+    if getattr(ocr_result, "status", "completed") in {"failed", "unavailable", "skipped"}:
+        items.append(EvidenceItem(
+            type="ocr_evidence", source=ocr_result.engine or "ocr",
+            strength="low", direction="informational",
+            description=f"OCR status: {ocr_result.status}.",
+            data={"status": ocr_result.status, "engine": ocr_result.engine, "warnings": ocr_result.warnings},
+            status=ocr_result.status,
+        ))
+        return items
+
     if ocr_result.has_text:
         items.append(EvidenceItem(
             type="ocr_evidence",
-            source="easyocr",
+            source=ocr_result.engine or "ocr",
             strength="medium" if ocr_result.word_count >= 5 else "low",
             direction="informational",
             description=(
                 f"OCR extracted {ocr_result.word_count} words "
-                f"({ocr_result.language} detected) with "
-                f"{ocr_result.total_confidence:.1%} average confidence."
+                f"({ocr_result.language} script estimate)" + (
+                    f" with {ocr_result.total_confidence:.1%} average engine confidence."
+                    if ocr_result.total_confidence is not None else "."
+                )
             ),
             data={
                 "word_count": ocr_result.word_count,
                 "language": ocr_result.language,
                 "confidence": ocr_result.total_confidence,
+                "engine": ocr_result.engine,
                 "text_preview": ocr_result.normalized_text[:200] if ocr_result.normalized_text else "",
             },
         ))
     else:
         items.append(EvidenceItem(
             type="ocr_evidence",
-            source="easyocr",
+            source=ocr_result.engine or "ocr",
             strength="low",
             direction="informational",
             description="No text detected in the image.",
@@ -261,8 +293,7 @@ def build_evidence_from_metadata(metadata_result) -> List[EvidenceItem]:
             strength="low",
             direction="neutral",
             description=(
-                "No EXIF metadata found. This is common in AI-generated images "
-                "and images shared through social media, but is not conclusive."
+                "No EXIF metadata was found. Metadata can be removed by sharing or editing workflows; its absence does not establish authenticity or manipulation."
             ),
             data={"has_exif": False},
         ))
@@ -286,7 +317,7 @@ def build_evidence_from_metadata(metadata_result) -> List[EvidenceItem]:
                 type="metadata_evidence",
                 source="exif_extractor",
                 strength="low",
-                direction="authentic",
+                    direction="neutral",
                 description=(
                     f"EXIF metadata present with camera "
                     f"{metadata_result.camera_model or 'unknown'}. "
@@ -325,7 +356,7 @@ def build_evidence_from_factcheck(factcheck_result) -> List[EvidenceItem]:
             source="google_factcheck_api",
             strength="low",
             direction="informational",
-            description=f"Fact-check API failed: {factcheck_result.error}",
+            description="Fact-check API request failed. See module status for details.",
             data={"status": "failed", "error": factcheck_result.error},
         ))
     elif factcheck_result.status == "no_results":
@@ -337,14 +368,14 @@ def build_evidence_from_factcheck(factcheck_result) -> List[EvidenceItem]:
             description="No matching fact-checks found for extracted claims.",
             data={"status": "no_results", "queries": factcheck_result.queries_performed},
         ))
-    elif factcheck_result.status == "success":
+    elif factcheck_result.status in {"success", "partial"}:
         for claim in factcheck_result.claims:
             rating_lower = claim.textual_rating.lower()
             if any(w in rating_lower for w in ["false", "fake", "incorrect", "misleading", "pants on fire"]):
-                direction = "manipulated"
+                direction = "informational"
                 strength = "high"
             elif any(w in rating_lower for w in ["true", "correct", "accurate"]):
-                direction = "authentic"
+                direction = "informational"
                 strength = "high"
             else:
                 direction = "neutral"
@@ -360,6 +391,7 @@ def build_evidence_from_factcheck(factcheck_result) -> List[EvidenceItem]:
                     f"'{claim.claimed_text[:100]}' rated '{claim.textual_rating}'."
                 ),
                 data=claim.to_dict(),
+                evidence_id=claim.evidence_id,
             ))
 
     return items
@@ -387,7 +419,7 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
             source="google_vision_web_detection",
             strength="low",
             direction="informational",
-            description=f"Web detection failed: {provenance_result.error}",
+            description="Web provenance request failed. See module status for details.",
             data={"status": "failed"},
         ))
     elif provenance_result.status == "success":
@@ -404,9 +436,14 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
                     f"image matches across the web."
                 ),
                 data={
+                    "provider": provenance_result.provider,
+                    "retrieved_at": provenance_result.retrieved_at,
                     "exact_matches": exact_count,
                     "partial_matches": partial_count,
                     "pages": len(provenance_result.matching_pages),
+                    "matching_pages": [page.to_dict() for page in provenance_result.matching_pages[:10]],
+                    "matching_images": [image.to_dict() for image in provenance_result.matching_images[:10]],
+                    "content_credentials": provenance_result.content_credentials,
                 },
             ))
 
@@ -420,7 +457,10 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
                     f"Web detection suggests: "
                     f"{', '.join(provenance_result.best_guess_labels)}"
                 ),
-                data={"labels": provenance_result.best_guess_labels},
+                data={"labels": provenance_result.best_guess_labels,
+                      "provider": provenance_result.provider,
+                      "retrieved_at": provenance_result.retrieved_at,
+                      "content_credentials": provenance_result.content_credentials},
             ))
     elif provenance_result.status == "no_results":
         items.append(EvidenceItem(
@@ -442,7 +482,7 @@ def build_evidence_from_xai(xai_result) -> List[EvidenceItem]:
 
     items = []
 
-    if xai_result.heatmap_path:
+    if xai_result.heatmap_path and xai_result.status == "completed":
         items.append(EvidenceItem(
             type="xai_evidence",
             source="grad_cam",
@@ -459,6 +499,9 @@ def build_evidence_from_xai(xai_result) -> List[EvidenceItem]:
                 "suspicious_regions": xai_result.suspicious_regions,
                 "heatmap_path": xai_result.heatmap_path,
                 "overlay_path": xai_result.overlay_path,
+                "heatmap_url": xai_result.heatmap_url,
+                "overlay_url": xai_result.overlay_url,
+                "model_name": xai_result.model_name,
             },
         ))
 
@@ -486,6 +529,8 @@ def build_evidence_from_vision(vision_result) -> List[EvidenceItem]:
                 "object_count": vision_result.object_count,
                 "unique_classes": vision_result.unique_classes,
                 "has_people": vision_result.has_people,
+                "objects": [obj.__dict__ for obj in vision_result.objects],
+                "model_name": vision_result.model_name,
             },
         ))
 

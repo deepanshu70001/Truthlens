@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import io
 import time
+import threading
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -27,7 +28,7 @@ from backend.app.utils.device import resolve_device, clear_gpu_memory
 log = get_logger("authenticity")
 
 # ── Model IDs ────────────────────────────────────────────────────
-PRIMARY_MODEL = "prithivMLmods/Deepfake-Real-Class-Siglip2"
+PRIMARY_MODEL = settings.AUTHENTICITY_MODEL
 SECONDARY_MODEL = "buildborderless/CommunityForensics-DeepfakeDet-ViT"
 
 
@@ -36,7 +37,7 @@ class AuthenticityResult:
     """Result from authenticity detection."""
     label: str  # likely_ai_generated | likely_manipulated | likely_authentic | inconclusive
     ai_generated_score: float = 0.0
-    manipulation_score: float = 0.0
+    manipulation_score: Optional[float] = None
     authentic_score: float = 0.0
     confidence: float = 0.0
     model_name: str = ""
@@ -49,7 +50,7 @@ class AuthenticityResult:
         return {
             "label": self.label,
             "ai_generated_score": round(self.ai_generated_score, 4),
-            "manipulation_score": round(self.manipulation_score, 4),
+            "manipulation_score": round(self.manipulation_score, 4) if self.manipulation_score is not None else None,
             "authentic_score": round(self.authentic_score, 4),
             "confidence": round(self.confidence, 4),
             "model_name": self.model_name,
@@ -57,6 +58,8 @@ class AuthenticityResult:
             "runtime_ms": self.runtime_ms,
             "warnings": self.warnings,
             "raw_scores": {k: round(v, 4) for k, v in self.raw_scores.items()},
+            "score_semantics": "Uncalibrated model softmax scores; not validated probabilities or accuracy estimates.",
+            "manipulation_score_status": "UNAVAILABLE: this detector does not independently classify editing/manipulation.",
             "caveat": (
                 "This is an AI-assisted probabilistic assessment. "
                 "Model predictions can be wrong and should not be treated as proof."
@@ -93,6 +96,7 @@ class AuthenticityDetector:
         self._device: Optional[torch.device] = None
         self._loaded = False
         self._model_id = PRIMARY_MODEL
+        self._lock = threading.RLock()
 
     @property
     def is_loaded(self) -> bool:
@@ -100,9 +104,12 @@ class AuthenticityDetector:
 
     def load(self, device: str = "auto") -> None:
         """Load model and processor from HuggingFace Hub / local cache."""
-        if self._loaded:
-            return
+        with self._lock:
+            if self._loaded:
+                return
+            self._load_model(device)
 
+    def _load_model(self, device: str) -> None:
         from transformers import AutoImageProcessor, AutoModelForImageClassification
 
         self._device = resolve_device(device)
@@ -112,18 +119,20 @@ class AuthenticityDetector:
 
         cache_dir = settings.MODEL_CACHE_DIR
 
-        self._processor = AutoImageProcessor.from_pretrained(
+        processor = AutoImageProcessor.from_pretrained(
             self._model_id,
             cache_dir=cache_dir,
             token=settings.HF_TOKEN or None,
         )
-        self._model = AutoModelForImageClassification.from_pretrained(
+        model = AutoModelForImageClassification.from_pretrained(
             self._model_id,
             cache_dir=cache_dir,
             token=settings.HF_TOKEN or None,
         )
-        self._model.to(self._device)
-        self._model.eval()
+        model.to(self._device)
+        model.eval()
+        self._processor = processor
+        self._model = model
 
         elapsed = int((time.time() - t0) * 1000)
         log.info("Authenticity model loaded in %d ms", elapsed)
@@ -131,18 +140,23 @@ class AuthenticityDetector:
 
     def unload(self) -> None:
         """Unload model to free memory."""
-        if self._model is not None:
-            del self._model
-            self._model = None
-        if self._processor is not None:
-            del self._processor
-            self._processor = None
-        self._loaded = False
-        clear_gpu_memory()
+        with self._lock:
+            if self._model is not None:
+                del self._model
+                self._model = None
+            if self._processor is not None:
+                del self._processor
+                self._processor = None
+            self._loaded = False
+            clear_gpu_memory()
         log.info("Authenticity model unloaded")
 
     @torch.no_grad()
     def detect(self, image: Image.Image) -> AuthenticityResult:
+        with self._lock:
+            return self._detect(image)
+
+    def _detect(self, image: Image.Image) -> AuthenticityResult:
         """
         Run authenticity detection on a PIL Image.
 
@@ -161,48 +175,48 @@ class AuthenticityDetector:
         # Forward pass
         outputs = self._model(**inputs)
         logits = outputs.logits[0]
-        probs = torch.softmax(logits, dim=0).cpu().numpy()
+        probs = torch.softmax(logits, dim=0).float().cpu().numpy()
+        if probs.ndim != 1 or len(probs) != len(self._model.config.id2label):
+            raise ValueError("Detector returned an unexpected number of class scores.")
+        if not np.isfinite(probs).all():
+            raise ValueError("Detector returned non-finite class scores.")
 
         # Map model labels to our schema
         id2label = self._model.config.id2label
         label_map = {}
         for idx, label_name in id2label.items():
-            label_map[label_name.lower()] = float(probs[int(idx)])
+            label_map[str(label_name).lower()] = float(probs[int(idx)])
 
-        # The SigLIP2 model outputs: {0: "Fake", 1: "Real"} (or similar)
-        fake_score = 0.0
-        real_score = 0.0
+        # Class meaning comes from the loaded checkpoint configuration, not index order.
+        fake_score = None
+        real_score = None
         for label_name, score in label_map.items():
             if "fake" in label_name or "deepfake" in label_name or "ai" in label_name:
-                fake_score = max(fake_score, score)
+                fake_score = max(fake_score or 0.0, score)
             elif "real" in label_name or "authentic" in label_name:
-                real_score = max(real_score, score)
+                real_score = max(real_score or 0.0, score)
 
-        # If neither mapped, use raw position
-        if fake_score == 0.0 and real_score == 0.0:
-            fake_score = float(probs[0])
-            real_score = float(probs[1]) if len(probs) > 1 else 1.0 - fake_score
-            warnings.append(
-                f"Model labels {id2label} did not map to expected Fake/Real. "
-                "Using positional fallback."
-            )
+        if fake_score is None or real_score is None:
+            raise ValueError("Detector class labels do not identify both fake and real classes.")
 
         # Determine label
         confidence = max(fake_score, real_score)
-        if confidence < 0.55:
-            label = "inconclusive"
-            warnings.append("Low confidence — model is not sure about this image.")
-        elif fake_score > real_score:
+        if settings.AI_GENERATED_THRESHOLD <= settings.AUTHENTIC_THRESHOLD:
+            raise ValueError("Detector decision thresholds are misconfigured.")
+        if fake_score >= settings.AI_GENERATED_THRESHOLD - 1e-6:
             label = "likely_ai_generated"
-        else:
+        elif fake_score <= settings.AUTHENTIC_THRESHOLD + 1e-6:
             label = "likely_authentic"
+        else:
+            label = "inconclusive"
+            warnings.append("Fake-class score falls in the configured uncertainty band.")
 
         runtime_ms = int((time.time() - t0) * 1000)
 
         result = AuthenticityResult(
             label=label,
             ai_generated_score=fake_score,
-            manipulation_score=fake_score * 0.5,  # Proxy — no separate manipulation model
+            manipulation_score=None,
             authentic_score=real_score,
             confidence=confidence,
             model_name=self._model_id,

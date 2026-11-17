@@ -56,6 +56,8 @@ async def lifespan(app: FastAPI):
 
     # ── Shutdown ─────────────────────────────────────────────────
     log.info("Shutting down TruthLens")
+    from backend.app.api.v1.endpoints.analyze import wait_for_analysis_tasks
+    await wait_for_analysis_tasks()
     from backend.app.db.session import engine
     await engine.dispose()
 
@@ -81,8 +83,8 @@ def create_app() -> FastAPI:
         CORSMiddleware,
         allow_origins=settings.cors_origin_list,
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST"],
+        allow_headers=["Content-Type"],
     )
 
     # ── Exception handlers ───────────────────────────────────────

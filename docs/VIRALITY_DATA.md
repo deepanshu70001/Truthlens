@@ -3,6 +3,8 @@
 > **Date**: 2026-10-02
 > **Status**: Investigation complete — most modules lack sufficient training data for real-world predictions.
 
+> **Phase 4/5 update (2026-11-17):** This historical investigation is not an inventory of datasets installed in the current checkout. No Census/TRAI tables are bundled or used for region scores; language-region estimates were removed. The current virality implementation has no synthetic `DEMO_MODE` data path. It returns only labeled content indicators, with historical prediction `DATA_UNAVAILABLE`. See [`phase4_dataset_inventory.md`](phase4_dataset_inventory.md), [`regional_spread_methodology.md`](regional_spread_methodology.md), and [`virality_methodology.md`](virality_methodology.md).
+
 ---
 
 ## 1. Purpose

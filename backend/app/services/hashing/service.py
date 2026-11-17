@@ -102,11 +102,12 @@ def compute_hashes(image_data: bytes) -> HashResult:
 
     # Perceptual hashes
     try:
-        img = Image.open(io.BytesIO(image_data))
-        phash = str(imagehash.phash(img))
-        ahash = str(imagehash.average_hash(img))
-        dhash = str(imagehash.dhash(img))
-        whash = str(imagehash.whash(img))
+        with Image.open(io.BytesIO(image_data)) as img:
+            img.load()
+            phash = str(imagehash.phash(img))
+            ahash = str(imagehash.average_hash(img))
+            dhash = str(imagehash.dhash(img))
+            whash = str(imagehash.whash(img))
     except Exception as e:
         log.warning("Perceptual hash computation failed: %s", e)
         phash = ahash = dhash = whash = ""

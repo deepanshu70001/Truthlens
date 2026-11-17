@@ -1,0 +1,31 @@
+{
+  "experiment_id": "auth-test-20261117T083946Z",
+  "created_utc": "2026-11-17T08:39:46.542587+00:00",
+  "revision": "6b72a96cb64b291eae44ddb07ca32fcd10e2935a",
+  "worktree": {
+    "dirty": true,
+    "status_sha256": "a9ca982e576ef4f261bf124bc5be28110d0adefbc6fbf693a0ad631068944568",
+    "worktree_content_sha256": "97e10b2604a4cd6af3086edae13d49d0305e20f34c47e9dc94dbb2d70f65e184"
+  },
+  "split": "test",
+  "random_seed": 1729,
+  "manifest": "experiments\\manifests\\authenticity.example.csv",
+  "model": null,
+  "thresholds": null,
+  "software": {
+    "python": "3.11.9",
+    "torch": "2.14.1+cpu",
+    "pillow": "12.1.1",
+    "device": "cpu"
+  },
+  "n_manifest_rows": 0,
+  "manifest_errors": [],
+  "validation_test_group_overlap": [],
+  "content_split_leakage": {
+    "exact_hashes_crossing_splits": 0,
+    "dhash_candidates_crossing_splits": 0,
+    "dhash_caveat": "candidate-only signal; inspect by group before exclusion"
+  },
+  "status": "NOT_EVALUABLE",
+  "reason": "No eligible labeled rows in requested split; no model inference or accuracy metric was run."
+}

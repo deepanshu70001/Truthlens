@@ -6,7 +6,9 @@ POST /api/v1/analyze
 
 from __future__ import annotations
 
+import asyncio
 import json
+import time
 import uuid
 from pathlib import Path
 
@@ -30,6 +32,26 @@ from backend.app.services.preprocessing.service import preprocess_image
 
 log = get_logger("api.analyze")
 router = APIRouter()
+_analysis_tasks: set[asyncio.Task] = set()
+
+
+async def wait_for_analysis_tasks() -> None:
+    """Wait until all in-process analysis tasks have finished."""
+    while _analysis_tasks:
+        await asyncio.gather(*tuple(_analysis_tasks), return_exceptions=True)
+
+
+def _track_analysis_task(task: asyncio.Task) -> None:
+    _analysis_tasks.add(task)
+
+    def _finished(done_task: asyncio.Task) -> None:
+        _analysis_tasks.discard(done_task)
+        if not done_task.cancelled():
+            error = done_task.exception()
+            if error is not None:
+                log.error("Analysis background task ended unexpectedly (%s)", type(error).__name__)
+
+    task.add_done_callback(_finished)
 
 
 @router.post(
@@ -64,16 +86,21 @@ async def create_analysis(
     """
     # ── 1. Read file data ────────────────────────────────────────
     try:
-        data = await image.read()
-    except Exception as e:
-        raise ImageValidationError(f"Failed to read uploaded file: {e}")
+        data = await image.read(settings.max_upload_bytes + 1)
+    except Exception:
+        log.exception("Failed to read uploaded file")
+        raise ImageValidationError("Failed to read the uploaded file.")
+
+    # Reject oversized input before buffering the remainder into memory.
+    if len(data) > settings.max_upload_bytes:
+        raise ImageValidationError(
+            f"File too large. Maximum size is {settings.MAX_UPLOAD_SIZE_MB} MB."
+        )
 
     # ── 2. Validate ──────────────────────────────────────────────
     try:
-        safe_filename, detected_mime = validate_image_file(
-            data=data,
-            filename=image.filename or "unnamed",
-            content_type=image.content_type,
+        safe_filename, detected_mime = await asyncio.to_thread(
+            validate_image_file, data, image.filename or "unnamed", image.content_type
         )
     except ValueError as e:
         raise ImageValidationError(str(e))
@@ -85,44 +112,47 @@ async def create_analysis(
     # ── 4. Compute hashes ────────────────────────────────────────
     sha256 = compute_sha256(data)
 
-    perceptual_hash_str = None
-    try:
+    def inspect_validated_image():
         import io
-        pil_img = PILImage.open(io.BytesIO(data))
-        phash = imagehash.phash(pil_img)
-        perceptual_hash_str = str(phash)
+        with PILImage.open(io.BytesIO(data)) as pil_img:
+            return pil_img.size, pil_img.format or "UNKNOWN", str(imagehash.phash(pil_img))
+
+    try:
+        (width, height), img_format, perceptual_hash_str = await asyncio.to_thread(inspect_validated_image)
     except Exception as e:
-        log.warning("Perceptual hash computation failed: %s", e)
+        log.warning("Image metadata/hash extraction failed (%s)", type(e).__name__)
+        width, height, img_format, perceptual_hash_str = None, None, "UNKNOWN", None
 
     # ── 5. Save original ─────────────────────────────────────────
     settings.ensure_storage_dirs()
     original_path = settings.originals_dir / storage_filename
 
     try:
-        original_path.write_bytes(data)
-    except Exception as e:
-        raise StorageError(f"Failed to save uploaded file: {e}")
-
-    # ── 6. Get dimensions ────────────────────────────────────────
-    import io
-    try:
-        pil_img = PILImage.open(io.BytesIO(data))
-        width, height = pil_img.size
-        img_format = pil_img.format or "UNKNOWN"
+        await asyncio.to_thread(original_path.write_bytes, data)
     except Exception:
-        width, height, img_format = None, None, "UNKNOWN"
+        log.exception("Failed to store uploaded image for analysis %s", analysis_id)
+        raise StorageError("Failed to store the uploaded image.")
 
     # ── 7. Run preprocessing ─────────────────────────────────────
+    preprocessing_started = time.perf_counter()
+    preprocessing_info = {"status": "failed", "warnings": ["Preprocessing did not complete."]}
     try:
-        prep_result = preprocess_image(
-            image_data=data,
-            analysis_id=analysis_id,
-            thumbnails_dir=settings.thumbnails_dir,
-            processed_dir=settings.processed_dir,
+        prep_result = await asyncio.to_thread(
+            preprocess_image, data, analysis_id, settings.thumbnails_dir, settings.processed_dir
         )
         thumbnail_path = prep_result.thumbnail_path
+        preprocessing_info = {
+            "status": "completed", "runtime_ms": int((time.perf_counter() - preprocessing_started) * 1000),
+            "original_width": prep_result.original_width, "original_height": prep_result.original_height,
+            "format": prep_result.format, "has_exif": prep_result.has_exif,
+            "orientation_corrected": prep_result.orientation_corrected,
+            "quality_stats": prep_result.quality_stats,
+            "thumbnail_available": bool(prep_result.thumbnail_path),
+            "resized_variants": sorted(prep_result.resized_paths.keys()), "warnings": [],
+        }
     except Exception as e:
-        log.warning("Preprocessing failed (non-fatal): %s", e)
+        preprocessing_info["runtime_ms"] = int((time.perf_counter() - preprocessing_started) * 1000)
+        log.warning("Preprocessing failed (non-fatal, %s)", type(e).__name__)
         thumbnail_path = None
 
     # ── 8. Create DB records ─────────────────────────────────────
@@ -154,14 +184,21 @@ async def create_analysis(
         event_type="analysis_created",
         severity="info",
         source="api.analyze",
-        message=f"Analysis created: {safe_filename} ({detected_mime}, {len(data)} bytes)",
+        message=f"Analysis created ({detected_mime}, {len(data)} bytes).",
     )
     db.add(event)
+    db.add(SystemEvent(
+        analysis_id=analysis_id,
+        event_type="preprocessing",
+        severity="info" if preprocessing_info["status"] == "completed" else "warning",
+        source="upload.preprocess",
+        message="Image preprocessing completed." if preprocessing_info["status"] == "completed" else "Image preprocessing failed; remaining analysis will continue.",
+        metadata_json=json.dumps(preprocessing_info),
+    ))
 
     await db.commit()
 
     # ── 9. Kick off background pipeline (stub) ───────────────────
-    import asyncio
     from backend.app.services.orchestrator import run_analysis_pipeline
     from backend.app.db.session import async_session_factory
 
@@ -172,11 +209,11 @@ async def create_analysis(
             except Exception as e:
                 log.error("Background pipeline error: %s", e)
 
-    asyncio.create_task(_run_pipeline())
+    _track_analysis_task(asyncio.create_task(_run_pipeline()))
 
     log.info(
-        "Analysis created: id=%s file=%s mime=%s size=%d sha256=%s",
-        analysis_id, safe_filename, detected_mime, len(data), sha256[:16],
+        "Analysis created: id=%s mime=%s size=%d",
+        analysis_id, detected_mime, len(data),
     )
 
     return AnalysisCreate(analysis_id=analysis_id, status="queued")

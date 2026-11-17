@@ -21,8 +21,10 @@ from __future__ import annotations
 
 import base64
 import time
+from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
+from urllib.parse import urlparse
 
 import httpx
 
@@ -55,12 +57,16 @@ class WebPage:
     url: str = ""
     page_title: str = ""
     match_type: str = ""  # full_match | partial_match
+    publisher: str = ""
+    retrieved_at: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "url": self.url,
             "page_title": self.page_title,
             "match_type": self.match_type,
+            "publisher": self.publisher,
+            "retrieved_at": self.retrieved_at,
         }
 
 
@@ -69,11 +75,13 @@ class SimilarImage:
     """A visually similar image found on the web."""
     url: str = ""
     match_type: str = ""  # exact | similar
+    retrieved_at: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "url": self.url,
             "match_type": self.match_type,
+            "retrieved_at": self.retrieved_at,
         }
 
 
@@ -90,6 +98,12 @@ class ProvenanceResult:
     runtime_ms: int = 0
     error: Optional[str] = None
     warnings: List[str] = field(default_factory=list)
+    provider: str = "google_vision_web_detection"
+    retrieved_at: Optional[str] = None
+    content_credentials: Dict[str, Any] = field(default_factory=lambda: {
+        "status": "unavailable",
+        "reason": "No C2PA/Content Credentials parser is configured; manifest presence and validity were not assessed.",
+    })
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -103,6 +117,9 @@ class ProvenanceResult:
             "runtime_ms": self.runtime_ms,
             "error": self.error,
             "warnings": self.warnings,
+            "provider": self.provider,
+            "retrieved_at": self.retrieved_at,
+            "content_credentials": self.content_credentials,
             "note": (
                 "Provenance results show where this image (or similar images) "
                 "appear online. A match does NOT prove manipulation — it provides "
@@ -151,7 +168,7 @@ def search_provenance(image_data: bytes) -> ProvenanceResult:
     }
 
     try:
-        with httpx.Client(timeout=30.0) as client:
+        with httpx.Client(timeout=settings.PROVENANCE_API_TIMEOUT_SECONDS) as client:
             response = client.post(
                 VISION_API_URL,
                 params={"key": settings.GOOGLE_API_KEY},
@@ -159,31 +176,37 @@ def search_provenance(image_data: bytes) -> ProvenanceResult:
             )
             response.raise_for_status()
             data = response.json()
+            if not isinstance(data, dict):
+                raise ValueError("Malformed Vision API response")
 
     except httpx.HTTPStatusError as e:
-        log.error("Vision API HTTP error: %s", e)
+        log.error("Vision API HTTP error (%s)", e.response.status_code)
         return ProvenanceResult(
             status="failed",
             error=f"Vision API error: HTTP {e.response.status_code}",
             runtime_ms=int((time.time() - t0) * 1000),
         )
     except httpx.RequestError as e:
-        log.error("Vision API request error: %s", e)
+        log.error("Vision API request failed (%s)", type(e).__name__)
         return ProvenanceResult(
             status="failed",
-            error=f"Vision API request failed: {e}",
+            error="Vision API request failed.",
             runtime_ms=int((time.time() - t0) * 1000),
         )
     except Exception as e:
-        log.error("Vision API unexpected error: %s", e)
+        log.error("Vision API unexpected error (%s)", type(e).__name__)
         return ProvenanceResult(
             status="failed",
-            error=f"Unexpected error: {e}",
+            error="Vision API processing failed.",
             runtime_ms=int((time.time() - t0) * 1000),
         )
 
     # Parse response
     responses = data.get("responses", [])
+    if not isinstance(responses, list) or (responses and not isinstance(responses[0], dict)):
+        return ProvenanceResult(status="failed", error="Vision API returned a malformed response.", runtime_ms=int((time.time() - t0) * 1000))
+    if responses and responses[0].get("error"):
+        return ProvenanceResult(status="failed", error="Vision API could not process this image.", runtime_ms=int((time.time() - t0) * 1000))
     if not responses:
         return ProvenanceResult(
             status="no_results",
@@ -191,51 +214,82 @@ def search_provenance(image_data: bytes) -> ProvenanceResult:
         )
 
     web_detection = responses[0].get("webDetection", {})
+    if not isinstance(web_detection, dict):
+        return ProvenanceResult(status="failed", error="Vision API returned malformed web-detection data.", runtime_ms=int((time.time() - t0) * 1000))
+    retrieved_at = datetime.now(timezone.utc).isoformat()
+
+    def external_https(value: Any) -> str:
+        if not isinstance(value, str):
+            return ""
+        parsed = urlparse(value)
+        return value if parsed.scheme == "https" and parsed.hostname and not parsed.username and not parsed.password else ""
 
     # Web entities
     web_entities = []
     for entity in web_detection.get("webEntities", []):
+        if not isinstance(entity, dict):
+            continue
+        try:
+            entity_score = float(entity.get("score", 0.0))
+        except (TypeError, ValueError):
+            entity_score = 0.0
         web_entities.append(WebEntity(
             entity_id=entity.get("entityId", ""),
             description=entity.get("description", ""),
-            score=float(entity.get("score", 0.0)),
+            score=entity_score if 0 <= entity_score <= 1 else 0.0,
         ))
 
     # Full matching images
     matching_images = []
     for match in web_detection.get("fullMatchingImages", []):
+        if not isinstance(match, dict) or not external_https(match.get("url")):
+            continue
         matching_images.append(SimilarImage(
-            url=match.get("url", ""),
+            url=external_https(match.get("url")),
             match_type="exact",
+            retrieved_at=retrieved_at,
         ))
 
     # Partial matching images
     for match in web_detection.get("partialMatchingImages", []):
+        if not isinstance(match, dict) or not external_https(match.get("url")):
+            continue
         matching_images.append(SimilarImage(
-            url=match.get("url", ""),
+            url=external_https(match.get("url")),
             match_type="partial",
+            retrieved_at=retrieved_at,
         ))
 
     # Pages with matching images
     matching_pages = []
     for page in web_detection.get("pagesWithMatchingImages", []):
+        if not isinstance(page, dict) or not external_https(page.get("url")):
+            continue
+        page_url = external_https(page.get("url"))
         matching_pages.append(WebPage(
-            url=page.get("url", ""),
-            page_title=page.get("pageTitle", ""),
+            url=page_url,
+            page_title=str(page.get("pageTitle", ""))[:500],
             match_type="full_match" if page.get("fullMatchingImages") else "partial_match",
+            publisher=urlparse(page_url).hostname or "",
+            retrieved_at=retrieved_at,
         ))
 
     # Visually similar images
     similar_images = []
     for img in web_detection.get("visuallySimilarImages", []):
+        if not isinstance(img, dict) or not external_https(img.get("url")):
+            continue
         similar_images.append(SimilarImage(
-            url=img.get("url", ""),
+            url=external_https(img.get("url")),
             match_type="similar",
+            retrieved_at=retrieved_at,
         ))
 
     # Best guess labels
     best_guess_labels = []
     for label in web_detection.get("bestGuessLabels", []):
+        if not isinstance(label, dict):
+            continue
         lbl = label.get("label", "")
         if lbl:
             best_guess_labels.append(lbl)
@@ -254,6 +308,7 @@ def search_provenance(image_data: bytes) -> ProvenanceResult:
         best_guess_labels=best_guess_labels,
         total_matches=total,
         runtime_ms=runtime_ms,
+        retrieved_at=retrieved_at,
     )
 
     log.info(

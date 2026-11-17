@@ -20,6 +20,7 @@ Output labels:
 from __future__ import annotations
 
 import time
+import math
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -55,8 +56,8 @@ CONFLICT_THRESHOLD = 0.10
 class FusionAssessment:
     """Final assessment from the fusion engine."""
     label: str = "inconclusive"  # likely_authentic | likely_ai_generated | likely_manipulated | inconclusive
-    overall_score: float = 0.5  # 0.0 = definitely synthetic, 1.0 = definitely authentic
-    confidence: float = 0.0
+    overall_score: Optional[float] = None  # 0.0 = synthetic direction, 1.0 = authentic direction
+    confidence: Optional[float] = None
     calibrated: bool = False
     reasoning: List[str] = field(default_factory=list)
     evidence_summary: Dict[str, int] = field(default_factory=dict)
@@ -67,8 +68,8 @@ class FusionAssessment:
     def to_dict(self) -> Dict[str, Any]:
         result = {
             "label": self.label,
-            "overall_score": round(self.overall_score, 4),
-            "confidence": round(self.confidence, 4),
+            "overall_score": round(self.overall_score, 4) if self.overall_score is not None else None,
+            "confidence": round(self.confidence, 4) if self.confidence is not None else None,
             "calibrated": self.calibrated,
             "reasoning": self.reasoning,
             "evidence_summary": self.evidence_summary,
@@ -111,8 +112,8 @@ def fuse_evidence(evidence: EvidenceCollection) -> FusionAssessment:
     if evidence.count == 0:
         return FusionAssessment(
             label="inconclusive",
-            overall_score=0.5,
-            confidence=0.0,
+            overall_score=None,
+            confidence=None,
             reasoning=["No evidence available for assessment."],
             limitations=["No analysis modules produced evidence."],
             runtime_ms=int((time.time() - t0) * 1000),
@@ -133,16 +134,39 @@ def fuse_evidence(evidence: EvidenceCollection) -> FusionAssessment:
         "informational_signals": 0,
     }
 
+    seen = set()
     for item in evidence.items:
-        weight = STRENGTH_WEIGHTS.get(item.strength, 0.1)
+        duplicate_key = (item.type, item.source, item.direction, item.description)
+        if duplicate_key in seen:
+            continue
+        seen.add(duplicate_key)
+        # A failed/absent stage has no observed evidence and must not vote.
+        # Preserve its status in the evidence record for traceability only.
+        if item.status not in {"completed", "partial"}:
+            reasoning.append(f"Ignored {item.status} evidence from {item.source}.")
+            continue
+        if item.strength not in STRENGTH_WEIGHTS or item.direction not in DIRECTION_SCORES:
+            reasoning.append(f"Ignored invalid evidence from {item.source}.")
+            continue
+        if item.confidence is not None and (
+            not math.isfinite(item.confidence) or not 0.0 <= item.confidence <= 1.0
+        ):
+            reasoning.append(f"Ignored evidence with invalid confidence from {item.source}.")
+            continue
 
-        if item.direction == "authentic":
+        # Only the classifier currently contributes a directional authenticity
+        # vote. Classical forensic indicators are heuristic and informational.
+        directional = item.type == "model_evidence"
+        direction = item.direction if directional else "informational"
+        weight = STRENGTH_WEIGHTS[item.strength]
+
+        if direction == "authentic":
             authentic_score += weight
             evidence_summary["authentic_signals"] += 1
-        elif item.direction == "synthetic":
+        elif direction == "synthetic":
             synthetic_score += weight
             evidence_summary["synthetic_signals"] += 1
-        elif item.direction == "manipulated":
+        elif direction == "manipulated":
             manipulated_score += weight
             evidence_summary["manipulated_signals"] += 1
         elif item.direction == "neutral":
@@ -168,22 +192,19 @@ def fuse_evidence(evidence: EvidenceCollection) -> FusionAssessment:
     # Determine label
     if conflicting and abs(authentic_score - negative_score) < DETERMINATION_THRESHOLD:
         label = "inconclusive"
-        overall_score = 0.5
-        confidence = 0.0
+        overall_score = None
+        confidence = None
         reasoning.append(
             "Strong conflicting evidence prevents a reliable determination."
         )
     elif total_weight < 0.1:
         label = "inconclusive"
-        overall_score = 0.5
-        confidence = 0.0
+        overall_score = None
+        confidence = None
         reasoning.append("Insufficient evidence for a determination.")
     elif authentic_score > negative_score + DETERMINATION_THRESHOLD:
         label = "likely_authentic"
-        if total_weight > 0:
-            overall_score = authentic_score / (authentic_score + negative_score) if (authentic_score + negative_score) > 0 else 0.5
-        else:
-            overall_score = 0.5
+        overall_score = authentic_score / (authentic_score + negative_score)
         confidence = min(authentic_score - negative_score, 1.0)
         reasoning.append(
             f"Evidence leans toward authentic "
@@ -191,10 +212,7 @@ def fuse_evidence(evidence: EvidenceCollection) -> FusionAssessment:
         )
     elif synthetic_score > manipulated_score:
         label = "likely_ai_generated"
-        if total_weight > 0:
-            overall_score = 1.0 - (synthetic_score / (authentic_score + negative_score)) if (authentic_score + negative_score) > 0 else 0.5
-        else:
-            overall_score = 0.5
+        overall_score = 1.0 - (synthetic_score / (authentic_score + negative_score))
         confidence = min(negative_score - authentic_score, 1.0)
         reasoning.append(
             f"Evidence suggests AI-generated content "
@@ -202,10 +220,7 @@ def fuse_evidence(evidence: EvidenceCollection) -> FusionAssessment:
         )
     elif manipulated_score > 0:
         label = "likely_manipulated"
-        if total_weight > 0:
-            overall_score = 1.0 - (manipulated_score / (authentic_score + negative_score)) if (authentic_score + negative_score) > 0 else 0.5
-        else:
-            overall_score = 0.5
+        overall_score = 1.0 - (manipulated_score / (authentic_score + negative_score))
         confidence = min(negative_score - authentic_score, 1.0)
         reasoning.append(
             f"Evidence suggests manipulation "
@@ -213,13 +228,15 @@ def fuse_evidence(evidence: EvidenceCollection) -> FusionAssessment:
         )
     else:
         label = "inconclusive"
-        overall_score = 0.5
-        confidence = 0.0
+        overall_score = None
+        confidence = None
         reasoning.append("No clear direction from available evidence.")
 
     # Clamp values
-    overall_score = max(0.0, min(1.0, overall_score))
-    confidence = max(0.0, min(1.0, confidence))
+    if overall_score is not None:
+        overall_score = max(0.0, min(1.0, overall_score))
+    if confidence is not None:
+        confidence = max(0.0, min(1.0, confidence))
 
     # Add limitations
     limitations.append(

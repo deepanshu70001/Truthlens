@@ -8,3 +8,6 @@ httpx>=0.27.0
 
 # Linting
 ruff>=0.4.0
+
+# Phase 6 experiment result figure generation
+matplotlib>=3.8.0
