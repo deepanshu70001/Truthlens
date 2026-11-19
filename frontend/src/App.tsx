@@ -91,33 +91,32 @@ function ProgressTracker({ completed, current, failed }: {
 }
 
 /* ────── AUTHENTICITY SECTION ────── */
-function AuthenticitySection({ data, assessment }: { data: any; assessment: any }) {
-  const label = assessment?.label || 'inconclusive';
-  const labelCfg: Record<string, { color: string; bg: string; text: string }> = {
-    likely_authentic: { color: 'text-green-400', bg: 'bg-green-500/10 border-green-500/30', text: 'Likely Authentic' },
-    likely_ai_generated: { color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/30', text: 'Likely AI-Generated' },
-    likely_manipulated: { color: 'text-orange-400', bg: 'bg-orange-500/10 border-orange-500/30', text: 'Likely Manipulated' },
-    inconclusive: { color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/30', text: 'Inconclusive' },
-  };
-  const cfg = labelCfg[label] || labelCfg.inconclusive;
+function AuthenticitySection({ data }: { data: any }) {
+  const prediction = data?.model_prediction;
+  const label = prediction === 'likely_ai_generated' || prediction === 'likely_authentic'
+    ? prediction
+    : typeof data?.ai_generated_score === 'number' && typeof data?.authentic_score === 'number'
+      ? data.ai_generated_score > data.authentic_score ? 'likely_ai_generated' : 'likely_authentic'
+      : data?.label;
+  const cfg = label === 'likely_ai_generated'
+    ? { color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/30', text: 'AI-Generated' }
+    : label === 'likely_authentic'
+      ? { color: 'text-green-400', bg: 'bg-green-500/10 border-green-500/30', text: 'Real / Authentic' }
+      : null;
   const scores = [
     { name: 'AI-generated raw score', value: data?.ai_generated_score },
-    { name: 'Manipulation score', value: data?.manipulation_score },
-    { name: 'Authentic raw score', value: data?.authentic_score },
+    { name: 'Real / authentic raw score', value: data?.authentic_score },
   ].filter(s => s.value != null);
 
   return (
     <Card title="Authenticity Assessment" icon={Shield}>
-      <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-xl border ${cfg.bg} mb-4`}>
+      {cfg ? <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-xl border ${cfg.bg} mb-4`}>
         <Shield className={`w-6 h-6 ${cfg.color}`} />
         <span className={`text-xl font-bold ${cfg.color}`}>{cfg.text}</span>
-      </div>
-      {assessment?.confidence != null && <p className="text-sm text-text-muted mb-4">Evidence margin (uncalibrated; not a probability): {Number(assessment.confidence).toFixed(2)}</p>}
-      {assessment?.overall_score != null && <p className="text-sm text-text-muted mb-3">Evidence direction score (uncalibrated heuristic): {Number(assessment.overall_score).toFixed(3)}</p>}
-      {assessment?.status && <p className="text-xs text-text-muted mb-2">Fusion status: {assessment.status}</p>}
+      </div> : <p className="text-sm text-text-muted mb-4">Prediction unavailable</p>}
       {scores.length > 0 && (
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          <p className="col-span-3 text-xs text-yellow-400">Raw classifier softmax outputs — uncalibrated scores, not probabilities or accuracy estimates.</p>
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <p className="col-span-2 text-xs text-text-muted">The larger raw score selects the tag; these scores are not calibrated probabilities.</p>
           {scores.map(s => (
             <div key={s.name} className="bg-surface/50 rounded-xl p-4 text-center">
               <p className="text-2xl font-bold text-text">{Number(s.value).toFixed(3)}</p>
@@ -126,17 +125,7 @@ function AuthenticitySection({ data, assessment }: { data: any; assessment: any 
           ))}
         </div>
       )}
-      {data?.calibrated_ai_generated_probability != null && <p className="text-sm text-text-muted mb-3">Validation-calibrated AI-generated probability: {pct(data.calibrated_ai_generated_probability)} · candidate: {data.calibrated_candidate_label || 'inconclusive'} · input-domain check: {data.domain_validation_status || 'not_evaluated'}</p>}
-      <p className="text-xs text-text-muted mb-2">Calibration: {data?.calibration_status || 'not_calibrated'} · target-domain validation: {data?.domain_validation_status || 'not_evaluated'}{data?.empirical_accuracy != null ? ` · measured accuracy: ${pct(data.empirical_accuracy)}` : ''}</p>
       {data?.model_name && <p className="text-xs text-text-muted">Model: {data.model_name}</p>}
-      <div className="mt-4 border-t border-border pt-3 text-sm">
-        <div className="flex items-center gap-2 mb-2"><span className="text-text-muted">Detector</span><StatusBadge status={data?.status || 'unavailable'} /></div>
-        <p className="text-text-muted">Application classification: <span className="text-text">{data?.label || 'Unavailable'}</span></p>
-        <p className="text-text-muted">Raw classifier argmax: <span className="text-text">{data?.model_prediction || 'Unavailable'}</span></p>
-        {data?.decision_band && <p className="text-text-muted">Decision band: <span className="text-text">{data.decision_band}</span></p>}
-        {data?.warnings?.map((warning: string, i: number) => <p key={i} className="text-xs text-warning mt-1">{warning}</p>)}
-      </div>
-      {assessment?.caveat && <p className="mt-3 text-xs text-yellow-400/80 italic">{assessment.caveat}</p>}
     </Card>
   );
 }
@@ -144,9 +133,14 @@ function AuthenticitySection({ data, assessment }: { data: any; assessment: any 
 /* ────── EVIDENCE SECTION ────── */
 function EvidenceSection({ data, explanation }: { data: any; explanation: any }) {
   if (!explanation && !data) return null;
+  const hasModelPrediction = Boolean(data?.items?.some((item: any) => item.type === 'model_evidence'));
+  const visibleSections = (explanation?.sections || []).filter((section: any) => section.title !== 'AI Model Assessment');
+  const visibleItems = (data?.items || []).filter((item: any) => item.type !== 'model_evidence');
   return (
-    <Card title="Why This Assessment?" icon={HelpCircle}>
-      {explanation?.summary && <p className="text-sm text-text-muted mb-4">{explanation.summary}</p>}
+    <Card title="Supporting Evidence" icon={HelpCircle}>
+      {hasModelPrediction
+        ? <p className="text-sm text-text-muted mb-4">The tag above follows the comparison of the AI-generated and authentic raw scores. Other signals below provide context.</p>
+        : explanation?.summary && <p className="text-sm text-text-muted mb-4">{explanation.summary}</p>}
       {explanation?.key_findings?.length > 0 && (
         <div className="space-y-2 mb-4">
           <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">Key Findings</p>
@@ -155,7 +149,7 @@ function EvidenceSection({ data, explanation }: { data: any; explanation: any })
           ))}
         </div>
       )}
-      {explanation?.sections?.map((s: any, i: number) => (
+      {visibleSections.map((s: any, i: number) => (
         <div key={i} className="mb-3">
           <p className="text-sm font-medium text-text mb-1">{s.title}</p>
           <p className="text-xs text-text-muted">{s.content}</p>
@@ -166,10 +160,10 @@ function EvidenceSection({ data, explanation }: { data: any; explanation: any })
           <AlertTriangle className="w-4 h-4" /> Conflicting evidence detected — assessment reliability reduced.
         </div>
       )}
-      {data?.items?.length > 0 ? (
+      {visibleItems.length > 0 ? (
         <div className="mt-4 space-y-2">
           <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">Evidence items</p>
-          {data.items.map((item: any) => (
+          {visibleItems.map((item: any) => (
             <div key={item.evidence_id || `${item.type}-${item.source}-${item.description}`} className="rounded-lg bg-surface/60 p-3">
               <div className="flex flex-wrap items-center gap-2"><span className="text-sm font-medium text-text">{item.type || 'Evidence'}</span><StatusBadge status={item.status || 'completed'} /><span className="text-xs text-text-muted">{item.source}</span></div>
               <p className="text-xs text-text-muted mt-1">{item.description}</p>
@@ -230,18 +224,33 @@ function ImageViewer({ imageUrl, heatmapUrl, objects, xai }: { imageUrl?: string
 
 function ReportSummary({ data }: { data: any }) {
   if (!data) return null;
+  const summary = data.summary || data;
+  const authenticityPrediction = data.authenticity?.model_prediction;
+  const displayValue = (title: string, value: any) => {
+    if (title === 'Authenticity') {
+      const prediction = authenticityPrediction || value?.model_prediction;
+      if (prediction === 'likely_ai_generated') return 'AI-Generated';
+      if (prediction === 'likely_authentic') return 'Real / Authentic';
+      const aiScore = data.authenticity?.ai_generated_score;
+      const authenticScore = data.authenticity?.authentic_score;
+      if (typeof aiScore === 'number' && typeof authenticScore === 'number') {
+        return aiScore > authenticScore ? 'AI-Generated' : 'Real / Authentic';
+      }
+    }
+    return value?.classification || value?.status || value?.assessment_mode || 'Unavailable';
+  };
   const entries = [
-    ['Authenticity', data.authenticity],
-    ['Factual claims', data.factual_claims],
-    ['Provenance', data.provenance],
-    ['Spread', data.spread],
-    ['Potential social impact', data.potential_social_impact],
+    ['Authenticity', summary.authenticity],
+    ['Factual claims', summary.factual_claims],
+    ['Provenance', summary.provenance],
+    ['Spread', summary.spread],
+    ['Potential social impact', summary.potential_social_impact],
   ];
   return <Card title="Analysis Summary" icon={FileText}>
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
       {entries.map(([title, value]: any) => <div key={title} className="rounded-lg bg-surface/60 p-3">
         <p className="text-xs uppercase font-semibold text-text-muted">{title}</p>
-        <p className="text-sm text-text mt-1">{value?.classification || value?.status || value?.assessment_mode || 'Unavailable'}{value?.verdicts?.length ? ` · ${value.verdicts.join(', ')}` : ''}{value?.categories?.length ? ` · ${value.categories.join(', ')}` : ''}</p>
+        <p className="text-sm text-text mt-1">{displayValue(title, value)}{value?.verdicts?.length ? ` · ${value.verdicts.join(', ')}` : ''}{value?.categories?.length ? ` · ${value.categories.join(', ')}` : ''}</p>
         {value?.note && <p className="text-xs text-text-muted mt-1">{value.note}</p>}
       </div>)}
     </div>
@@ -816,7 +825,7 @@ export default function App() {
         {isCompleted && report && (
           <>
             {report.status !== 'completed' && <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning">Analysis status: {report.status}. Review unavailable or failed stages below; this assessment may be incomplete.</div>}
-            <ReportSummary data={report.summary} />
+            <ReportSummary data={report} />
             {/* New analysis button */}
             <div className="flex justify-end">
               <button onClick={() => { setFile(null); setPreview(''); setAnalysisId(''); sessionStorage.removeItem('truthlens.analysisId'); window.history.replaceState({}, '', window.location.pathname); setStatus(null); setReport(null); }} className="px-4 py-2 rounded-lg bg-surface-2 border border-border text-sm text-text-muted hover:text-text transition-colors flex items-center gap-2">
@@ -825,7 +834,7 @@ export default function App() {
             </div>
 
             {/* 1. Authenticity */}
-            <AuthenticitySection data={report.authenticity} assessment={report.fusion || report.assessment} />
+            <AuthenticitySection data={report.authenticity} />
 
             {/* 2. Evidence / Why */}
             <EvidenceSection data={report.evidence} explanation={report.explanation} />

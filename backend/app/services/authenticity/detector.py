@@ -70,7 +70,7 @@ def _resolve_checkpoint_revision(model_id: str, cache_dir: str | Path, config: A
 @dataclass
 class AuthenticityResult:
     """Result from authenticity detection."""
-    label: str  # likely_ai_generated | likely_manipulated | likely_authentic | inconclusive
+    label: str  # likely_ai_generated | likely_authentic
     model_prediction: str = "inconclusive"
     ai_generated_score: float = 0.0
     manipulation_score: Optional[float] = None
@@ -112,6 +112,7 @@ class AuthenticityResult:
             "warnings": self.warnings,
             "raw_scores": {k: round(v, 4) for k, v in self.raw_scores.items()},
             "score_semantics": "ai_generated_score and authentic_score are raw softmax scores, not calibrated probabilities or estimates of real-world accuracy.",
+            "classification_rule": "AI-generated when ai_generated_score is greater than authentic_score; otherwise Real/authentic. This is a raw-score argmax, not a calibrated decision.",
             "probability_semantics": "calibrated_ai_generated_probability is populated only when an independently reviewed, validation-split calibration artifact is configured.",
             "manipulation_score_status": "UNAVAILABLE: this detector does not independently classify editing/manipulation.",
             "caveat": (
@@ -348,16 +349,14 @@ class AuthenticityDetector:
         if fake_score is None or real_score is None or fake_logit is None or real_logit is None:
             raise ValueError("Detector class labels do not identify both fake and real classes.")
 
-        # Never turn raw softmax confidence into a real-world confidence claim.
-        # Without reviewed calibration evidence, expose the raw argmax as a
-        # model prediction and abstain from the application-level label.
+        # The requested application decision is the raw-score argmax. It is a
+        # binary model tag, not a calibrated probability or validated claim.
         raw_max_softmax_score = max(fake_score, real_score)
         model_prediction = (
-            "likely_ai_generated" if fake_logit > real_logit
-            else "likely_authentic" if real_logit > fake_logit
-            else "inconclusive"
+            "likely_ai_generated" if fake_score > real_score
+            else "likely_authentic"
         )
-        label = "inconclusive"
+        label = model_prediction
         calibrated_probability = None
         calibrated_candidate_label = "inconclusive"
         calibration_status = "not_calibrated"
@@ -376,12 +375,12 @@ class AuthenticityDetector:
                     calibrated_candidate_label = "likely_authentic"
                 else:
                     warnings.append("Calibrated score falls in the validation-selected uncertainty band.")
-                warnings.append("Input-domain membership is not assessed; the application classification remains inconclusive.")
+                warnings.append("Input-domain membership is not assessed; the binary raw-score tag is not validated for this image domain.")
             except CalibrationArtifactError as exc:
                 warnings.append(f"Configured calibration was rejected: {exc}")
                 calibration_status = "invalid_artifact"
         if calibration_status == "not_calibrated":
-            warnings.append("No independently reviewed calibration artifact is configured; overall detector classification is inconclusive.")
+            warnings.append("The tag is selected by comparing raw scores; these are not calibrated probabilities or accuracy estimates.")
 
         runtime_ms = int((time.time() - t0) * 1000)
 
