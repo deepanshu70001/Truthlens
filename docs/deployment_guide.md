@@ -7,7 +7,7 @@ TruthLens is currently suitable for a trusted local academic demonstration. It h
 - Python 3.11+ (validated in this checkout with 3.11.9).
 - Node.js 22.12+ recommended for the current Vite 8 toolchain; `npm ci` from `frontend/`.
 - 4+ CPU cores and sufficient RAM for CPU mode. CUDA is optional. The default fine-tuned authenticity backend uses `models/baselines/siglip_frozen_head.pt` plus the `google/siglip-base-patch16-224` vision encoder (downloaded from Hugging Face on first load unless already cached); other model packages/weights may download additional data.
-- OCR requires EasyOCR or a system Tesseract installation with configured language packs. Object detection requires Ultralytics and an available YOLO checkpoint. Optional API keys enable Google integrations.
+- OCR uses EasyOCR with models stored in `OCR_MODEL_DIR` (default `models/ocr`); its first run downloads the configured language models there. Tesseract is an optional fallback and requires both the Python wrapper and system executable/language packs. Object detection requires Ultralytics and an available YOLO checkpoint. Optional API keys enable Google integrations.
 
 ## Local setup (PowerShell)
 

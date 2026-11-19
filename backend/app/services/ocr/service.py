@@ -7,11 +7,13 @@ import threading
 import time
 import unicodedata
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import numpy as np
 from PIL import Image
 
+from backend.app.config import settings
 from backend.app.core.logging import get_logger
 
 log = get_logger("ocr")
@@ -106,12 +108,21 @@ class OCRService:
             return
         try:
             import easyocr
-            self._reader = easyocr.Reader(self._languages, gpu=self._gpu, verbose=False)
+            model_dir = settings.OCR_MODEL_DIR
+            # EasyOCR otherwise writes to the user's home directory, which can
+            # be read-only for the app process or deployment container.
+            Path(model_dir).mkdir(parents=True, exist_ok=True)
+            self._reader = easyocr.Reader(
+                self._languages,
+                gpu=self._gpu,
+                verbose=False,
+                model_storage_directory=model_dir,
+            )
             self._engine = "EasyOCR"
             return
         except Exception as exc:
             self._load_warnings.append(f"EasyOCR unavailable ({type(exc).__name__}).")
-            log.warning("EasyOCR unavailable (%s)", type(exc).__name__)
+            log.warning("EasyOCR unavailable (%s): %s", type(exc).__name__, exc)
         self._load_tesseract()
 
     def _load_tesseract(self) -> None:

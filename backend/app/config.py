@@ -56,6 +56,7 @@ class Settings(BaseSettings):
     AUTHENTICITY_CALIBRATION_PATH: str = ""
     VISION_MODEL: str = "yolov8n.pt"
     OCR_LANGUAGES: str = "en,hi"
+    OCR_MODEL_DIR: str = str(_project_root() / "models" / "ocr")
     AI_GENERATED_THRESHOLD: float = 0.65
     AUTHENTIC_THRESHOLD: float = 0.35
 
