@@ -36,6 +36,7 @@ class OCRResult:
     word_count: int = 0
     runtime_ms: int = 0
     has_text: bool = False
+    no_text_reason: Optional[str] = None
     warnings: List[str] = field(default_factory=list)
     status: str = "completed"
     engine: Optional[str] = None
@@ -45,7 +46,8 @@ class OCRResult:
         return {
             "status": self.status, "engine": self.engine,
             "language_configuration": self.language_configuration,
-            "text": self.text, "raw_text": self.text,
+            "text": self.text or "", "raw_text": self.text or "",
+            "no_text_reason": self.no_text_reason,
             "normalized_text": self.normalized_text, "language": self.language,
             "blocks": [{"text": b.text, "confidence": round(b.confidence, 4) if b.confidence is not None else None, "bbox": b.bbox} for b in self.blocks],
             "total_confidence": round(self.total_confidence, 4) if self.total_confidence is not None else None,
@@ -155,9 +157,11 @@ class OCRService:
         started = time.perf_counter()
         warnings = list(self._load_warnings)
         if not self.is_loaded:
-            return OCRResult(status="unavailable", runtime_ms=int((time.perf_counter()-started)*1000), warnings=warnings or ["No OCR engine is available."], language_configuration=self._languages)
+            reason = "OCR could not run because no configured OCR engine is available."
+            return OCRResult(status="unavailable", runtime_ms=int((time.perf_counter()-started)*1000), warnings=warnings or [reason], no_text_reason=reason, language_configuration=self._languages)
         blocks: List[OCRBlock] = []
         engine = self._engine
+        fallback_succeeded = False
         try:
             if self._reader is not None:
                 raw_results = self._reader.readtext(np.asarray(image.convert("RGB")))
@@ -185,6 +189,7 @@ class OCRService:
                     engine = self._engine
                     try:
                         blocks = self._run_tesseract(image)
+                        fallback_succeeded = True
                     except Exception as fallback_exc:
                         warnings.append(f"Tesseract inference failed ({type(fallback_exc).__name__}).")
                         blocks = []
@@ -193,19 +198,27 @@ class OCRService:
                 else:
                     engine = "EasyOCR"
             if not blocks:
-                return OCRResult(status="failed" if engine else "unavailable", engine=engine, runtime_ms=int((time.perf_counter()-started)*1000), warnings=warnings, language_configuration=self._languages)
+                if fallback_succeeded:
+                    reason = f"{engine} ran for {', '.join(self._languages) or 'the configured languages'} but found no readable text regions. The image may contain no text, or text may be too small, blurry, or low-contrast to recognize."
+                    return OCRResult(status="completed", engine=engine, runtime_ms=int((time.perf_counter()-started)*1000), warnings=warnings, no_text_reason=reason, language_configuration=self._languages)
+                reason = f"OCR could not complete using {engine or 'an available engine'}; check the OCR warnings for details."
+                return OCRResult(status="failed" if engine else "unavailable", engine=engine, runtime_ms=int((time.perf_counter()-started)*1000), warnings=warnings, no_text_reason=reason, language_configuration=self._languages)
 
         raw_text = "\n".join(block.text for block in blocks)
         normalized = _normalize_text(raw_text)
         confidences = [b.confidence for b in blocks if b.confidence is not None]
         mean_confidence = float(np.mean(confidences)) if confidences else None
+        no_text_reason = None if normalized else (
+            f"{engine or 'OCR'} ran for {', '.join(self._languages) or 'the configured languages'} "
+            "but found no readable text regions. The image may contain no text, or text may be too small, blurry, or low-contrast to recognize."
+        )
         return OCRResult(
             text=raw_text, normalized_text=normalized, language=_detect_primary_script(raw_text),
             blocks=blocks, total_confidence=mean_confidence,
             word_count=len(normalized.split()) if normalized else 0,
             runtime_ms=int((time.perf_counter()-started)*1000), has_text=bool(normalized),
             warnings=warnings, status="partial" if any("discarded" in w for w in warnings) else "completed",
-            engine=engine, language_configuration=self._languages,
+            engine=engine, no_text_reason=no_text_reason, language_configuration=self._languages,
         )
 
 

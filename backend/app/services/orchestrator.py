@@ -307,7 +307,7 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
         )
 
         # ── Stage 5: OCR ─────────────────────────────────────────
-        from backend.app.services.ocr.service import get_ocr_service
+        from backend.app.services.ocr.service import OCRResult, get_ocr_service
 
         ocr_languages = [language.strip() for language in settings.OCR_LANGUAGES.split(",") if language.strip()]
         ocr_service = get_ocr_service(gpu=settings.DEVICE != "cpu", languages=ocr_languages)
@@ -323,6 +323,15 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
             analysis, db, stage_results,
             required=False,
         )
+        if ocr_result is None:
+            ocr_stage = stage_results.get("ocr")
+            failure_reason = getattr(ocr_stage, "error", None) or "The OCR stage returned no result."
+            ocr_result = OCRResult(
+                status=getattr(ocr_stage, "status", "failed"),
+                no_text_reason=f"OCR could not complete: {failure_reason}",
+                warnings=[f"OCR stage did not produce text ({failure_reason})."],
+                language_configuration=ocr_languages,
+            )
 
         # ── Stage 6: Vision (Object Detection) ───────────────────
         from backend.app.services.vision.detector import get_object_detector

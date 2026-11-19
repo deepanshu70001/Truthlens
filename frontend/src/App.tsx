@@ -259,11 +259,15 @@ function ReportSummary({ data }: { data: any }) {
 
 /* ────── OCR SECTION ────── */
 function OcrSection({ data }: { data: any }) {
-  if (!data) return null;
+  if (!data) return (
+    <Card title="OCR — Extracted Text" icon={FileText}>
+      <p className="text-sm text-text-muted">OCR result unavailable: this report contains no OCR result.</p>
+    </Card>
+  );
   return (
     <Card title="OCR — Extracted Text" icon={FileText}>
       <div className="flex gap-4 mb-3 text-xs text-text-muted"><span>Status: <span className="text-text">{data.status || 'unknown'}</span></span><span>Engine: <span className="text-text">{data.engine || '—'}</span></span><span>Languages: <span className="text-text">{(data.language_configuration || []).join(', ') || '—'}</span></span></div>
-      {data.status === 'failed' || data.status === 'unavailable' ? <p className="text-sm text-text-muted">OCR unavailable. {data.warnings?.join(' ')}</p> : data.has_text ? (
+      {data.status === 'failed' || data.status === 'unavailable' ? <p className="text-sm text-text-muted">{data.no_text_reason || `OCR unavailable. ${(data.warnings || []).join(' ')}`}</p> : data.has_text ? (
         <>
           <div className="flex gap-4 mb-3">
             <span className="text-xs text-text-muted">Script estimate: <span className="text-text font-medium">{data.language || '—'}</span></span>
@@ -274,7 +278,7 @@ function OcrSection({ data }: { data: any }) {
             {data.text || data.normalized_text || '(empty)'}
           </div>
         </>
-      ) : <p className="text-sm text-text-muted">No readable text detected in the image.</p>}
+      ) : <p className="text-sm text-text-muted">{data.no_text_reason || 'OCR ran but found no readable text regions. The image may contain no text or the text may be too small, blurry, or low-contrast to recognize.'}</p>}
     </Card>
   );
 }
