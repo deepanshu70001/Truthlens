@@ -173,16 +173,22 @@ def build_evidence_from_authenticity(auth_result) -> List[EvidenceItem]:
 
     items = []
 
-    # Primary model prediction
-    if auth_result.confidence >= 0.7:
-        strength = "high"
-    elif auth_result.confidence >= 0.5:
-        strength = "medium"
+    # Raw softmax magnitude is not empirical reliability and cannot determine
+    # evidence strength or cast a directional vote. Direction is permitted only
+    # when a reviewed calibration artifact produced an application-level label.
+    calibrated_probability = getattr(auth_result, "calibrated_ai_generated_probability", None)
+    calibrated = (
+        getattr(auth_result, "calibration_status", "not_calibrated") == "validated_temperature_scaling"
+        and getattr(auth_result, "domain_validation_status", "not_evaluated") == "validated_for_input_domain"
+    )
+    strength = "medium" if calibrated else "low"
+    if calibrated and auth_result.label == "likely_authentic":
+        direction = "authentic"
+    elif calibrated and auth_result.label == "likely_ai_generated":
+        direction = "synthetic"
+    elif calibrated and auth_result.label == "likely_manipulated":
+        direction = "manipulated"
     else:
-        strength = "low"
-
-    direction = "authentic" if auth_result.label == "likely_authentic" else "synthetic"
-    if auth_result.label == "inconclusive":
         direction = "neutral"
 
     items.append(EvidenceItem(
@@ -191,17 +197,25 @@ def build_evidence_from_authenticity(auth_result) -> List[EvidenceItem]:
         strength=strength,
         direction=direction,
         description=(
-            f"Primary authenticity model predicts '{auth_result.label}' "
-            f"with {auth_result.confidence:.1%} confidence."
+            f"Primary classifier raw argmax is '{getattr(auth_result, 'model_prediction', auth_result.label)}'; "
+            f"application classification is '{auth_result.label}'. "
+            "Raw softmax output is not a calibrated probability."
         ),
         data={
             "label": auth_result.label,
+            "model_prediction": getattr(auth_result, "model_prediction", auth_result.label),
             "ai_generated_score": auth_result.ai_generated_score,
             "authentic_score": auth_result.authentic_score,
+            "raw_logits": getattr(auth_result, "raw_logits", {}),
+            "calibration_status": getattr(auth_result, "calibration_status", "not_calibrated"),
+            "calibrated_ai_generated_probability": calibrated_probability,
+            "calibrated_candidate_label": getattr(auth_result, "calibrated_candidate_label", "inconclusive"),
+            "domain_validation_status": getattr(auth_result, "domain_validation_status", "not_evaluated"),
+            "empirical_accuracy": getattr(auth_result, "empirical_accuracy", None),
             "model": auth_result.model_name,
         },
-        confidence=auth_result.confidence,
-        calibrated=False,
+        confidence=calibrated_probability if calibrated else None,
+        calibrated=calibrated,
     ))
 
     return items

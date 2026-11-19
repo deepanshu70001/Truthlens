@@ -416,11 +416,15 @@ class TestEvidenceSchema:
             ai_generated_score = 0.15
             authentic_score = 0.85
             model_name = "test-model"
+            model_prediction = "likely_authentic"
+            calibrated_ai_generated_probability = 0.15
+            calibration_status = "validated_temperature_scaling"
+            domain_validation_status = "validated_for_input_domain"
 
         items = build_evidence_from_authenticity(MockAuth())
         assert len(items) == 1
         assert items[0].direction == "authentic"
-        assert items[0].strength == "high"
+        assert items[0].strength == "medium"
 
     def test_build_evidence_from_none(self):
         from backend.app.services.evidence.schema import (
@@ -458,7 +462,7 @@ class TestFusion:
         col = EvidenceCollection()
         col.add(EvidenceItem(
             type="model_evidence", source="m1", strength="high",
-            direction="authentic", description="Model says authentic",
+            direction="authentic", description="Model says authentic", calibrated=True, confidence=0.9,
         ))
         col.add(EvidenceItem(
             type="metadata_evidence", source="exif", strength="low",
@@ -476,7 +480,7 @@ class TestFusion:
         col = EvidenceCollection()
         col.add(EvidenceItem(
             type="model_evidence", source="m1", strength="high",
-            direction="synthetic", description="Model says AI-generated",
+            direction="synthetic", description="Model says AI-generated", calibrated=True, confidence=0.9,
         ))
 
         result = fuse_evidence(col)
@@ -489,11 +493,11 @@ class TestFusion:
         col = EvidenceCollection()
         col.add(EvidenceItem(
             type="model_evidence", source="m1", strength="high",
-            direction="authentic", description="Model A says authentic",
+            direction="authentic", description="Model A says authentic", calibrated=True, confidence=0.9,
         ))
         col.add(EvidenceItem(
             type="model_evidence", source="m2", strength="high",
-            direction="synthetic", description="Model B says synthetic",
+            direction="synthetic", description="Model B says synthetic", calibrated=True, confidence=0.9,
         ))
 
         result = fuse_evidence(col)

@@ -61,4 +61,5 @@ def test_authenticity_detector_does_not_invent_manipulation_probability():
 
     data = AuthenticityResult(label="inconclusive", ai_generated_score=0.5, authentic_score=0.5).to_dict()
     assert data["manipulation_score"] is None
-    assert "Uncalibrated" in data["score_semantics"]
+    assert "not calibrated" in data["score_semantics"].lower()
+    assert data["confidence"] is None

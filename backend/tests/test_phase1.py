@@ -47,18 +47,15 @@ def make_detector(fake_score):
 
 
 @pytest.mark.parametrize(
-    ("fake_score", "label"),
-    [
-        (0.80, "likely_ai_generated"),
-        (0.65, "likely_ai_generated"),
-        (0.35, "likely_authentic"),
-        (0.10, "likely_authentic"),
-        (0.50, "inconclusive"),
-    ],
+    "fake_score", [0.80, 0.65, 0.35, 0.10, 0.50],
 )
-def test_detector_uses_checkpoint_labels_and_decision_bands(fake_score, label):
+def test_detector_exposes_raw_argmax_but_abstains_without_calibration(fake_score):
     result = make_detector(fake_score).detect(Image.new("RGB", (8, 8)))
-    assert result.label == label
+    assert result.label == "inconclusive"
+    expected_prediction = "likely_ai_generated" if fake_score > 0.5 else "likely_authentic" if fake_score < 0.5 else "inconclusive"
+    assert result.model_prediction == expected_prediction
+    assert result.calibration_status == "not_calibrated"
+    assert result.confidence is None
     assert result.raw_scores == {"real": pytest.approx(1 - fake_score), "fake": pytest.approx(fake_score)}
 
 

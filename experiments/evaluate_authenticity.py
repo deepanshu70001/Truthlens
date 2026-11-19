@@ -177,13 +177,14 @@ def main() -> None:
         from backend.app.services.authenticity.detector import AuthenticityDetector
         detector = AuthenticityDetector(); start = time.perf_counter(); detector.load(settings.DEVICE)
         load_ms = (time.perf_counter() - start) * 1000
-        y, scores, labels, times = [], [], [], []
+        y, scores, model_predictions, labels, times = [], [], [], [], []
         per_class = defaultdict(list)
         for row in rows:
             with Image.open(row["_path"]) as im: image = im.convert("RGB")
             t0 = time.perf_counter(); pred = detector.detect(image); times.append((time.perf_counter() - t0) * 1000)
-            y.append(int(row["label"] == "ai_generated")); scores.append(float(pred.ai_generated_score)); labels.append(pred.label)
-            per_class[row["label"]].append({"label": pred.label, "score": float(pred.ai_generated_score)})
+            y.append(int(row["label"] == "ai_generated")); scores.append(float(pred.ai_generated_score)); model_predictions.append(pred.model_prediction)
+            labels.append("likely_ai_generated" if pred.ai_generated_score >= settings.AI_GENERATED_THRESHOLD else "likely_authentic" if pred.ai_generated_score <= settings.AUTHENTIC_THRESHOLD else "inconclusive")
+            per_class[row["label"]].append({"application_classification": pred.label, "model_prediction": pred.model_prediction, "score": float(pred.ai_generated_score)})
         pred = [int(s >= settings.AI_GENERATED_THRESHOLD) if s >= settings.AI_GENERATED_THRESHOLD or s <= settings.AUTHENTIC_THRESHOLD else -1 for s in scores]
         decided = [i for i, p in enumerate(pred) if p >= 0]
         metrics = binary_metrics([y[i] for i in decided], [pred[i] for i in decided], [scores[i] for i in decided]) if decided else None
@@ -196,7 +197,7 @@ def main() -> None:
         thresholds["single_threshold_0.50_no_abstention"] = {"coverage": 1.0, "uncertain_count": 0, "metrics": binary_metrics(y, p50, scores)}
         majority = int(sum(y) > len(y) / 2)
         majority_pred = [majority] * len(y)
-        result.update({"status": "COMPLETED_DIAGNOSTIC" if args.allow_unreviewed and (manifest_errors or split_overlap or content_leakage["exact_hashes_crossing_splits"]) else "COMPLETED", "model": settings.AUTHENTICITY_MODEL, "thresholds": {"operational_real_max": settings.AUTHENTIC_THRESHOLD, "operational_ai_min": settings.AI_GENERATED_THRESHOLD, "semantics": "uncalibrated detector score; abstention lies between thresholds"}, "load_ms": load_ms, "inference_ms": {"median": statistics.median(times), "mean": statistics.mean(times), "min": min(times), "max": max(times)}, "coverage": len(decided)/len(rows), "uncertain_count": len(rows)-len(decided), "operational_metrics_on_covered_only": metrics, "fixed_threshold_sweep_no_tuning": thresholds, "raw_score_calibration_diagnostics": calibration_diagnostics(y, scores), "majority_class_baseline": {"predicted_class": "ai_generated" if majority else "real", "metrics": binary_metrics(y, majority_pred, [float(majority)]*len(y))}, "per_example_predictions": [{"group_id": r["group_id"], "label": r["label"], "score": s, "prediction": lab} for r,s,lab in zip(rows,scores,labels)], "warning": "Metrics are valid only if labels, source permissions and split independence have been independently reviewed. Score is not a calibrated probability."})
+        result.update({"status": "COMPLETED_DIAGNOSTIC" if args.allow_unreviewed and (manifest_errors or split_overlap or content_leakage["exact_hashes_crossing_splits"]) else "COMPLETED", "model": settings.AUTHENTICITY_MODEL, "model_revision": detector._model_revision, "thresholds": {"operational_real_max": settings.AUTHENTIC_THRESHOLD, "operational_ai_min": settings.AI_GENERATED_THRESHOLD, "semantics": "fixed diagnostic thresholds on uncalibrated raw softmax score; abstention lies between thresholds"}, "load_ms": load_ms, "inference_ms": {"median": statistics.median(times), "mean": statistics.mean(times), "min": min(times), "max": max(times)}, "coverage": len(decided)/len(rows), "uncertain_count": len(rows)-len(decided), "operational_metrics_on_covered_only": metrics, "fixed_threshold_sweep_no_tuning": thresholds, "raw_score_calibration_diagnostics": calibration_diagnostics(y, scores), "majority_class_baseline": {"predicted_class": "ai_generated" if majority else "real", "metrics": binary_metrics(y, majority_pred, [float(majority)]*len(y))}, "per_example_predictions": [{"group_id": r["group_id"], "label": r["label"], "raw_ai_softmax_score": s, "raw_model_argmax": model_label, "application_classification": app_label} for r,s,model_label,app_label in zip(rows,scores,model_predictions,labels)], "warning": "Metrics are valid only if labels, source permissions and split independence have been independently reviewed. Raw score is not a calibrated probability."})
         if args.robustness:
             robustness = {}
             for row, base_score, base_label in zip(rows, scores, labels):
@@ -205,7 +206,8 @@ def main() -> None:
                     result_pred = detector.detect(transformed)
                     item = robustness.setdefault(name, {"score_abs_deltas": [], "label_flips": 0, "n": 0})
                     item["score_abs_deltas"].append(abs(float(result_pred.ai_generated_score) - base_score))
-                    item["label_flips"] += int(result_pred.label != base_label); item["n"] += 1
+                    transformed_label = "likely_ai_generated" if result_pred.ai_generated_score >= settings.AI_GENERATED_THRESHOLD else "likely_authentic" if result_pred.ai_generated_score <= settings.AUTHENTIC_THRESHOLD else "inconclusive"
+                    item["label_flips"] += int(transformed_label != base_label); item["n"] += 1
             for item in robustness.values():
                 item["mean_absolute_score_delta"] = statistics.mean(item.pop("score_abs_deltas"))
                 item["label_flip_rate"] = item["label_flips"] / item["n"]

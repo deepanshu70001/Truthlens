@@ -48,6 +48,8 @@ class Settings(BaseSettings):
     DEVICE: str = "auto"
     HALF_PRECISION: bool = False
     AUTHENTICITY_MODEL: str = "prithivMLmods/Deepfake-Real-Class-Siglip2"
+    AUTHENTICITY_MODEL_REVISION: str = ""
+    AUTHENTICITY_CALIBRATION_PATH: str = ""
     VISION_MODEL: str = "yolov8n.pt"
     OCR_LANGUAGES: str = "en,hi"
     AI_GENERATED_THRESHOLD: float = 0.65

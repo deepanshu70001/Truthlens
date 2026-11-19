@@ -157,6 +157,12 @@ def fuse_evidence(evidence: EvidenceCollection) -> FusionAssessment:
         # Only the classifier currently contributes a directional authenticity
         # vote. Classical forensic indicators are heuristic and informational.
         directional = item.type == "model_evidence"
+        if directional and item.direction in {"authentic", "synthetic", "manipulated"} and not item.calibrated:
+            evidence_summary["neutral_signals"] += 1
+            reasoning.append(
+                f"Ignored directional vote from {item.source}: its model output is uncalibrated."
+            )
+            continue
         direction = item.direction if directional else "informational"
         weight = STRENGTH_WEIGHTS[item.strength]
 
@@ -202,6 +208,13 @@ def fuse_evidence(evidence: EvidenceCollection) -> FusionAssessment:
         overall_score = None
         confidence = None
         reasoning.append("Insufficient evidence for a determination.")
+    elif authentic_score + negative_score == 0:
+        label = "inconclusive"
+        overall_score = None
+        confidence = None
+        reasoning.append(
+            "No calibrated directional evidence is available; informational and raw classifier outputs cannot establish authenticity."
+        )
     elif authentic_score > negative_score + DETERMINATION_THRESHOLD:
         label = "likely_authentic"
         overall_score = authentic_score / (authentic_score + negative_score)

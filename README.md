@@ -7,7 +7,7 @@ TruthLens is an academic research prototype that combines model outputs, image-f
 ## Current capabilities
 
 - Securely validated image upload, hashes, image metadata and preprocessing.
-- SigLIP2 authenticity classifier when its model dependencies and weights are available. Its softmax scores are uncalibrated; editing/manipulation classification is separate and unavailable from this detector.
+- SigLIP2 classifier when its model dependencies and weights are available. Without an independently reviewed, checkpoint-matched calibration artifact, TruthLens shows its raw argmax and softmax scores separately and abstains with an inconclusive application classification. Its scores are not real-world probabilities; editing/manipulation classification is separate and unavailable from this detector.
 - Classical forensic indicators with per-signal limitations; compression artifacts alone do not establish manipulation.
 - OCR through EasyOCR or optional Tesseract, text normalization and heuristic claim eligibility/extraction.
 - Optional Google Fact Check Tools and Google Vision Web Detection integrations.
@@ -89,3 +89,4 @@ This is the existing CSE-AI student-team project described in the implementation
 - [Phase 6 viva preparation](docs/phase6_viva_preparation.md)
 - [Phase 6 implementation report](docs/phase6_implementation_report.md)
 - [Phase 6 experiment tooling](experiments/README.md)
+- [AI-image misclassification review and regression changes](docs/ai_generation_misclassification_review.md)

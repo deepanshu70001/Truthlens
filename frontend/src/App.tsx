@@ -101,9 +101,9 @@ function AuthenticitySection({ data, assessment }: { data: any; assessment: any 
   };
   const cfg = labelCfg[label] || labelCfg.inconclusive;
   const scores = [
-    { name: 'AI-Generated', value: data?.ai_generated_score },
-    { name: 'Manipulation', value: data?.manipulation_score },
-    { name: 'Authentic', value: data?.authentic_score },
+    { name: 'AI-generated raw score', value: data?.ai_generated_score },
+    { name: 'Manipulation score', value: data?.manipulation_score },
+    { name: 'Authentic raw score', value: data?.authentic_score },
   ].filter(s => s.value != null);
 
   return (
@@ -112,27 +112,27 @@ function AuthenticitySection({ data, assessment }: { data: any; assessment: any 
         <Shield className={`w-6 h-6 ${cfg.color}`} />
         <span className={`text-xl font-bold ${cfg.color}`}>{cfg.text}</span>
       </div>
-      {assessment?.confidence != null && (
-        <p className="text-sm text-text-muted mb-4">Confidence: {pct(assessment.confidence)}
-          <span className="ml-2 text-xs text-yellow-400">(uncalibrated)</span>
-        </p>
-      )}
-      {assessment?.overall_score != null && <p className="text-sm text-text-muted mb-3">Fusion score: {pct(assessment.overall_score)} <span className="text-xs">(uncalibrated heuristic)</span></p>}
+      {assessment?.confidence != null && <p className="text-sm text-text-muted mb-4">Evidence margin (uncalibrated; not a probability): {Number(assessment.confidence).toFixed(2)}</p>}
+      {assessment?.overall_score != null && <p className="text-sm text-text-muted mb-3">Evidence direction score (uncalibrated heuristic): {Number(assessment.overall_score).toFixed(3)}</p>}
       {assessment?.status && <p className="text-xs text-text-muted mb-2">Fusion status: {assessment.status}</p>}
       {scores.length > 0 && (
         <div className="grid grid-cols-3 gap-3 mb-4">
+          <p className="col-span-3 text-xs text-yellow-400">Raw classifier softmax outputs — uncalibrated scores, not probabilities or accuracy estimates.</p>
           {scores.map(s => (
             <div key={s.name} className="bg-surface/50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-text">{pct(s.value)}</p>
+              <p className="text-2xl font-bold text-text">{Number(s.value).toFixed(3)}</p>
               <p className="text-xs text-text-muted mt-1">{s.name}</p>
             </div>
           ))}
         </div>
       )}
+      {data?.calibrated_ai_generated_probability != null && <p className="text-sm text-text-muted mb-3">Validation-calibrated AI-generated probability: {pct(data.calibrated_ai_generated_probability)} · candidate: {data.calibrated_candidate_label || 'inconclusive'} · input-domain check: {data.domain_validation_status || 'not_evaluated'}</p>}
+      <p className="text-xs text-text-muted mb-2">Calibration: {data?.calibration_status || 'not_calibrated'} · target-domain validation: {data?.domain_validation_status || 'not_evaluated'}{data?.empirical_accuracy != null ? ` · measured accuracy: ${pct(data.empirical_accuracy)}` : ''}</p>
       {data?.model_name && <p className="text-xs text-text-muted">Model: {data.model_name}</p>}
       <div className="mt-4 border-t border-border pt-3 text-sm">
         <div className="flex items-center gap-2 mb-2"><span className="text-text-muted">Detector</span><StatusBadge status={data?.status || 'unavailable'} /></div>
-        <p className="text-text-muted">Model output: <span className="text-text">{data?.label || 'Unavailable'}</span></p>
+        <p className="text-text-muted">Application classification: <span className="text-text">{data?.label || 'Unavailable'}</span></p>
+        <p className="text-text-muted">Raw classifier argmax: <span className="text-text">{data?.model_prediction || 'Unavailable'}</span></p>
         {data?.decision_band && <p className="text-text-muted">Decision band: <span className="text-text">{data.decision_band}</span></p>}
         {data?.warnings?.map((warning: string, i: number) => <p key={i} className="text-xs text-warning mt-1">{warning}</p>)}
       </div>

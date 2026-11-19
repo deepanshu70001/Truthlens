@@ -175,18 +175,25 @@ def build_report(
             "status": authenticity_status,
             "model_name": settings.AUTHENTICITY_MODEL,
             "label": None,
+            "model_prediction": None,
             "ai_generated_score": None,
             "authentic_score": None,
+            "calibrated_ai_generated_probability": None,
+            "calibration_status": "not_calibrated",
+            "calibration_method": None,
+            "domain_validation_status": "not_evaluated",
+            "empirical_accuracy": None,
+            "score_semantics": "Raw softmax scores are not calibrated probabilities or estimates of real-world accuracy.",
             "warnings": [auth_stage.get("error")] if isinstance(auth_stage, dict) and auth_stage.get("error") else [],
         }
     else:
         authenticity = dict(authenticity)
         authenticity["status"] = authenticity_status
-        fake_score = authenticity.get("ai_generated_score")
+        calibrated_score = authenticity.get("calibrated_ai_generated_probability")
         authenticity["decision_band"] = (
-            "AI_GENERATED" if fake_score is not None and fake_score >= settings.AI_GENERATED_THRESHOLD
-            else "AUTHENTIC" if fake_score is not None and fake_score <= settings.AUTHENTIC_THRESHOLD
-            else "UNCERTAIN" if fake_score is not None
+            "AI_GENERATED" if calibrated_score is not None and authenticity.get("label") == "likely_ai_generated"
+            else "AUTHENTIC" if calibrated_score is not None and authenticity.get("label") == "likely_authentic"
+            else "UNCERTAIN" if calibrated_score is not None
             else None
         )
 
