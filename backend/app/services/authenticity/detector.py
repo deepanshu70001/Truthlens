@@ -11,6 +11,7 @@ The output is a signal, NOT proof of authenticity or fakery.
 from __future__ import annotations
 
 import io
+import re
 import time
 import threading
 from dataclasses import dataclass, field
@@ -35,6 +36,33 @@ log = get_logger("authenticity")
 # ── Model IDs ────────────────────────────────────────────────────
 PRIMARY_MODEL = settings.AUTHENTICITY_MODEL
 SECONDARY_MODEL = "buildborderless/CommunityForensics-DeepfakeDet-ViT"
+
+
+def _resolve_checkpoint_revision(model_id: str, cache_dir: str | Path, config: Any, requested_revision: str = "") -> str:
+    """Resolve the exact cached Hub commit when Transformers omits _commit_hash."""
+    candidates = [getattr(config, "_commit_hash", None), requested_revision]
+    for candidate in candidates:
+        if isinstance(candidate, str) and re.fullmatch(r"[0-9a-f]{40}", candidate):
+            return candidate
+
+    model_cache = Path(cache_dir) / f"models--{model_id.replace('/', '--')}"
+    refs = model_cache / "refs"
+    ref_file = refs / (requested_revision or "main")
+    try:
+        revision = ref_file.read_text(encoding="utf-8").strip()
+    except OSError:
+        revision = ""
+    if re.fullmatch(r"[0-9a-f]{40}", revision) and (model_cache / "snapshots" / revision).is_dir():
+        return revision
+    if requested_revision:
+        return "unknown"
+
+    snapshots = model_cache / "snapshots"
+    if snapshots.is_dir():
+        revisions = [item.name for item in snapshots.iterdir() if item.is_dir() and re.fullmatch(r"[0-9a-f]{40}", item.name)]
+        if len(revisions) == 1:
+            return revisions[0]
+    return "unknown"
 
 
 @dataclass
@@ -160,7 +188,9 @@ class AuthenticityDetector:
         model.eval()
         self._processor = processor
         self._model = model
-        self._model_revision = getattr(model.config, "_commit_hash", None) or settings.AUTHENTICITY_MODEL_REVISION or "unknown"
+        self._model_revision = _resolve_checkpoint_revision(
+            self._model_id, cache_dir, model.config, settings.AUTHENTICITY_MODEL_REVISION
+        )
 
         elapsed = int((time.time() - t0) * 1000)
         log.info("Authenticity model loaded in %d ms", elapsed)

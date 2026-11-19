@@ -173,3 +173,19 @@ def test_detector_preserves_checkpoint_label_mapping_and_explicit_rgb_preprocess
     assert result.calibrated_ai_generated_probability is None
     assert result.confidence is None
     assert result.to_dict()["score_semantics"].startswith("ai_generated_score")
+
+
+def test_checkpoint_revision_resolves_exact_cached_hub_commit():
+    import tempfile
+    from types import SimpleNamespace
+    from pathlib import Path
+    from backend.app.services.authenticity.detector import _resolve_checkpoint_revision
+
+    revision = "a" * 40
+    with tempfile.TemporaryDirectory(dir=Path.cwd()) as temp_root:
+        root = Path(temp_root)
+        model_cache = root / "models--example--detector"
+        (model_cache / "refs").mkdir(parents=True)
+        (model_cache / "snapshots" / revision).mkdir(parents=True)
+        (model_cache / "refs" / "main").write_text(revision, encoding="utf-8")
+        assert _resolve_checkpoint_revision("example/detector", root, SimpleNamespace()) == revision
