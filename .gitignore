@@ -51,6 +51,8 @@ models/cache/
 *.safetensors
 *.bin
 !requirements*.txt
+# This small fine-tuned head is required by the default TruthLens detector.
+!models/baselines/siglip_frozen_head.pt
 *.h5
 *.hdf5
 *.tflite

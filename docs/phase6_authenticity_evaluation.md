@@ -2,7 +2,13 @@
 
 ## Task and implementation
 
-The configured detector, `prithivMLmods/Deepfake-Real-Class-Siglip2`, returns fake/real softmax scores. The service maps labels from checkpoint configuration and applies settings thresholds: AI-generated when fake score ≥ 0.65; likely authentic when ≤ 0.35; otherwise inconclusive. The score is explicitly uncalibrated. Manipulation is not a separate class and `manipulation_score` is null. These are operational code facts, not validated thresholds.
+## Current detector configuration (2026-11-19)
+
+The default detector now pairs the locally supplied `models/baselines/siglip_frozen_head.pt` linear head with the frozen `google/siglip-base-patch16-224` vision encoder. The head checkpoint SHA-256 is `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`. Training used the CIFAKE real/AI dataset, extracted SigLIP `pooler_output` features, and optimized a one-logit BCE head; AI-generated is the positive class. Inference returns raw logits and raw softmax scores, records the head digest and resolved backbone revision, and keeps the application label inconclusive absent an independently reviewed calibration and input-domain validation artifact. Manipulation is not a separate class and `manipulation_score` is null.
+
+The remote `ml/models` branch reports a 200-image CIFAKE test subset result for this model (100 images per class; accuracy 0.87, AI recall 0.83, ROC AUC 0.9613). These branch-reported metrics have not been reproduced from a reviewed manifest in this checkout, do not represent an independently collected benchmark, and do not establish generalization to newer generators or in-the-wild images. The synthetic API smoke run confirms integration only and is not evaluation evidence.
+
+The prior Phase 6 manifest-based evaluation below returned `NOT_EVALUABLE` with 0 eligible examples. It remains the current independent-evaluation conclusion; the detector integration does not change that result.
 
 ## Experiment performed
 

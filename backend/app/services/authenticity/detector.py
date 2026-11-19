@@ -1,8 +1,8 @@
 """
 TruthLens — Authenticity detection service.
 
-Uses SigLIP2-based image classifier (Deepfake-Real-Class-Siglip2)
-as primary detector.
+Uses the fine-tuned TruthLens SigLIP head by default, with the previous
+hosted image classifier available as an explicit alternate backend.
 
 IMPORTANT: This is a probabilistic AI-assisted assessment.
 The output is a signal, NOT proof of authenticity or fakery.
@@ -11,12 +11,14 @@ The output is a signal, NOT proof of authenticity or fakery.
 from __future__ import annotations
 
 import io
+import hashlib
 import re
 import time
 import threading
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from types import SimpleNamespace
 
 import numpy as np
 import torch
@@ -119,27 +121,53 @@ class AuthenticityResult:
         }
 
 
+class FineTunedSiglipClassifier(torch.nn.Module):
+    """Frozen SigLIP vision encoder with TruthLens' trained binary linear head."""
+
+    def __init__(self, vision_model: torch.nn.Module, head: torch.nn.Linear):
+        super().__init__()
+        self.vision_model = vision_model
+        self.head = head
+        self.config = SimpleNamespace(
+            id2label={0: "real", 1: "ai_generated"},
+            _name_or_path="truthlens/siglip-frozen-cifake-head",
+        )
+
+    def forward(self, pixel_values: torch.Tensor, **kwargs: Any):
+        features = self.vision_model(pixel_values=pixel_values, **kwargs).pooler_output
+        ai_logit = self.head(features).squeeze(-1)
+        # Preserve the scalar BCE logit margin while exposing the two-class
+        # interface used by the existing report and Grad-CAM pipeline.
+        logits = torch.stack((-ai_logit / 2, ai_logit / 2), dim=-1)
+        return SimpleNamespace(logits=logits)
+
+
+class FineTunedSiglipProcessor:
+    """Exact Resize/ToTensor/Normalize preprocessing used by the training run."""
+
+    def __init__(self):
+        from torchvision import transforms
+
+        self.transform = transforms.Compose([
+            transforms.Resize(224),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)),
+        ])
+
+    def __call__(self, images: Image.Image, return_tensors: str = "pt"):
+        if return_tensors != "pt":
+            raise ValueError("Fine-tuned SigLIP processor supports PyTorch tensors only.")
+        return {"pixel_values": self.transform(images.convert("RGB")).unsqueeze(0)}
+
+
 class AuthenticityDetector:
     """
-    Authenticity detection using SigLIP2-based binary classifier.
+    Authenticity detection using a fine-tuned SigLIP head or hosted classifier.
 
-    Selected model: prithivMLmods/Deepfake-Real-Class-Siglip2
-    - Architecture: SiglipForImageClassification (SigLIP2-base)
-    - Input: 224x224 RGB
-    - Output: 2-class logits (Fake / Real)
-    - Parameters: ~93M (F32)
-    - VRAM: ~400 MB
-    - License: Apache 2.0
-    - Why selected:
-      * Apache 2.0 license (commercial-friendly)
-      * Standard HF Transformers integration (AutoModelForImageClassification)
-      * Lightweight enough for RTX 3050 4GB
-      * Modern SigLIP2 vision encoder (strong feature extraction)
-    - Limitations:
-      * Binary only (no manipulation-type breakdown)
-      * No published evaluation benchmarks
-      * Concept drift risk with newer generation techniques
-      * TruthLens has NOT independently verified accuracy
+    The default backend uses a frozen google/siglip-base-patch16-224 encoder
+    and the trained one-logit head checkpoint. The previous hosted binary
+    classifier remains available through AUTHENTICITY_BACKEND=huggingface.
     """
 
     def __init__(self):
@@ -149,6 +177,8 @@ class AuthenticityDetector:
         self._loaded = False
         self._model_id = PRIMARY_MODEL
         self._model_revision: Optional[str] = None
+        self._checkpoint_digest: Optional[str] = None
+        self._custom_preprocess = None
         self._lock = threading.RLock()
 
     @property
@@ -163,34 +193,80 @@ class AuthenticityDetector:
             self._load_model(device)
 
     def _load_model(self, device: str) -> None:
-        from transformers import AutoImageProcessor, AutoModelForImageClassification
-
         self._device = resolve_device(device)
-
-        log.info("Loading authenticity model: %s on %s", self._model_id, self._device)
         t0 = time.time()
-
         cache_dir = settings.MODEL_CACHE_DIR
 
-        processor = AutoImageProcessor.from_pretrained(
-            self._model_id,
-            cache_dir=cache_dir,
-            token=settings.HF_TOKEN or None,
-            revision=settings.AUTHENTICITY_MODEL_REVISION or None,
-        )
-        model = AutoModelForImageClassification.from_pretrained(
-            self._model_id,
-            cache_dir=cache_dir,
-            token=settings.HF_TOKEN or None,
-            revision=settings.AUTHENTICITY_MODEL_REVISION or None,
-        )
+        if settings.AUTHENTICITY_BACKEND.strip().lower() == "finetuned_siglip":
+            from transformers import SiglipVisionModel
+
+            checkpoint = Path(settings.AUTHENTICITY_CHECKPOINT_PATH)
+            if not checkpoint.is_file():
+                raise FileNotFoundError(
+                    f"Fine-tuned SigLIP head not found at {checkpoint}. "
+                    "Place siglip_frozen_head.pt there or set AUTHENTICITY_CHECKPOINT_PATH."
+                )
+            checkpoint_bytes = checkpoint.read_bytes()
+            state_dict = torch.load(io.BytesIO(checkpoint_bytes), map_location="cpu", weights_only=True)
+            if not isinstance(state_dict, dict) or set(state_dict) != {"weight", "bias"}:
+                raise ValueError("Fine-tuned SigLIP checkpoint must contain only a linear head weight and bias.")
+            if not isinstance(state_dict["weight"], torch.Tensor) or tuple(state_dict["weight"].shape) != (1, 768):
+                raise ValueError("Fine-tuned SigLIP checkpoint has an incompatible head; expected weight shape [1, 768].")
+            if not isinstance(state_dict["bias"], torch.Tensor) or tuple(state_dict["bias"].shape) != (1,):
+                raise ValueError("Fine-tuned SigLIP checkpoint has an incompatible bias; expected shape [1].")
+
+            backbone_id = settings.AUTHENTICITY_BACKBONE_MODEL
+            log.info("Loading fine-tuned SigLIP backbone %s on %s", backbone_id, self._device)
+            vision_model = SiglipVisionModel.from_pretrained(
+                backbone_id,
+                cache_dir=cache_dir,
+                token=settings.HF_TOKEN or None,
+                revision=settings.AUTHENTICITY_BACKBONE_REVISION or None,
+            )
+            if int(vision_model.config.hidden_size) != 768:
+                raise ValueError("Configured SigLIP backbone hidden size does not match the trained head.")
+            head = torch.nn.Linear(vision_model.config.hidden_size, 1)
+            head.load_state_dict(state_dict, strict=True)
+            model = FineTunedSiglipClassifier(vision_model, head)
+            processor = FineTunedSiglipProcessor()
+            self._custom_preprocess = processor
+            self._model_id = "truthlens/siglip-cifake-frozen-head"
+            self._checkpoint_digest = hashlib.sha256(checkpoint_bytes).hexdigest()
+            backbone_revision = _resolve_checkpoint_revision(
+                backbone_id,
+                cache_dir,
+                vision_model.config,
+                settings.AUTHENTICITY_BACKBONE_REVISION,
+            )
+            self._model_revision = f"backbone:{backbone_id}@{backbone_revision};head_sha256:{self._checkpoint_digest}"
+        elif settings.AUTHENTICITY_BACKEND.strip().lower() == "huggingface":
+            from transformers import AutoImageProcessor, AutoModelForImageClassification
+
+            self._model_id = settings.AUTHENTICITY_MODEL
+            log.info("Loading authenticity model: %s on %s", self._model_id, self._device)
+            processor = AutoImageProcessor.from_pretrained(
+                self._model_id,
+                cache_dir=cache_dir,
+                token=settings.HF_TOKEN or None,
+                revision=settings.AUTHENTICITY_MODEL_REVISION or None,
+            )
+            model = AutoModelForImageClassification.from_pretrained(
+                self._model_id,
+                cache_dir=cache_dir,
+                token=settings.HF_TOKEN or None,
+                revision=settings.AUTHENTICITY_MODEL_REVISION or None,
+            )
+            self._model_revision = _resolve_checkpoint_revision(
+                self._model_id, cache_dir, model.config, settings.AUTHENTICITY_MODEL_REVISION
+            )
+            self._custom_preprocess = None
+        else:
+            raise ValueError("AUTHENTICITY_BACKEND must be 'finetuned_siglip' or 'huggingface'.")
+
         model.to(self._device)
         model.eval()
         self._processor = processor
         self._model = model
-        self._model_revision = _resolve_checkpoint_revision(
-            self._model_id, cache_dir, model.config, settings.AUTHENTICITY_MODEL_REVISION
-        )
 
         elapsed = int((time.time() - t0) * 1000)
         log.info("Authenticity model loaded in %d ms", elapsed)
@@ -205,6 +281,7 @@ class AuthenticityDetector:
             if self._processor is not None:
                 del self._processor
                 self._processor = None
+            self._custom_preprocess = None
             self._loaded = False
             clear_gpu_memory()
         log.info("Authenticity model unloaded")
@@ -230,8 +307,13 @@ class AuthenticityDetector:
         # The checkpoint's processor uses RGB input and its stored resize and
         # normalization parameters. Convert explicitly to avoid mode-dependent
         # behavior for grayscale, palette, or CMYK uploads.
-        inputs = self._processor(images=image.convert("RGB"), return_tensors="pt")
-        inputs = {k: v.to(self._device) for k, v in inputs.items()}
+        rgb_image = image.convert("RGB")
+        if self._custom_preprocess is not None:
+            inputs = self._custom_preprocess(images=rgb_image, return_tensors="pt")
+            inputs = {k: v.to(self._device) for k, v in inputs.items()}
+        else:
+            inputs = self._processor(images=rgb_image, return_tensors="pt")
+            inputs = {k: v.to(self._device) for k, v in inputs.items()}
 
         # Forward pass
         outputs = self._model(**inputs)

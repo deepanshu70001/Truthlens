@@ -47,6 +47,10 @@ class Settings(BaseSettings):
     MODEL_CONFIG_PATH: str = str(_project_root() / "models" / "configs")
     DEVICE: str = "auto"
     HALF_PRECISION: bool = False
+    AUTHENTICITY_BACKEND: str = "finetuned_siglip"
+    AUTHENTICITY_BACKBONE_MODEL: str = "google/siglip-base-patch16-224"
+    AUTHENTICITY_BACKBONE_REVISION: str = ""
+    AUTHENTICITY_CHECKPOINT_PATH: str = str(_project_root() / "models" / "baselines" / "siglip_frozen_head.pt")
     AUTHENTICITY_MODEL: str = "prithivMLmods/Deepfake-Real-Class-Siglip2"
     AUTHENTICITY_MODEL_REVISION: str = ""
     AUTHENTICITY_CALIBRATION_PATH: str = ""

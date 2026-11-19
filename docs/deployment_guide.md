@@ -6,7 +6,7 @@ TruthLens is currently suitable for a trusted local academic demonstration. It h
 
 - Python 3.11+ (validated in this checkout with 3.11.9).
 - Node.js 22.12+ recommended for the current Vite 8 toolchain; `npm ci` from `frontend/`.
-- 4+ CPU cores and sufficient RAM for CPU mode. CUDA is optional; this session used CPU. Model weights add roughly 0.4 GB for the cached authenticity checkpoint; other model packages/weights may download additional data.
+- 4+ CPU cores and sufficient RAM for CPU mode. CUDA is optional. The default fine-tuned authenticity backend uses `models/baselines/siglip_frozen_head.pt` plus the `google/siglip-base-patch16-224` vision encoder (downloaded from Hugging Face on first load unless already cached); other model packages/weights may download additional data.
 - OCR requires EasyOCR or a system Tesseract installation with configured language packs. Object detection requires Ultralytics and an available YOLO checkpoint. Optional API keys enable Google integrations.
 
 ## Local setup (PowerShell)
@@ -22,6 +22,8 @@ Copy-Item .env.example .env
 ```
 
 Keep default SQLite for a local demonstration. Edit `.env` only for storage/model settings or optional integrations. Set `DEVICE=cpu` if CUDA is not correctly installed. Configure optional keys only after reviewing privacy implications: Google Vision receives the uploaded image; Fact Check Tools receives extracted claim query text. Never commit `.env`.
+
+The repository ZIP used for this integration includes the fine-tuned head, but `.pt` weights are Git-ignored. When transferring or deploying the project, copy `siglip_frozen_head.pt` into `models/baselines/` and set `AUTHENTICITY_CHECKPOINT_PATH` if it is elsewhere. The default `AUTHENTICITY_BACKEND=finetuned_siglip` pairs that head with `AUTHENTICITY_BACKBONE_MODEL=google/siglip-base-patch16-224`; the first backend load needs Hugging Face access to retrieve the backbone. To select the previous hosted image classifier instead, set `AUTHENTICITY_BACKEND=huggingface` and configure `AUTHENTICITY_MODEL` (optionally `AUTHENTICITY_MODEL_REVISION`). Both paths retain the same API/report schema and inconclusive-by-default classification safeguard. The trained head was evaluated on a small CIFAKE subset; that result does not establish generalization to current image generators or real-world images.
 
 Start the API from the repository root:
 

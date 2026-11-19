@@ -75,7 +75,22 @@ async def health_check(db: AsyncSession = Depends(get_db)):
 )
 async def model_health():
     model_root = Path(settings.MODEL_CACHE_DIR)
-    authenticity_cached = (model_root / f"models--{settings.AUTHENTICITY_MODEL.replace('/', '--')}").exists()
+    finetuned_backend = settings.AUTHENTICITY_BACKEND.strip().lower() == "finetuned_siglip"
+    if finetuned_backend:
+        authenticity_model_id = "truthlens/siglip-cifake-frozen-head"
+        authenticity_backbone_id = settings.AUTHENTICITY_BACKBONE_MODEL
+        authenticity_checkpoint = Path(settings.AUTHENTICITY_CHECKPOINT_PATH)
+        authenticity_checkpoint_present = authenticity_checkpoint.is_file()
+    else:
+        authenticity_model_id = settings.AUTHENTICITY_MODEL
+        authenticity_backbone_id = None
+        authenticity_checkpoint = None
+        authenticity_checkpoint_present = None
+    authenticity_cached = (
+        model_root / f"models--{authenticity_backbone_id.replace('/', '--')}"
+        if authenticity_backbone_id
+        else model_root / f"models--{settings.AUTHENTICITY_MODEL.replace('/', '--')}"
+    ).exists()
     yolo_path = Path(settings.VISION_MODEL)
     if not yolo_path.is_absolute():
         yolo_path = Path.cwd() / yolo_path
@@ -89,11 +104,20 @@ async def model_health():
     vision_loaded = get_object_detector().is_loaded
     ocr_languages = [code.strip() for code in settings.OCR_LANGUAGES.split(",") if code.strip()]
     ocr_loaded = get_ocr_service(gpu=settings.DEVICE != "cpu", languages=ocr_languages).is_loaded
+    authenticity_status = (
+        "loaded" if auth_loaded
+        else "checkpoint_missing" if finetuned_backend and not authenticity_checkpoint_present
+        else "cached_not_loaded" if authenticity_cached
+        else "download_required"
+    )
     return {
         "status": "model_readiness_report",
         "models": [
-            {"name": "authenticity", "model_id": settings.AUTHENTICITY_MODEL,
-             "status": "loaded" if auth_loaded else "cached_not_loaded" if authenticity_cached else "download_required",
+            {"name": "authenticity", "model_id": authenticity_model_id,
+             "backbone_model_id": authenticity_backbone_id,
+             "checkpoint_path": str(authenticity_checkpoint) if authenticity_checkpoint else None,
+             "checkpoint_present": authenticity_checkpoint_present,
+             "status": authenticity_status,
              "dependency_available": importlib.util.find_spec("transformers") is not None,
              "loaded": auth_loaded},
             {"name": "object_detection", "model_id": settings.VISION_MODEL,

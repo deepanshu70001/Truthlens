@@ -88,17 +88,18 @@ For regional spread risk ranking:
 
 ### 4.1 Authenticity Detection
 
-**Model**: `prithivMLmods/Deepfake-Real-Class-Siglip2`
+**Current default model**: TruthLens fine-tuned SigLIP head (`models/baselines/siglip_frozen_head.pt`) with `google/siglip-base-patch16-224` frozen vision encoder.
 
 | Metric | Value | Dataset | Note |
 |--------|-------|---------|------|
-| Reported accuracy (model card) | ~93% | Training set | **Not independently validated by TruthLens** |
-| TruthLens-specific evaluation | **Pending** | — | Requires curated test set of Indian context images |
+| Branch-reported accuracy | 0.87 | 200-image CIFAKE test subset | Not reproduced in this checkout; not independent validation |
+| Branch-reported AI recall | 0.83 | Same subset | Not a probability or a real-world performance guarantee |
+| Branch-reported ROC AUC | 0.9613 | Same subset | Dataset- and split-specific; independently unverified here |
+| TruthLens independent evaluation | **Not evaluable** | 0 eligible reviewed examples | Requires a sourced, labeled, leakage-controlled test set |
 
 **Limitations**:
-- Model was trained on predominantly Western image datasets
-- Performance on AI-generated images from newer models (2025+) is unknown
-- No calibration study has been performed for this model
+- The reported head evaluation uses a small CIFAKE subset; performance on newer generators and real-world images is unknown
+- No independent benchmark, calibration study, or domain validation has been completed for this model
 - Subject to concept drift as generation techniques evolve
 
 ### 4.2 Forensic Analysis (ELA, Noise, JPEG)

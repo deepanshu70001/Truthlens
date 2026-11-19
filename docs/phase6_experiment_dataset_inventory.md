@@ -1,6 +1,6 @@
 # Phase 6 experiment dataset inventory
 
-Inventory date: 2026-11-17. Files were counted using the aggregate script in `experiments/dataset_audit.py`; rights and labels require documentary review and cannot be inferred from file bytes. The 35-image scan yielded 496 dHash pairs at Hamming distance ≤2; these are loose candidates, not confirmed duplicates or an exclusion count.
+Dataset inventory date: 2026-11-17; model artifact integration recorded 2026-11-19. Files were counted using the aggregate script in `experiments/dataset_audit.py`; rights and labels require documentary review and cannot be inferred from file bytes. The 35-image scan yielded 496 dHash pairs at Hamming distance ≤2; these are loose candidates, not confirmed duplicates or an exclusion count.
 
 | Dataset/source | Type / source | Count/coverage | Labels/languages/geography | License / annotation / limitations | Experimental role |
 |---|---|---|---|---|---|
@@ -9,6 +9,7 @@ Inventory date: 2026-11-17. Files were counted using the aggregate script in `ex
 | `backend/tests/fixtures/test_photo.jpg` | Generated test fixture if absent; created by test helper | One nominal fixture | Synthetic visual pattern; no real/AI class semantics | Software test only; not a natural-image sample | API/unit integration only |
 | `data/` and `temp/` runtime storage | Application/user input and derived outputs | Present; not inventoried as research data | No reviewed truth labels | Privacy-sensitive user/application records; intentionally not scanned for research | Excluded from all experiments |
 | SigLIP2 model cache | `prithivMLmods/Deepfake-Real-Class-Siglip2` configured checkpoint | Cached checkpoint previously observed (~743 MB aggregate cache) | Model labels fake/real; checkpoint training provenance is external | Hugging Face model card currently declares Apache-2.0 and identifies the SigLIP2 base; pin an immutable Hub revision and review upstream training-data provenance before submission. No TruthLens-specific benchmark | Inference smoke test only; not evaluation data |
+| Fine-tuned SigLIP head (added 2026-11-19) | Supplied `siglip_frozen_head.pt`; now `models/baselines/siglip_frozen_head.pt` | 5,053 bytes; SHA-256 `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`; paired with `google/siglip-base-patch16-224` | AI-generated is positive; one linear logit over frozen `pooler_output` | Checkpoint shape verified with safe weights-only loading. Remote branch reports CIFAKE-subset metrics; no reviewed data manifest or independent reproduction in this checkout | Integrated into the default API and web UI; synthetic smoke only, excluded from evaluation metrics |
 | FakeNewsNet, PHEME, MuMiN, IFND, GenImage, RRDataset | External research candidate datasets | Not installed in this checkout | Different labels/task/scope; several may require gated access or careful media rights | Must review each official dataset release and media reuse rights before retrieval or use; incompatible sources cannot be pooled without protocol | Candidate reading list only; none used for metrics |
 
 ## Data-quality and split findings
