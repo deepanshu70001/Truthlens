@@ -1,28 +1,79 @@
-# TruthLens Phase 6 experiments
+# TruthLens Experiments & Evaluation Infrastructure
 
-This directory contains reproducible evaluation tools. It contains no user-image data and does not silently treat repository images as labeled research data.
+This directory contains the reproducible experimental pipelines, dataset split manifests, training scripts, post-hoc calibration utilities, and evaluation reports across TruthLens Phases 0 through 8.
 
-## Current status
+---
 
-- `dataset_audit.py` inventories an explicitly selected directory using aggregate counts, image dimensions, file validity, SHA-256 duplicates and dHash candidate pairs (Hamming distance ≤2). It does not print image content or copy images. Candidate pairs require manual/source-group review and are not automatically excluded.
-- `evaluate_authenticity.py` accepts a reviewed CSV manifest and runs the configured detector, threshold analysis, image transformations, and standard binary metrics. It rejects unapproved/unlabeled manifests and flags duplicate groups crossing splits. It never tunes thresholds on the test split.
-- `calibrate_authenticity.py` fits a temperature-scaling artifact from validation rows only. It requires separate non-empty train/validation/test splits, source and rights references, at least 30 validation examples per class, no cross-split group or exact-hash leakage, and an exact checkpoint revision. The output remains a candidate unless the operator explicitly confirms human review. Application use is optional and is never implied by running the script.
-- The repository has no approved labeled manifest yet. Consequently, scientific model metrics are not evaluable. Test fixtures and local uploads are excluded.
+## 1. Directory Structure
 
-## Commands
-
-From repository root, with the project environment active:
-
-```powershell
-python experiments/dataset_audit.py --root test_data --output experiments/results/repository_test_data_audit.json
-python experiments/evaluate_authenticity.py --manifest experiments/manifests/authenticity.csv --split test --output experiments/results/authenticity_test.json
-python experiments/calibrate_authenticity.py --manifest experiments/manifests/authenticity.csv --output models/configs/authenticity-calibration.json
+```
+experiments/
+├── checkpoints/              # Checkpoint weights for research candidates (Phases 5 & 7)
+│   ├── phase5/               # E1 (frozen head), E2 (balanced), E3 (layer 11 FT)
+│   └── phase7/               # S1, S2, R1, R2, A1
+├── configs/                  # Experiment configurations (phase7_config.yaml)
+├── manifests/                # Approved training, validation, calibration, and test manifests
+├── reports/                  # Machine-readable evaluation reports, calibration parameters, and audit summaries
+├── results/                  # Per-sample prediction CSVs (Phases 3, 6, 7)
+├── train_phase7.py           # Matched in-memory augmentation trainer across 5 architectures
+├── evaluate_phase7_test.py   # Locked test evaluation across all three external benchmarks
+├── calibrate_phase7_candidate.py # Post-hoc temperature calibration parameter optimizer
+├── audit_phase7_shortcuts.py # Container format shortcut verification script
+└── README.md                 # This guide
 ```
 
-The manifest schema is `experiments/manifests/authenticity.example.csv`. Before use, copy it and complete source URL, license/permission reference, label protocol, split, and duplicate/event group IDs. Do not place sensitive uploads in experiment artifacts. Group related images and duplicates in a single split. Use `validation` for threshold selection; reserve `test` for one final evaluation.
+---
 
-After independently reviewing data labels, source rights, generator categories, and split isolation, an operator may add `--confirm-reviewed-validation-data` to produce an artifact accepted by the runtime. Then configure `AUTHENTICITY_CALIBRATION_PATH` and pin `AUTHENTICITY_MODEL_REVISION` to the checkpoint revision recorded by the run. The runtime rejects artifacts for another model/revision. The calibration artifact records validation NLL, Brier score, ECE, temperature, selected abstention thresholds, and limitations. These are calibration-fit diagnostics, not held-out test accuracy. Use the reserved test split once with `evaluate_authenticity.py` after the calibration and thresholds are frozen. A calibrated probability can then be displayed as scoped to the validation distribution, but the overall application label remains inconclusive until input-domain membership is independently validated; TruthLens currently has no validated OOD detector.
+## 2. Ingested External Benchmarks & Partitions ($N = 29,640$)
 
-Without an accepted calibration artifact, the detector exposes its raw model argmax and softmax scores but sets the application classification to `inconclusive`; raw softmax magnitude cannot create a directional fusion vote. The detector does not claim OOD detection, domain validation, empirical accuracy, or manipulation classification. Running a script does not make a dataset licensed or independent; these remain human-reviewed prerequisites.
+The experimental suite operates across three cryptographically audited external image benchmarks:
+1. **Tiny-GenImage ($N = 25,006$):** 8 generators (BigGAN, Cascade Diffusion, DeepFloyd-IF, GLIDE, LDM, Midjourney v4, SD 1.4, SD 1.5).
+2. **Frontier Benchmark 2026-10 ($N = 2,976$):** 8 modern generators (DALL-E 3, Flux.1-dev, Flux.1-schnell, Midjourney v6, Recraft v3, SD 3 Medium, SD 3.5 Large, SD 3.5 Turbo) across 4 compression tiers (Original, Instagram, Reshared, WhatsApp).
+3. **WildAIGC-Bench ($N = 1,658$):** Real-world in-the-wild digital media captures.
 
-No performance number should be reported in a paper until a valid labeled manifest, label protocol, permission basis, and independent grouping have been reviewed and recorded.
+### Split Governance Partitions
+- **Approved Training:** 6,995 samples (`experiments/manifests/phase4_training_manifest.csv`)
+- **Validation:** 6,255 samples
+- **Calibration Pool:** 13,000 samples
+- **Locked Test Set:** 10,385 samples (Tiny: 7,000; Frontier: 2,091; WildAIGC: 1,294)
+
+---
+
+## 3. Key Experimental Commands
+
+From the repository root with the project environment active:
+
+### 3.1 Pre-Training Container Format Audit
+```powershell
+python experiments/audit_phase7_shortcuts.py
+# Outputs: experiments/reports/phase7_format_audit.json
+# Verifies: raw metadata RF AUC = 1.0000; augmented metadata RF AUC = 0.5028
+```
+
+### 3.2 Matched In-Memory Augmentation Training
+```powershell
+python experiments/train_phase7.py --config experiments/configs/phase7_config.yaml
+# Produces candidate checkpoints under experiments/checkpoints/phase7/
+```
+
+### 3.3 Post-Hoc Temperature Scaling Calibration
+```powershell
+python experiments/calibrate_phase7_candidate.py
+# Outputs: experiments/reports/phase7_calibration.json
+```
+
+### 3.4 Locked Test Benchmark Evaluation
+```powershell
+python experiments/evaluate_phase7_test.py
+# Outputs: experiments/reports/phase7_test_evaluation.json, phase7_statistical_comparison.json
+# Computes: group-aware bootstrap 95% confidence intervals (B = 1,000)
+```
+
+---
+
+## 4. Evaluation Governance & Model Retention Policy
+
+TruthLens enforces strict pre-registered governance:
+- Candidate models may replace the production baseline only if they achieve statistically significant improvement or non-inferiority across all held-out benchmarks without negative transfer.
+- In Phase 7 evaluations, while Candidate S2 (`truthlens/siglip-base-v2-s2`) achieved a 0.9423 ROC-AUC on Tiny-GenImage (+0.3300 gain), it suffered negative transfer on late-2026 generators on the Frontier Benchmark (ROC-AUC 0.4234 vs. baseline 0.6501, $\Delta = -0.2267$, 95% CI: $[-0.2781, -0.1720]$).
+- In accordance with pre-registered safety rules, Candidate S2 was rejected for production, and the production detector retains the frozen baseline (`truthlens/siglip-cifake-frozen-head`, SHA-256: `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`).

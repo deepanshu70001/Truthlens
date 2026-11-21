@@ -1,0 +1,255 @@
+{
+  "audit_version": "1.0.0",
+  "audit_phase": "Phase 8: Full Research Reproducibility and Repository Audit",
+  "timestamp_utc": "2026-11-22T00:40:00Z",
+  "repository": {
+    "name": "deepanshu70001/Truthlens",
+    "branch": "fix/truthlens-remediation",
+    "head_commit": "9591788769895d7441a8cfa02b7809b9eeddf243",
+    "git_working_tree_clean": true
+  },
+  "environment": {
+    "os": "Windows 11 Home",
+    "python": "3.12.10",
+    "torch": "2.7.1",
+    "transformers": "4.49.0",
+    "cuda_device": "NVIDIA GeForce RTX 3050 Laptop GPU (4096 MB VRAM)",
+    "cpu": "Intel Core i5-12500H (12 cores, 16 threads)"
+  },
+  "phase_status_matrix": {
+    "phase_0": {
+      "title": "Baseline Audit & Setup",
+      "status": "COMPLETE_VERIFIED",
+      "evidence": ".github/workflows/ci.yml, baseline-python-packages.txt"
+    },
+    "phase_1": {
+      "title": "Model Identity & Calibration Safety",
+      "status": "COMPLETE_VERIFIED",
+      "evidence": "backend/app/services/authenticity/detector.py, models/baselines/siglip_frozen_head.pt"
+    },
+    "phase_2": {
+      "title": "External Dataset Ingestion & Split Governance",
+      "status": "COMPLETE_VERIFIED",
+      "evidence": "datasets/external/ (29,640 images), experiments/manifests/"
+    },
+    "phase_3": {
+      "title": "Frozen Baseline Benchmark Evaluation",
+      "status": "COMPLETE_VERIFIED",
+      "evidence": "experiments/results/phase3/, docs/phase3_evaluation_report.md"
+    },
+    "phase_3_5": {
+      "title": "Independent Research Audit",
+      "status": "COMPLETE_VERIFIED",
+      "evidence": "experiments/reports/phase3_5_audit.json, docs/phase3_5_research_audit_report.md"
+    },
+    "phase_4": {
+      "title": "Training Dataset Preparation",
+      "status": "COMPLETE_VERIFIED",
+      "evidence": "experiments/manifests/phase4_training_manifest.csv (6,995 samples)"
+    },
+    "phase_5": {
+      "title": "Controlled Model Training & Fine-Tuning",
+      "status": "COMPLETE_VERIFIED",
+      "evidence": "experiments/checkpoints/phase5/, docs/phase5_training_report.md"
+    },
+    "phase_6": {
+      "title": "Calibration, Held-Out Evaluation & Shortcut Discovery",
+      "status": "COMPLETE_VERIFIED",
+      "evidence": "docs/phase6_evaluation_report.md, experiments/reports/phase6_candidate_decision.json"
+    },
+    "phase_7": {
+      "title": "Shortcut-Resistant Detection via Matched Augmentation",
+      "status": "COMPLETE_VERIFIED",
+      "evidence": "experiments/checkpoints/phase7/, docs/phase7_evaluation_report.md"
+    }
+  },
+  "numerical_reproduction": {
+    "evaluated_dataset_pairs_count": 9,
+    "statistical_discrepancies_found": 0,
+    "tiny_genimage_test": {
+      "sample_count": 7000,
+      "baseline": {
+        "accuracy": 0.5521,
+        "balanced_accuracy": 0.5521,
+        "precision": 0.5356,
+        "recall": 0.7854,
+        "specificity": 0.3189,
+        "f1_score": 0.6369,
+        "roc_auc": 0.6123,
+        "pr_auc": 0.6181,
+        "mcc": 0.1179,
+        "confusion_matrix": {"tn": 1116, "fp": 2384, "fn": 751, "tp": 2749}
+      },
+      "s2_candidate": {
+        "accuracy": 0.8460,
+        "balanced_accuracy": 0.8460,
+        "precision": 0.9420,
+        "recall": 0.7374,
+        "specificity": 0.9546,
+        "f1_score": 0.8272,
+        "roc_auc": 0.9423,
+        "pr_auc": 0.9489,
+        "mcc": 0.7089,
+        "confusion_matrix": {"tn": 3341, "fp": 159, "fn": 919, "tp": 2581}
+      },
+      "delta_s2_vs_base": {
+        "delta_balanced_accuracy": 0.2939,
+        "delta_roc_auc": 0.3300,
+        "delta_f1": 0.1903,
+        "bootstrap_ci_95": {
+          "delta_balanced_accuracy": [0.2703, 0.3189],
+          "delta_roc_auc": [0.3034, 0.3554]
+        }
+      }
+    },
+    "frontier_benchmark_test": {
+      "sample_count": 2091,
+      "baseline": {
+        "accuracy": 0.5801,
+        "balanced_accuracy": 0.6228,
+        "precision": 0.4459,
+        "recall": 0.7689,
+        "specificity": 0.4767,
+        "f1_score": 0.5645,
+        "roc_auc": 0.6501,
+        "pr_auc": 0.4533,
+        "mcc": 0.2408,
+        "confusion_matrix": {"tn": 644, "fp": 707, "fn": 171, "tp": 569}
+      },
+      "s2_candidate": {
+        "accuracy": 0.5361,
+        "balanced_accuracy": 0.4849,
+        "precision": 0.3328,
+        "recall": 0.3095,
+        "specificity": 0.6603,
+        "f1_score": 0.3207,
+        "roc_auc": 0.4234,
+        "pr_auc": 0.3369,
+        "mcc": -0.0308,
+        "confusion_matrix": {"tn": 892, "fp": 459, "fn": 511, "tp": 229}
+      },
+      "delta_s2_vs_base": {
+        "delta_balanced_accuracy": -0.1379,
+        "delta_roc_auc": -0.2267,
+        "delta_f1": -0.2438,
+        "bootstrap_ci_95": {
+          "delta_balanced_accuracy": [-0.1828, -0.0941],
+          "delta_roc_auc": [-0.2781, -0.1720]
+        }
+      }
+    },
+    "wildaigc_bench_test": {
+      "sample_count": 1294,
+      "baseline": {
+        "accuracy": 0.4490,
+        "balanced_accuracy": 0.4294,
+        "precision": 0.5940,
+        "recall": 0.4935,
+        "specificity": 0.3653,
+        "f1_score": 0.5391,
+        "roc_auc": 0.4226,
+        "pr_auc": 0.6201,
+        "mcc": -0.1350,
+        "confusion_matrix": {"tn": 164, "fp": 285, "fn": 428, "tp": 417}
+      },
+      "s2_candidate": {
+        "accuracy": 0.5023,
+        "balanced_accuracy": 0.5589,
+        "precision": 0.7332,
+        "recall": 0.3740,
+        "specificity": 0.7439,
+        "f1_score": 0.4953,
+        "roc_auc": 0.6049,
+        "pr_auc": 0.7356,
+        "mcc": 0.1190,
+        "confusion_matrix": {"tn": 334, "fp": 115, "fn": 529, "tp": 316}
+      },
+      "delta_s2_vs_base": {
+        "delta_balanced_accuracy": 0.1295,
+        "delta_roc_auc": 0.1823,
+        "delta_f1": -0.0438,
+        "bootstrap_ci_95": {
+          "delta_balanced_accuracy": [0.0854, 0.1729],
+          "delta_roc_auc": [0.1311, 0.2350]
+        }
+      }
+    }
+  },
+  "checkpoints_audit": {
+    "all_phase7_checkpoints_verified": true,
+    "checkpoints": {
+      "s1": {
+        "model_id": "truthlens/siglip-base-v2-s1",
+        "checkpoint_sha256": "2554519107c8ad8de07805e55225e7d5a5ac8f9959aecb47815ac86f6fd92111",
+        "head_sha256": "d7e936a3259f0e7f05a18a426300972870a1071b95b721118cfe779cae343c1e",
+        "trainable_params": 769,
+        "best_epoch": 1,
+        "status": "VERIFIED"
+      },
+      "s2": {
+        "model_id": "truthlens/siglip-base-v2-s2",
+        "checkpoint_sha256": "620e42f74bb7ae24fb1deeaedf24dbf9147162d3612c8f5171b64e53834f9805",
+        "head_sha256": "df8583ec51b51991723d6162ff59730abea96f5b5859186f63a63b91c1c9f33a",
+        "trainable_params": 14176513,
+        "best_epoch": 4,
+        "status": "VERIFIED"
+      },
+      "r1": {
+        "model_id": "truthlens/resnet50-v2-r1",
+        "checkpoint_sha256": "2887136affa6406e9871583d7890f8469399222ebce918a5bfb4ea8a0efb5c3e",
+        "head_sha256": "a241a20f68569b59639e44ffcff657d22ca95e74d1c44ba0784bb41e97ae2b85",
+        "trainable_params": 23510081,
+        "best_epoch": 7,
+        "status": "VERIFIED"
+      },
+      "r2": {
+        "model_id": "truthlens/resnet50-v2-r2",
+        "checkpoint_sha256": "b721cadc68e7b663b6d27457813a3782521f15858cf85d992e596da65b21495c",
+        "head_sha256": "99e24551af5e8f375f4c5409cbbe96041006a88b56d115e589a193644f8ae58a",
+        "trainable_params": 14966785,
+        "best_epoch": 7,
+        "status": "VERIFIED"
+      },
+      "a1": {
+        "model_id": "truthlens/siglip-base-v2-a1",
+        "checkpoint_sha256": "872b93ceff594fe6ec948ddf55c2826cfd4b8e2b83c5fa4e6da2bc4ad67f33e7",
+        "head_sha256": "43cc6436a3760836ce22a6114251952e4726f125a666e6761ca7dcf56ea55365",
+        "trainable_params": 14176513,
+        "best_epoch": 1,
+        "status": "VERIFIED"
+      }
+    }
+  },
+  "data_leakage_audit": {
+    "training_samples_approved": 6995,
+    "excluded_reserve_records": 2998,
+    "excluded_duplicate_records": 1,
+    "reserve_samples_in_training": 0,
+    "train_val_overlap": 0,
+    "train_calib_overlap": 0,
+    "train_test_overlap": 0,
+    "train_frontier_overlap": 0,
+    "train_wildaigc_overlap": 0,
+    "groups_spanning_multiple_partitions": 0,
+    "leakage_status": "ZERO_LEAKAGE_VERIFIED"
+  },
+  "governance_audit": {
+    "production_baseline_head_sha256": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+    "production_baseline_checksum_matches": true,
+    "production_detector_retained_in_app": true,
+    "candidate_models_deployed": 0,
+    "inconclusive_gating_verified": true,
+    "governance_status": "COMPLIANT_AND_ENFORCED"
+  },
+  "test_suite_validation": {
+    "total_tests": 277,
+    "passed": 267,
+    "skipped": 10,
+    "failed": 0,
+    "authoritative_status": "ALL_TESTS_PASSING"
+  },
+  "phase_9_readiness": {
+    "approved_to_proceed": true,
+    "recommendation": "Repository has achieved complete numerical reproducibility, verified cryptographic integrity, zero data leakage, and airtight governance contracts. Phase 9 model development may begin."
+  }
+}

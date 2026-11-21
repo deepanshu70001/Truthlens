@@ -98,7 +98,7 @@
     "primary_research_candidate_s2": {
       "model_id": "truthlens/siglip-base-v2-s2",
       "architecture": "SigLIP layers 10, 11 + head partial fine-tuning",
-      "checkpoint_sha256": "90bfe0ea1849544e3906ea1947b744d03d3eb0075d9e5d4cb0d8dc8155e88698",
+      "checkpoint_sha256": "620e42f74bb7ae24fb1deeaedf24dbf9147162d3612c8f5171b64e53834f9805",
       "trainable_parameters": 14178817,
       "peak_vram_mb": 839.1,
       "status": "REJECT_CANDIDATE_FOR_PRODUCTION",

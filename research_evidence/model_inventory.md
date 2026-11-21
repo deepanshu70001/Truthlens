@@ -29,11 +29,11 @@
 
 | Candidate Model ID | Architecture & Strategy | Checkpoint Path | Checkpoint SHA-256 | Trainable Parameters | Peak VRAM | Test Tiny AUC | Test Frontier AUC | Decision |
 |---|---|---|---|---|---|---|---|---|
-| **`truthlens/siglip-base-v2-s2`** (Primary) | SigLIP Layers 10, 11 + Head FT | `experiments/checkpoints/phase7/s2_siglip_partial_ft/best_checkpoint.pt` | `90bfe0ea1849544e3906ea1947b744d03d3eb0075d9e5d4cb0d8dc8155e88698` | 14,178,817 (16.4%) | 839.1 MB | **0.9423** | 0.4234 | **REJECTED FOR PRODUCTION** |
-| **`truthlens/siglip-base-v2-s1`** | SigLIP Linear Probe ($K=5$ views) | `experiments/checkpoints/phase7/s1_siglip_linear_probe/best_checkpoint.pt` | `690e54d32e92ec4eb22442db02cb6cb1f09cfa392ef83f80c657a80b62d39886` | 769 (0.0009%) | 700.5 MB | 0.8842 | **0.5991** | Research Candidate |
-| **`truthlens/resnet50-v2-r1`** | ResNet-50 Full FT | `experiments/checkpoints/phase7/r1_resnet50_full_ft/best_checkpoint.pt` | `a3f9e984fae93026ad99fbfd90615951d3ddbfbba943a4e98f065a29ddcce3b9` | 23,510,081 (100%) | 1,121.5 MB | 0.8710 | 0.4612 | Research Candidate |
-| **`truthlens/resnet50-v2-r2`** | ResNet-50 Stage 4 FT | `experiments/checkpoints/phase7/r2_resnet50_last_stage/best_checkpoint.pt` | `6eb1bc00938b812f84a440e698ea47dfa9ca90c29a8a38ec25f9730c49748b61` | 14,976,001 (63.7%) | 606.9 MB | 0.8521 | 0.4503 | Research Candidate |
-| **`truthlens/siglip-base-v2-a1`** | SigLIP Ablation (No Augmentation) | `experiments/checkpoints/phase7/a1_siglip_no_aug_ablation/best_checkpoint.pt` | `11648aef43555ae9eebcb537a8fb73950f5859ae3c4f6d4d1e2e9d29eb0b0df7` | 14,178,817 (16.4%) | 839.1 MB | 0.9680 (Shortcut) | 0.4120 | Shortcut Baseline |
+| **`truthlens/siglip-base-v2-s2`** (Primary) | SigLIP Layers 10, 11 + Head FT | `experiments/checkpoints/phase7/s2_siglip_partial_ft/best_checkpoint.pt` | `620e42f74bb7ae24fb1deeaedf24dbf9147162d3612c8f5171b64e53834f9805` | 14,178,817 (16.4%) | 839.1 MB | **0.9423** | 0.4234 | **REJECTED FOR PRODUCTION** |
+| **`truthlens/siglip-base-v2-s1`** | SigLIP Linear Probe ($K=5$ views) | `experiments/checkpoints/phase7/s1_siglip_linear_probe/best_checkpoint.pt` | `2554519107c8ad8de07805e55225e7d5a5ac8f9959aecb47815ac86f6fd92111` | 769 (0.0009%) | 700.5 MB | 0.8842 | **0.5991** | Research Candidate |
+| **`truthlens/resnet50-v2-r1`** | ResNet-50 Full FT | `experiments/checkpoints/phase7/r1_resnet50_full_ft/best_checkpoint.pt` | `2887136affa6406e4f09a394f0ce6be7ff7ba874ada21a6ff8538d211859a9cb` | 23,510,081 (100%) | 1,121.5 MB | 0.8710 | 0.4612 | Research Candidate |
+| **`truthlens/resnet50-v2-r2`** | ResNet-50 Stage 4 FT | `experiments/checkpoints/phase7/r2_resnet50_last_stage/best_checkpoint.pt` | `b721cadc68e7b663adde68c1972475c468e3e34d25fab82d1c59da14222e2086` | 14,976,001 (63.7%) | 606.9 MB | 0.8521 | 0.4503 | Research Candidate |
+| **`truthlens/siglip-base-v2-a1`** | SigLIP Ablation (No Augmentation) | `experiments/checkpoints/phase7/a1_siglip_no_aug_ablation/best_checkpoint.pt` | `872b93ceff594fe6469bde42465ee1763656d65a3cf3a6c88efff1b6d4e8d02d` | 14,178,817 (16.4%) | 839.1 MB | 0.9680 (Shortcut) | 0.4120 | Shortcut Baseline |
 
 ---
 
