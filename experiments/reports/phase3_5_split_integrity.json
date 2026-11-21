@@ -1,0 +1,33 @@
+{
+  "tiny_genimage": {
+    "total_records": 35000,
+    "roles": {
+      "test": 7000,
+      "calibration": 12048,
+      "validation": 5958,
+      "excluded": 9993
+    },
+    "zero_leakage_verified": true,
+    "leakage_violations": []
+  },
+  "frontier_benchmark_2026_10": {
+    "total_records": 2976,
+    "roles": {
+      "calibration": 588,
+      "validation": 297,
+      "test": 2091
+    },
+    "zero_leakage_verified": true,
+    "leakage_violations": []
+  },
+  "wildaigc_bench": {
+    "total_records": 1839,
+    "roles": {
+      "calibration": 268,
+      "validation": 133,
+      "test": 962
+    },
+    "zero_leakage_verified": true,
+    "leakage_violations": []
+  }
+}

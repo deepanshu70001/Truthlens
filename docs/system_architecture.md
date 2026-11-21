@@ -11,7 +11,7 @@ flowchart LR
   API -->|preprocessing status event| DB
   API -->|in-process background task| Orch[Single async analysis orchestrator]
   Orch --> Prep[Preprocess / metadata / quality]
-  Orch --> Auth[SigLIP2 authenticity]
+  Orch --> Auth[SigLIP fine-tuned head authenticity]
   Orch --> Forensics[Classical forensics]
   Orch --> OCR[EasyOCR or Tesseract when installed]
   Orch --> Vision[YOLO when installed/configured]
@@ -34,6 +34,16 @@ The upload endpoint performs validation, hashing and preprocessing, persists ana
 ## Implemented versus unavailable
 
 The authenticity model, classical forensics, OCR adapters, YOLO object detection, Grad-CAM, claim extraction, fact-check API adapter, Google image provenance adapter, evidence/fusion/report services, and Phase 4 heuristic indicators exist. Integration is conditional on optional libraries, model cache, compatible model internals, and credentials. Text translation, VLM inference, C2PA parsing, trained spread/regional/social models, authentication, and a durable job queue are not implemented. The `/models` API remains a placeholder.
+
+## Model identity and calibration contract
+
+To prevent cross-checkpoint miscalibration or silent model drift, TruthLens establishes a canonical Model Identity Contract (Schema Version 2) enforced at both calibration generation and runtime loading:
+- **Canonical Model Identity:** Evaluates runtime model ID, backbone model ID and revision commit hash, classification head SHA-256 fingerprint, preprocessing contract version (`siglip-frozen-v1`), and label mapping.
+- **Tripartite Decision Separation:**
+  1. `model_prediction`: Raw argmax binary classification (`likely_ai_generated`, `likely_authentic`, or `inconclusive` on ties).
+  2. `calibrated_candidate_label`: Probability-band candidate under temperature scaling.
+  3. `label`: Application-level decision. Defaults strictly to `inconclusive` unless both valid calibration and independent domain-validation evidence (`validated_for_input_domain`) are established.
+- **Opt-in Calibration:** Calibration artifacts must document human confirmation of labels, rights, and multi-family AI generators from a dedicated validation split. Mismatched artifacts are rejected safely.
 
 ## Runtime and persistence
 

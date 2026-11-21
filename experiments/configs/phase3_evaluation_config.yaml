@@ -1,0 +1,85 @@
+# Phase 3: Controlled Benchmark Evaluation & Calibration Configuration
+# This file specifies evaluation parameters, metrics, and model contracts for Phase 3.
+# NOTE: This is a configuration specification. No evaluation is executed during Phase 2.
+
+evaluation_target:
+  name: "TruthLens Authenticity Detector (SigLIP-Base Frozen Head Baseline)"
+  architecture: "SigLIP-Base (Vision Transformer) with Frozen-Head Classifier"
+  model_id: "truthlens/siglip-cifake-frozen-head"
+  backbone_model: "google/siglip-base-patch16-224"
+  backbone_revision: "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed"
+  head_checkpoint_path: "models/baselines/siglip_frozen_head.pt"
+  expected_head_sha256: "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538"
+  preprocessing_version: "siglip-frozen-v1"
+  label_mapping:
+    0: "real"
+    1: "ai_generated"
+
+model_identity_verification:
+  enforce_strict_identity: true
+  reject_on_head_sha256_mismatch: true
+  reject_on_backbone_mismatch: true
+  reject_on_preprocessing_mismatch: true
+  reject_on_label_mapping_mismatch: true
+
+evaluation_datasets:
+  tiny_genimage:
+    manifest_path: "experiments/manifests/tiny_genimage_evaluation_splits.csv"
+    calibration_split_role: "calibration"
+    validation_split_role: "validation"
+    test_split_role: "test"
+    domain_type: "standardized_synthetic_and_imagenet"
+
+  frontier_benchmark_2026_10:
+    manifest_path: "experiments/manifests/frontier_benchmark_2026_10_evaluation_splits.csv"
+    calibration_split_role: "calibration"
+    validation_split_role: "validation"
+    test_split_role: "test"
+    domain_type: "frontier_2026_generators_and_social_compression"
+
+  wildaigc_bench:
+    manifest_path: "experiments/manifests/wildaigc_bench_evaluation_splits.csv"
+    calibration_split_role: "calibration"
+    validation_split_role: "validation"
+    test_split_role: "test"
+    domain_type: "in_the_wild_viral_news_claims"
+
+phase3_evaluation_metrics:
+  # Metrics computable on raw logits / softmax probabilities
+  uncalibrated_metrics:
+    - name: "raw_accuracy"
+      type: "classification"
+    - name: "raw_precision"
+      type: "classification"
+    - name: "raw_recall"
+      type: "classification"
+    - name: "raw_f1_score"
+      type: "classification"
+    - name: "roc_auc"
+      type: "threshold_independent"
+    - name: "false_acceptance_rate"
+      type: "operating_point"
+    - name: "false_rejection_rate"
+      type: "operating_point"
+    - name: "confusion_matrix"
+      type: "contingency_table"
+
+  # Metrics requiring verified temperature-calibrated probabilities
+  calibrated_metrics:
+    - name: "expected_calibration_error"
+      bins: 15
+      strategy: "uniform_mass"
+    - name: "maximum_calibration_error"
+      bins: 15
+    - name: "brier_score"
+      type: "strictly_proper_scoring_rule"
+    - name: "negative_log_likelihood"
+      type: "cross_entropy"
+    - name: "reliability_diagrams"
+      type: "visualization"
+
+  slice_evaluations:
+    - "per_generator_metrics"
+    - "per_dataset_metrics"
+    - "per_compression_variant_metrics"
+    - "generator_held_out_generalization"

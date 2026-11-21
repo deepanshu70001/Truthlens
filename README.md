@@ -75,18 +75,18 @@ This is the existing CSE-AI student-team project described in the implementation
 
 ## Project documentation
 
-- [System architecture](docs/system_architecture.md)
-- [API reference](docs/api_reference.md)
-- [Deployment guide](docs/deployment_guide.md)
+- [Master Project Dossier](PROJECT_DOCUMENTATION/PROJECT_MASTER_DOSSIER.md) — Comprehensive master documentation suite
+- [Documentation Index](docs/README.md) — Complete catalogue of all reference documents, audits, and phase reports
+- [System architecture](docs/system_architecture.md) — Current pipeline and component map
+- [API reference](docs/api_reference.md) — REST endpoints and structured report JSON schema
+- [Deployment guide](docs/deployment_guide.md) — Local installation, configuration, and verification
 - [Security audit](docs/phase5_security_audit.md)
 - [System audit](docs/phase5_system_audit.md)
 - [E2E test report](docs/phase5_e2e_test_report.md)
 - [Performance report](docs/phase5_performance_report.md)
-- [Phase 5 implementation report](docs/phase5_implementation_report.md)
 - [Phase 6 research readiness audit](docs/phase6_research_readiness_audit.md)
 - [Phase 6 final research report](docs/phase6_final_research_report.md)
 - [Phase 6 IEEE paper draft](docs/TruthLens_IEEE_research_paper.md)
 - [Phase 6 viva preparation](docs/phase6_viva_preparation.md)
-- [Phase 6 implementation report](docs/phase6_implementation_report.md)
 - [Phase 6 experiment tooling](experiments/README.md)
-- [AI-image misclassification review and regression changes](docs/ai_generation_misclassification_review.md)
+- [AI-image misclassification review](docs/ai_generation_misclassification_review.md)

@@ -1,0 +1,40 @@
+{
+  "audit_version": "1.0.0",
+  "audit_date": "2026-11-21T12:53:50.555465+00:00",
+  "phase": "Phase 3.5: Independent Research & Statistical Audit",
+  "evaluator_verdict": "PASS_WITH_LIMITATIONS",
+  "audit_summary": {
+    "overall_status": "PASS WITH LIMITATIONS",
+    "prediction_csvs_valid": true,
+    "metrics_reconciled": true,
+    "split_integrity_verified": true,
+    "cross_role_leakage_count": 0,
+    "tiny_genimage_bootstrap_diagnosed": true,
+    "wildaigc_temperature_diagnosed": true,
+    "wildaigc_dataset_approval": "NOT_APPROVED_FOR_AI_GENERATION_SUPERVISED_TRAINING",
+    "frontier_dataset_approval": "RESERVED_FOR_EVALUATION_ZERO_TRAINING_MEMBERSHIP",
+    "tiny_genimage_training_reserve_pool": "ELIGIBLE_FOR_FILTERED_SELECTION"
+  },
+  "discrepancies_resolved": [
+    {
+      "issue": "Narrative precision discrepancies reported in user prompt (0.5204 vs 0.5354, 0.4460 vs 0.4459, 0.6401 vs 0.5940)",
+      "root_cause": "Typographical/draft calculation errors in previous turn narrative text table. The underlying serialized phase3_results.json and prediction CSVs were mathematically exact and consistent with the confusion matrices: Tiny-GenImage = 0.5354, Frontier = 0.4459, WildAIGC = 0.5940.",
+      "resolution": "Confirmed and reconciled in phase3_5_metric_reconciliation.csv."
+    },
+    {
+      "issue": "Artificially wide bootstrap confidence interval on Tiny-GenImage [0.4133, 0.8200]",
+      "root_cause": "Phase 2 Step 3 grouped all 3,500 real ImageNet test images into a single group (tiny_genimage_val_ImageNet-Camera_ILSVRC2012). In unstratified group bootstrap with 2,001 groups, 34.3% of resamples omitted this single real group entirely (0 real samples). Stratified bootstrap yields the true valid 95% CI of [0.5426, 0.5614].",
+      "resolution": "Diagnosed and documented in phase3_5_bootstrap_audit.json."
+    },
+    {
+      "issue": "Extremely high calibration temperature on WildAIGC T = 148.4123",
+      "root_cause": "Negative correlation between detector margins and true labels on WildAIGC (r = -0.2310). Model assigned higher AI scores to Real images than AI images. NLL optimization pushed T -> infinity to maximize entropy (flat 0.5 probability), hitting the upper search bound exp(5.0) \u2248 148.4123.",
+      "resolution": "Diagnosed and documented in phase3_5_calibration_audit.json."
+    }
+  ],
+  "dataset_approval_decisions": {
+    "tiny_genimage": "APPROVED_TRAINING_RESERVE_SUBSET_ONLY",
+    "frontier_benchmark_2026_10": "RESERVED_FOR_EVALUATION_ZERO_TRAINING_MEMBERSHIP",
+    "wildaigc_bench": "NOT_APPROVED_FOR_AI_GENERATION_SUPERVISED_TRAINING"
+  }
+}

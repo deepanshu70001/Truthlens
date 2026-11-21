@@ -1,0 +1,509 @@
+{
+  "tiny_genimage_generators": {
+    "adm": {
+      "category": "SEEN_TRAINING",
+      "ai_sample_count": 500,
+      "paired_real_sample_count": 3500,
+      "e3_candidate": {
+        "ai_detection_rate": 0.994,
+        "balanced_accuracy": 0.9854,
+        "roc_auc": 0.9992,
+        "f1_score": 0.9221,
+        "precision": 0.8599,
+        "recall": 0.994
+      },
+      "baseline": {
+        "ai_detection_rate": 0.674,
+        "balanced_accuracy": 0.4969,
+        "roc_auc": 0.4958,
+        "f1_score": 0.2094,
+        "precision": 0.124,
+        "recall": 0.674
+      },
+      "delta_balanced_accuracy": 0.4885,
+      "delta_roc_auc": 0.5034
+    },
+    "biggan": {
+      "category": "SEEN_TRAINING",
+      "ai_sample_count": 500,
+      "paired_real_sample_count": 3500,
+      "e3_candidate": {
+        "ai_detection_rate": 0.996,
+        "balanced_accuracy": 0.9864,
+        "roc_auc": 0.9993,
+        "f1_score": 0.9231,
+        "precision": 0.8601,
+        "recall": 0.996
+      },
+      "baseline": {
+        "ai_detection_rate": 0.604,
+        "balanced_accuracy": 0.4619,
+        "roc_auc": 0.4546,
+        "f1_score": 0.1898,
+        "precision": 0.1126,
+        "recall": 0.604
+      },
+      "delta_balanced_accuracy": 0.5245,
+      "delta_roc_auc": 0.5447
+    },
+    "glide": {
+      "category": "SEEN_TRAINING",
+      "ai_sample_count": 500,
+      "paired_real_sample_count": 3500,
+      "e3_candidate": {
+        "ai_detection_rate": 0.994,
+        "balanced_accuracy": 0.9854,
+        "roc_auc": 0.997,
+        "f1_score": 0.9221,
+        "precision": 0.8599,
+        "recall": 0.994
+      },
+      "baseline": {
+        "ai_detection_rate": 0.894,
+        "balanced_accuracy": 0.6069,
+        "roc_auc": 0.7111,
+        "f1_score": 0.2686,
+        "precision": 0.1581,
+        "recall": 0.894
+      },
+      "delta_balanced_accuracy": 0.3785,
+      "delta_roc_auc": 0.2859
+    },
+    "midjourney": {
+      "category": "HELD_OUT_UNSEEN",
+      "ai_sample_count": 500,
+      "paired_real_sample_count": 3500,
+      "e3_candidate": {
+        "ai_detection_rate": 0.516,
+        "balanced_accuracy": 0.7464,
+        "roc_auc": 0.926,
+        "f1_score": 0.615,
+        "precision": 0.7611,
+        "recall": 0.516
+      },
+      "baseline": {
+        "ai_detection_rate": 0.89,
+        "balanced_accuracy": 0.6049,
+        "roc_auc": 0.7401,
+        "f1_score": 0.2676,
+        "precision": 0.1575,
+        "recall": 0.89
+      },
+      "delta_balanced_accuracy": 0.1415,
+      "delta_roc_auc": 0.1859
+    },
+    "stable diffusion v1.5": {
+      "category": "UNSEEN",
+      "ai_sample_count": 500,
+      "paired_real_sample_count": 3500,
+      "e3_candidate": {
+        "ai_detection_rate": 0.844,
+        "balanced_accuracy": 0.9104,
+        "roc_auc": 0.9835,
+        "f1_score": 0.8415,
+        "precision": 0.839,
+        "recall": 0.844
+      },
+      "baseline": {
+        "ai_detection_rate": 0.928,
+        "balanced_accuracy": 0.6239,
+        "roc_auc": 0.7339,
+        "f1_score": 0.2774,
+        "precision": 0.1631,
+        "recall": 0.928
+      },
+      "delta_balanced_accuracy": 0.2865,
+      "delta_roc_auc": 0.2496
+    },
+    "vqdm": {
+      "category": "HELD_OUT_UNSEEN",
+      "ai_sample_count": 500,
+      "paired_real_sample_count": 3500,
+      "e3_candidate": {
+        "ai_detection_rate": 0.206,
+        "balanced_accuracy": 0.5914,
+        "roc_auc": 0.783,
+        "f1_score": 0.3012,
+        "precision": 0.5598,
+        "recall": 0.206
+      },
+      "baseline": {
+        "ai_detection_rate": 0.63,
+        "balanced_accuracy": 0.4749,
+        "roc_auc": 0.469,
+        "f1_score": 0.1971,
+        "precision": 0.1168,
+        "recall": 0.63
+      },
+      "delta_balanced_accuracy": 0.1165,
+      "delta_roc_auc": 0.314
+    },
+    "wukong": {
+      "category": "HELD_OUT_UNSEEN",
+      "ai_sample_count": 500,
+      "paired_real_sample_count": 3500,
+      "e3_candidate": {
+        "ai_detection_rate": 0.54,
+        "balanced_accuracy": 0.7584,
+        "roc_auc": 0.9289,
+        "f1_score": 0.6345,
+        "precision": 0.7692,
+        "recall": 0.54
+      },
+      "baseline": {
+        "ai_detection_rate": 0.874,
+        "balanced_accuracy": 0.5969,
+        "roc_auc": 0.6818,
+        "f1_score": 0.2634,
+        "precision": 0.1551,
+        "recall": 0.874
+      },
+      "delta_balanced_accuracy": 0.1615,
+      "delta_roc_auc": 0.2471
+    }
+  },
+  "frontier_generators": {
+    "alibaba/qwen-image-3": {
+      "ai_sample_count": 40,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.5,
+        "balanced_accuracy": 0.5875,
+        "roc_auc": 0.6405,
+        "f1_score": 0.0802
+      },
+      "baseline": {
+        "ai_detection_rate": 0.8,
+        "balanced_accuracy": 0.6383,
+        "roc_auc": 0.6036,
+        "f1_score": 0.0822
+      },
+      "delta_balanced_accuracy": -0.0508,
+      "delta_roc_auc": 0.0369
+    },
+    "blackforestlabs/flux-3": {
+      "ai_sample_count": 32,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.2812,
+        "balanced_accuracy": 0.4782,
+        "roc_auc": 0.3992,
+        "f1_score": 0.0375
+      },
+      "baseline": {
+        "ai_detection_rate": 0.5,
+        "balanced_accuracy": 0.4883,
+        "roc_auc": 0.559,
+        "f1_score": 0.0424
+      },
+      "delta_balanced_accuracy": -0.0101,
+      "delta_roc_auc": -0.1598
+    },
+    "bytedance/seedream/v5/pro": {
+      "ai_sample_count": 40,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.5,
+        "balanced_accuracy": 0.5875,
+        "roc_auc": 0.5671,
+        "f1_score": 0.0802
+      },
+      "baseline": {
+        "ai_detection_rate": 0.75,
+        "balanced_accuracy": 0.6133,
+        "roc_auc": 0.6973,
+        "f1_score": 0.0772
+      },
+      "delta_balanced_accuracy": -0.0258,
+      "delta_roc_auc": -0.1302
+    },
+    "flux-2": {
+      "ai_sample_count": 36,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.5278,
+        "balanced_accuracy": 0.6014,
+        "roc_auc": 0.621,
+        "f1_score": 0.0769
+      },
+      "baseline": {
+        "ai_detection_rate": 0.5833,
+        "balanced_accuracy": 0.53,
+        "roc_auc": 0.5494,
+        "f1_score": 0.055
+      },
+      "delta_balanced_accuracy": 0.0714,
+      "delta_roc_auc": 0.0716
+    },
+    "flux-2-pro": {
+      "ai_sample_count": 48,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.5625,
+        "balanced_accuracy": 0.6188,
+        "roc_auc": 0.5903,
+        "f1_score": 0.1051
+      },
+      "baseline": {
+        "ai_detection_rate": 0.875,
+        "balanced_accuracy": 0.6758,
+        "roc_auc": 0.7491,
+        "f1_score": 0.1054
+      },
+      "delta_balanced_accuracy": -0.057,
+      "delta_roc_auc": -0.1588
+    },
+    "google/nano-banana-2.1": {
+      "ai_sample_count": 40,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.45,
+        "balanced_accuracy": 0.5625,
+        "roc_auc": 0.5636,
+        "f1_score": 0.0724
+      },
+      "baseline": {
+        "ai_detection_rate": 0.8,
+        "balanced_accuracy": 0.6383,
+        "roc_auc": 0.6595,
+        "f1_score": 0.0822
+      },
+      "delta_balanced_accuracy": -0.0758,
+      "delta_roc_auc": -0.0959
+    },
+    "hidream-o1-image": {
+      "ai_sample_count": 44,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.9091,
+        "balanced_accuracy": 0.7921,
+        "roc_auc": 0.8844,
+        "f1_score": 0.153
+      },
+      "baseline": {
+        "ai_detection_rate": 1.0,
+        "balanced_accuracy": 0.7383,
+        "roc_auc": 0.8181,
+        "f1_score": 0.1107
+      },
+      "delta_balanced_accuracy": 0.0538,
+      "delta_roc_auc": 0.0663
+    },
+    "ideogram/v4.5": {
+      "ai_sample_count": 48,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.3958,
+        "balanced_accuracy": 0.5354,
+        "roc_auc": 0.519,
+        "f1_score": 0.0751
+      },
+      "baseline": {
+        "ai_detection_rate": 0.9583,
+        "balanced_accuracy": 0.7175,
+        "roc_auc": 0.707,
+        "f1_score": 0.1149
+      },
+      "delta_balanced_accuracy": -0.1821,
+      "delta_roc_auc": -0.188
+    },
+    "kling-image/v3": {
+      "ai_sample_count": 28,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.6071,
+        "balanced_accuracy": 0.6411,
+        "roc_auc": 0.7565,
+        "f1_score": 0.0702
+      },
+      "baseline": {
+        "ai_detection_rate": 1.0,
+        "balanced_accuracy": 0.7383,
+        "roc_auc": 0.7453,
+        "f1_score": 0.0734
+      },
+      "delta_balanced_accuracy": -0.0972,
+      "delta_roc_auc": 0.0112
+    },
+    "krea-2/turbo": {
+      "ai_sample_count": 44,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.3182,
+        "balanced_accuracy": 0.4966,
+        "roc_auc": 0.5312,
+        "f1_score": 0.0563
+      },
+      "baseline": {
+        "ai_detection_rate": 0.7273,
+        "balanced_accuracy": 0.602,
+        "roc_auc": 0.6653,
+        "f1_score": 0.0817
+      },
+      "delta_balanced_accuracy": -0.1054,
+      "delta_roc_auc": -0.1341
+    },
+    "luma/agent/uni-1/v1": {
+      "ai_sample_count": 36,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.25,
+        "balanced_accuracy": 0.4625,
+        "roc_auc": 0.3664,
+        "f1_score": 0.0372
+      },
+      "baseline": {
+        "ai_detection_rate": 0.8056,
+        "balanced_accuracy": 0.6411,
+        "roc_auc": 0.6909,
+        "f1_score": 0.0751
+      },
+      "delta_balanced_accuracy": -0.1786,
+      "delta_roc_auc": -0.3245
+    },
+    "meta/muse-image": {
+      "ai_sample_count": 36,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.4444,
+        "balanced_accuracy": 0.5597,
+        "roc_auc": 0.5291,
+        "f1_score": 0.0652
+      },
+      "baseline": {
+        "ai_detection_rate": 0.8611,
+        "balanced_accuracy": 0.6689,
+        "roc_auc": 0.5764,
+        "f1_score": 0.0801
+      },
+      "delta_balanced_accuracy": -0.1092,
+      "delta_roc_auc": -0.0473
+    },
+    "microsoft/mai-image-2.5": {
+      "ai_sample_count": 36,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.6111,
+        "balanced_accuracy": 0.6431,
+        "roc_auc": 0.7082,
+        "f1_score": 0.0885
+      },
+      "baseline": {
+        "ai_detection_rate": 0.8889,
+        "balanced_accuracy": 0.6828,
+        "roc_auc": 0.7056,
+        "f1_score": 0.0826
+      },
+      "delta_balanced_accuracy": -0.0397,
+      "delta_roc_auc": 0.0026
+    },
+    "nano-banana-pro": {
+      "ai_sample_count": 56,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.3929,
+        "balanced_accuracy": 0.534,
+        "roc_auc": 0.482,
+        "f1_score": 0.0851
+      },
+      "baseline": {
+        "ai_detection_rate": 0.75,
+        "balanced_accuracy": 0.6133,
+        "roc_auc": 0.6633,
+        "f1_score": 0.1043
+      },
+      "delta_balanced_accuracy": -0.0793,
+      "delta_roc_auc": -0.1813
+    },
+    "openai/gpt-image-2": {
+      "ai_sample_count": 36,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.1389,
+        "balanced_accuracy": 0.407,
+        "roc_auc": 0.415,
+        "f1_score": 0.0208
+      },
+      "baseline": {
+        "ai_detection_rate": 0.3333,
+        "balanced_accuracy": 0.405,
+        "roc_auc": 0.3837,
+        "f1_score": 0.0318
+      },
+      "delta_balanced_accuracy": 0.002,
+      "delta_roc_auc": 0.0313
+    },
+    "qwen-image-2512": {
+      "ai_sample_count": 28,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.3571,
+        "balanced_accuracy": 0.5161,
+        "roc_auc": 0.5233,
+        "f1_score": 0.0419
+      },
+      "baseline": {
+        "ai_detection_rate": 0.5714,
+        "balanced_accuracy": 0.5241,
+        "roc_auc": 0.5671,
+        "f1_score": 0.0426
+      },
+      "delta_balanced_accuracy": -0.008,
+      "delta_roc_auc": -0.0438
+    },
+    "recraft/v4.1": {
+      "ai_sample_count": 44,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.2273,
+        "balanced_accuracy": 0.4512,
+        "roc_auc": 0.4944,
+        "f1_score": 0.0406
+      },
+      "baseline": {
+        "ai_detection_rate": 0.9091,
+        "balanced_accuracy": 0.6929,
+        "roc_auc": 0.7842,
+        "f1_score": 0.1011
+      },
+      "delta_balanced_accuracy": -0.2417,
+      "delta_roc_auc": -0.2898
+    },
+    "xai/grok-imagine-image/v2.0": {
+      "ai_sample_count": 36,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.25,
+        "balanced_accuracy": 0.4625,
+        "roc_auc": 0.5186,
+        "f1_score": 0.0372
+      },
+      "baseline": {
+        "ai_detection_rate": 0.6389,
+        "balanced_accuracy": 0.5578,
+        "roc_auc": 0.5085,
+        "f1_score": 0.0601
+      },
+      "delta_balanced_accuracy": -0.0953,
+      "delta_roc_auc": 0.0101
+    },
+    "z-image/turbo": {
+      "ai_sample_count": 32,
+      "paired_real_sample_count": 1351,
+      "e3_candidate": {
+        "ai_detection_rate": 0.25,
+        "balanced_accuracy": 0.4625,
+        "roc_auc": 0.4047,
+        "f1_score": 0.0334
+      },
+      "baseline": {
+        "ai_detection_rate": 0.6562,
+        "balanced_accuracy": 0.5665,
+        "roc_auc": 0.5707,
+        "f1_score": 0.0553
+      },
+      "delta_balanced_accuracy": -0.104,
+      "delta_roc_auc": -0.166
+    }
+  }
+}

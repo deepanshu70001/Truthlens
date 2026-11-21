@@ -1,0 +1,119 @@
+{
+  "variant_evaluations": {
+    "original": {
+      "threshold": 0.5,
+      "confusion_matrix": {
+        "tn": 149,
+        "fp": 191,
+        "fn": 38,
+        "tp": 147
+      },
+      "accuracy": 0.5638,
+      "balanced_accuracy": 0.6164,
+      "precision": 0.4349,
+      "recall": 0.7946,
+      "specificity": 0.4382,
+      "false_acceptance_rate": 0.5618,
+      "false_rejection_rate": 0.2054,
+      "f1_score": 0.5621,
+      "roc_auc": 0.6395,
+      "pr_auc": 0.4454,
+      "brier_score": 0.2507,
+      "sample_count": 525
+    },
+    "instagram": {
+      "threshold": 0.5,
+      "confusion_matrix": {
+        "tn": 171,
+        "fp": 166,
+        "fn": 43,
+        "tp": 142
+      },
+      "accuracy": 0.5996,
+      "balanced_accuracy": 0.6375,
+      "precision": 0.461,
+      "recall": 0.7676,
+      "specificity": 0.5074,
+      "false_acceptance_rate": 0.4926,
+      "false_rejection_rate": 0.2324,
+      "f1_score": 0.5761,
+      "roc_auc": 0.6648,
+      "pr_auc": 0.4749,
+      "brier_score": 0.2417,
+      "sample_count": 522
+    },
+    "reshared": {
+      "threshold": 0.5,
+      "confusion_matrix": {
+        "tn": 161,
+        "fp": 176,
+        "fn": 44,
+        "tp": 141
+      },
+      "accuracy": 0.5785,
+      "balanced_accuracy": 0.62,
+      "precision": 0.4448,
+      "recall": 0.7622,
+      "specificity": 0.4777,
+      "false_acceptance_rate": 0.5223,
+      "false_rejection_rate": 0.2378,
+      "f1_score": 0.5618,
+      "roc_auc": 0.6519,
+      "pr_auc": 0.4583,
+      "brier_score": 0.2446,
+      "sample_count": 522
+    },
+    "whatsapp": {
+      "threshold": 0.5,
+      "confusion_matrix": {
+        "tn": 163,
+        "fp": 174,
+        "fn": 46,
+        "tp": 139
+      },
+      "accuracy": 0.5785,
+      "balanced_accuracy": 0.6175,
+      "precision": 0.4441,
+      "recall": 0.7514,
+      "specificity": 0.4837,
+      "false_acceptance_rate": 0.5163,
+      "false_rejection_rate": 0.2486,
+      "f1_score": 0.5582,
+      "roc_auc": 0.6442,
+      "pr_auc": 0.4481,
+      "brier_score": 0.2461,
+      "sample_count": 522
+    }
+  },
+  "pairwise_consistency_against_original": {
+    "whatsapp": {
+      "total_pairs": 522,
+      "prediction_flips": 25,
+      "flip_rate": 0.0479
+    },
+    "instagram": {
+      "total_pairs": 522,
+      "prediction_flips": 30,
+      "flip_rate": 0.0575
+    },
+    "reshared": {
+      "total_pairs": 522,
+      "prediction_flips": 29,
+      "flip_rate": 0.0556
+    }
+  },
+  "compression_degradation_deltas": {
+    "whatsapp": {
+      "delta_accuracy": 0.0147,
+      "delta_roc_auc": 0.0047
+    },
+    "instagram": {
+      "delta_accuracy": 0.0358,
+      "delta_roc_auc": 0.0253
+    },
+    "reshared": {
+      "delta_accuracy": 0.0147,
+      "delta_roc_auc": 0.0124
+    }
+  }
+}

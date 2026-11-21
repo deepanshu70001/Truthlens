@@ -249,12 +249,10 @@ Truthlens/
 | File | Content |
 |---|---|
 | `README.md` | Project overview, startup, current capability and research/deployment caveats. |
-| `docs/ARCHITECTURE.md`, `docs/system_architecture.md` | Architecture/design notes and current component flow; `system_architecture.md` is the concise current system map. |
-| `docs/api_reference.md` | API route/schema overview. |
+| `docs/README.md` | Documentation index and navigation map for all reference files and phase reports. |
+| `docs/system_architecture.md` | Concise current system architecture, component data flow, and runtime boundaries. |
+| `docs/api_reference.md` | API route/schema overview and structured report JSON specification. |
 | `docs/deployment_guide.md` | Local setup, configuration, demonstration workflow and deployment constraints. |
-| `docs/MODELS.md` | Model inventory and configuration history. |
-| `docs/EVALUATION.md` | Evaluation notes/protocol status. |
-| `docs/IMPLEMENTATION_PLAN.md` | Phase implementation plan/history. |
 | `docs/phase1_implementation_report.md`, `phase2_implementation_report.md`, `phase3_implementation_report.md`, `phase4_implementation_report.md`, `phase5_implementation_report.md`, `phase6_implementation_report.md` | Phase-specific implementation records; older records can describe prior states, so reconcile with current source. |
 | `docs/phase4_dataset_inventory.md`, `phase4_evaluation.md` | Phase 4 input/data availability and evaluation limitations. |
 | `docs/phase5_e2e_test_report.md`, `phase5_performance_report.md`, `phase5_security_audit.md`, `phase5_system_audit.md` | Historical end-to-end/software, performance, security and system audit records. |

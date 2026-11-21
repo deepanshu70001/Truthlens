@@ -112,7 +112,8 @@ def main() -> None:
             prediction = detector.detect(image.convert("RGB"))
         margins.append(prediction.raw_logits["fake"] - prediction.raw_logits["real"])
         labels.append(int(row["label"] == "ai_generated"))
-    model_revision = detector._model_revision
+    model_identity = detector.model_identity()
+    model_revision = model_identity.get("model_revision")
     if not model_revision or model_revision == "unknown":
         raise SystemExit("Calibration aborted: the exact checkpoint revision could not be identified.")
 
@@ -121,10 +122,16 @@ def main() -> None:
     after = probabilities_from_margins(margins, temperature)
     thresholds = select_abstention_thresholds(labels, after)
     artifact = {
-        "schema_version": 1,
+        "schema_version": 2,
         "method": "temperature_scaling",
-        "model_id": settings.AUTHENTICITY_MODEL,
-        "model_revision": model_revision,
+        "model_id": model_identity["model_id"],
+        "model_revision": model_identity["model_revision"],
+        "backbone_model": model_identity.get("backbone_model"),
+        "backbone_revision": model_identity.get("backbone_revision"),
+        "head_sha256": model_identity.get("head_sha256"),
+        "preprocessing_version": model_identity.get("preprocessing_version"),
+        "label_mapping": model_identity.get("label_mapping"),
+        "inference_config": model_identity.get("inference_config", {}),
         "validation_manifest_sha256": manifest_digest,
         "validation_split": "validation",
         "sample_count": len(validation),

@@ -4,7 +4,7 @@ TruthLens is currently suitable for a trusted local academic demonstration. It h
 
 ## Prerequisites
 
-- Python 3.11+ (validated in this checkout with 3.11.9).
+- Python 3.11+ (validated in this checkout with 3.11.9 and 3.12.10).
 - Node.js 22.12+ recommended for the current Vite 8 toolchain; `npm ci` from `frontend/`.
 - 4+ CPU cores and sufficient RAM for CPU mode. CUDA is optional. The default fine-tuned authenticity backend uses `models/baselines/siglip_frozen_head.pt` plus the `google/siglip-base-patch16-224` vision encoder (downloaded from Hugging Face on first load unless already cached); other model packages/weights may download additional data.
 - OCR uses EasyOCR with models stored in `OCR_MODEL_DIR` (default `models/ocr`); its first run downloads the configured language models there. Tesseract is an optional fallback and requires both the Python wrapper and system executable/language packs. Object detection requires Ultralytics and an available YOLO checkpoint. Optional API keys enable Google integrations.
@@ -23,7 +23,7 @@ Copy-Item .env.example .env
 
 Keep default SQLite for a local demonstration. Edit `.env` only for storage/model settings or optional integrations. Set `DEVICE=cpu` if CUDA is not correctly installed. Configure optional keys only after reviewing privacy implications: Google Vision receives the uploaded image; Fact Check Tools receives extracted claim query text. Never commit `.env`.
 
-The repository ZIP used for this integration includes the fine-tuned head at `models/baselines/siglip_frozen_head.pt`; this small file is included in source control. The default `AUTHENTICITY_BACKEND=finetuned_siglip` pairs that head with `AUTHENTICITY_BACKBONE_MODEL=google/siglip-base-patch16-224`; the first backend load needs Hugging Face access to retrieve the backbone. To select the previous hosted image classifier instead, set `AUTHENTICITY_BACKEND=huggingface` and configure `AUTHENTICITY_MODEL` (optionally `AUTHENTICITY_MODEL_REVISION`). The user-facing authenticity tag is the raw-score winner: AI-generated when its score is greater, otherwise Real/authentic. These scores are not calibrated probabilities. The trained head was evaluated on a small CIFAKE subset; that result does not establish generalization to current image generators or real-world images.
+The repository includes the fine-tuned head at `models/baselines/siglip_frozen_head.pt`; this small file is included in source control. The default `AUTHENTICITY_BACKEND=finetuned_siglip` pairs that head with `AUTHENTICITY_BACKBONE_MODEL=google/siglip-base-patch16-224`; the first backend load needs Hugging Face access to retrieve the backbone. To select the previous hosted image classifier instead, set `AUTHENTICITY_BACKEND=huggingface` and configure `AUTHENTICITY_MODEL` (optionally `AUTHENTICITY_MODEL_REVISION`). The raw model prediction records the raw-score argmax ('likely_ai_generated' or 'likely_authentic'); the application classification label defaults strictly to 'inconclusive' unless a verified calibration artifact and domain validation evidence are provided. These scores are not calibrated probabilities. The trained head was evaluated on a small CIFAKE subset; that result does not establish generalization to current image generators or real-world images.
 
 Start the API from the repository root:
 

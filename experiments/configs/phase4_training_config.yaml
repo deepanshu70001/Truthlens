@@ -1,0 +1,58 @@
+experiment_name: truthlens_phase5_siglip_frozen_head_retraining
+description: Hardware-aware configuration for training newly initialized linear head
+  on frozen SigLIP backbone using approved Phase 4 dataset
+hardware_profile:
+  gpu: NVIDIA GeForce RTX 3050 Laptop GPU
+  dedicated_vram_gb: 4
+  shared_memory_gb: 8
+  recommended_precision: fp16
+model:
+  backbone: google/siglip-base-patch16-224
+  backbone_revision: 7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed
+  freeze_backbone: true
+  classification_head:
+    in_features: 768
+    out_features: 1
+    initialization: xavier_uniform
+  preprocessing:
+    version: siglip-frozen-v1
+    image_size: 224
+    crop: center_224
+    normalization:
+      mean:
+      - 0.5
+      - 0.5
+      - 0.5
+      std:
+      - 0.5
+      - 0.5
+      - 0.5
+dataset:
+  training_manifest: experiments/manifests/phase4_training_manifest.csv
+  validation_manifest: experiments/manifests/tiny_genimage_evaluation_splits.csv
+  validation_role: validation
+  test_manifest_locked: experiments/manifests/tiny_genimage_evaluation_splits.csv
+  test_role_locked: test
+  total_approved_training_samples: 6995
+training_hyperparameters:
+  batch_size: 32
+  gradient_accumulation_steps: 2
+  effective_batch_size: 64
+  num_epochs: 10
+  optimizer: AdamW
+  learning_rate: 0.0001
+  weight_decay: 0.01
+  lr_scheduler: cosine_with_warmup
+  warmup_ratio: 0.05
+  mixed_precision: fp16
+  seed: 42
+  dataloader_num_workers: 0
+  early_stopping:
+    metric: val_loss
+    mode: min
+    patience: 3
+    min_delta: 0.001
+output:
+  checkpoint_dir: models/checkpoints/phase5_candidates
+  best_checkpoint_filename: siglip_retrained_head_candidate.pt
+  save_every_epoch: true

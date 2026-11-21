@@ -1,0 +1,49 @@
+dataset,metric_name,narrative_reported_value,serialized_json_value,recomputed_ground_truth_value,difference,reconciliation_status,root_cause_notes
+tiny_genimage,true_negatives,1116,N/A,1116,0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+tiny_genimage,false_positives,2384,N/A,2384,0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+tiny_genimage,false_negatives,753,N/A,753,0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+tiny_genimage,true_positives,2747,N/A,2747,0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+tiny_genimage,accuracy,0.5519,0.5519,0.5519,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+tiny_genimage,balanced_accuracy,0.5519,0.5519,0.5519,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+tiny_genimage,precision,0.5204,0.5354,0.5354,0.015,CORRECTED_DISCREPANCY,Discrepancy identified in previous narrative text. Recomputed TP/(TP+FP) = 2747/(2747+2384) = 0.5354. phase3_results.json recorded 0.5354.
+tiny_genimage,recall,0.7849,0.7849,0.7849,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+tiny_genimage,specificity,0.3189,0.3189,0.3189,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+tiny_genimage,false_acceptance_rate,0.6811,0.6811,0.6811,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+tiny_genimage,false_rejection_rate,0.2151,0.2151,0.2151,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+tiny_genimage,f1_score,0.6365,0.6365,0.6365,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+tiny_genimage,roc_auc,0.6123,0.6123,0.6123,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+tiny_genimage,pr_auc,0.6181,0.6181,0.6181,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+tiny_genimage,matthews_corrcoef,N/A,N/A,0.1172,N/A,NEWLY_AUDITED,Calculated directly from prediction CSV.
+tiny_genimage,cohen_kappa,N/A,N/A,0.1037,N/A,NEWLY_AUDITED,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,true_negatives,644,N/A,644,0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,false_positives,707,N/A,707,0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,false_negatives,171,N/A,171,0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,true_positives,569,N/A,569,0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,accuracy,0.5801,0.5801,0.5801,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,balanced_accuracy,0.6228,0.6228,0.6228,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,precision,0.446,0.4459,0.4459,-0.0001,CORRECTED_DISCREPANCY,Discrepancy identified in previous narrative text. Recomputed TP/(TP+FP) = 569/(569+707) = 0.4459. phase3_results.json recorded 0.4459.
+frontier_benchmark_2026_10,recall,0.7689,0.7689,0.7689,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,specificity,0.4767,0.4767,0.4767,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,false_acceptance_rate,0.5233,0.5233,0.5233,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,false_rejection_rate,0.2311,0.2311,0.2311,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,f1_score,0.5645,0.5645,0.5645,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,roc_auc,0.6501,0.6501,0.6501,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,pr_auc,0.4534,0.4534,0.4534,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,matthews_corrcoef,N/A,N/A,0.2408,N/A,NEWLY_AUDITED,Calculated directly from prediction CSV.
+frontier_benchmark_2026_10,cohen_kappa,N/A,N/A,0.211,N/A,NEWLY_AUDITED,Calculated directly from prediction CSV.
+wildaigc_bench,true_negatives,164,N/A,164,0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+wildaigc_bench,false_positives,285,N/A,285,0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+wildaigc_bench,false_negatives,428,N/A,428,0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+wildaigc_bench,true_positives,417,N/A,417,0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+wildaigc_bench,accuracy,0.449,0.449,0.449,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+wildaigc_bench,balanced_accuracy,0.4294,0.4294,0.4294,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+wildaigc_bench,precision,0.6401,0.594,0.594,-0.0461,CORRECTED_DISCREPANCY,Discrepancy identified in previous narrative text. Recomputed TP/(TP+FP) = 417/(417+285) = 0.5940. phase3_results.json recorded 0.594.
+wildaigc_bench,recall,0.4935,0.4935,0.4935,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+wildaigc_bench,specificity,0.3653,0.3653,0.3653,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+wildaigc_bench,false_acceptance_rate,0.6347,0.6347,0.6347,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+wildaigc_bench,false_rejection_rate,0.5065,0.5065,0.5065,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+wildaigc_bench,f1_score,0.5391,0.5391,0.5391,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+wildaigc_bench,roc_auc,0.4226,0.4226,0.4226,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+wildaigc_bench,pr_auc,0.6201,0.6201,0.6201,0.0,VERIFIED_EXACT,Calculated directly from prediction CSV.
+wildaigc_bench,matthews_corrcoef,N/A,N/A,-0.135,N/A,NEWLY_AUDITED,Calculated directly from prediction CSV.
+wildaigc_bench,cohen_kappa,N/A,N/A,-0.1314,N/A,NEWLY_AUDITED,Calculated directly from prediction CSV.

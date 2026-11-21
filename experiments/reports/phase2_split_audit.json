@@ -1,0 +1,129 @@
+{
+  "metadata": {
+    "audit_timestamp_utc": "2026-11-21T12:13:17.145035+00:00",
+    "protocol_version": "2.0.0",
+    "protocol_id": "truthlens-phase2-step3-group-aware-v1",
+    "split_seed": 42
+  },
+  "datasets": {
+    "tiny_genimage": {
+      "total_images": 35000,
+      "unique_groups": 7362,
+      "evaluation_roles": {
+        "test": 7000,
+        "calibration": 12048,
+        "validation": 5958,
+        "excluded": 9994
+      },
+      "splits_original": {
+        "val": 7000,
+        "train": 28000
+      },
+      "labels": {
+        "ai_generated": 17500,
+        "likely_authentic": 17500
+      }
+    },
+    "frontier_benchmark_2026_10": {
+      "total_images": 2976,
+      "unique_groups": 747,
+      "evaluation_roles": {
+        "calibration": 588,
+        "validation": 297,
+        "test": 2091
+      },
+      "splits_original": {
+        "test": 2976
+      },
+      "labels": {
+        "ai_generated": 1044,
+        "likely_authentic": 1932
+      }
+    },
+    "wildaigc_bench": {
+      "total_images": 1839,
+      "unique_groups": 1194,
+      "evaluation_roles": {
+        "calibration": 364,
+        "validation": 181,
+        "test": 1294
+      },
+      "splits_original": {
+        "test": 1839
+      },
+      "labels": {
+        "ai_generated": 1201,
+        "likely_authentic": 638
+      }
+    }
+  },
+  "leakage_audit": {
+    "datasets": {
+      "tiny_genimage": {
+        "total_rows": 35000,
+        "cross_role_identical_sha256_count": 0,
+        "cross_role_group_id_leak_count": 0,
+        "sha_leaks": {},
+        "group_leaks": {}
+      },
+      "frontier_benchmark_2026_10": {
+        "total_rows": 2976,
+        "cross_role_identical_sha256_count": 0,
+        "cross_role_group_id_leak_count": 0,
+        "sha_leaks": {},
+        "group_leaks": {}
+      },
+      "wildaigc_bench": {
+        "total_rows": 1839,
+        "cross_role_identical_sha256_count": 0,
+        "cross_role_group_id_leak_count": 0,
+        "sha_leaks": {},
+        "group_leaks": {}
+      }
+    },
+    "cross_dataset": {
+      "cross_dataset_exact_matches_count": 0,
+      "cross_dataset_collisions": {},
+      "internal_truthlens_fixture_overlap_count": 0,
+      "internal_collisions": [],
+      "cifake_training_overlap_count": 0
+    },
+    "any_leakage_detected": false
+  },
+  "generator_held_out_protocol": {
+    "enabled": true,
+    "protocol_id": "truthlens-phase2-step3-cross-generator-v1",
+    "description": "Secondary protocol holding out entire generator model families to evaluate cross-architecture generalization",
+    "tiny_genimage": {
+      "calibration_generators": [
+        "Stable Diffusion v1.5",
+        "BigGAN",
+        "ADM",
+        "GLIDE"
+      ],
+      "held_out_test_generators": [
+        "Midjourney",
+        "Wukong",
+        "VQDM"
+      ]
+    },
+    "frontier_benchmark": {
+      "calibration_generators": [
+        "bytedance/seedream/v5/pro",
+        "flux-2-pro",
+        "ideogram/v4.5",
+        "krea-2/turbo",
+        "nano-banana-pro",
+        "recraft/v4.1"
+      ],
+      "held_out_test_generators": [
+        "openai/gpt-image-2",
+        "blackforestlabs/flux-3",
+        "grok-imagine-2",
+        "google/nano-banana-2.1",
+        "meta/muse-image"
+      ]
+    }
+  },
+  "research_readiness": "READY_FOR_PHASE_3"
+}

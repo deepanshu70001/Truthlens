@@ -1,0 +1,122 @@
+{
+  "schema_version": "2.0",
+  "phase": "Phase 6 - Calibration",
+  "created_at": "2026-11-21T14:38:33.441702+00:00",
+  "model_id": "truthlens/siglip-base-tiny-genimage-e3_partial_finetuning",
+  "checkpoint_sha256": "541956a1f766d5093aaec4733f616afaf6deaf5aad1e0bbd6e59f95687a4b96d",
+  "protocol_governance": {
+    "fitted_exclusively_on_calibration": true,
+    "validation_data_used": false,
+    "test_data_used": false,
+    "status": "PASS"
+  },
+  "datasets": {
+    "tiny_genimage": {
+      "dataset_name": "tiny_genimage",
+      "sample_count": 12048,
+      "optimal_temperature": 2.0898,
+      "optimizer_converged": true,
+      "uncalibrated_T1": {
+        "nll": 0.3668,
+        "brier_score": 0.0915,
+        "ece": 0.0847,
+        "mce": 0.4946
+      },
+      "calibrated": {
+        "temperature": 2.0898,
+        "nll": 0.2654,
+        "brier_score": 0.0798,
+        "ece": 0.0571,
+        "mce": 0.3304,
+        "nll_delta": -0.1014,
+        "brier_delta": -0.0117,
+        "ece_delta": -0.0275
+      }
+    },
+    "frontier_benchmark_2026_10": {
+      "dataset_name": "frontier_benchmark_2026_10",
+      "sample_count": 588,
+      "optimal_temperature": 6.9975,
+      "optimizer_converged": true,
+      "uncalibrated_T1": {
+        "nll": 1.2899,
+        "brier_score": 0.3051,
+        "ece": 0.2845,
+        "mce": 0.5331
+      },
+      "calibrated": {
+        "temperature": 6.9975,
+        "nll": 0.6586,
+        "brier_score": 0.2324,
+        "ece": 0.1597,
+        "mce": 0.7419,
+        "nll_delta": -0.6313,
+        "brier_delta": -0.0727,
+        "ece_delta": -0.1248
+      }
+    },
+    "wildaigc_bench": {
+      "dataset_name": "wildaigc_bench",
+      "sample_count": 364,
+      "optimal_temperature": 50.0,
+      "optimizer_converged": true,
+      "uncalibrated_T1": {
+        "nll": 1.673,
+        "brier_score": 0.4528,
+        "ece": 0.4529,
+        "mce": 0.6256
+      },
+      "calibrated": {
+        "temperature": 50.0,
+        "nll": 0.6947,
+        "brier_score": 0.2508,
+        "ece": 0.1627,
+        "mce": 0.4648,
+        "nll_delta": -0.9782,
+        "brier_delta": -0.202,
+        "ece_delta": -0.2902
+      }
+    },
+    "pooled": {
+      "dataset_name": "pooled",
+      "sample_count": 13000,
+      "optimal_temperature": 2.2729,
+      "optimizer_converged": true,
+      "uncalibrated_T1": {
+        "nll": 0.4451,
+        "brier_score": 0.1113,
+        "ece": 0.101,
+        "mce": 0.4642
+      },
+      "calibrated": {
+        "temperature": 2.2729,
+        "nll": 0.309,
+        "brier_score": 0.0951,
+        "ece": 0.057,
+        "mce": 0.2845,
+        "nll_delta": -0.1362,
+        "brier_delta": -0.0162,
+        "ece_delta": -0.0439
+      }
+    }
+  },
+  "baseline_comparison": {
+    "baseline_temperatures": {
+      "tiny_genimage": 14.0373,
+      "frontier_benchmark_2026_10": 4.6642,
+      "wildaigc_bench": 148.4123,
+      "pooled": 14.0595
+    },
+    "candidate_temperatures": {
+      "tiny_genimage": 2.0898,
+      "frontier_benchmark_2026_10": 6.9975,
+      "wildaigc_bench": 50.0,
+      "pooled": 2.2729
+    }
+  },
+  "governance_and_safety_checks": {
+    "all_temperatures_finite_and_positive": true,
+    "ranking_preserved": "Yes (temperature scaling is strictly monotonic)",
+    "production_authorization": "NO - Calibration does not authorize production label assignments without Phase 6 held-out validation."
+  }
+}

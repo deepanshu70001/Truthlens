@@ -1,0 +1,90 @@
+protocol_version: "2.0.0"
+protocol_id: "truthlens-phase2-step3-group-aware-v1"
+split_seed: 42
+creation_date: "2026-11-21"
+
+datasets:
+  tiny_genimage:
+    dataset_id: "tiny_genimage"
+    name: "Tiny-GenImage"
+    version: "1.0-tiny"
+    input_manifest: "experiments/manifests/tiny_genimage.csv"
+    output_manifest: "experiments/manifests/tiny_genimage_evaluation_splits.csv"
+    grouping_strategy: "generator_class_prefix_and_exact_hash"
+    group_id_basis: "generator_and_class_synset_prefix"
+    preserve_official_val_as_test: true
+    official_val_role: "test"
+    official_train_allocation:
+      calibration: 0.50
+      validation: 0.25
+      reserve: 0.25
+
+  frontier_benchmark_2026_10:
+    dataset_id: "frontier_benchmark_2026_10"
+    name: "WasItAIGenerated Frontier Image & Video Benchmark (October 2026)"
+    version: "2026-10"
+    input_manifest: "experiments/manifests/frontier_benchmark_2026_10.csv"
+    output_manifest: "experiments/manifests/frontier_benchmark_2026_10_evaluation_splits.csv"
+    grouping_strategy: "source_id_linked_variants"
+    group_id_basis: "metadata.csv:id_variant_family"
+    group_ratios:
+      calibration: 0.20
+      validation: 0.10
+      test: 0.70
+    stratification_keys:
+      - "label"
+      - "generator"
+
+  wildaigc_bench:
+    dataset_id: "wildaigc_bench"
+    name: "WildAIGC-Bench"
+    version: "v3"
+    input_manifest: "experiments/manifests/wildaigc_bench.csv"
+    output_manifest: "experiments/manifests/wildaigc_bench_evaluation_splits.csv"
+    relations_file: "datasets/external/wildaigc_bench/relations.jsonl"
+    grouping_strategy: "sample_id_and_relations_connected_components"
+    group_id_basis: "sample_id_and_relations_graph_components"
+    group_ratios:
+      calibration: 0.20
+      validation: 0.10
+      test: 0.70
+    stratification_keys:
+      - "label"
+
+generator_held_out_protocol:
+  enabled: true
+  protocol_id: "truthlens-phase2-step3-cross-generator-v1"
+  description: "Secondary protocol holding out entire generator model families to evaluate cross-architecture generalization"
+  tiny_genimage:
+    calibration_generators:
+      - "Stable Diffusion v1.5"
+      - "BigGAN"
+      - "ADM"
+      - "GLIDE"
+    held_out_test_generators:
+      - "Midjourney"
+      - "Wukong"
+      - "VQDM"
+  frontier_benchmark:
+    calibration_generators:
+      - "bytedance/seedream/v5/pro"
+      - "flux-2-pro"
+      - "ideogram/v4.5"
+      - "krea-2/turbo"
+      - "nano-banana-pro"
+      - "recraft/v4.1"
+    held_out_test_generators:
+      - "openai/gpt-image-2"
+      - "blackforestlabs/flux-3"
+      - "grok-imagine-2"
+      - "google/nano-banana-2.1"
+      - "meta/muse-image"
+
+leakage_prevention:
+  enforce_zero_cross_role_hashes: true
+  enforce_zero_cross_role_groups: true
+  enforce_zero_cross_role_variants: true
+  enforce_zero_cross_role_relations: true
+  check_internal_truthlens_fixtures: true
+  check_cifake_training_overlap: true
+  max_allowed_leakage_count: 0

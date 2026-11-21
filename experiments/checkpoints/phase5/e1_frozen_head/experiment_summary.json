@@ -1,0 +1,48 @@
+{
+  "experiment_name": "e1_frozen_head",
+  "description": "Frozen SigLIP vision backbone with newly initialized linear classification head trained with standard BCE loss.",
+  "mode": "frozen_head",
+  "best_epoch": 10,
+  "total_epochs_trained": 10,
+  "total_training_duration_sec": 1151.0,
+  "peak_vram_mb": 537.97,
+  "parameter_counts": {
+    "total_params": 92884993,
+    "trainable_params": 769,
+    "frozen_params": 92884224
+  },
+  "best_validation_metrics": {
+    "val_loss": 0.4826,
+    "accuracy": 0.7837,
+    "balanced_accuracy": 0.7644,
+    "precision": 0.8217,
+    "recall": 0.6311,
+    "specificity": 0.8977,
+    "f1_score": 0.7139,
+    "roc_auc": 0.8656,
+    "pr_auc": 0.8333,
+    "mcc": 0.557,
+    "confusion_matrix": {
+      "tn": 3061,
+      "fp": 349,
+      "fn": 940,
+      "tp": 1608
+    },
+    "sample_count": 5958
+  },
+  "best_checkpoint_path": "experiments\\checkpoints\\phase5\\e1_frozen_head\\best_checkpoint.pt",
+  "best_checkpoint_sha256": "b1a415575d53e9167bbbf0c49924c4e9893d7b293d519088e2afd5858e333a74",
+  "best_head_path": "experiments\\checkpoints\\phase5\\e1_frozen_head\\head.pt",
+  "best_head_sha256": "c318a3b9efbdbe0da08fe4d660f24e76149c2d2afa199f0b08c58326ab774aff",
+  "model_identity": {
+    "model_id": "truthlens/siglip-base-tiny-genimage-e1_frozen_head",
+    "backbone_model_id": "google/siglip-base-patch16-224",
+    "backbone_revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+    "head_sha256": "c318a3b9efbdbe0da08fe4d660f24e76149c2d2afa199f0b08c58326ab774aff",
+    "preprocessing": "siglip-frozen-v1",
+    "label_mapping": {
+      "0": "likely_authentic",
+      "1": "ai_generated"
+    }
+  }
+}

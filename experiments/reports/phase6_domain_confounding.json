@@ -1,0 +1,60 @@
+{
+  "format_distribution": {
+    "PNG": {
+      "total": 3500,
+      "real": 0,
+      "ai": 3500
+    },
+    "JPEG": {
+      "total": 3500,
+      "real": 3500,
+      "ai": 0
+    }
+  },
+  "matched_format_evaluation": {
+    "samples_evaluated": 1000,
+    "real_samples_jpeg": 500,
+    "ai_samples_png": 500,
+    "e3_candidate_robustness": {
+      "jpeg90": {
+        "prediction_flips": 456,
+        "flip_rate_pct": 45.6,
+        "mean_absolute_logit_shift": 6.1198,
+        "max_absolute_logit_shift": 15.9258
+      },
+      "jpeg75": {
+        "prediction_flips": 495,
+        "flip_rate_pct": 49.5,
+        "mean_absolute_logit_shift": 6.7081,
+        "max_absolute_logit_shift": 15.9336
+      },
+      "png": {
+        "prediction_flips": 0,
+        "flip_rate_pct": 0.0,
+        "mean_absolute_logit_shift": 0.0,
+        "max_absolute_logit_shift": 0.0
+      }
+    },
+    "baseline_robustness": {
+      "jpeg90": {
+        "prediction_flips": 142,
+        "flip_rate_pct": 14.2,
+        "mean_absolute_logit_shift": 0.7078,
+        "max_absolute_logit_shift": 3.5352
+      },
+      "jpeg75": {
+        "prediction_flips": 173,
+        "flip_rate_pct": 17.3,
+        "mean_absolute_logit_shift": 0.8294,
+        "max_absolute_logit_shift": 4.3171
+      },
+      "png": {
+        "prediction_flips": 0,
+        "flip_rate_pct": 0.0,
+        "mean_absolute_logit_shift": 0.0,
+        "max_absolute_logit_shift": 0.0
+      }
+    },
+    "scientific_interpretation": "Matched-format transcoding reveals whether the classifier relies heavily on compression artifacts. Transcoding real JPEG images to PNG and AI PNG images to JPEG tests causal prediction invariance. Differences in flip rates and logit shifts between baseline and E3 provide evidence on whether fine-tuning sensitized the network to compression signatures or semantic generative structures."
+  }
+}

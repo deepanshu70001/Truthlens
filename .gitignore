@@ -94,6 +94,9 @@ docker-compose.override.yml
 data/postgres/
 data/redis/
 
+# --- Datasets & Benchmarks ---
+datasets/
+
 # --- Uploads & Artifacts ---
 uploads/
 artifacts/

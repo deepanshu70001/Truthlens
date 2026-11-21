@@ -1,0 +1,126 @@
+{
+  "execution_date": "2026-11-21T12:39:10.387209+00:00",
+  "device": "cuda",
+  "batch_size": 64,
+  "total_images_evaluated": 29821,
+  "total_duration_seconds": 712.39,
+  "overall_images_per_second": 41.9,
+  "model_identity": {
+    "model_id": "truthlens/siglip-cifake-frozen-head",
+    "model_revision": "backbone:google/siglip-base-patch16-224@7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed;head_sha256:e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+    "backbone_model": "google/siglip-base-patch16-224",
+    "backbone_revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+    "head_sha256": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+    "preprocessing_version": "siglip-frozen-v1",
+    "label_mapping": {
+      "0": "real",
+      "1": "ai_generated"
+    },
+    "inference_config": {
+      "backend": "finetuned_siglip",
+      "input_channels": 3,
+      "input_size": 224
+    }
+  },
+  "datasets": {
+    "tiny_genimage": {
+      "dataset_id": "tiny_genimage",
+      "total_evaluated": 25006,
+      "overall_raw_accuracy": 0.5298,
+      "total_runtime_seconds": 528.19,
+      "images_per_second": 47.3,
+      "role_breakdown": {
+        "test": {
+          "total": 7000,
+          "accuracy": 0.5519,
+          "class_counts": {
+            "ai_generated": 3500,
+            "likely_authentic": 3500
+          }
+        },
+        "calibration": {
+          "total": 12048,
+          "accuracy": 0.5212,
+          "class_counts": {
+            "ai_generated": 4974,
+            "likely_authentic": 7074
+          }
+        },
+        "validation": {
+          "total": 5958,
+          "accuracy": 0.5213,
+          "class_counts": {
+            "ai_generated": 2548,
+            "likely_authentic": 3410
+          }
+        }
+      }
+    },
+    "frontier_benchmark_2026_10": {
+      "dataset_id": "frontier_benchmark_2026_10",
+      "total_evaluated": 2976,
+      "overall_raw_accuracy": 0.5867,
+      "total_runtime_seconds": 122.08,
+      "images_per_second": 24.4,
+      "role_breakdown": {
+        "calibration": {
+          "total": 588,
+          "accuracy": 0.5595,
+          "class_counts": {
+            "ai_generated": 200,
+            "likely_authentic": 388
+          }
+        },
+        "validation": {
+          "total": 297,
+          "accuracy": 0.6869,
+          "class_counts": {
+            "ai_generated": 104,
+            "likely_authentic": 193
+          }
+        },
+        "test": {
+          "total": 2091,
+          "accuracy": 0.5801,
+          "class_counts": {
+            "ai_generated": 740,
+            "likely_authentic": 1351
+          }
+        }
+      }
+    },
+    "wildaigc_bench": {
+      "dataset_id": "wildaigc_bench",
+      "total_evaluated": 1839,
+      "overall_raw_accuracy": 0.4426,
+      "total_runtime_seconds": 61.57,
+      "images_per_second": 29.9,
+      "role_breakdown": {
+        "calibration": {
+          "total": 364,
+          "accuracy": 0.4341,
+          "class_counts": {
+            "ai_generated": 238,
+            "likely_authentic": 126
+          }
+        },
+        "validation": {
+          "total": 181,
+          "accuracy": 0.4144,
+          "class_counts": {
+            "ai_generated": 118,
+            "likely_authentic": 63
+          }
+        },
+        "test": {
+          "total": 1294,
+          "accuracy": 0.449,
+          "class_counts": {
+            "ai_generated": 845,
+            "likely_authentic": 449
+          }
+        }
+      }
+    }
+  }
+}

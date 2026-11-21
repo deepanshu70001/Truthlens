@@ -1,0 +1,63 @@
+{
+  "report_version": "1.0.0",
+  "created_at": "2026-11-21T12:55:33.673653+00:00",
+  "total_approved_training_samples": 6995,
+  "class_distribution": {
+    "ai_generated": 3480,
+    "likely_authentic": 3515,
+    "class_ratio_ai_pct": 49.75,
+    "class_ratio_real_pct": 50.25,
+    "imbalance_status": "HIGHLY_BALANCED (49.75% AI vs 50.25% Real)"
+  },
+  "generator_distribution": {
+    "ADM": 502,
+    "BigGAN": 482,
+    "GLIDE": 2000,
+    "ImageNet-Camera": 3515,
+    "Stable Diffusion v1.5": 496
+  },
+  "generator_family_distribution": {
+    "pixel_diffusion": 502,
+    "generative_adversarial_network": 482,
+    "latent_diffusion": 2496,
+    "camera_real_nature": 3515
+  },
+  "format_distribution": {
+    "PNG": 3480,
+    "JPEG": 3515
+  },
+  "dimensions": {
+    "width": {
+      "min": 49,
+      "max": 3872,
+      "mean": 374.8,
+      "median": 333
+    },
+    "height": {
+      "min": 42,
+      "max": 3872,
+      "mean": 340.2,
+      "median": 320
+    },
+    "aspect_ratio": {
+      "min": 0.386,
+      "max": 3.886,
+      "mean": 1.111,
+      "median": 1.0
+    }
+  },
+  "file_sizes_kb": {
+    "min": 1.3,
+    "max": 3210.0,
+    "mean": 121.1,
+    "median": 89.6
+  },
+  "corrupt_images": 0,
+  "missing_labels": 0,
+  "duplicate_images_in_approved_manifest": 0,
+  "reserve_audit_summary": {
+    "APPROVED_TRAINING": 6995,
+    "EXCLUDED_DUPLICATE": 1,
+    "EXCLUDED_PROTOCOL": 2998
+  }
+}

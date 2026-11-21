@@ -1,0 +1,71 @@
+{
+  "dataset": "tiny_genimage",
+  "total_test_samples": 7000,
+  "total_groups": 2001,
+  "root_cause_of_wide_intervals": {
+    "finding": "Degenerate single group for all 3,500 real ImageNet images",
+    "largest_group_id": "tiny_genimage_val_ImageNet-Camera_ILSVRC2012",
+    "samples_in_largest_group": 3500,
+    "fraction_of_test_set_in_single_group": 0.5,
+    "vqdm_group_size": 500,
+    "glide_group_size": 500,
+    "mathematical_mechanism": "In unstratified group bootstrap with 2,001 groups, the probability of omitting the single 3,500-sample real group in any iteration is (1 - 1/2001)^2001 \u2248 e^-1 \u2248 36.8%. In 34.3% of resamples, the bootstrap sample contained exactly 0 real samples, artificially expanding the 95% CI to [0.4133, 0.8200].",
+    "zero_real_resample_count_in_1000": 343
+  },
+  "method_comparison": {
+    "unstratified_group_bootstrap_phase3": {
+      "accuracy_point_estimate": 0.5519,
+      "accuracy_95_ci": [
+        0.4133,
+        0.82
+      ],
+      "balanced_accuracy_95_ci": [
+        0.5291,
+        0.82
+      ],
+      "f1_95_ci": [
+        0.3505,
+        0.9011
+      ],
+      "scientific_status": "FLAWED_BY_DEGENERATE_REAL_GROUP"
+    },
+    "stratified_bootstrap_corrected": {
+      "accuracy_point_estimate": 0.5519,
+      "accuracy_95_ci": [
+        0.5426,
+        0.5614
+      ],
+      "balanced_accuracy_95_ci": [
+        0.5426,
+        0.5614
+      ],
+      "f1_95_ci": [
+        0.6284,
+        0.6443
+      ],
+      "scientific_status": "VALID_CLASS_PRESERVING_ESTIMATE"
+    }
+  },
+  "frontier_benchmark_audit": {
+    "total_test_samples": 2091,
+    "unique_groups": 525,
+    "group_size": "4 linked variant images per group",
+    "zero_class_resamples": 0,
+    "accuracy_95_ci": [
+      0.5387,
+      0.6203
+    ],
+    "scientific_status": "VALID_GROUP_BOOTSTRAP"
+  },
+  "wildaigc_bench_audit": {
+    "total_test_samples": 1294,
+    "unique_groups": 836,
+    "group_size": "1 to 7 samples per connected component",
+    "zero_class_resamples": 0,
+    "accuracy_95_ci": [
+      0.4135,
+      0.4827
+    ],
+    "scientific_status": "VALID_GROUP_BOOTSTRAP"
+  }
+}

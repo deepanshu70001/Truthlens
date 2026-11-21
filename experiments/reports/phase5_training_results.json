@@ -1,0 +1,179 @@
+{
+  "metadata": {
+    "phase": "Phase 5 - Controlled Model Training and Fine-Tuning",
+    "backbone": "google/siglip-base-patch16-224",
+    "backbone_revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+    "device": "cuda",
+    "training_samples": 6995,
+    "validation_samples": 5958,
+    "test_evaluation_performed": false,
+    "test_split_status": "LOCKED - STRICTLY FORBIDDEN IN PHASE 5"
+  },
+  "baseline_validation": {
+    "model_id": "truthlens/siglip-cifake-frozen-head",
+    "backbone_revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+    "head_sha256": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+    "validation_accuracy": 0.5213,
+    "validation_balanced_accuracy": 0.5542,
+    "validation_roc_auc": 0.602,
+    "validation_f1": 0.5828
+  },
+  "experiments": {
+    "e1_frozen_head": {
+      "experiment_name": "e1_frozen_head",
+      "description": "Frozen SigLIP vision backbone with newly initialized linear classification head trained with standard BCE loss.",
+      "mode": "frozen_head",
+      "best_epoch": 10,
+      "total_epochs_trained": 10,
+      "total_training_duration_sec": 1151.0,
+      "peak_vram_mb": 537.97,
+      "parameter_counts": {
+        "total_params": 92884993,
+        "trainable_params": 769,
+        "frozen_params": 92884224
+      },
+      "best_validation_metrics": {
+        "val_loss": 0.4826,
+        "accuracy": 0.7837,
+        "balanced_accuracy": 0.7644,
+        "precision": 0.8217,
+        "recall": 0.6311,
+        "specificity": 0.8977,
+        "f1_score": 0.7139,
+        "roc_auc": 0.8656,
+        "pr_auc": 0.8333,
+        "mcc": 0.557,
+        "confusion_matrix": {
+          "tn": 3061,
+          "fp": 349,
+          "fn": 940,
+          "tp": 1608
+        },
+        "sample_count": 5958
+      },
+      "best_checkpoint_path": "experiments\\checkpoints\\phase5\\e1_frozen_head\\best_checkpoint.pt",
+      "best_checkpoint_sha256": "b1a415575d53e9167bbbf0c49924c4e9893d7b293d519088e2afd5858e333a74",
+      "best_head_path": "experiments\\checkpoints\\phase5\\e1_frozen_head\\head.pt",
+      "best_head_sha256": "c318a3b9efbdbe0da08fe4d660f24e76149c2d2afa199f0b08c58326ab774aff",
+      "model_identity": {
+        "model_id": "truthlens/siglip-base-tiny-genimage-e1_frozen_head",
+        "backbone_model_id": "google/siglip-base-patch16-224",
+        "backbone_revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+        "head_sha256": "c318a3b9efbdbe0da08fe4d660f24e76149c2d2afa199f0b08c58326ab774aff",
+        "preprocessing": "siglip-frozen-v1",
+        "label_mapping": {
+          "0": "likely_authentic",
+          "1": "ai_generated"
+        }
+      }
+    },
+    "e2_balanced_training": {
+      "experiment_name": "e2_balanced_training",
+      "description": "Frozen SigLIP vision backbone with class-weighted BCE loss compensating for authentic/AI training split ratio.",
+      "mode": "balanced_head",
+      "best_epoch": 9,
+      "total_epochs_trained": 10,
+      "total_training_duration_sec": 1290.69,
+      "peak_vram_mb": 537.97,
+      "parameter_counts": {
+        "total_params": 92884993,
+        "trainable_params": 769,
+        "frozen_params": 92884224
+      },
+      "best_validation_metrics": {
+        "val_loss": 0.4824,
+        "accuracy": 0.7845,
+        "balanced_accuracy": 0.7655,
+        "precision": 0.8208,
+        "recall": 0.6346,
+        "specificity": 0.8965,
+        "f1_score": 0.7158,
+        "roc_auc": 0.8656,
+        "pr_auc": 0.8333,
+        "mcc": 0.5585,
+        "confusion_matrix": {
+          "tn": 3057,
+          "fp": 353,
+          "fn": 931,
+          "tp": 1617
+        },
+        "sample_count": 5958
+      },
+      "best_checkpoint_path": "experiments\\checkpoints\\phase5\\e2_balanced_training\\best_checkpoint.pt",
+      "best_checkpoint_sha256": "4436cfab95e9afe79e3832a15547ab3d66fe4b7e5fb9f892d29815ce9b858344",
+      "best_head_path": "experiments\\checkpoints\\phase5\\e2_balanced_training\\head.pt",
+      "best_head_sha256": "29ca24e7cb9d68a9ce790cb77d7084207e0e60474dd239a76beb3a2f2ff878d9",
+      "model_identity": {
+        "model_id": "truthlens/siglip-base-tiny-genimage-e2_balanced_training",
+        "backbone_model_id": "google/siglip-base-patch16-224",
+        "backbone_revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+        "head_sha256": "29ca24e7cb9d68a9ce790cb77d7084207e0e60474dd239a76beb3a2f2ff878d9",
+        "preprocessing": "siglip-frozen-v1",
+        "label_mapping": {
+          "0": "likely_authentic",
+          "1": "ai_generated"
+        }
+      }
+    },
+    "e3_partial_finetuning": {
+      "experiment_name": "e3_partial_finetuning",
+      "description": "Partial fine-tuning unfreezing only the final transformer encoder layer (layer 11) with differential learning rates.",
+      "mode": "partial_finetuning",
+      "best_epoch": 5,
+      "total_epochs_trained": 8,
+      "total_training_duration_sec": 975.81,
+      "peak_vram_mb": 622.73,
+      "parameter_counts": {
+        "total_params": 92884993,
+        "trainable_params": 7088641,
+        "frozen_params": 85796352
+      },
+      "best_validation_metrics": {
+        "val_loss": 0.399,
+        "accuracy": 0.8823,
+        "balanced_accuracy": 0.8667,
+        "precision": 0.9574,
+        "recall": 0.7586,
+        "specificity": 0.9748,
+        "f1_score": 0.8465,
+        "roc_auc": 0.9577,
+        "pr_auc": 0.9551,
+        "mcc": 0.7666,
+        "confusion_matrix": {
+          "tn": 3324,
+          "fp": 86,
+          "fn": 615,
+          "tp": 1933
+        },
+        "sample_count": 5958
+      },
+      "best_checkpoint_path": "experiments\\checkpoints\\phase5\\e3_partial_finetuning\\best_checkpoint.pt",
+      "best_checkpoint_sha256": "541956a1f766d5093aaec4733f616afaf6deaf5aad1e0bbd6e59f95687a4b96d",
+      "best_head_path": "experiments\\checkpoints\\phase5\\e3_partial_finetuning\\head.pt",
+      "best_head_sha256": "38b12fb1931158a771cb6b64bd5745ef7f7796b27df6b9eb292c281566689b68",
+      "model_identity": {
+        "model_id": "truthlens/siglip-base-tiny-genimage-e3_partial_finetuning",
+        "backbone_model_id": "google/siglip-base-patch16-224",
+        "backbone_revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+        "head_sha256": "38b12fb1931158a771cb6b64bd5745ef7f7796b27df6b9eb292c281566689b68",
+        "preprocessing": "siglip-frozen-v1",
+        "label_mapping": {
+          "0": "likely_authentic",
+          "1": "ai_generated"
+        }
+      }
+    }
+  },
+  "model_selection": {
+    "selected_model": "e3_partial_finetuning",
+    "decision": "PROMOTE_AS_CANDIDATE",
+    "justification": "e3_partial_finetuning achieved validation balanced accuracy 0.8667, outperforming baseline 0.5542 by +31.25 percentage points.",
+    "eligibility_for_phase6_test": true
+  },
+  "domain_confounding_analysis": {
+    "real_images_format": "100% JPEG (ImageNet ILSVRC2012 nature)",
+    "ai_images_format": "100% PNG (ADM, BigGAN, SD 1.5, GLIDE)",
+    "class_prefix_overlap": 0,
+    "confounding_risk": "HIGH - Models may exploit compression artifact differences between JPEG and PNG rather than semantic generative features. Generalization across uncompressed formats requires evaluation in Phase 6."
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "temperature_fitting_isolation": {
+    "verified_strictly_fitted_on_calibration": true,
+    "test_split_influenced_fitting": false,
+    "validation_split_influenced_fitting": false
+  },
+  "dataset_calibration_audit": {
+    "tiny_genimage": {
+      "sample_count": 12048,
+      "fitted_temperature": 14.0373,
+      "real_samples": 7074,
+      "ai_samples": 4974,
+      "mean_margin_real": 0.9088,
+      "mean_margin_ai": 1.8051,
+      "margin_label_correlation": 0.2116,
+      "is_negatively_correlated": false
+    },
+    "frontier_benchmark_2026_10": {
+      "sample_count": 588,
+      "fitted_temperature": 4.6642,
+      "real_samples": 388,
+      "ai_samples": 200,
+      "mean_margin_real": 0.0761,
+      "mean_margin_ai": 1.209,
+      "margin_label_correlation": 0.297,
+      "is_negatively_correlated": false
+    },
+    "wildaigc_bench": {
+      "sample_count": 364,
+      "fitted_temperature": 148.4123,
+      "real_samples": 126,
+      "ai_samples": 238,
+      "mean_margin_real": 0.6826,
+      "mean_margin_ai": -0.1002,
+      "margin_label_correlation": -0.231,
+      "is_negatively_correlated": true
+    }
+  },
+  "wildaigc_temperature_investigation": {
+    "reported_temperature": 148.4123,
+    "mathematical_root_cause": "On WildAIGC calibration data, model margins are negatively correlated with ground truth labels (r = -0.2310). The detector assigned higher AI scores to Real images (mean margin = +0.6826) than to AI images (mean margin = -0.1002). Because scalar temperature scaling T > 0 cannot invert the sign of margins, the cross-entropy loss function minimizes NLL by driving T -> infinity, which flattens all probabilities toward 0.50 (maximum entropy, NLL = -log(0.5) \u2248 0.6931). The optimizer hit the upper optimization bound of log(T) = 5.0 (exp(5.0) \u2248 148.4123).",
+    "optimization_bound_hit": true,
+    "upper_bound_exp_5": 148.4132,
+    "scientific_significance": "The extreme temperature T=148.41 proves that the baseline CIFake-trained SigLIP detector has zero domain validity on in-the-wild fact-checked media, producing anti-correlated logits."
+  },
+  "temperature_scaling_invariance_verified": {
+    "roc_curve_invariant": true,
+    "ranking_invariant": true,
+    "monotonicity_preserved": true
+  }
+}

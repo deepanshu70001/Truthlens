@@ -1,0 +1,19 @@
+{
+  "candidate_model_id": "truthlens/siglip-base-tiny-genimage-e3_partial_finetuning",
+  "baseline_model_id": "truthlens/siglip-cifake-frozen-head",
+  "final_candidate_decision": "RETAIN_BASELINE",
+  "candidate_disposition": "REJECT_CANDIDATE_FOR_PRODUCTION",
+  "decision_summary": "The E3 candidate achieved high in-distribution performance on Tiny-GenImage (BalAcc 0.8520, AUC 0.9453), but rigorous generalization audits revealed critical defects that prohibit production deployment: 1. Severe cross-dataset degradation on the modern Frontier benchmark (BalAcc 0.5497 vs Baseline 0.6228; AUC 0.5546 vs Baseline 0.6501). 2. Catastrophic shortcut learning on image format: matched transcoding showed that converting AI PNG images to JPEG caused 45.6% to 49.5% prediction flips, with a mean logit shift of 6.12 to 6.71 points. 3. Sharp recall drop on held-out unseen generators: Midjourney (51.6%), Wukong (54.0%), and VQDM (20.6%). Consequently, the baseline model is retained in production, and E3 is rejected for deployment.",
+  "evaluation_criteria_audit": {
+    "cross_dataset_performance": "FAIL (E3 underperformed Baseline on Frontier by -7.31% BalAcc and -9.55% AUC)",
+    "unseen_generator_generalization": "PASS_WITH_LIMITATIONS (Improved BalAcc over baseline due to specificity, but recall collapsed to 20-54%)",
+    "encoding_robustness": "FAIL (45.6% - 49.5% flip rate under JPEG transcoding; severe format confounding)",
+    "compression_robustness": "FAIL (E3 dropped to ~0.54-0.56 AUC across social media variants, below baseline ~0.64-0.66)",
+    "confidence_calibration": "PASS (Optimal T=2.0898 on Tiny-GenImage; pooled T=2.2729; significantly improved over baseline)"
+  },
+  "phase7_recommendations": [
+    "1. Retain the frozen CIFAKE baseline (models/baselines/siglip_frozen_head.pt) in production.",
+    "2. For future fine-tuning (Phase 7), apply aggressive data augmentation including random JPEG compression, format transcoding, and blur during training to break the 100% JPEG (real) vs 100% PNG (AI) artifact shortcut.",
+    "3. Incorporate multi-generator, format-balanced training data across both real and synthetic partitions."
+  ]
+}

@@ -1,0 +1,87 @@
+# TruthLens Phase 5: Controlled Model Training and Fine-Tuning Configuration
+# Model: google/siglip-base-patch16-224 (revision: 7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed)
+# Hardware: NVIDIA RTX 3050 Laptop GPU (4 GB dedicated VRAM)
+
+global_settings:
+  project_name: "TruthLens"
+  phase: "Phase 5 - Controlled Training & Fine-Tuning"
+  seed: 42
+  device: "cuda"
+  fp16: true
+  num_workers: 0
+  cache_dir: "models/cache"
+  base_dir: "datasets/external/tiny_genimage"
+  training_manifest: "experiments/manifests/phase4_training_manifest.csv"
+  validation_manifest: "experiments/manifests/tiny_genimage_evaluation_splits.csv"
+  checkpoints_dir: "experiments/checkpoints/phase5"
+  reports_dir: "experiments/reports"
+  figures_dir: "experiments/reports/figures"
+
+model_architecture:
+  backbone_model_id: "google/siglip-base-patch16-224"
+  backbone_revision: "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed"
+  preprocessing_id: "siglip-frozen-v1"
+  embedding_dim: 768
+  output_classes: 1
+  label_mapping:
+    0: "likely_authentic"
+    1: "ai_generated"
+
+training_hyperparameters:
+  batch_size: 16
+  gradient_accumulation_steps: 2
+  effective_batch_size: 32
+  max_epochs: 10
+  early_stopping_patience: 3
+  early_stopping_metric: "balanced_accuracy"
+  early_stopping_mode: "max"
+  clip_grad_norm: 1.0
+  warmup_ratio: 0.05
+  weight_decay: 0.01
+
+experiments:
+  e1_frozen_head:
+    experiment_id: "E1"
+    name: "e1_frozen_head"
+    description: "Frozen SigLIP vision backbone with newly initialized linear classification head trained with standard BCE loss."
+    mode: "frozen_head"
+    unfreeze_backbone: false
+    unfrozen_layers: 0
+    lr_head: 0.0001
+    lr_backbone: 0.0
+    loss_type: "bce"
+    pos_weight: null
+
+  e2_balanced_training:
+    experiment_id: "E2"
+    name: "e2_balanced_training"
+    description: "Frozen SigLIP vision backbone with class-weighted BCE loss compensating for authentic/AI training split ratio."
+    mode: "balanced_head"
+    unfreeze_backbone: false
+    unfrozen_layers: 0
+    lr_head: 0.0001
+    lr_backbone: 0.0
+    loss_type: "weighted_bce"
+    # Class balance ratio: 3,515 authentic / 3,480 AI = 1.010057
+    pos_weight: 1.010057
+
+  e3_partial_finetuning:
+    experiment_id: "E3"
+    name: "e3_partial_finetuning"
+    description: "Partial fine-tuning unfreezing only the final transformer encoder layer (layer 11) with differential learning rates."
+    mode: "partial_finetuning"
+    unfreeze_backbone: true
+    unfrozen_layers: 1
+    lr_head: 0.0001
+    lr_backbone: 0.00001
+    loss_type: "bce"
+    pos_weight: null
+
+baseline_reference:
+  model_id: "truthlens/siglip-cifake-frozen-head"
+  backbone_revision: "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed"
+  head_sha256: "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538"
+  validation_accuracy: 0.5213
+  validation_balanced_accuracy: 0.5542
+  validation_roc_auc: 0.6020
+  validation_f1: 0.5828

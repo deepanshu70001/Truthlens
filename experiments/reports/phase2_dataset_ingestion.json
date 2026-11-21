@@ -1,0 +1,160 @@
+{
+  "metadata": {
+    "audit_timestamp_utc": "2026-11-21T11:56:18.497801+00:00",
+    "execution_duration_seconds": 110.6,
+    "python_version": "3.12.10",
+    "pillow_version": "11.3.0",
+    "imagehash_version": "4.3.2",
+    "platform": "Windows-11-10.0.26300-SP0"
+  },
+  "datasets": {
+    "tiny_genimage": {
+      "name": "Tiny-GenImage",
+      "version": "1.0-tiny",
+      "total_images_indexed": 35000,
+      "valid_images": 35000,
+      "failed_or_corrupt_images": 0,
+      "labels_distribution": {
+        "ai_generated": 17500,
+        "likely_authentic": 17500
+      },
+      "splits_distribution": {
+        "train": 28000,
+        "val": 7000
+      },
+      "generators_count": 8,
+      "top_generators": {
+        "ImageNet-Camera": 17500,
+        "BigGAN": 2500,
+        "VQDM": 2500,
+        "Stable Diffusion v1.5": 2500,
+        "Wukong": 2500,
+        "ADM": 2500,
+        "GLIDE": 2500,
+        "Midjourney": 2500
+      },
+      "licenses_distribution": {
+        "ImageNet Non-Commercial Terms (nature) / GenImage Open Benchmark (ai)": 35000
+      },
+      "metadata_completeness": {
+        "source_url_coverage_pct": 100.0,
+        "license_coverage_pct": 100.0,
+        "ground_truth_label_coverage_pct": 100.0,
+        "split_coverage_pct": 100.0
+      },
+      "duplicate_stats": {
+        "unique_sha256": 34999,
+        "exact_duplicate_clusters": 1,
+        "exact_duplicate_extra_copies": 1,
+        "unique_dhash": 34995,
+        "dhash_candidate_extra_copies": 5
+      }
+    },
+    "ai_image_detection_benchmark_2026_10": {
+      "name": "WasItAIGenerated Frontier Image & Video Benchmark (October 2026)",
+      "version": "2026-10",
+      "total_images_indexed": 2976,
+      "valid_images": 2976,
+      "failed_or_corrupt_images": 0,
+      "labels_distribution": {
+        "likely_authentic": 1932,
+        "ai_generated": 1044
+      },
+      "splits_distribution": {
+        "test": 2976
+      },
+      "generators_count": 20,
+      "top_generators": {
+        "Camera/Real": 1932,
+        "nano-banana-pro": 80,
+        "flux-2-pro": 68,
+        "ideogram/v4.5": 68,
+        "hidream-o1-image": 64,
+        "recraft/v4.1": 64,
+        "krea-2/turbo": 64,
+        "alibaba/qwen-image-3": 60,
+        "google/nano-banana-2.1": 56,
+        "bytedance/seedream/v5/pro": 56
+      },
+      "licenses_distribution": {
+        "CC BY-SA 4.0": 1284,
+        "CC BY 4.0 (WasItAIGenerated)": 1044,
+        "CC BY 4.0": 260,
+        "Public domain": 48,
+        "CC0": 220,
+        "CC BY-SA 2.0 kr": 8,
+        "CC BY 2.0": 12,
+        "CC BY-SA 3.0": 40,
+        "CC BY-SA 2.0": 52,
+        "CC BY 3.0": 8
+      },
+      "metadata_completeness": {
+        "source_url_coverage_pct": 64.92,
+        "license_coverage_pct": 100.0,
+        "ground_truth_label_coverage_pct": 100.0,
+        "split_coverage_pct": 100.0
+      },
+      "duplicate_stats": {
+        "unique_sha256": 2976,
+        "exact_duplicate_clusters": 0,
+        "exact_duplicate_extra_copies": 0,
+        "unique_dhash": 975,
+        "dhash_candidate_extra_copies": 2001
+      }
+    },
+    "wildaigc_bench": {
+      "name": "WildAIGC-Bench",
+      "version": "v3",
+      "total_images_indexed": 1839,
+      "valid_images": 1839,
+      "failed_or_corrupt_images": 0,
+      "labels_distribution": {
+        "ai_generated": 1201,
+        "likely_authentic": 638
+      },
+      "splits_distribution": {
+        "test": 1839
+      },
+      "generators_count": 2,
+      "top_generators": {
+        "Wild-AI-Generated": 1201,
+        "Documentary/Photojournalism": 638
+      },
+      "licenses_distribution": {
+        "CC BY 4.0 Metadata & Annotations / Third-Party Research Fair Use": 1839
+      },
+      "metadata_completeness": {
+        "source_url_coverage_pct": 99.89,
+        "license_coverage_pct": 100.0,
+        "ground_truth_label_coverage_pct": 100.0,
+        "split_coverage_pct": 100.0
+      },
+      "duplicate_stats": {
+        "unique_sha256": 1363,
+        "exact_duplicate_clusters": 476,
+        "exact_duplicate_extra_copies": 476,
+        "unique_dhash": 1362,
+        "dhash_candidate_extra_copies": 477
+      }
+    }
+  },
+  "cross_dataset_analysis": {
+    "total_datasets": 3,
+    "cross_dataset_exact_matches_count": 0,
+    "cross_dataset_exact_matches": []
+  },
+  "internal_truthlens_overlap": {
+    "exact_matches_count": 0,
+    "matches": []
+  },
+  "training_data_overlap_analysis": {
+    "detector_model_id": "truthlens/siglip-cifake-frozen-head",
+    "backbone_model": "google/siglip-base-patch16-224",
+    "backbone_pretraining_corpus": "WebLI (10B images, Web-crawled)",
+    "classification_head_training_data": "CIFAKE (60,000 images, 32x32 CIFAR-10 real vs synthetic Stable Diffusion v1.4)",
+    "tiny_genimage_nature_overlap_with_imagenet": "Tiny-GenImage 'nature' split contains exactly 17,500 real photographs sourced from ImageNet (ILSVRC 2012). These images are 256x256 ImageNet validation/train images. They have zero overlap with CIFAKE (which is 32x32 CIFAR-10), but ImageNet concepts were present in SigLIP WebLI pretraining.",
+    "frontier_benchmark_generator_isolation": "The 19 image generators and 12 video generators in the WasItAIGenerated Frontier Benchmark were released in or up to October 2026 (e.g. GPT-Image-2, Flux.3, Grok Imagine 2, Nano Banana Pro). They postdate the SigLIP backbone (2023) and CIFAKE head by several years, ensuring zero train-set memorization or leakage for these frontier models.",
+    "wildaigc_bench_isolation": "WildAIGC-Bench consists of in-the-wild real-world news events and viral claims collected in 2024-2026. All claims possess documented fact-check verification records. Zero overlap with CIFAKE training data.",
+    "exact_hash_overlap_with_internal_truthlens_fixtures": 0
+  }
+}

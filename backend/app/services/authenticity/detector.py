@@ -70,7 +70,7 @@ def _resolve_checkpoint_revision(model_id: str, cache_dir: str | Path, config: A
 @dataclass
 class AuthenticityResult:
     """Result from authenticity detection."""
-    label: str  # likely_ai_generated | likely_authentic
+    label: str  # inconclusive | likely_ai_generated | likely_authentic (application decision)
     model_prediction: str = "inconclusive"
     ai_generated_score: float = 0.0
     manipulation_score: Optional[float] = None
@@ -171,6 +171,10 @@ class AuthenticityDetector:
     classifier remains available through AUTHENTICITY_BACKEND=huggingface.
     """
 
+    # Preprocessing contract version.  Bump when the transform pipeline
+    # (resize target, crop, normalisation, colour-space) changes.
+    PREPROCESSING_VERSION = "siglip-frozen-v1"
+
     def __init__(self):
         self._model = None
         self._processor = None
@@ -179,6 +183,10 @@ class AuthenticityDetector:
         self._model_id = PRIMARY_MODEL
         self._model_revision: Optional[str] = None
         self._checkpoint_digest: Optional[str] = None
+        self._backbone_id: Optional[str] = None
+        self._backbone_revision: Optional[str] = None
+        self._preprocessing_version: str = self.PREPROCESSING_VERSION
+        self._label_mapping: Optional[Dict[int, str]] = None
         self._custom_preprocess = None
         self._lock = threading.RLock()
 
@@ -233,13 +241,17 @@ class AuthenticityDetector:
             self._custom_preprocess = processor
             self._model_id = "truthlens/siglip-cifake-frozen-head"
             self._checkpoint_digest = hashlib.sha256(checkpoint_bytes).hexdigest()
+            self._backbone_id = backbone_id
             backbone_revision = _resolve_checkpoint_revision(
                 backbone_id,
                 cache_dir,
                 vision_model.config,
                 settings.AUTHENTICITY_BACKBONE_REVISION,
             )
+            self._backbone_revision = backbone_revision
             self._model_revision = f"backbone:{backbone_id}@{backbone_revision};head_sha256:{self._checkpoint_digest}"
+            self._preprocessing_version = self.PREPROCESSING_VERSION
+            self._label_mapping = dict(model.config.id2label)
         elif settings.AUTHENTICITY_BACKEND.strip().lower() == "huggingface":
             from transformers import AutoImageProcessor, AutoModelForImageClassification
 
@@ -260,6 +272,10 @@ class AuthenticityDetector:
             self._model_revision = _resolve_checkpoint_revision(
                 self._model_id, cache_dir, model.config, settings.AUTHENTICITY_MODEL_REVISION
             )
+            self._backbone_id = None
+            self._backbone_revision = None
+            self._preprocessing_version = "huggingface-auto"
+            self._label_mapping = dict(model.config.id2label)
             self._custom_preprocess = None
         else:
             raise ValueError("AUTHENTICITY_BACKEND must be 'finetuned_siglip' or 'huggingface'.")
@@ -284,6 +300,9 @@ class AuthenticityDetector:
                 self._processor = None
             self._custom_preprocess = None
             self._loaded = False
+            self._backbone_id = None
+            self._backbone_revision = None
+            self._label_mapping = None
             clear_gpu_memory()
         log.info("Authenticity model unloaded")
 
@@ -349,23 +368,32 @@ class AuthenticityDetector:
         if fake_score is None or real_score is None or fake_logit is None or real_logit is None:
             raise ValueError("Detector class labels do not identify both fake and real classes.")
 
-        # The requested application decision is the raw-score argmax. It is a
-        # binary model tag, not a calibrated probability or validated claim.
+        # The raw-score argmax records the model's binary tag. It is NOT the
+        # application decision; uncalibrated raw scores must not be promoted
+        # to an authenticated label.
         raw_max_softmax_score = max(fake_score, real_score)
         model_prediction = (
             "likely_ai_generated" if fake_score > real_score
-            else "likely_authentic"
+            else "likely_authentic" if real_score > fake_score
+            else "inconclusive"
         )
-        label = model_prediction
+        # Application label defaults to inconclusive; it can only be
+        # promoted when a validated calibration + domain evidence exists.
+        label = "inconclusive"
         calibrated_probability = None
         calibrated_candidate_label = "inconclusive"
         calibration_status = "not_calibrated"
         calibration_method = None
-        domain_validation_status = "not_evaluated"
+        domain_validation_status = self._evaluate_domain_validation(image)
 
         if settings.AUTHENTICITY_CALIBRATION_PATH:
             try:
-                artifact = load_calibration_artifact(settings.AUTHENTICITY_CALIBRATION_PATH, self._model_id, self._model_revision)
+                artifact = load_calibration_artifact(
+                    settings.AUTHENTICITY_CALIBRATION_PATH,
+                    self._model_id,
+                    self._model_revision,
+                    self.model_identity(),
+                )
                 calibrated_probability = calibrated_ai_probability(fake_logit, real_logit, artifact["temperature"])
                 calibration_status = "validated_temperature_scaling"
                 calibration_method = "temperature_scaling"
@@ -375,12 +403,23 @@ class AuthenticityDetector:
                     calibrated_candidate_label = "likely_authentic"
                 else:
                     warnings.append("Calibrated score falls in the validation-selected uncertainty band.")
-                warnings.append("Input-domain membership is not assessed; the binary raw-score tag is not validated for this image domain.")
+                if domain_validation_status != "validated_for_input_domain":
+                    warnings.append("Input-domain membership is not assessed; the binary raw-score tag is not validated for this image domain.")
             except CalibrationArtifactError as exc:
                 warnings.append(f"Configured calibration was rejected: {exc}")
                 calibration_status = "invalid_artifact"
         if calibration_status == "not_calibrated":
             warnings.append("The tag is selected by comparing raw scores; these are not calibrated probabilities or accuracy estimates.")
+
+        if (
+            calibration_status == "validated_temperature_scaling"
+            and domain_validation_status == "validated_for_input_domain"
+        ):
+            label = calibrated_candidate_label
+            confidence = max(calibrated_probability, 1.0 - calibrated_probability)
+        else:
+            label = "inconclusive"
+            confidence = None
 
         runtime_ms = int((time.time() - t0) * 1000)
 
@@ -390,11 +429,7 @@ class AuthenticityDetector:
             ai_generated_score=fake_score,
             manipulation_score=None,
             authentic_score=real_score,
-            confidence=(
-                max(calibrated_probability, 1.0 - calibrated_probability)
-                if calibrated_probability is not None and domain_validation_status == "validated_for_input_domain"
-                else None
-            ),
+            confidence=confidence,
             raw_max_softmax_score=raw_max_softmax_score,
             model_name=self._model_id,
             model_version=self._model_revision or self._model.config._name_or_path,
@@ -428,6 +463,43 @@ class AuthenticityDetector:
     def get_device(self):
         """Return the device the model is on."""
         return self._device
+
+    def _evaluate_domain_validation(self, image: Image.Image) -> str:
+        """Evaluate whether input image belongs to a validated data domain.
+
+        Defaults to 'not_evaluated' until independent domain validation is
+        established.
+        """
+        return "not_evaluated"
+
+    def model_identity(self) -> Dict[str, Any]:
+        """Return the canonical model identity contract.
+
+        Every field in this dict is required for a calibration artifact to
+        be accepted at runtime.  The calibration script must persist the
+        same structure so that a future load can verify exact compatibility.
+        """
+        label_mapping = self._label_mapping
+        if label_mapping is None and self._model is not None and hasattr(self._model, "config"):
+            label_mapping = dict(getattr(self._model.config, "id2label", {}))
+        return {
+            "model_id": self._model_id,
+            "model_revision": self._model_revision or (
+                getattr(self._model.config, "_name_or_path", "unknown")
+                if self._model is not None and hasattr(self._model, "config")
+                else "unknown"
+            ),
+            "backbone_model": self._backbone_id,
+            "backbone_revision": self._backbone_revision,
+            "head_sha256": self._checkpoint_digest,
+            "preprocessing_version": self._preprocessing_version,
+            "label_mapping": label_mapping,
+            "inference_config": {
+                "backend": settings.AUTHENTICITY_BACKEND,
+                "input_channels": 3,
+                "input_size": 224,
+            },
+        }
 
 
 # Module-level singleton (lazy-loaded)
