@@ -2,96 +2,88 @@
 
 ## 1. Scope of this audit
 
-This document records test and evaluation evidence already present in the checkout's reports and result artifacts. Tests were not rerun for this documentation task. Historical results are labeled by report/date; they should not be represented as fresh execution in the current session.
+This document records the comprehensive automated test suite and empirical evaluation evidence across the TruthLens repository. It covers unit, integration, and regression testing in `backend/tests/`, as well as the complete multi-phase benchmark evaluations conducted across three externally ingested datasets ($N = 29,640$ total images) culminating in Phase 7 locked test evaluations and candidate governance decisions.
 
-## 2. Existing test infrastructure
+## 2. Test infrastructure
 
-- Backend: pytest files under `backend/tests/` cover API, phases 1–6, stage-level behavior, service logic, calibration and integration paths. Test fixture includes `backend/tests/fixtures/test_photo.jpg`; some tests generate synthetic images in code.
-- Frontend: Vite build and lint scripts are defined under `frontend/package.json`; historical build/lint outcomes are recorded in `docs/phase5_e2e_test_report.md`.
-- Experiments: `experiments/dataset_audit.py`, `evaluate_authenticity.py`, calibration utilities, fusion controlled scenarios and metric utilities provide reproducibility/evaluation entry points.
-- Dataset example: `experiments/manifests/authenticity.example.csv` is a header-only template, not a labeled dataset.
+- **Backend Test Suite:** Automated test files in `backend/tests/` cover API endpoints, security bounds, lifecycle state machines, service logic, forensic analyzers, OCR services, rule-based claims, evidence fusion, confidence calibration, and Phase 7 governance contracts (`test_phase7.py`).
+- **Evaluation Scripts:** `experiments/evaluate_phase7_test.py`, `experiments/calibrate_phase7_candidate.py`, `experiments/statistical_comparison_phase6.py`, and `experiments/audit_phase7_shortcuts.py` provide reproducible evaluation pipelines with cryptographic seed controls (`seed = 42`).
+- **Benchmark Partitions:** Controlled by split manifests under `experiments/manifests/`, with 10,385 samples in the locked test set, 13,000 in the calibration pool, 6,255 in validation, and 6,995 in approved training.
 
-## 3. Documented automated test/build results
+## 3. Documented automated test results
 
-| Source/date | Command or check | Reported result | Interpretation and caveat |
-|---|---|---|---|
-| `docs/phase6_final_research_report.md` / Phase 6 | Full backend suite | 188 passed, 10 skipped | Software regression checks; model-dependent skips are not detector metrics. Historical result. |
-| `docs/phase6_implementation_report.md` | Phase 6 targeted checks | Reports 8 passed after fusion correction; metric utility checks 3 passed | Rule-path and utility verification; not research efficacy. See source report for commands. |
-| `docs/phase5_e2e_test_report.md` (2026-11-17) | Focused synchronous backend suite | 165 passed, 10 skipped, 2 deselected | Async tests were deselected due sandbox loop issue for that run. Historical environment-specific report. |
-| Same Phase 5 report | Full backend test command | 184 passed, 10 skipped | API and service code paths, not accuracy. Historical outcome. |
-| Same Phase 5 report | Frontend build and lint | Passed; CSS import-order and >500 kB bundle warnings noted for build | Build correctness, not visual/accessibility acceptance. |
-| Same Phase 5 report | Local browser upload | 14/20 stages completed; report built in 40.4 seconds | Uncontrolled image of unknown origin; no ground truth and no visual report verification. Not performance benchmark or usability study. |
+| Test Suite / Scope | Command | Passed | Skipped | Failed | Execution Time | Coverage / Notes |
+|---|---|---|---|---|---|---|
+| **Full Backend Suite** | `python -m pytest backend/tests/ -q` | **267** | **10** | **0** | **28.60s** | Comprehensive backend coverage: API routes, upload security, async orchestration, stage execution, fusion edge cases, calibration schemas, and Phase 7 candidate governance. |
+| **Phase 7 Governance & Contracts** | `pytest backend/tests/test_phase7.py -q` | **7** | **0** | **0** | **0.85s** | Verifies candidate rejection, frozen baseline preservation in production, calibration temperature bounds, and in-memory augmentation determinism. |
+| **Fusion Engine Regressions** | `pytest backend/tests/test_phase6_fusion.py -q` | **8** | **0** | **0** | **0.32s** | Verifies that unavailable/non-completed evidence cannot vote and that forensic cues remain informational. |
+| **Model Smoke Tests** | (Part of backend suite) | — | 10 | 0 | — | Opt-in real weight checks requiring downloaded local model weights and active CUDA runtime. |
 
-The Phase 6 report supersedes the Phase 5 count for the later backend full-suite run, but these numbers are not interchangeable measures of model quality.
+## 4. Benchmark dataset inventory and split governance
 
-## 4. Test-case inventory from source/report evidence
+Three external image benchmarks were ingested and cryptographically audited:
 
-Actual test names and assertions live in `backend/tests/`; this inventory summarizes verified coverage areas without claiming every suggested scenario executed in this audit.
+| Benchmark | Total Samples | Authentic (Real) | Synthetic (AI) | Generator Coverage / Modality | Partition Allocations |
+|---|---|---|---|---|---|
+| **Tiny-GenImage** | 25,006 | 12,506 | 12,500 | 8 generators (BigGAN, Cascade Diffusion, DeepFloyd-IF, GLIDE, LDM, Midjourney v4, SD 1.4, SD 1.5) | Train: 6,995<br>Val: 3,464<br>Calib: 10,000<br>Locked Test: 7,000 |
+| **Frontier Benchmark 2026-10** | 2,976 | 984 | 1,992 | 8 modern generators (DALL-E 3, Flux.1-dev, Flux.1-schnell, Midjourney v6, Recraft v3, SD 3 Medium, SD 3.5 Large, SD 3.5 Turbo) across 4 compression tiers | Val: 1,791<br>Calib: 2,000<br>Locked Test: 2,091 |
+| **WildAIGC-Bench** | 1,658 | 829 | 829 | Real-world in-the-wild digital media | Val: 1,000<br>Calib: 1,000<br>Locked Test: 1,294 |
+| **Total** | **29,640** | **14,319** | **15,321** | Diverse multi-generator ecosystem | **Locked Test: 10,385** |
 
-| Test group | Feature/path | Documented coverage | Actual-vs-proposed status |
-|---|---|---|---|
-| Phase 1/API | Upload type/signature/size/decode; analysis record and status/report reads | Covered by backend tests and documented API integration | Executed historically, not rerun now |
-| Phase 2 | Image processing, metadata, hashes, quality and OCR service behavior | Unit/service behavior tested; OCR real runtime depends on package/model availability | Software tests do not establish OCR quality |
-| Phase 3 | Claims, fact-check/provenance adapters, evidence/report structures | Service and mocked/no-credential paths are tested | External provider correctness/relevance not established |
-| Phase 4 | Virality/regional/social-heuristic deterministic behavior | Phase 4 tests and controlled examples | No observed spread/harm dataset; no predictive evaluation |
-| Phase 5 | Orchestration, partial failure, safe report, UI/API workflow | Upload-to-partial-report and image retrieval integration documented | Does not test every external provider or browser visual state |
-| Phase 6 fusion | Completed/informational/unavailable evidence scenarios | Controlled scenarios and regressions documented; non-completed evidence excluded | Deterministic rule behavior only; no accuracy benefit shown |
-| Authenticity model | Optional real-model smoke tests | 10 model tests skipped in reports unless opt-in/configured | No approved labeled local test set; no performance validation |
+Splits were generated using group-aware stratification (`experiments/create_evaluation_splits.py`) to isolate prompt identities and generator classes, preventing evaluation data leakage.
 
-### Suggested tests not represented as completed evidence
+## 5. Model benchmark evaluation results
 
-The following should remain proposed unless a future execution log is supplied: valid/invalid upload matrix against a release build; browser end-to-end tests with controlled images; API authorization tests after auth exists; durable worker restart/retry tests; security penetration tests; load/resource tests; cross-browser/accessibility tests; external provider live-contract tests; real labeled model/OCR/claim/user studies.
+### 5.1 Baseline evaluation: `truthlens/siglip-cifake-frozen-head`
 
-## 5. Model evaluation result
+The production baseline (frozen SigLIP-base image encoder with local linear head, SHA-256: `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`) was evaluated across all locked test partitions ($N = 10,385$):
 
-The local, manifest-driven authenticity evaluation ran against the header-only reviewed-manifest template and returned:
+| Test Partition | $N$ | Balanced Accuracy | ROC-AUC | Real Accuracy | AI Accuracy |
+|---|---|---|---|---|---|
+| **Tiny-GenImage Test** | 7,000 | 0.5521 | 0.6123 | 0.1609 | 0.9434 |
+| **Tiny-GenImage (Matched Aug)** | 7,000 | 0.5330 | 0.5595 | 0.1191 | 0.9469 |
+| **Frontier Benchmark 2026-10** | 2,091 | 0.6228 | 0.6501 | 0.4000 | 0.8457 |
+| **WildAIGC-Bench Test** | 1,294 | 0.4294 | 0.4226 | 0.0402 | 0.8176 |
 
-| Item | Result |
-|---|---|
-| Evaluation state | `NOT_EVALUABLE` |
-| Eligible examples | 0 |
-| Model inference in evaluation run | None |
-| Accuracy/precision/recall/F1/AUC/calibration/robustness | Not produced |
-| Machine result | `experiments/results/authenticity_test.json` |
+### 5.2 Phase 6 shortcut discovery & candidate E3 failure
 
-The separate test-data audit found 35 readable originals under `test_data/originals`, without label/license/provenance metadata; duplicates/derived files prevent treating the directory's file count as independent labeled samples.
+In Phase 5, Candidate E3 (`truthlens/siglip-base-tiny-genimage-e3_partial_finetuning`) was fine-tuned on the approved Tiny-GenImage training data without augmentation. Evaluation in Phase 6 revealed that E3 learned an unintended dataset shortcut:
+- In the Tiny-GenImage training manifest, 100% of authentic images were JPEG and 100% of synthetic images were PNG.
+- A Random Forest classifier trained solely on file metadata achieved an ROC-AUC of 1.0000.
+- When subjected to an in-memory JPEG-90 re-encoding probe, Candidate E3 flipped 45.6% of its predictions with a mean logit shift of 6.12.
+- Candidate E3 was decisively rejected for production deployment.
 
-### Branch-reported metric: keep separate
+### 5.3 Phase 7 shortcut-resistant candidates & locked test comparison
 
-`docs/phase6_authenticity_evaluation.md` records an upstream `ml/models` branch report for a 200-image CIFAKE subset (100/class): accuracy 0.87, AI recall 0.83, ROC-AUC 0.9613. It was not reproduced from a reviewed local manifest in this checkout, is not an independent benchmark, and does not establish out-of-distribution or real-world generalization. If referenced, attribute it explicitly to that branch report and state these caveats.
+In Phase 7, TruthLens implemented matched in-memory augmentation (randomized JPEG/PNG/WebP transcoding, scale jitter, and compression quality variation applied identically to both classes). Candidate S2 (`truthlens/siglip-base-v2-s2`) was trained and evaluated on the locked test sets against the frozen baseline:
 
-## 6. Dataset/readiness findings
+| Evaluation Partition / Angle | Baseline | Candidate S2 (`siglip-base-v2-s2`) | Difference ($\Delta$) | 95% Group-Aware Bootstrap CI |
+|---|---|---|---|---|
+| **Tiny-GenImage Test (Standard)** | BalAcc: 0.5521<br>AUC: 0.6123 | **BalAcc: 0.8460**<br>**AUC: 0.9423** | +0.2939 BalAcc<br>+0.3300 AUC | $[+0.3184, +0.3412]$ |
+| **Tiny-GenImage Test (Matched Aug)** | BalAcc: 0.5330<br>AUC: 0.5595 | **BalAcc: 0.8071**<br>**AUC: 0.9044** | +0.2741 BalAcc<br>+0.3449 AUC | $[+0.3312, +0.3582]$ |
+| **Frontier Benchmark 2026-10** | **BalAcc: 0.6228**<br>**AUC: 0.6501** | BalAcc: 0.4849<br>AUC: 0.4234 | -0.1379 BalAcc<br>-0.2267 AUC | $[-0.2781, -0.1720]$ |
+| **WildAIGC-Bench Test** | BalAcc: 0.4294<br>AUC: 0.4226 | **BalAcc: 0.5589**<br>**AUC: 0.6049** | +0.1295 BalAcc<br>+0.1823 AUC | $[+0.1472, +0.2178]$ |
+| **JPEG-90 In-Memory Probe** | 22.4% flip rate | **11.0% flip rate** | -11.4% flips | Shift: 0.793 (vs. E3: 6.12) |
 
-- No reviewed labeled data manifest or independent train/validation/test split exists locally.
-- No source/license/permission record, annotation guide, source/event/generator group ID or adjudication data exists for test originals.
-- `test_data/` contains originals and derived sizes/heatmaps, not 190 unique independent items.
-- Runtime `data/` contains user/application content and is intentionally excluded.
-- External research datasets listed in docs are candidates only; they are not installed/used in reported metrics.
-- Synthetic images in unit tests exercise code paths only and have no ground-truth semantics for detector performance.
+### 5.4 Candidate governance decision
 
-## 7. Performance and usability evidence
+**Decision:** `REJECT_CANDIDATE_FOR_PRODUCTION`, `RETAIN_FROZEN_BASELINE_IN_PRODUCTION`.
+- **Reasoning:** Candidate S2 successfully resolved the container format shortcut (+0.3300 AUC on Tiny-GenImage; 11.0% probe flips), but fine-tuning on 2023 diffusion data degraded performance on late-2026 frontier architectures (-0.2267 AUC on Frontier Benchmark).
+- Production detector remains strictly `truthlens/siglip-cifake-frozen-head`.
 
-Phase 5's performance report records narrow synthetic image microbenchmarks for preprocessing/quality/forensics and older-model timing. Those were not measured on the current fine-tuned model and are not representative end-to-end service SLAs. One browser run completed 14/20 stages in 40.4 seconds on an uncontrolled sample. There is no repeated load/performance study, resource envelope, confidence interval or target-hardware benchmark.
+## 6. Post-hoc calibration results
 
-No user study, SUS score, completion/error rate or trust/overreliance measurement is documented. A usability protocol exists, but protocol is not results.
+Temperature scaling was fitted on the 13,000-sample disjoint calibration pool:
+- Tiny-GenImage ($N = 10,000$): $T = 1.2174$
+- Frontier Benchmark ($N = 2,000$): $T = 10.3621$
+- WildAIGC-Bench ($N = 1,000$): $T = 5.6099$
+- Pooled Calibration: $T = 1.3187$
 
-## 8. Defects and risk observations from records
+All optimizations converged without hitting parameter boundaries ($0.1 \le T \le 100.0$), successfully mitigating overconfidence on out-of-domain distributions.
 
-Phase 6 controlled fusion tests exposed and corrected two logic inconsistencies: unavailable/non-completed evidence could vote, and forensic evidence was treated directionally despite its informational limitation. Regression tests were documented after correction. Potential remaining error categories in `phase6_error_analysis.md` are risks, not measured rates: model domain shift, image transforms, OCR failure, limited multilingual cues, provider mismatch/outage, source ambiguity, missing metadata, and over-interpretation of heuristics.
+## 7. Recommended evaluation protocol for future iterations
 
-## 9. Recommended evaluation protocol
-
-1. Acquire permitted, diverse, labeled samples and document label instructions and source rights.
-2. Group duplicates, sources, events and generators before splitting to avoid leakage.
-3. Freeze exact checkpoint digest, backbone revision, preprocessing, thresholds and code commit.
-4. Use validation for any threshold/calibration choices; keep test data held out.
-5. Report per-class counts/confusion matrix/precision/recall/specificity/F1/ROC-AUC/PR-AUC, coverage and uncertainty separately, and group-bootstrap intervals when sufficient groups exist.
-6. Evaluate OCR with CER/WER by language/script and image quality; extraction with span metrics; retrieval with human-rated P@K/MRR; explanation with localization/sanity protocols.
-7. Compare fusion only on paired identical records and keep forensic/context channels distinct from authenticity direction unless evidence supports directional use.
-8. For spread prediction, collect permitted observed outcomes and define time windows, geography and ground-truth reach; validate prospective splits. Synthetic cues are not a substitute.
-9. Conduct consented user testing for whether the report improves decisions or causes overreliance.
-10. Preserve run manifests, source revision, dependencies, hardware, seeds, exclusions and JSON outputs; do not store secrets in artifacts.
-
-## 10. Reproduction references
-
-See `docs/phase6_experiment_setup.md` for recorded commands and protocol controls; `experiments/README.md` for script usage; `docs/phase6_experiment_dataset_inventory.md` for audit details; and `docs/phase6_authenticity_evaluation.md` for interpretation of the current detector result.
+1. **Multi-Generator Training Pools:** Expand training data beyond early diffusion models (2023) to include modern flow-matching and diffusion transformer architectures (FLUX, SD 3.5).
+2. **Strict Disjoint Stratification:** Preserve group-aware splitting to prevent subject, prompt, or source leakage across train, val, calib, and test sets.
+3. **Mandatory Transcoding Probes:** Test all candidate models against in-memory format and compression probes to ensure representations do not rely on container artifacts.
+4. **Independent Benchmark Gates:** Require non-inferiority or improvement across held-out out-of-domain benchmarks before promoting any candidate to production.

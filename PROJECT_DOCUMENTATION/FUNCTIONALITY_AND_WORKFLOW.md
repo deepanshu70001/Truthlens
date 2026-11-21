@@ -43,14 +43,15 @@ If the model or optional engines are absent, the report can be partial/unavailab
 - The report can be `partial` where some stages fail or are unavailable. Stage state must be considered alongside output values.
 - Code: `backend/app/api/v1/endpoints/analysis.py`, `backend/app/services/reporting/builder.py`, `frontend/src/services/api.ts`.
 
-### Authenticity prediction — implemented conditionally
+### Authenticity prediction — implemented & evaluated
 
-- **Input:** preprocessed/decoded image in the expected model format.
-- **Model:** configured default pairs a local frozen-head checkpoint `models/baselines/siglip_frozen_head.pt` with `google/siglip-base-patch16-224`; a prior hosted SigLIP2 model is selectable as an alternate backend.
-- **Output:** class scores and operational authenticity tag when model loading and inference succeed.
-- **Interpretation:** scores are raw/uncalibrated; they are not real-world probabilities. No separate manipulation label is produced. Performance is not evaluable on an approved local dataset.
+- **Input:** preprocessed/decoded image in the expected model format ($224 \times 224$ normalized RGB).
+- **Model:** production deployment retains the frozen baseline `models/baselines/siglip_frozen_head.pt` (SHA-256: `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`) paired with `google/siglip-base-patch16-224`.
+- **Output:** class probabilities (calibrated or uncalibrated) and operational authenticity tag with explicit uncertainty band ($[0.35, 0.65]$).
+- **Calibration:** post-hoc temperature scaling fitted on held-out calibration pools ($N=13,000$).
+- **Benchmarked:** systematically benchmarked across 3 external datasets ($N=10,385$ locked test set); fine-tuned candidate S2 (`truthlens/siglip-base-v2-s2`) was rejected for production due to negative transfer on late-2026 generators.
 - **Dependencies:** PyTorch/Transformers, checkpoint, accessible/cached backbone and compatible device.
-- **Code:** `backend/app/services/authenticity/detector.py`, `backend/app/config.py`; evaluation caveats in `docs/phase6_authenticity_evaluation.md`.
+- **Code:** `backend/app/services/authenticity/detector.py`, `backend/app/services/authenticity/calibration.py`, `docs/phase7_evaluation_report.md`.
 
 ### Metadata, quality, hashing — implemented
 

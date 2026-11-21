@@ -1,99 +1,72 @@
 # Project Inventory — TruthLens Repository
 
-> Inspected: 2026-10-20 | Git HEAD: `270afbb` | 6 commits
+> **Document Status:** Complete & Traced to Checked-Out Codebase
+> **Repository:** `https://github.com/deepanshu70001/Truthlens`
+> **Working Branch:** `fix/truthlens-remediation`
+> **Workspace Path:** `d:\Projects\Truthlens`
 
-## Top-Level Structure
+---
+
+## 1. Top-Level Repository Structure
 
 ```
-final year project/
-├── backend/              # FastAPI backend (Python)
+Truthlens/
+├── .github/                  # CI workflows (ci.yml)
+├── backend/                  # FastAPI backend (Python 3.12)
 │   ├── app/
-│   │   ├── api/v1/       # REST endpoints (analyze, analysis, health, datasets, stubs)
-│   │   ├── core/         # Logging, exceptions, security
-│   │   ├── db/           # SQLAlchemy async session, base model
-│   │   ├── models/       # ORM: Analysis, ImageAsset, ModelRun, SystemEvent
-│   │   ├── schemas/      # Pydantic: AnalysisOut, HealthResponse, etc.
-│   │   ├── services/     # 27 service modules (see below)
-│   │   ├── utils/        # Device resolution, GPU memory
-│   │   └── workers/      # (directory exists, contents unknown)
-│   ├── tests/            # pytest suite: 5 test files + conftest
-│   ├── requirements.txt  # 38 dependencies
-│   └── requirements-dev.txt
-├── frontend/             # React + TypeScript + Vite
-│   └── src/
-│       ├── App.tsx       # 729-line single-file application
-│       ├── App.css       # Custom styles
-│       ├── index.css     # Base styles
-│       └── services/     # API client (api.ts)
-├── data/
-│   ├── synthetic/        # 3 CSV datasets (500 records each) + manifest.json
-│   ├── external/cifake/  # manifest.json only (images not committed to git)
-│   ├── heatmaps/         # EMPTY
-│   ├── artifacts/        # (storage)
-│   └── reports/          # (storage)
-├── docs/                 # 5 docs: ARCHITECTURE, EVALUATION, IMPLEMENTATION_PLAN, MODELS, VIRALITY_DATA
+│   │   ├── api/v1/           # REST endpoints (analyze, analysis, health, stubs)
+│   │   ├── core/             # Logging, exceptions, security, upload bounds
+│   │   ├── db/               # SQLAlchemy async session, declarative base
+│   │   ├── models/           # ORM models: Analysis, ImageAsset, ModelRun, SystemEvent
+│   │   ├── schemas/          # Pydantic request/response schemas
+│   │   ├── services/         # Modular analysis services (authenticity, forensics, ocr, fusion, etc.)
+│   │   └── utils/            # Device resolution, CUDA memory management
+│   ├── tests/                # Automated pytest suite: 267 passed, 10 skipped
+│   └── requirements.txt      # Backend Python dependencies
+├── datasets/                 # Ingested external benchmarks (N = 29,640)
+│   └── external/
+│       ├── tiny_genimage/                         # 25,006 images + ingestion manifest
+│       ├── ai_image_detection_benchmark_2026_10/  # 2,976 images + ingestion manifest
+│       └── wildaigc_bench/                        # 1,658 images + ingestion manifest
+├── docs/                     # Comprehensive architecture, methodology, and phase reports (Phases 1–7)
+│   ├── TruthLens_IEEE_research_paper.md           # Research paper manuscript draft
+│   └── phase*.md                                  # Phase 2–7 audit and evaluation reports
+├── experiments/              # Training, calibration, splitting, and audit scripts
+│   ├── configs/              # Phase 7 experiment configuration YAML
+│   ├── manifests/            # Approved training, validation, calibration, and test manifests
+│   ├── reports/              # Phase 2–7 evaluation reports and decision JSONs
+│   ├── train_phase7.py       # Matched in-memory augmentation multi-architecture trainer
+│   └── evaluate_phase7_test.py # Locked test evaluation across all external benchmarks
+├── frontend/                 # React 19 + TypeScript + Vite + Tailwind CSS
+│   ├── src/                  # App.tsx dashboard, components, services
+│   └── package.json          # Frontend dependencies
 ├── models/
-│   ├── cache/            # HuggingFace model cache (git-ignored)
-│   └── configs/          # Model configuration
-├── results/ml/           # 3 experiment results (JSON + CSV predictions)
-├── scripts/
-│   ├── ml/               # train_baselines.py, make_comparison.py, make_plots.py, run_all.sh
-│   ├── download_cifake_subset.py
-│   ├── download_models.py
-│   ├── generate_synthetic_data.py
-│   └── validate_datasets.py
-├── storage/              # uploads/ + artifacts/ (runtime storage)
-├── test_data/            # fake_news_test.jpg (940 KB) + empty subdirs
-├── docker/               # EMPTY
-├── truthlens.db          # SQLite database (40 KB)
-├── test_stage3_debug.db  # Debug database (40 KB)
-└── requirements-ml.txt   # ML-specific requirements (178 bytes)
+│   └── baselines/            # siglip_frozen_head.pt (SHA-256 e39afc5536...)
+├── PROJECT_DOCUMENTATION/    # 7 authoritative project dossiers (Master, Architecture, Testing, etc.)
+├── research_evidence/        # 22-document research evidence package
+├── scripts/                  # check_doc_links.py, download_benchmarks.py, download_models.py
+├── storage/                  # Runtime uploads and generated diagnostic artifacts
+└── README.md                 # Primary project overview and quickstart
 ```
 
-## Backend Service Modules (27 directories under `backend/app/services/`)
+---
 
-| Module | Key File | Size | Responsibility |
-|--------|----------|------|---------------|
-| `analysis/` | — | — | Analysis coordination |
-| `authenticity/` | `detector.py` (8.4 KB) | 245 lines | SigLIP2 deepfake/real classification |
-| `claims/` | `extractor.py` (8.4 KB) | — | Claim extraction from OCR text |
-| `evidence/` | `schema.py` (17.2 KB) | 493 lines | Evidence item/collection data model + builders |
-| `explanation/` | `generator.py` (8.5 KB) | 287 lines | Natural-language explanation from evidence |
-| `factcheck/` | `service.py` | — | Google Fact-Check Tools API integration |
-| `forensics/` | `analyzer.py` (18 KB) | 501 lines | 6 classical forensic analyses |
-| `fusion/` | `engine.py` (9.1 KB) | 260 lines | Weighted evidence aggregation |
-| `hashing/` | `service.py` (5.7 KB) | 201 lines | SHA-256 + pHash/aHash/dHash/wHash |
-| `metadata/` | `service.py` | — | EXIF extraction |
-| `ml/` | — | — | ML abstractions |
-| `nlp/` | `language_detector.py` (5.2 KB) | — | XLM-RoBERTa language detection |
-| `ocr/` | `service.py` (7.6 KB) | — | EasyOCR text extraction |
-| `preprocessing/` | `service.py` | — | Thumbnail, resize, quality stats |
-| `provenance/` | `service.py` (8.2 KB) | 266 lines | Google Vision Web Detection API |
-| `quality/` | `service.py` | — | Image quality assessment |
-| `regional/` | `engine.py` (11.4 KB) | 295 lines | India regional spread risk (heuristic) |
-| `reporting/` | `builder.py` (5.1 KB) | — | JSON report assembly |
-| `search/` | — | — | Search services |
-| `social_impact/` | `engine.py` (11.1 KB) | 321 lines | Social impact assessment (heuristic) |
-| `text/` | `normalizer.py` (5.3 KB) | — | Text cleaning, sentence splitting |
-| `virality/` | `engine.py` (12.4 KB) | 341 lines | Virality estimation (heuristic) |
-| `vision/` | `detector.py` (4.9 KB) | — | YOLO object detection |
-| `vlm/` | `service.py` (4.6 KB) | — | Qwen2.5-VL context analysis |
-| `xai/` | `gradcam.py` (11.4 KB) | 334 lines | Grad-CAM heatmap generation |
+## 2. Key Backend Service Responsibilities
 
-## Database Models (4 ORM classes)
-
-| Model | Table | Fields |
-|-------|-------|--------|
-| `Analysis` | `analyses` | id, status, truth_score, truth_confidence, truth_label, current_step, completed_steps, processing_time_ms, error_message, report_json, timestamps |
-| `ImageAsset` | `image_assets` | id, analysis_id, original_filename, storage_filename, storage_path, sha256_hash, perceptual_hash, mime_type, file_size_bytes, width, height, format, thumbnail_path |
-| `ModelRun` | `model_runs` | id, analysis_id, model_id, model_version, task, device, input_hash, result_json, confidence, runtime_ms, error_message |
-| `SystemEvent` | `system_events` | id, analysis_id, event_type, severity, source, message, metadata_json |
-
-## Frontend (Single-Page Application)
-
-- **Framework**: React 18+ with TypeScript
-- **Build**: Vite
-- **Styling**: Custom CSS (dark theme)
-- **Architecture**: Monolithic `App.tsx` (729 lines) — upload, progress tracking, report display
-- **Visualizations**: Recharts (radar/bar charts), React-Leaflet (India map), Grad-CAM overlay
-- **API client**: `services/api.ts` — `uploadImage()`, `getAnalysisStatus()`, `getAnalysisReport()`, `getHeatmapUrl()`
+| Service Package | Key Module | Primary Responsibility |
+|---|---|---|
+| `authenticity/` | `detector.py`, `calibration.py` | Production SigLIP detector (`truthlens/siglip-cifake-frozen-head`), post-hoc temperature scaling, uncertainty gating |
+| `forensics/` | `analyzer.py` | Classical image heuristics: ELA, noise variance, JPEG ghosting, edge density, resampling (informational cues) |
+| `ocr/` | `service.py` | Optical character recognition via EasyOCR with optional Tesseract fallback |
+| `claims/` | `extractor.py` | Heuristic extraction of candidate factual statements, temporal tokens, and location entities |
+| `factcheck/` | `service.py` | Google Fact Check Tools API connector (config-gated) |
+| `provenance/` | `service.py` | Google Vision Web Detection reverse lookup connector (config-gated) |
+| `hashing/` | `service.py` | SHA-256 cryptographic hashing and 64-bit perceptual hashing (pHash, dHash, aHash, wHash) |
+| `evidence/` | `schema.py` | Typed multi-modal evidence collection schema (`EvidenceItem`, `EvidenceCollection`) |
+| `fusion/` | `engine.py` | Status-aware multi-modal evidence aggregation engine (Phase 6 rules) |
+| `explanation/` | `generator.py` | Natural language explanation and limitations builder |
+| `virality/` | `engine.py` | Rule-based content sensationalism and platform heuristics |
+| `regional/` | `engine.py` | Canonical Indian geography mapping; returns explicit `DATA_UNAVAILABLE` status |
+| `social_impact/` | `engine.py` | Keyword-based content sensitivity matching across 5 policy domains |
+| `reporting/` | `builder.py` | Assembles final structured analysis report JSON |
+| `orchestrator.py` | `orchestrator.py` | Central asynchronous coordinator executing stages with fail-soft boundaries |

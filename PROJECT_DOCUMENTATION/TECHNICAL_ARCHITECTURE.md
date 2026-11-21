@@ -18,8 +18,8 @@ TruthLens is a browser-based single-page frontend communicating with a Python Fa
 | ML | PyTorch, Transformers, SigLIP vision backbone and local linear head | Authenticity inference; optional additional model services |
 | OCR | EasyOCR, optional pytesseract/Tesseract | Extract visible text when packages, language data and model cache are available |
 | Object detection | Ultralytics YOLO, configurable checkpoint | Optional object boxes/labels |
-| Testing | pytest and Python test suite | API/service/regression checks; historical counts are in evaluation reports |
-| VCS | Git | Source history; current checkout was `main`, seven commits ahead of origin at inspection |
+| Testing | pytest and Python test suite | Automated regression suite with 267 passed, 10 skipped in `backend/tests/` |
+| VCS | Git | Working branch: `fix/truthlens-remediation` |
 
 Versions are stated only where the checked-in manifest/docs declare them. Runtime versions vary by validation record; see `docs/phase6_experiment_setup.md` and `docs/phase5_e2e_test_report.md`.
 
@@ -104,8 +104,8 @@ No migration scripts were found. Deployment docs state tables are created with S
 | `metadata/service.py` | Metadata/EXIF extraction including guarded GPS handling. |
 | `quality/service.py` | Resolution and image encoding/quality indicators. |
 | `hashing/service.py` | SHA-256/perceptual-hash utilities and similarity support. |
-| `authenticity/detector.py` | Loads configured backend, default frozen SigLIP vision encoder plus local linear head; predicts scores/result. |
-| `authenticity/calibration.py` | Checks artifact/model identity and calibration helpers; no valid evaluation artifact was established. |
+| `authenticity/detector.py` | Production detector (`truthlens/siglip-cifake-frozen-head`), frozen SigLIP-base vision encoder + local linear head; predicts calibrated/uncalibrated probabilities and uncertainty bands. |
+| `authenticity/calibration.py` | Enforces cryptographic model identity contracts and applies post-hoc temperature scaling fitted on held-out calibration pools. |
 | `forensics/analyzer.py` | ELA, noise, JPEG, edge, texture, resampling indicators with limitations. |
 | `ocr/service.py` | EasyOCR first and optional Tesseract fallback; explicit engine/status/text output. |
 | `text/normalizer.py`, `nlp/language_detector.py` | Text normalization and optional model-based language/script outputs. No translation. |

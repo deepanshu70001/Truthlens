@@ -1,100 +1,90 @@
 # TruthLens Experimental Results & Comparative Evaluation
 
-> **Document Status:** Complete & Traced to Numerical JSON Outputs  
-> **Inspection Date:** 2026-10-20  
-> **Source Files:** `results/ml/cnn_scratch.json`, `results/ml/resnet18_frozen.json`, `results/ml/siglip_frozen.json`
+> **Document Status:** Comprehensive Empirical Results across Phases 0–7
+> **Hardware:** Intel Core i5-12500H (12 cores, 16 threads), 16 GB RAM, NVIDIA GeForce RTX 3050 Laptop GPU (4 GB VRAM)
+> **Source Artifacts:** `experiments/reports/phase7_locked_test_results.json`, `experiments/reports/phase7_candidate_decision.json`, `experiments/reports/phase7_temperature_calibration.json`, `experiments/reports/phase7_training_results.json`
 
 ---
 
-## 1. Primary Empirical Results Summary
+## 1. Master Benchmark Evaluation on Locked Test Partitions ($N = 10,385$)
 
-The experimental evaluation tests synthetic vs. authentic image discrimination on a standardized CIFAKE benchmark subset under identical train/validation/test splits (800 / 200 / 200, seed `20261014`). All experiments executed on the local host environment (Intel i5-12500H, NVIDIA RTX 3050 Laptop GPU, PyTorch 2.7.1+cu118).
+All evaluations executed on held-out, leak-free test partitions isolated via group-aware stratification:
 
-### Master Comparative Benchmark Table
-
-| Metric | CNN from Scratch (`cnn_scratch`) | ResNet-18 Frozen Probe (`resnet18_frozen`) | SigLIP Frozen Probe (`siglip_frozen`) |
-| :--- | :--- | :--- | :--- |
-| **Model Type** | Custom 4-Layer ConvNet | ImageNet-1k ResNet-18 | `google/siglip-base-patch16-224` |
-| **Input Resolution** | $32 \times 32 \times 3$ | $224 \times 224 \times 3$ | $224 \times 224 \times 3$ |
-| **Total Parameters** | 356,097 | 11,177,025 | 92,884,993 |
-| **Trainable Parameters** | **356,097** (100%) | **513** (0.0046%) | **769** (0.00083%) |
-| **Training Epochs** | 20 | 10 | 50 |
-| **Training Wall Time** | 500.0 s | 382.1 s | **73.0 s** (cached features) |
-| **Best Val Accuracy** | **90.50%** | 85.50% | 89.50% |
-| **Test Accuracy** | **89.50%** | 81.50% | 87.00% |
-| **Test Precision** | **92.47%** | 80.58% | 90.22% |
-| **Test Recall** | 86.00% | 83.00% | 83.00% |
-| **Test F1 Score** | **89.12%** | 81.77% | 86.46% |
-| **Test ROC-AUC** | 0.9585 | 0.9255 | **0.9613** |
-
----
-
-## 2. Detailed Confusion Matrix Breakdown
-
-On the test split of $N = 200$ images (balanced: 100 Authentic Real, 100 Synthetic Fake):
-
-```
-                       CNN Scratch              ResNet-18 Frozen           SigLIP Frozen
-                  Predicted                 Predicted                 Predicted
-               Real       Fake           Real       Fake           Real       Fake
-Actual Real  TN = 93    FP = 7         TN = 80    FP = 20        TN = 91    FP = 9
-Actual Fake  FN = 14    TP = 86        FN = 17    TP = 83        FN = 17    TP = 83
-```
-
-### Analysis of Error Modes:
-1. **False Positive Rate (Real misclassified as Fake):**
-   - ResNet-18 exhibited a severe 20.0% false positive rate (20/100).
-   - SigLIP reduced false positives to 9.0% (9/100).
-   - CNN Scratch achieved the lowest false positive rate at **7.0%** (7/100), yielding the highest precision (**92.47%**).
-2. **False Negative Rate (Fake misclassified as Real):**
-   - CNN Scratch produced 14 false negatives (14.0%).
-   - Both ResNet-18 and SigLIP produced 17 false negatives (17.0%).
+| Metric / Evaluation Angle | Production Baseline (`siglip-cifake-frozen-head`) | Candidate E3 (Unaugmented FT, Phase 5) | Candidate S2 (`siglip-base-v2-s2`, Phase 7) | $\Delta$ (S2 vs. Baseline) | 95% Group-Aware Bootstrap CI (S2 vs. Baseline) |
+|---|---|---|---|---|---|
+| **Tiny-GenImage Test ($N=7,000$)** | | | | | |
+| • Balanced Accuracy | 0.5521 | 0.8840 | **0.8460** | +0.2939 | $[+0.2798, +0.3082]$ |
+| • ROC-AUC | 0.6123 | 0.9610 | **0.9423** | +0.3300 | $[+0.3184, +0.3412]$ |
+| • Real Accuracy ($N=3,500$) | 0.1609 | 0.8710 | **0.7849** | +0.6240 | — |
+| • AI Accuracy ($N=3,500$) | 0.9434 | 0.8970 | **0.9071** | -0.0363 | — |
+| **Tiny-GenImage Matched Aug ($N=7,000$)** | | | | | |
+| • Balanced Accuracy | 0.5330 | 0.5120 | **0.8071** | +0.2741 | $[+0.2584, +0.2897]$ |
+| • ROC-AUC | 0.5595 | 0.5210 | **0.9044** | +0.3449 | $[+0.3312, +0.3582]$ |
+| **Frontier Benchmark 2026-10 ($N=2,091$)** | | | | | |
+| • Balanced Accuracy | **0.6228** | 0.5012 | 0.4849 | -0.1379 | $[-0.1712, -0.1044]$ |
+| • ROC-AUC | **0.6501** | 0.4410 | 0.4234 | -0.2267 | $[-0.2781, -0.1720]$ |
+| • Real Accuracy ($N=730$) | 0.4000 | 0.1540 | **0.6603** | +0.2603 | — |
+| • AI Accuracy ($N=1,361$) | 0.8457 | 0.8480 | **0.3093** | -0.5364 | — |
+| **WildAIGC-Bench Test ($N=1,294$)** | | | | | |
+| • Balanced Accuracy | 0.4294 | 0.4890 | **0.5589** | +0.1295 | $[+0.0984, +0.1610]$ |
+| • ROC-AUC | 0.4226 | 0.4950 | **0.6049** | +0.1823 | $[+0.1472, +0.2178]$ |
+| **In-Memory JPEG-90 Transcoding Probe** | | | | | |
+| • Prediction Flip Rate | 22.4% | 45.6% (Catastrophic shortcut) | **11.0%** (Stable) | -11.4% | (vs. E3: -34.6%) |
+| • Mean Logit Absolute Shift | 1.45 | 6.12 (Extreme shift) | **0.793** (Robust) | -0.657 | (vs. E3: -5.327) |
 
 ---
 
-## 3. Training Dynamics & Convergence Trajectories
+## 2. Phase 7 Architecture Comparison
 
-### 3.1 Loss and Validation Accuracy Progression
+Five models were trained on the approved 6,995-sample Tiny-GenImage training manifest under a 4 GB VRAM envelope:
 
-#### CNN Scratch (20 Epochs, lr = 0.001)
-- Epoch 1: Train Loss = 0.6561, Val Acc = 62.00%
-- Epoch 5: Train Loss = 0.3034, Val Acc = 85.50%
-- Epoch 10: Train Loss = 0.1996, Val Acc = 87.00%
-- Epoch 16: Train Loss = 0.1077, Val Acc = **90.50%** (Peak validation performance)
-- Epoch 20: Train Loss = 0.1095, Val Acc = 87.50% (Slight overfitting on small 800-sample train set)
-
-#### ResNet-18 Frozen Probe (10 Epochs, lr = 0.001)
-- Epoch 1: Train Loss = 0.6946, Val Acc = 57.00%
-- Epoch 4: Train Loss = 0.4924, Val Acc = 80.50%
-- Epoch 8: Train Loss = 0.3873, Val Acc = 85.00%
-- Epoch 10: Train Loss = 0.3626, Val Acc = **85.50%**
-
-#### SigLIP Frozen Probe (50 Epochs, lr = 0.001)
-- Epoch 1: Train Loss = 0.6459, Val Acc = 76.00% (Rapid initial convergence)
-- Epoch 10: Train Loss = 0.3662, Val Acc = 86.50%
-- Epoch 20: Train Loss = 0.2862, Val Acc = 88.00%
-- Epoch 33: Train Loss = 0.2356, Val Acc = **89.50%** (Peak validation performance)
-- Epoch 50: Train Loss = 0.1944, Val Acc = 88.50%
+| Model ID | Architecture / Training Strategy | Trainable Params | Peak VRAM | Epochs (Best) | Tiny Val Acc | Frontier Val AUC | Validation Score | Status |
+|---|---|---|---|---|---|---|---|---|
+| **S1** (`truthlens/siglip-base-v2-s1`) | SigLIP Linear Probe ($K=5$ views, 34,975 samples) | 769 (0.0009%) | 700.5 MB | 15 (12) | 0.8124 | **0.5991** | 0.6678 | Candidate |
+| **S2** (`truthlens/siglip-base-v2-s2`) | SigLIP Layers 10, 11 + Head Partial FT | 14,178,817 (16.4%) | 839.1 MB | 7 (4) | **0.8675** | 0.4769 | **0.6722** | Primary Candidate |
+| **R1** (`truthlens/resnet50-v2-r1`) | ResNet-50 Full Fine-Tuning | 23,510,081 (100%) | 1,121.5 MB | 7 (3) | 0.8245 | 0.4803 | 0.6524 | Candidate |
+| **R2** (`truthlens/resnet50-v2-r2`) | ResNet-50 Stage 4 Fine-Tuning | 14,976,001 (63.7%) | 606.9 MB | 8 (5) | 0.8012 | 0.4744 | 0.6378 | Candidate |
+| **A1** (`truthlens/siglip-base-v2-a1`) | SigLIP Ablation (No Augmentation) | 14,178,817 (16.4%) | 839.1 MB | 6 (2) | 0.9412 | 0.5676 | 0.7544 | Shortcut Ablation |
 
 ---
 
-## 4. Key Scientific Findings & Discussion
+## 3. Pre-Training Container Format Audit
 
-### 4.1 The High-Frequency Resolution Paradox
-A striking empirical result is that the custom 4-layer CNN trained from scratch outperformed the ImageNet-pretrained ResNet-18 (89.50% vs. 81.50% test accuracy).
-- **Physical Explanation:** CIFAKE images are natively $32 \times 32$ pixels. Training the custom CNN directly on $32 \times 32$ preserves the native pixel grid and subtle high-frequency checkerboard artifacts left by diffusion deconvolution layers.
-- Conversely, feeding $32 \times 32$ images into standard ResNet-18 requires upsampling to $224 \times 224$ via bicubic interpolation, which acts as a low-pass spatial smoothing filter, erasing high-frequency generative artifacts.
+To demonstrate container-format confounding, Random Forest models were trained exclusively on image metadata features (file extension, MIME type, file size, byte entropy, aspect ratio, width, height):
 
-### 4.2 Parameter Efficiency of Vision-Language Representations
-While the CNN scored slightly higher test accuracy on this specific test set (+2.5%), **SigLIP achieved the highest overall discriminatory capability as measured by ROC-AUC (0.9613 vs. 0.9585)**.
-- **Trainable Parameter Ratio:** SigLIP trained only **769 parameters**—a $463\times$ reduction in trained parameters compared to the CNN (356,097).
-- **Compute Efficiency:** Because vision transformer embeddings were pre-extracted and cached in memory, 50 epochs of linear probe training completed in **73.0 seconds**, compared to 500.0 seconds for the CNN.
-- This demonstrates that multimodal contrastive pretraining encodes generalized visual representations that linearly separate synthetic and authentic media with near-zero marginal computational cost.
+| Experiment | Dataset Partition | Metadata Features Only (ROC-AUC) | Interpretation |
+|---|---|---|---|
+| **Raw Dataset (Unaugmented)** | Tiny-GenImage Train ($N=6,995$) | **1.0000** | Perfect separation: 100% real images are JPEG; 100% AI images are PNG. |
+| **Raw Dataset (Unaugmented)** | Tiny-GenImage Val ($N=3,464$) | **1.0000** | Confirms container format artifact generalises across all raw splits. |
+| **Matched In-Memory Augmentation** | Tiny-GenImage Augmented Train ($N=6,995$) | **0.5028** | Metadata separability collapsed to random chance ($p \approx 0.50$). |
+| **Matched In-Memory Augmentation** | Tiny-GenImage Augmented Val ($N=3,464$) | **0.4994** | Proves matched transcoding completely eliminates container shortcut. |
 
 ---
 
-## 5. Summary Recommendations for Paper Writing
+## 4. Post-Hoc Temperature Calibration Results
 
-1. Report both **Accuracy** and **ROC-AUC** side by side to highlight the distinction between fixed-threshold accuracy and threshold-independent separation.
-2. Frame the CNN-from-scratch result as evidence of high-frequency spatial artifact sensitivity, and the SigLIP result as evidence of semantic and distributional robustness.
-3. Explicitly state the dataset constraints (1,200 total images) to maintain scientific modesty, noting that broader generalization across Midjourney, FLUX, and DALL-E requires expanded multi-generator benchmarks.
+Temperature scaling ($T$) fitted on the 13,000-sample calibration pool using Negative Log-Likelihood (NLL) optimization:
+
+| Calibration Split | $N$ | Optimized Temperature ($T$) | Uncalibrated NLL | Calibrated NLL | Uncalibrated ECE | Calibrated ECE | Optimization Status |
+|---|---|---|---|---|---|---|---|
+| **Tiny-GenImage Calib** | 10,000 | **1.2174** | 0.412 | **0.398** | 0.084 | **0.031** | Converged |
+| **Frontier Benchmark Calib** | 2,000 | **10.3621** | 1.482 | **0.781** | 0.312 | **0.065** | Converged |
+| **WildAIGC-Bench Calib** | 1,000 | **5.6099** | 0.941 | **0.652** | 0.198 | **0.048** | Converged |
+| **Pooled Calibration** | 13,000 | **1.3187** | 0.521 | **0.485** | 0.112 | **0.038** | Converged |
+
+---
+
+## 5. Candidate Governance & Production Retention Decision
+
+- **Pre-Registered Criteria:** A candidate model may replace the production baseline only if it achieves non-inferiority or statistically significant improvement across all held-out benchmarks without negative transfer ($\Delta \text{AUC} \ge 0$).
+- **Empirical Outcome:** Candidate S2 achieved impressive in-distribution gains (+0.3300 AUC on Tiny-GenImage) and robust compression stability, but suffered severe negative transfer on modern 2026 generators (-0.2267 AUC on Frontier Benchmark).
+- **Formal Decision:**
+  ```json
+  {
+    "candidate_model_id": "truthlens/siglip-base-v2-s2",
+    "production_model_id": "truthlens/siglip-cifake-frozen-head",
+    "decision": "REJECT_CANDIDATE_FOR_PRODUCTION",
+    "retention": "RETAIN_FROZEN_BASELINE_IN_PRODUCTION",
+    "governance_rationale": "Candidate S2 failed cross-generator generalization on modern 2026 generators (Frontier AUC 0.4234 vs Baseline 0.6501, Delta AUC -0.2267). Frozen baseline retained in production."
+  }
+  ```

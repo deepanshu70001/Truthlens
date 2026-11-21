@@ -1,52 +1,35 @@
 # TruthLens Experiment Inventory
 
-> **Document Status:** Verified Against Execution Logs & Scripts  
-> **Inspection Date:** 2026-10-20  
-> **Primary References:** `results/ml/`, `scripts/ml/train_baselines.py`, `scripts/ml/make_comparison.py`, `docs/EVALUATION.md`
+> **Document Status:** Comprehensive Multi-Phase Experimental Program Registry
+> **Source Directory:** `experiments/`, `experiments/reports/`, `docs/`
 
 ---
 
-## 1. Overview of Experimental Program
+## 1. Master Experiment Table (Phases 0–7)
 
-To support an empirical research paper, TruthLens defines a structured experimental agenda. This tracks:
-1. **Completed Experiments:** Rigorous benchmark trials with recorded JSON outputs, predictions, and confusion matrices in `results/ml/`.
-2. **Partially Implemented / Validated Trials:** Modules verified via automated unit and stage tests in `backend/tests/`.
-3. **Proposed / Planned Paper Experiments:** Structured experiments designed for final manuscript inclusion once computational resources or external API quotas permit.
-
----
-
-## 2. Master Experiment Table
-
-| Experiment ID | Title | Objective | Status | Dataset / Split | Model / Component | Primary Metrics | Evidence / Result File |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **EXP-01** | CNN from Scratch Baseline | Establish foundational non-pretrained performance on synthetic image detection | **COMPLETED** | CIFAKE Subset (800 train, 200 val, 200 test; Seed: 20261014) | 4-layer Custom ConvNet (356,097 params) | Acc: 89.50%, F1: 89.12%, ROC-AUC: 0.9585, Time: 500.0s | `results/ml/cnn_scratch.json`, `cnn_scratch_preds.csv` |
-| **EXP-02** | ResNet-18 Transfer Learning Probe | Benchmark standard vision transfer learning with frozen backbone and linear probe | **COMPLETED** | CIFAKE Subset (800 train, 200 val, 200 test; Seed: 20261014) | ResNet-18 ImageNet-1k (513 trainable, 11.18M total) | Acc: 81.50%, F1: 81.77%, ROC-AUC: 0.9255, Time: 382.1s | `results/ml/resnet18_frozen.json`, `resnet18_frozen_preds.csv` |
-| **EXP-03** | SigLIP Foundation Linear Probe | Evaluate vision-language foundation model zero/few-shot feature representations | **COMPLETED** | CIFAKE Subset (800 train, 200 val, 200 test; Seed: 20261014) | `google/siglip-base-patch16-224` (769 trainable, 92.88M total) | Acc: 87.00%, F1: 86.46%, ROC-AUC: 0.9613, Time: 73.0s | `results/ml/siglip_frozen.json`, `siglip_frozen_preds.csv` |
-| **EXP-04** | Cross-Baseline Efficiency Comparison | Compare parameter efficiency, latency, and discriminatory capability across baselines | **COMPLETED** | CIFAKE Subset (Test split: 200 samples) | CNN vs ResNet-18 vs SigLIP | Parameter efficiency, Train duration, ROC-AUC | `results/ml/comparison.csv`, `results/ml/comparison.md` |
-| **EXP-05** | Grad-CAM Interpretability Localization | Validate spatial localization of synthetic generator artifacts against human annotations | Proposed / Implemented | Curated deepfake test set (faces, objects, text) | SigLIP2 + Layer-targeted Grad-CAM | Pointing Game Accuracy, IoU against manipulation masks | `backend/app/services/xai/gradcam.py` |
-| **EXP-06** | Forensic Compression Robustness | Measure performance degradation of ELA and noise residuals under aggressive JPEG re-compression | Proposed | Synthetic images resaved at Q=85, 75, 50, 30 | Classical Forensics Engine (`analyzer.py`) | ELA contrast decay, false positive spike rate | `backend/app/services/forensics/` |
-| **EXP-07** | Multimodal Fusion Ablation | Quantify accuracy improvement of multi-criteria fusion over individual model predictions | Proposed | Multi-signal test suite with cross-domain contradictions | Evidence Fusion Engine (`engine.py`) | Overall F1 score, False Positive Reduction on recycled real imagery | `backend/app/services/fusion/` |
-| **EXP-08** | Regional Spread Demographic Consistency | Stress-test demographic mapping and linguistic routing across 36 Indian States/UTs | Validated via Synthetic Suite | `data/synthetic/regional_spread_scenarios.csv` (500 cases) | Regional Spread Engine (`engine.py`) | State ranking stability, linguistic coverage percentage | `backend/tests/test_stage4.py` |
+| Experiment ID | Phase | Objective | Status | Dataset & Split | Architecture / Strategy | Primary Findings & Metrics | Evidence Artifact |
+|---|---|---|---|---|---|---|---|
+| **EXP-P0** | Phase 0 | Baseline Audit & Dependency Setup | COMPLETED | Repo checkout | Environment verification | Initial CI and testing hygiene established | `docs/` |
+| **EXP-P1** | Phase 1 | Model Identity & Calibration Safety | COMPLETED | Mock & baseline checkpoints | Production detector schema | Cryptographic model contract registered; SHA-256 `e39afc55...` | `backend/tests/test_calibration.py` |
+| **EXP-P2** | Phase 2 | External Dataset Ingestion & Validation | COMPLETED | Tiny-GenImage, Frontier 2026-10, WildAIGC ($N=29,640$) | Cryptographic audit | 100% SHA-256 match, 0 corrupted files, exact duplicate clustering | `docs/phase2_dataset_ingestion_report.md` |
+| **EXP-P2-SPLIT** | Phase 2 | Group-Aware Dataset Splitting | COMPLETED | $N=29,640$ images | Disjoint stratification | 6,995 train, 6,255 val, 13,000 calib, 10,385 locked test; zero prompt leakage | `docs/phase2_split_protocol.md` |
+| **EXP-P3** | Phase 3 | Frozen Baseline Benchmark Evaluation | COMPLETED | Locked test ($N=10,385$) | `truthlens/siglip-cifake-frozen-head` | Tiny AUC: 0.6123, Frontier AUC: 0.6501, WildAIGC AUC: 0.4226 | `docs/phase3_evaluation_report.md` |
+| **EXP-P3.5** | Phase 3.5 | Independent Research & Split Audit | COMPLETED | Split manifests & logs | Statistical verification | Confirmed split isolation and baseline evaluation reproducibility | `docs/phase3_5_research_audit_report.md` |
+| **EXP-P4** | Phase 4 | Training Dataset Preparation | COMPLETED | Approved manifest ($N=6,995$) | Data filtering & balancing | 3,515 Real, 3,480 AI verified for training | `docs/phase4_training_dataset_report.md` |
+| **EXP-P5** | Phase 5 | Controlled Fine-Tuning | COMPLETED | Approved train ($N=6,995$) | E1 (linear), E2 (balanced), E3 (layer 11 FT) | Candidate E3 selected on validation metrics (Tiny val acc 0.884) | `docs/phase5_training_report.md` |
+| **EXP-P6** | Phase 6 | Held-Out Evaluation & Shortcut Discovery | COMPLETED | Locked test ($N=10,385$) | Candidate E3 | Discovered container format shortcut (100% real JPEG vs 100% AI PNG; 45.6% probe flips); Candidate E3 rejected | `docs/phase6_evaluation_report.md` |
+| **EXP-P7-AUDIT** | Phase 7 | Pre-Training Shortcut Metadata Audit | COMPLETED | Train & val metadata | Random Forest on metadata | Raw metadata RF AUC = 1.0000; Matched in-memory augmentation RF AUC = 0.5028 | `experiments/audit_phase7_shortcuts.py` |
+| **EXP-P7-TRAIN** | Phase 7 | Matched Augmentation Model Training | COMPLETED | Approved train ($N=6,995$) | S1, S2, R1, R2, A1 | Candidate S2 selected as primary candidate (Val score 0.6722, best overall) | `docs/phase7_training_report.md` |
+| **EXP-P7-CALIB** | Phase 7 | Temperature Scaling Calibration | COMPLETED | Calibration pool ($N=13,000$) | Candidate S2 logits | Tiny $T=1.2174$, Frontier $T=10.3621$, WildAIGC $T=5.6099$, Pooled $T=1.3187$ | `experiments/reports/phase7_temperature_calibration.json` |
+| **EXP-P7-TEST** | Phase 7 | Locked Test Benchmark Evaluation | COMPLETED | Locked test ($N=10,385$) | Candidate S2 vs Frozen Baseline | S2 Tiny AUC: 0.9423 (+0.3300 gain); S2 Frontier AUC: 0.4234 (-0.2267 drop; negative transfer) | `docs/phase7_evaluation_report.md` |
+| **EXP-P7-GOV** | Phase 7 | Candidate Governance Decision | COMPLETED | Evaluation registry | Policy decision | Candidate S2 rejected for production; Frozen baseline retained in production | `experiments/reports/phase7_candidate_decision.json` |
 
 ---
 
-## 3. Detailed Review of Completed Experiments
+## 2. Archival Historical Baselines (CIFAKE 1.2k Subset)
 
-### 3.1 EXP-01: CNN from Scratch
-- **Protocol:** Trained with Adam optimizer ($\text{lr} = 0.001$, batch size 32) on $32 \times 32$ input resolution for 20 epochs.
-- **Outcome:** Achieved a top validation accuracy of 90.50% at epoch 16, stabilizing at 89.50% test accuracy. Confusion matrix on 200 test samples:
-  - True Negatives (Real detected as Real): 93
-  - False Positives (Real misclassified as Fake): 7
-  - False Negatives (Fake misclassified as Real): 14
-  - True Positives (Fake detected as Fake): 86
-- **Significance:** Demonstrates that high-frequency convolutional kernels easily detect local pixel co-occurrence artifacts inherent in Stable Diffusion v1.4, even without pretraining.
-
-### 3.2 EXP-02: ResNet-18 Frozen Linear Probe
-- **Protocol:** Input images upsampled to $224 \times 224 \times 3$. Backbone frozen; linear projection head trained for 10 epochs.
-- **Outcome:** Best validation accuracy 85.50%; test accuracy 81.50%; ROC-AUC 0.9255.
-- **Error Analysis:** High false positive count (20 real images misclassified as fake) and 17 false negatives. Standard ImageNet-1k representations emphasize semantic object categories rather than subtle pixel generation artifacts.
-
-### 3.3 EXP-03: SigLIP Foundation Probe
-- **Protocol:** `google/siglip-base-patch16-224` vision backbone with cached 768-dimensional embeddings. Linear head trained for 50 epochs.
-- **Outcome:** Test accuracy 87.00%; Precision 90.22%; ROC-AUC **0.9613** (highest among all baselines). Training completed in only 73.0 seconds due to precomputed feature embeddings.
-- **Significance:** Achieved superior discrimination (ROC-AUC 0.9613) with only 769 trainable parameters, confirming that vision-language foundation backbones retain fine-grained distributional cues necessary for synthetic media detection.
+| Baseline ID | Architecture | Parameters | Test Acc | Test ROC-AUC | Historical Note |
+|---|---|---|---|---|---|
+| **ARCH-CNN** | Custom 4-Layer ConvNet | 356,097 (100% train) | 89.50% | 0.9585 | Native $32 \times 32$ pixel resolution; sensitive to local pixel co-occurrence |
+| **ARCH-RN18** | ResNet-18 ImageNet Probe | 513 (0.0046% train) | 81.50% | 0.9255 | Upsampled $224 \times 224$ bicubic interpolation smoothed spatial artifacts |
+| **ARCH-SIGLIP** | SigLIP Frozen Probe | 769 (0.00083% train) | 87.00% | 0.9613 | Converged in 73.0s using cached vision-language embeddings |

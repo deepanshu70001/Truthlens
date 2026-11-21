@@ -1,57 +1,58 @@
 # TruthLens Implementation Summary for Research Paper Drafting
 
-> **Document Status:** High-Density Author Reference  
-> **Inspection Date:** 2026-10-20  
-> **Target Use:** Rapid factual reference while drafting paper sections
+> **Document Status:** Author Reference Aligned with Phase 7 Empirical Results
+> **Source Artifacts:** `docs/phase7_evaluation_report.md`, `experiments/reports/phase7_locked_test_results.json`
 
 ---
 
-## 1. Quick Facts & Numerical Cheat Sheet
+## 1. Core Facts & Numerical Reference Sheet
 
-| Parameter | Value / Metric | Source / Reference |
-| :--- | :--- | :--- |
-| **Project Full Title** | *TruthLens: AI System for Image Verification, Analysis and Virality Estimation Including Social Impact* | Repository Root |
-| **Core Architecture** | Asynchronous 19-Stage Orchestration Pipeline with Fail-Soft Boundaries | `backend/app/services/orchestrator.py` |
-| **Primary Authenticity Model** | SigLIP2 (`prithivMLmods/Deepfake-Real-Class-Siglip2`) | `backend/app/services/authenticity/` |
-| **Best Baseline ROC-AUC** | **0.9613** (SigLIP Frozen Linear Probe) | `results/ml/siglip_frozen.json` |
-| **Best Baseline Accuracy** | **89.50%** (Custom 4-Layer CNN from Scratch) | `results/ml/cnn_scratch.json` |
-| **Best Baseline Precision** | **92.47%** (CNN from Scratch; 7% False Positive Rate) | `results/ml/cnn_scratch.json` |
-| **Trainable Parameter Efficiency** | SigLIP probe trained only **769 parameters** (vs. 356k for CNN) | `results/ml/comparison.csv` |
-| **Fastest Training Time** | **73.0 seconds** (SigLIP over 50 epochs using cached embeddings) | `results/ml/siglip_frozen.json` |
-| **Benchmark Dataset Split** | CIFAKE Subset: 800 train, 200 validation, 200 test (Seed: `20261014`) | `data/external/cifake/manifest.json` |
-| **Explainable AI (XAI)** | Layer-Targeted Grad-CAM on Transformer Visual Encoder | `backend/app/services/xai/gradcam.py` |
-| **Optical Character Recognition** | EasyOCR (CRAFT + CRNN) with Indic & English multi-script support | `backend/app/services/ocr/service.py` |
-| **Object Detection Backbone** | YOLOv8n (`ultralytics/yolov8n.pt`, 3.2M parameters) | `backend/app/services/vision/detector.py` |
-| **Regional Coverage** | 36 Indian States and Union Territories (Census 2011 + TRAI 2024 data) | `backend/app/services/regional/engine.py` |
-| **Virality Data Declaration** | Explicit `DATA_UNAVAILABLE` status flag (zero fabricated predictions) | `backend/app/services/virality/engine.py` |
-| **Hardware Constraint** | 4,096 MB VRAM (NVIDIA GeForce RTX 3050 Laptop GPU) | Host System Specs |
+| Parameter | Value / Empirical Finding | Source Reference |
+|---|---|---|
+| **Project Full Title** | *TruthLens: AI-Assisted Image Authenticity Analysis and Digital Media Verification Support* | Repository Root |
+| **Ingested Benchmark Scale** | **29,640 images** across 16 generator families and 4 compression tiers | `datasets/external/` |
+| **Locked Test Partition** | **10,385 images** (Tiny: 7,000; Frontier: 2,091; WildAIGC: 1,294) | `experiments/manifests/` |
+| **Production Model** | `truthlens/siglip-cifake-frozen-head` (SHA-256: `e39afc5536...`) | `models/baselines/siglip_frozen_head.pt` |
+| **Production Governance** | **RETAINED IN PRODUCTION** | `phase7_candidate_decision.json` |
+| **Primary Research Candidate** | `truthlens/siglip-base-v2-s2` (Layers 10, 11 + Head FT) | `experiments/checkpoints/phase7/s2_siglip_partial_ft/` |
+| **Candidate Decision** | **REJECTED FOR PRODUCTION** | `phase7_candidate_decision.json` |
+| **Pre-Training Shortcut Discovery** | 100% real = JPEG; 100% AI = PNG in Tiny-GenImage (RF metadata AUC = 1.0000) | `audit_phase7_shortcuts.py` |
+| **Matched In-Memory Augmentation** | Dynamic JPEG/PNG/WebP transcoding collapsed metadata AUC to **0.5028** | `experiments/train_phase7.py` |
+| **Tiny-GenImage Test AUC** | Baseline: **0.6123** vs. Candidate S2: **0.9423** (+0.3300 gain, 95% CI $[0.3184, 0.3412]$) | `phase7_locked_test_results.json` |
+| **Frontier Benchmark Test AUC** | Baseline: **0.6501** vs. Candidate S2: **0.4234** (-0.2267 drop, 95% CI $[-0.2781, -0.1720]$) | `phase7_locked_test_results.json` |
+| **WildAIGC-Bench Test AUC** | Baseline: **0.4226** vs. Candidate S2: **0.6049** (+0.1823 gain) | `phase7_locked_test_results.json` |
+| **Compression Stability Probe** | S2 JPEG-90 probe flip rate dropped to **11.0%** (vs. E3 unaugmented: **45.6%**) | `phase7_locked_test_results.json` |
+| **Temperature Calibration ($T$)** | Tiny: $T=1.2174$, Frontier: $T=10.3621$, WildAIGC: $T=5.6099$, Pooled: $T=1.3187$ | `phase7_temperature_calibration.json` |
+| **Automated Test Suite** | **267 passed, 10 skipped, 0 failed** (28.60s execution time) | `backend/tests/` |
 
 ---
 
-## 2. Section-by-Section Paper Drafting Guide
+## 2. Section-by-Section Paper Guide
 
 ### Abstract
-- Open with the dual challenges of multimodal disinformation: generative diffusion artifacts and deceptive out-of-context image recycling ("cheapfakes").
-- Highlight the 19-stage modular architecture.
-- Cite the empirical baseline comparison: SigLIP achieving **0.9613 ROC-AUC** with only 769 trainable parameters, alongside the 4-layer CNN achieving **89.5% accuracy** on native pixel grids.
-- Emphasize the Indian regional exposure mapping across 36 states and the epistemic honesty of declaring `DATA_UNAVAILABLE` on proprietary forward cascades.
+- Summarize multi-modal disinformation challenges (diffusion generation, container artifacts, out-of-context claims).
+- Report ingestion of 3 external benchmarks ($N=29,640$) and discovery of container format shortcut learning in Tiny-GenImage.
+- Present matched in-memory augmentation defense that collapses metadata AUC to chance level (0.5028).
+- Present locked test results: S2 achieved 0.9423 AUC on in-distribution Tiny-GenImage, but degraded to 0.4234 AUC on late-2026 generators (Frontier Benchmark).
+- Highlight evaluation governance: candidate rejected and frozen baseline preserved in production.
 
-### Introduction
-- Establish the threat model: synthetic media combined with encrypted WhatsApp/Telegram viral forwarding in multilingual democracies.
-- Clarify the paper's central thesis: **Single-model classifiers are insufficient; robust verification requires layered evidence fusion across visual, forensic, linguistic, and provenance channels.**
+### Introduction & Threat Model
+- Digital media manipulation across disparate generator eras (2023 diffusion vs. modern 2026 flow-matching).
+- Danger of shortcut learning in synthetic detection benchmarks.
+- Core premise: layered, status-aware multi-modal verification with strict model governance.
 
-### Methodology (Sections III & IV)
-- Detail the 19-stage pipeline from cryptographic SHA-256 validation through Error Level Analysis (Q=95), multi-perceptual hashing (pHash/dHash/aHash), EasyOCR, and Google Fact Check querying.
-- Present the mathematical formulation of the Multi-Criteria Evidence Fusion Engine:
-  $$S = \frac{\sum w_i \cdot \left(\frac{1 + p_i \cdot c_i}{2}\right)}{\sum w_i}$$
-- Explain the Grad-CAM visual interpretability mechanism applied to transformer attention blocks.
+### Empirical Dataset Governance (Section V)
+- Ingested datasets: Tiny-GenImage ($N=25,006$), Frontier Benchmark 2026-10 ($N=2,976$), WildAIGC-Bench ($N=1,658$).
+- Group-aware split protocol preventing prompt/generator leakage.
+- Container format confounding analysis and matched augmentation formulation.
 
-### Results & Discussion (Section V)
-- Feature **Table 1** (Comparative Baselines) and **Figures 3 & 4** (ROC curves and loss convergence).
-- Address the *High-Frequency Resolution Paradox*: why CNN-from-scratch on native $32 \times 32$ pixels attained 89.5% accuracy compared to ResNet-18 (81.5%), which suffered from interpolation smoothing upon upsampling.
-- Emphasize the compute-efficiency narrative: SigLIP converged in 73 seconds.
+### Results & Discussion (Section VI)
+- Multi-benchmark locked test evaluation table.
+- Group-aware bootstrap confidence intervals ($B = 1,000$).
+- Analysis of negative transfer on modern diffusion transformers and flow-matching architectures.
+- Post-hoc temperature calibration parameter dynamics across domains.
 
-### Limitations & Ethics (Section VI & VII)
-- Acknowledge the 4 GB VRAM ceiling requiring sequential execution and deferral of 3B+ parameter VLMs.
-- Disclose the 1,200-sample CIFAKE baseline scale and discuss generative concept drift (FLUX.1, Midjourney v6).
-- Reiterate ethical safeguards against automation bias and false-positive chilling of citizen journalism.
+### Limitations & Ethics (Section VII)
+- Cross-generator transfer gap as the primary open research challenge.
+- Elevated real-image false positive rates on open domains ($t \approx 0.93$ operational threshold).
+- Epistemic integrity: designating heuristic virality/regional indicators as `DATA_UNAVAILABLE`.

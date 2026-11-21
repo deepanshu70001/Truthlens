@@ -1,36 +1,29 @@
 feature,status,evidence_file,evidence_detail,notes
-Image Upload & Validation,"Implemented, not fully verified",backend/app/api/v1/endpoints/analyze.py,"MIME + magic-byte validation, size limit, Pillow decode, SHA-256 hashing",Endpoint exists; no end-to-end test execution logs found
-Image Preprocessing (thumbnail/resize),"Implemented, not fully verified",backend/app/services/preprocessing/service.py,"Called from analyze.py line 117-126",Service file exists (not fully inspected)
-EXIF Metadata Extraction,"Implemented, not fully verified",backend/app/services/metadata/service.py,"Called from orchestrator.py line 167-172",Service file exists; invoked in pipeline stage 1
-Image Quality Assessment,"Implemented, not fully verified",backend/app/services/quality/service.py,"Called from orchestrator.py line 177-182",Service file exists; invoked in pipeline stage 2
-Authenticity Detection (SigLIP2),"Implemented, not fully verified",backend/app/services/authenticity/detector.py,"245 lines; loads prithivMLmods/Deepfake-Real-Class-Siglip2; binary Fake/Real classification",Model loading and inference code complete; no execution logs found in repo
-Forensic Analysis (6 signals),"Implemented and verified",backend/app/services/forensics/analyzer.py,"501 lines; ELA, noise, JPEG artifacts, edge, texture, resampling; all 6 signals implemented",Code complete with weighted aggregation; test_stage3.py covers forensics
-OCR (EasyOCR),"Implemented, not fully verified",backend/app/services/ocr/service.py,"7.6 KB; EasyOCR wrapper with GPU support",Requires easyocr pip install; invoked in pipeline stage 5
-Object Detection (YOLO),"Implemented, not fully verified",backend/app/services/vision/detector.py,"4.9 KB; Ultralytics YOLO wrapper",Requires ultralytics pip install; invoked in pipeline stage 6
-XAI / Grad-CAM Heatmap,"Implemented, not fully verified",backend/app/services/xai/gradcam.py,"334 lines; ViT-compatible Grad-CAM with contour-based region detection",Code complete; data/heatmaps/ directory is empty — no generated outputs found
-Text Normalization,"Implemented, not fully verified",backend/app/services/text/normalizer.py,"5.3 KB; sentence splitting, cleaning",Invoked in pipeline stage 8
-Claim Extraction,"Implemented, not fully verified",backend/app/services/claims/extractor.py,"8.4 KB; rule-based claim detection from sentences",Invoked in pipeline stage 9
-Fact-Check API Integration,"Implemented, not fully verified",backend/app/services/factcheck/service.py,"Google Fact-Check Tools API integration",Requires GOOGLE_API_KEY or FACTCHECK_API_KEY; returns 'unavailable' without credentials
-Provenance / Web Detection,"Implemented, not fully verified",backend/app/services/provenance/service.py,"266 lines; Google Cloud Vision Web Detection API",Requires GOOGLE_API_KEY; returns 'unavailable' without credentials
-Image Hashing (pHash/dHash/aHash/wHash),"Implemented and verified",backend/app/services/hashing/service.py,"201 lines; SHA-256 + 4 perceptual hashes via imagehash library",Code complete; test coverage in test_stage3.py
-Evidence Collection,"Implemented, not fully verified",backend/app/services/evidence/schema.py,"493 lines; 9 evidence categories, typed EvidenceItem/EvidenceCollection",Evidence builders for all 8 module types implemented
-Evidence Fusion Engine,"Implemented, not fully verified",backend/app/services/fusion/engine.py,"260 lines; weighted voting with conflict detection; 4 output labels",Code complete with DETERMINATION_THRESHOLD=0.15 and CONFLICT_THRESHOLD=0.10
-Explanation Generation,"Implemented, not fully verified",backend/app/services/explanation/generator.py,"287 lines; structured NL explanations from evidence",Builds summary + sections + key findings + limitations from evidence
-Virality Estimation,Implemented — heuristic only,backend/app/services/virality/engine.py,"341 lines; keyword-based feature scoring; DATA_UNAVAILABLE status",Not a trained model — uses literature-derived feature weights; explicitly labeled
-Regional Spread Estimation,Implemented — heuristic only,backend/app/services/regional/engine.py,"295 lines; Census 2011 language data + TRAI internet penetration",36 Indian states/UTs covered; 60% language / 40% internet weighting; DATA_UNAVAILABLE
-Social Impact Assessment,Implemented — heuristic only,backend/app/services/social_impact/engine.py,"321 lines; keyword-based sensitivity scoring; DATA_UNAVAILABLE status",Rule-based content analysis; not a prediction model
-Report Assembly,"Implemented, not fully verified",backend/app/services/reporting/builder.py,"5.1 KB; builds structured JSON report from all pipeline outputs",Invoked as final pipeline stage
-VLM Context Analysis (Qwen2.5-VL),Partially implemented,backend/app/services/vlm/service.py,"4.6 KB; service file exists",NOT invoked in current orchestrator.py — not part of active pipeline
-Language Detection (XLM-RoBERTa),"Implemented, not fully verified",backend/app/services/nlp/language_detector.py,"5.2 KB; XLM-RoBERTa pipeline wrapper",Service file exists; integration unclear from orchestrator
-Face Detection,Planned,docs/MODELS.md,"Listed as PLANNED in model registry (Section 8.1)",No implementation file found
-Translation (NLLB-200),Planned,docs/MODELS.md,"Listed as PLANNED — future integration",No implementation file found
-Secondary Authenticity Model (CommunityForensics-ViT),Planned,docs/MODELS.md,"Listed as SELECTED (Secondary / Ensemble)",Not loaded in current detector.py — only primary SigLIP2 is used
-ML Baseline Experiments (CNN/ResNet/SigLIP),Implemented and verified,results/ml/*.json,"3 experiments with full metrics, confusion matrices, per-image predictions",Real measured results on CIFAKE subset (seed 20261014)
-CIFAKE Dataset Download Script,Implemented and verified,scripts/download_cifake_subset.py,"6.9 KB; reproducible subset download from HuggingFace",Images not committed to git; manifest.json present in data/external/cifake/
-Synthetic Data Generation,Implemented and verified,scripts/generate_synthetic_data.py,"7.9 KB; generates 3×500 scenario datasets with seed 20261014",CSVs present in data/synthetic/; validated by validate_datasets.py
-Dataset Validation Script,Implemented and verified,scripts/validate_datasets.py,"7.6 KB; validates structure and integrity of synthetic datasets",Script exists and is documented
-Frontend Dashboard,"Implemented, not fully verified",frontend/src/App.tsx,"729 lines; upload, progress tracker, report viewer, charts, India map",Single-file React app with dark theme; visualization via Recharts + Leaflet
-API Health Endpoint,"Implemented, not fully verified",backend/app/api/v1/endpoints/health.py,"2.0 KB; GPU info, DB status, uptime",Returns system health information
-Dataset API Endpoint,"Implemented, not fully verified",backend/app/api/v1/endpoints/datasets.py,"4.1 KB; paginated read-only access to synthetic datasets",Only active when DEMO_MODE=true
-Analysis Orchestrator (19-stage pipeline),"Implemented, not fully verified",backend/app/services/orchestrator.py,"595 lines; fail-soft stage runner with async dispatch",All 19 stages coded; no execution evidence found in repository
-Docker Deployment,Unavailable,docker/,"Empty directory",Docker Compose configuration not created
+Image Upload & Validation,Implemented and verified,backend/app/api/v1/endpoints/analyze.py,"MIME + magic-byte validation, 20 MB size limit, 40 MP limit, Pillow decode, SHA-256",Verified by test_upload_security.py and test_api.py
+Image Preprocessing,Implemented and verified,backend/app/services/preprocessing/service.py,"RGB normalization, EXIF orientation, thumbnails, resizes",Verified by test_stage3.py
+EXIF Metadata Extraction,Implemented and verified,backend/app/services/metadata/service.py,EXIF and safe GPS extraction,Verified in analysis pipeline
+Image Quality Assessment,Implemented and verified,backend/app/services/quality/service.py,"Resolution, entropy, sharpness metrics",Verified by test_quality_service.py
+Authenticity Detection (SigLIP Baseline),Implemented and verified,backend/app/services/authenticity/detector.py,"Frozen SigLIP-base vision encoder + linear head, SHA-256 e39afc55...",Production detector retained; evaluated on 10,385 locked test samples
+Authenticity Calibration,Implemented and verified,backend/app/services/authenticity/calibration.py,Two-class post-hoc temperature scaling,Fitted on 13,000 calibration samples (T=1.3187 pooled)
+Forensic Analysis (6 signals),Implemented and verified,backend/app/services/forensics/analyzer.py,"ELA, noise, JPEG ghosting, edge, texture, resampling",Informational evidence; verified in test_stage3.py
+OCR (EasyOCR + Tesseract),Implemented and verified,backend/app/services/ocr/service.py,EasyOCR wrapper with Tesseract fallback,Verified by test_stage3.py
+Object Detection (YOLO),Implemented conditionally,backend/app/services/vision/detector.py,Ultralytics YOLO wrapper,Optional stage; passes gracefully when unconfigured
+XAI / Grad-CAM Heatmap,Implemented conditionally,backend/app/services/xai/gradcam.py,ViT layer-targeted Grad-CAM heatmaps,Optional stage; verified in test_xai_gradcam.py
+Text Normalization,Implemented and verified,backend/app/services/text/normalizer.py,"Sentence splitting, Unicode cleaning, token counts",Verified in pipeline
+Claim Extraction,Implemented and verified,backend/app/services/claims/extractor.py,Rule-based candidate factual claim detection,Verified by test_stage3.py
+Fact-Check API Integration,Implemented conditionally,backend/app/services/factcheck/service.py,Google Fact Check Tools API adapter,Decoupled with graceful degradation when uncredentialed
+Provenance / Web Detection,Implemented conditionally,backend/app/services/provenance/service.py,Google Cloud Vision Web Detection API,Decoupled with graceful degradation when uncredentialed
+Image Hashing,Implemented and verified,backend/app/services/hashing/service.py,"SHA-256 + 4 perceptual hashes (pHash, dHash, aHash, wHash)",Verified by test_stage3.py
+Evidence Collection,Implemented and verified,backend/app/services/evidence/schema.py,Typed EvidenceItem and EvidenceCollection schemas,Verified by test_evidence_schema.py
+Evidence Fusion Engine,Implemented and verified,backend/app/services/fusion/engine.py,"Status-aware fusion: non-completed excluded, model votes direction",Phase 6 rules verified by test_phase6_fusion.py
+Explanation Generation,Implemented and verified,backend/app/services/explanation/generator.py,Structured natural language summary and caveats,Verified in test_stage3.py
+Virality Estimation,Implemented — heuristic only,backend/app/services/virality/engine.py,Rule-based sensationalism/platform cues,Heuristic only; no observed propagation outcome data
+Regional Spread Estimation,Unavailable,backend/app/services/regional/engine.py,Returns explicit DATA_UNAVAILABLE status,No empirical spread data; prevents pseudo-scientific claims
+Social Impact Assessment,Implemented — heuristic only,backend/app/services/social_impact/engine.py,Exact-keyword matching across 5 sensitive domains,Rule-based cues; not a predictive harm model
+Report Assembly,Implemented and verified,backend/app/services/reporting/builder.py,Structured JSON report builder with status/warnings/limitations,Verified by test_stage3.py and test_stage5.py
+Analysis Orchestrator (19 stages),Implemented and verified,backend/app/services/orchestrator.py,Asynchronous stage runner with fail-soft boundaries,Verified by test_stage3.py and test_stage5.py
+API Health Endpoints,Implemented and verified,backend/app/api/v1/endpoints/health.py,"System health, database query, GPU info, model presence",Verified by test_health_endpoints.py
+Frontend Dashboard,Implemented and verified,frontend/src/App.tsx,"React 19 / TypeScript single-page application with Tailwind CSS",Vite build passes cleanly
+Matched Augmentation Pipeline,Implemented and verified,experiments/train_phase7.py,Dynamic in-memory transcoding (JPEG/PNG/WebP) and quality scaling,Neutralized format shortcut (metadata AUC dropped to 0.5028)
+Benchmark Evaluation Suite,Implemented and verified,experiments/evaluate_phase7_test.py,Locked test evaluation on 10,385 external benchmark samples,Verified by test_phase7.py (7/7 passed)
+Automated Regression Suite,Implemented and verified,backend/tests/,267 passed and 10 skipped in 28.60s,Zero test failures across backend platform

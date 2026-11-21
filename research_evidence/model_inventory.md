@@ -1,73 +1,52 @@
 # TruthLens Model Inventory
 
-> **Document Status:** Verified Against Repository & Experimental Logs  
-> **Inspection Date:** 2026-10-20  
-> **Primary References:** `docs/MODELS.md`, `results/ml/`, `backend/app/services/authenticity/`, `scripts/ml/train_baselines.py`
+> **Document Status:** Complete & Traced to Checkpoint Digests and Execution Registries
+> **Source Directory:** `models/`, `experiments/checkpoints/`
+> **Registry Manifests:** `experiments/reports/phase7_selected_candidate_identity.json`, `experiments/reports/phase7_model_registry.json`
 
 ---
 
-## 1. Overview of Evaluated & Integrated Models
+## 1. Production Model (Locked in Production)
 
-TruthLens evaluates and incorporates multiple neural network architectures across computer vision, vision-language modeling, and optical character recognition. To maintain strict scientific rigor, models are divided into:
-1. **Integrated Primary Models** (active in the running system)
-2. **Empirically Benchmarked Baselines** (trained/evaluated on the CIFAKE benchmark subset)
-3. **Investigated & Alternative Models** (evaluated for feasibility or deferred due to hardware constraints)
-
----
-
-## 2. Comprehensive Model Master Table
-
-| Model Identifier / Name | Primary Task | Backbone Architecture | Total Params | Trainable Params | VRAM (Inference) | Source / License | Repository Status |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`prithivMLmods/Deepfake-Real-Class-Siglip2`** | Synthetic / AI Image Detection | SigLIP2-Base (`google/siglip2-base-patch16-224`) | ~86M | N/A (Pretrained) | ~400 MB (fp32) | Hugging Face (Apache 2.0) | **Integrated (Primary)** |
-| **`cnn_scratch`** | AI vs Real Detection Baseline | 4-layer Conv2D + BatchNorm + MaxPool + FC | 356,097 | 356,097 | ~80 MB | Custom (`scripts/ml/`) | **Benchmarked Baseline** |
-| **`resnet18_frozen`** | AI vs Real Detection Baseline | Torchvision ResNet-18 (ImageNet-1k weights) | 11,177,025 | 513 (Linear head) | ~150 MB | PyTorch (BSD-3-Clause) | **Benchmarked Baseline** |
-| **`siglip_frozen`** | AI vs Real Detection Baseline | `google/siglip-base-patch16-224` | 92,884,993 | 769 (Linear head) | ~450 MB | Hugging Face (Apache 2.0) | **Benchmarked Baseline** |
-| **`buildborderless/CommunityForensics-DeepfakeDet-ViT`** | Secondary Ensemble Detection | ViT-Small (`timm/vit_small_patch16_384`) | ~22M | N/A (Pretrained) | ~200 MB | Hugging Face (MIT) | Investigated Alternative |
-| **`ultralytics/yolov8n.pt`** | Scene Object & Entity Detection | YOLOv8 Nano (Anchor-free CNN) | ~3.2M | N/A (COCO-pretrain) | ~120 MB | Ultralytics (AGPL-3.0) | **Integrated (Primary)** |
-| **EasyOCR (CRAFT + CRNN)** | Multilingual Scene Text Extraction | CRAFT (detection) + ResNet-LSTM-CTC (recognition) | ~15M | N/A (Pretrained) | ~350 MB | JaidedAI (Apache 2.0) | **Integrated (Primary)** |
-| **`Qwen/Qwen2.5-VL-3B-Instruct`** | Contextual Scene & Claim Reasoning | Multimodal Vision-Language Transformer | ~3.0B | N/A (Pretrained) | ~6.5 GB (fp16) / ~3.8 GB (int4) | Alibaba Cloud (Apache 2.0) | Investigated / Service Drafted (Deferred) |
-| **XLM-RoBERTa / FastText** | Language & Script Identification | Multilingual Masked Language Model / n-gram | ~278M | N/A (Pretrained) | ~300 MB | Meta / Hugging Face (MIT) | Investigated Alternative |
+| Attribute | Specification |
+|---|---|
+| **Model ID** | `truthlens/siglip-cifake-frozen-head` |
+| **Role** | Production authenticity classifier |
+| **Backbone** | `google/siglip-base-patch16-224` (Hugging Face) |
+| **Backbone Revision** | `7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed` |
+| **Head Weights Path** | `models/baselines/siglip_frozen_head.pt` |
+| **Head SHA-256 Digest** | `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538` |
+| **Architecture** | Frozen Vision Transformer (12 layers, 768-dim) + Linear Head ($768 \to 1$ logit) |
+| **Total Parameters** | 86,432,257 |
+| **Trainable Parameters** | 769 (0.0009%) |
+| **Input Preprocessing** | `siglip-frozen-v1` (Normalized RGB $224 \times 224$, Bicubic interpolation) |
+| **Calibration Status** | Post-hoc temperature scaling ($T=1.3187$ pooled) |
+| **Operational Governance** | **RETAINED IN PRODUCTION** |
 
 ---
 
-## 3. Deep Dive: Authenticity & Deepfake Detection Models
+## 2. Research Candidates (Phase 7 Shortcut-Resistant Training)
 
-### 3.1 Primary Model: SigLIP2 (`prithivMLmods/Deepfake-Real-Class-Siglip2`)
-- **Role:** Primary inference model in `backend/app/services/authenticity/detector.py`.
-- **Input Dimensions:** RGB image resized and normalized to $224 \times 224 \times 3$.
-- **Output:** Softmax distribution over binary classes (`Real` vs. `Fake`).
-- **Strengths:** Employs sigmoid loss for language-image pretraining (SigLIP2), yielding superior zero-shot representation of subtle high-frequency generator artifacts compared to standard CLIP.
-- **Identified Failure Modes & Concept Drift:** Highly vulnerable to emerging generative pipelines not represented in training (e.g. FLUX.1, SD3, Midjourney v6). Compression, aggressive JPEG re-encoding, and social platform downscaling attenuate high-frequency signals.
-
-### 3.2 Benchmarked Baselines (Trained on Local CIFAKE Subset)
-To establish rigorous empirical grounding for the research paper, three models were trained on an identical split (800 train, 200 validation, 200 test) using `scripts/ml/train_baselines.py`:
-
-1. **`cnn_scratch` (Convolutional Baseline):**
-   - 4 convolutional blocks (channels: 32 → 64 → 128 → 256) with Batch Normalization, ReLU activation, $2 \times 2$ MaxPooling, and a dense classification head.
-   - Trained for 20 epochs with Adam optimizer ($\text{lr}=10^{-3}$).
-   - Reached **89.5% test accuracy** and **0.9585 ROC-AUC** in 500 seconds.
-2. **`resnet18_frozen` (Transfer Learning Baseline):**
-   - Standard ResNet-18 initialized with ImageNet-1k weights. Feature backbone frozen; single linear classification layer trained.
-   - Trained for 10 epochs. Reached **81.5% test accuracy** and **0.9255 ROC-AUC** in 382 seconds.
-3. **`siglip_frozen` (Foundation Model Linear Probe):**
-   - `google/siglip-base-patch16-224` vision encoder with frozen transformer weights, tuning only a 769-parameter linear projection head.
-   - Trained for 50 epochs. Reached **87.0% test accuracy** and **0.9613 ROC-AUC** in 73 seconds (GPU-accelerated cached features).
+| Candidate Model ID | Architecture & Strategy | Checkpoint Path | Checkpoint SHA-256 | Trainable Parameters | Peak VRAM | Test Tiny AUC | Test Frontier AUC | Decision |
+|---|---|---|---|---|---|---|---|---|
+| **`truthlens/siglip-base-v2-s2`** (Primary) | SigLIP Layers 10, 11 + Head FT | `experiments/checkpoints/phase7/s2_siglip_partial_ft/best_checkpoint.pt` | `90bfe0ea1849544e3906ea1947b744d03d3eb0075d9e5d4cb0d8dc8155e88698` | 14,178,817 (16.4%) | 839.1 MB | **0.9423** | 0.4234 | **REJECTED FOR PRODUCTION** |
+| **`truthlens/siglip-base-v2-s1`** | SigLIP Linear Probe ($K=5$ views) | `experiments/checkpoints/phase7/s1_siglip_linear_probe/best_checkpoint.pt` | `690e54d32e92ec4eb22442db02cb6cb1f09cfa392ef83f80c657a80b62d39886` | 769 (0.0009%) | 700.5 MB | 0.8842 | **0.5991** | Research Candidate |
+| **`truthlens/resnet50-v2-r1`** | ResNet-50 Full FT | `experiments/checkpoints/phase7/r1_resnet50_full_ft/best_checkpoint.pt` | `a3f9e984fae93026ad99fbfd90615951d3ddbfbba943a4e98f065a29ddcce3b9` | 23,510,081 (100%) | 1,121.5 MB | 0.8710 | 0.4612 | Research Candidate |
+| **`truthlens/resnet50-v2-r2`** | ResNet-50 Stage 4 FT | `experiments/checkpoints/phase7/r2_resnet50_last_stage/best_checkpoint.pt` | `6eb1bc00938b812f84a440e698ea47dfa9ca90c29a8a38ec25f9730c49748b61` | 14,976,001 (63.7%) | 606.9 MB | 0.8521 | 0.4503 | Research Candidate |
+| **`truthlens/siglip-base-v2-a1`** | SigLIP Ablation (No Augmentation) | `experiments/checkpoints/phase7/a1_siglip_no_aug_ablation/best_checkpoint.pt` | `11648aef43555ae9eebcb537a8fb73950f5859ae3c4f6d4d1e2e9d29eb0b0df7` | 14,178,817 (16.4%) | 839.1 MB | 0.9680 (Shortcut) | 0.4120 | Shortcut Baseline |
 
 ---
 
-## 4. Hardware Constraints and Model Sizing Tradeoffs
+## 3. Historical Rejected Candidate (Phase 5/6)
 
-The development environment operates on an **NVIDIA GeForce RTX 3050 Laptop GPU with 4,096 MB VRAM**.
+| Candidate Model ID | Architecture | Checkpoint SHA-256 | Reason for Rejection |
+|---|---|---|---|
+| **`truthlens/siglip-base-tiny-genimage-e3_partial_finetuning`** | SigLIP Layer 11 + Head (Unaugmented) | `541956a1f766d5093aaec4733f616afaf6deaf5aad1e0bbd6e59f95687a4b96d` | Learned container-format shortcut (100% JPEG real vs 100% PNG AI). Flipped 45.6% of predictions under JPEG-90 transcoding. |
 
-```
-VRAM Budget Breakdown (Total Capacity: 4,096 MB):
-├── Windows OS & Display Overhead:      ~700 MB
-├── Available Workstation Headroom:     ~3,396 MB
-├── SigLIP2 Authenticity Model:         ~400 MB (Active Stage 3 & 7)
-├── YOLOv8n Object Detector:            ~120 MB (Active Stage 6)
-└── EasyOCR Text Recognizer:            ~350 MB (Active Stage 5)
-```
+---
 
-**Reason for Deferring Qwen2.5-VL-3B:**  
-A 3-billion-parameter Vision-Language Model requires a minimum of 6.5 GB VRAM in half-precision (fp16) or ~3.8 GB when quantized to 4-bit (bitsandbytes int4). Loading Qwen2.5-VL concurrently with the FastAPI server and operating system exceeded available physical VRAM, causing CUDA Out-Of-Memory (OOM) faults. Consequently, VLM context reasoning was architected as a decoupled optional service rather than a mandatory stage in the primary 19-stage pipeline.
+## 4. Auxiliary Pipeline Services
+
+- **EasyOCR / Tesseract:** Character recognition engine extracting embedded text in English and Hindi (`backend/app/services/ocr/service.py`).
+- **Ultralytics YOLO:** Object detection model for scene entity tagging (`backend/app/services/vision/detector.py`).
+- **Grad-CAM:** Gradient-weighted class activation mapping targeting visual attention layers (`backend/app/services/xai/gradcam.py`).

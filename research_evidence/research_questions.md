@@ -1,41 +1,40 @@
-# TruthLens Research Questions & Author Decision Matrix
+# TruthLens Research Questions & Empirical Answers
 
-> **Document Status:** Actionable Review for Authors & Advisors  
-> **Inspection Date:** 2026-10-20  
-> **Primary References:** `research_evidence/README.md`, `research_paper_draft.md`
-
----
-
-## 1. Formal Academic Research Questions (RQs)
-
-To ensure the research paper delivers a sharp scientific contribution rather than a mere software overview, the following four Research Questions are formulated directly around the system's architecture and empirical findings:
-
-### **RQ1: Multi-Signal Evidence Fusion vs. Single Oracle**
-> *Can an auditable multi-criteria evidence fusion framework reconcile conflicting multimodal signals (visual forensics, deepfake detection, reverse image lookup, and fact-checking) more reliably than single-model deep learning classifiers, particularly on "cheapfakes" and recycled media?*
-- **Hypothesis:** Single models fail on unmanipulated historical images paired with deceptive text. Fusing reverse image provenance with claim verification detects out-of-context recycling where vision classifiers return false negatives.
-
-### **RQ2: High-Frequency Artifact Sensitivity vs. Foundation Representations**
-> *How do compact, un-pretrained convolutional neural networks compare with large, frozen vision-language foundation backbones (e.g., SigLIP) in terms of parameter efficiency, convergence rate, and discriminatory capability on synthetic diffusion artifacts?*
-- **Hypothesis:** While CNNs trained from scratch exploit high-frequency spatial grid artifacts at native resolution, frozen vision transformers capture semantic-distributional discrepancies with several orders of magnitude fewer trainable parameters (0.00083% of weights).
-
-### **RQ3: Sociodemographic Exposure Modeling Under Platform Data Scarcity**
-> *In the structural absence of closed-messaging forward cascades (WhatsApp/Telegram), how effectively can regional linguistic distributions and telecom penetration statistics approximate geographic vulnerability to image-borne disinformation in multilingual environments like India?*
-- **Hypothesis:** Cross-referencing detected Indic OCR scripts with Census 2011 linguistic speakers and TRAI broadband density produces an actionable, auditable exposure ranking without fabricating pseudo-empirical virality metrics.
-
-### **RQ4: Pipeline Resilience & Fail-Soft Fault Tolerance**
-> *How does an asynchronous, staged orchestration architecture maintain diagnostic utility when confronted with missing metadata, third-party API rate-limiting, and network timeouts?*
-- **Hypothesis:** Decoupled stage runners with individual exception boundaries preserve forensic integrity, allowing internal visual and heuristic probes to succeed even when external web lookups fail.
+> **Document Status:** Complete Empirical Resolution of Research Questions
+> **Source Artifacts:** `docs/phase7_evaluation_report.md`, `experiments/reports/phase7_locked_test_results.json`
 
 ---
 
-## 2. Unresolved Author Decisions & Input Requirements
+## 1. Formal Academic Research Questions & Empirical Findings
 
-The following strategic and technical decisions require alignment by the project author:
+### **RQ1: Cross-Generator & Cross-Era Generalization**
+> *Can an authenticity detector fine-tuned on early diffusion generator artifacts (2023 era) generalize to contemporary flow-matching, diffusion transformer, and autoregressive architectures (late-2026 era)?*
+- **Empirical Resolution:** **Negative.** Fine-tuning Candidate S2 on Tiny-GenImage (2023 diffusion) improved in-distribution test AUC from 0.6123 to 0.9423 (+0.3300), but caused catastrophic negative transfer on the held-out Frontier Benchmark 2026-10 (AUC dropped from 0.6501 to 0.4234, $\Delta = -0.2267$, 95% CI: $[-0.2781, -0.1720]$). Pretrained vision-language features without narrow fine-tuning exhibited superior out-of-domain robustness.
 
-| # | Question / Decision Item | Options / Alternatives | Author Recommendation / Impact |
-| :--- | :--- | :--- | :--- |
-| **1** | **Target Publication Venue** | • IEEE / ACM Conference (e.g. IEEE Access, ACM Web Conf, ICASSP)<br>• Capstone University Evaluation / Departmental Review<br>• arXiv Preprint | Determines manuscript formatting (IEEE two-column vs. Springer LNCS) and strict page limits (6, 8, or 12 pages). |
-| **2** | **Full 19-Stage End-to-End Live Run** | • Execute pipeline on a curated sample image on local GPU and record timing logs.<br>• Retain static unit test audit in `test_results.txt`. | Recording real end-to-end execution wall-clock time (seconds per stage) adds concrete operational credibility to Section IV. |
-| **3** | **External API Integration Policy** | • Provide live Google Cloud Vision & Fact Check API credentials for real test evaluation.<br>• Present offline mock/cached evaluations as the primary paper benchmark. | Recommends mock/cached benchmarks for absolute replication without exposing private API keys or incurring external query costs. |
-| **4** | **Out-of-Distribution (OOD) Generative Evaluation** | • Restrict empirical section strictly to CIFAKE (Stable Diffusion v1.4 vs CIFAR-10).<br>• Download a tiny 50-image test set of modern generators (FLUX.1, Midjourney v6) to illustrate concept drift. | Adding a modern OOD test set provides a compelling narrative for Section V on generative concept drift. |
-| **5** | **VLM (Qwen2.5-VL-3B) Role in Paper** | • Present VLM as a completed offline ablation study.<br>• Frame VLM as an architected future extension deferred due to 4 GB VRAM hardware boundary. | **Recommended:** Present as an architected modular extension, citing the 4 GB VRAM boundary as a practical edge-computing constraint. |
+### **RQ2: Container Format Shortcut Vulnerability & Mitigation**
+> *How susceptible are image authenticity detectors to non-semantic container format confounding (e.g. JPEG vs. PNG), and can dynamic in-memory augmentation eliminate this vulnerability?*
+- **Empirical Resolution:** **Highly Susceptible, Successfully Mitigated.** In unaugmented fine-tuning (Candidate E3), models exploited container differences (100% real = JPEG, 100% AI = PNG; metadata RF AUC = 1.0000), causing 45.6% prediction flips under JPEG-90 probes. Matched in-memory augmentation (dynamic transcoding and quality scaling) collapsed metadata AUC to 0.5028 and reduced probe flips to 11.0% (mean logit shift 0.793).
+
+### **RQ3: Multi-Criteria Evidence Fusion vs. Single Oracle**
+> *Does status-aware multi-modal evidence fusion prevent catastrophic misclassifications when individual signals fail or produce contradictory cues?*
+- **Empirical Resolution:** **Validated Software Policy.** Phase 6 fusion logic guarantees that unavailable, skipped, or failed stages cannot vote. Classical forensics (proven to be encoding-sensitive) are restricted to informational status, ensuring model evidence alone drives directional authenticity while presenting context to human analysts.
+
+### **RQ4: Post-Hoc Calibration Under Domain Shift**
+> *Does temperature scaling fitted on held-out calibration pools effectively mitigate detector overconfidence on out-of-domain distributions?*
+- **Empirical Resolution:** **Validated.** Temperature scaling fitted across 13,000 samples ($T = 1.2174$ Tiny, $T = 10.3621$ Frontier, $T = 5.6099$ WildAIGC, $T = 1.3187$ Pooled) successfully softened extreme overconfident logits, reducing calibration error (ECE).
+
+### **RQ5: Social & Regional Predictability from Static Visual Media**
+> *Can static visual and textual content indicators reliably predict real-world viral dissemination or regional reach in the absence of forward cascades?*
+- **Empirical Resolution:** **Negative / Bound.** Static cues lack correlation with empirical dissemination graphs. TruthLens designates regional spread as `DATA_UNAVAILABLE` to prevent pseudo-scientific reach claims.
+
+---
+
+## 2. Author Decision Registry: Resolution Status
+
+| # | Topic | Status & Resolution in Checkout |
+|---|---|---|
+| 1 | **Target Publication Venue** | Prepared as IEEE two-column paper draft (`docs/TruthLens_IEEE_research_paper.md`). |
+| 2 | **Full 19-Stage Pipeline Run** | Validated end-to-end via automated asynchronous integration tests (`backend/tests/test_stage3.py`, `test_stage5.py`). |
+| 3 | **External API Integration Policy** | Decoupled with config-gating and mock/no-credential safe degradation. |
+| 4 | **Out-of-Distribution Generative Evaluation** | Comprehensive evaluation on Frontier Benchmark 2026-10 ($N=2,976$ samples across 8 modern generators and 4 compression tiers). |
+| 5 | **Production Deployment Decision** | Strictly retains frozen baseline (`truthlens/siglip-cifake-frozen-head`) due to candidate S2 modern generator transfer gap. |

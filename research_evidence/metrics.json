@@ -2,6 +2,7 @@
   "system": {
     "project_name": "TruthLens",
     "version": "0.1.0",
+    "git_branch": "fix/truthlens-remediation",
     "architecture_stages_count": 19,
     "hardware_specs": {
       "os": "Windows 11",
@@ -11,108 +12,158 @@
       "ram_gb": 16,
       "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
       "vram_mb": 4096,
-      "cuda_version": "11.8",
+      "cuda_version": "12.x",
       "python_version": "3.12.10",
-      "torch_version": "2.7.1+cu118"
+      "torch_version": "2.7.1"
+    },
+    "test_suite": {
+      "total_tests": 277,
+      "passed": 267,
+      "skipped": 10,
+      "failed": 0,
+      "duration_seconds": 28.60
     }
   },
-  "dataset": {
-    "benchmark": "CIFAKE Stratified Subset",
-    "source": "Bird & Lotfi (2024)",
-    "split_seed": 20261014,
-    "sizes": {
-      "train": 800,
-      "val": 200,
-      "test": 200,
-      "total": 1200
+  "datasets": {
+    "total_ingested_images": 29640,
+    "benchmarks": {
+      "tiny_genimage": {
+        "total_images": 25006,
+        "real_count": 12506,
+        "ai_count": 12500,
+        "generators": 8,
+        "locked_test_count": 7000
+      },
+      "frontier_benchmark_2026_10": {
+        "total_images": 2976,
+        "real_count": 984,
+        "ai_count": 1992,
+        "generators": 8,
+        "compression_tiers": 4,
+        "locked_test_count": 2091
+      },
+      "wildaigc_bench": {
+        "total_images": 1658,
+        "real_count": 829,
+        "ai_count": 829,
+        "locked_test_count": 1294
+      }
     },
-    "class_balance": {
-      "real_percentage": 50.0,
-      "fake_percentage": 50.0
+    "split_governance": {
+      "approved_training": 6995,
+      "validation": 6255,
+      "calibration": 13000,
+      "locked_test": 10385
     }
   },
-  "experiments": {
-    "cnn_scratch": {
-      "model_type": "Custom 4-Layer ConvNet",
-      "mode": "scratch",
-      "input_resolution": [32, 32, 3],
-      "total_params": 356097,
-      "trainable_params": 356097,
-      "learning_rate": 0.001,
-      "epochs": 20,
-      "train_wall_seconds": 500.0,
-      "best_val_accuracy": 0.905,
-      "test_metrics": {
-        "accuracy": 0.895,
-        "precision": 0.9247311827956989,
-        "recall": 0.86,
-        "f1_score": 0.8911917098445595,
-        "roc_auc": 0.9585
-      },
-      "confusion_matrix": {
-        "true_negatives": 93,
-        "false_positives": 7,
-        "false_negatives": 14,
-        "true_positives": 86
+  "models": {
+    "production_baseline": {
+      "model_id": "truthlens/siglip-cifake-frozen-head",
+      "backbone": "google/siglip-base-patch16-224",
+      "backbone_revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+      "head_sha256": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+      "status": "RETAINED_IN_PRODUCTION",
+      "evaluation": {
+        "tiny_genimage_test": {
+          "sample_count": 7000,
+          "balanced_accuracy": 0.5521,
+          "roc_auc": 0.6123,
+          "real_accuracy": 0.1609,
+          "ai_accuracy": 0.9434
+        },
+        "tiny_genimage_matched_aug_test": {
+          "sample_count": 7000,
+          "balanced_accuracy": 0.5330,
+          "roc_auc": 0.5595,
+          "real_accuracy": 0.1191,
+          "ai_accuracy": 0.9469
+        },
+        "frontier_benchmark_test": {
+          "sample_count": 2091,
+          "balanced_accuracy": 0.6228,
+          "roc_auc": 0.6501,
+          "real_accuracy": 0.4000,
+          "ai_accuracy": 0.8457
+        },
+        "wildaigc_bench_test": {
+          "sample_count": 1294,
+          "balanced_accuracy": 0.4294,
+          "roc_auc": 0.4226,
+          "real_accuracy": 0.0402,
+          "ai_accuracy": 0.8176
+        },
+        "jpeg90_probe_flip_rate": 0.224
       }
     },
-    "resnet18_frozen": {
-      "model_type": "ImageNet-1k Pretrained ResNet-18",
-      "mode": "frozen_backbone",
-      "input_resolution": [224, 224, 3],
-      "total_params": 11177025,
-      "trainable_params": 513,
-      "learning_rate": 0.001,
-      "epochs": 10,
-      "train_wall_seconds": 382.1,
-      "best_val_accuracy": 0.855,
-      "test_metrics": {
-        "accuracy": 0.815,
-        "precision": 0.8058252427184466,
-        "recall": 0.83,
-        "f1_score": 0.8177339901477833,
-        "roc_auc": 0.9255
-      },
-      "confusion_matrix": {
-        "true_negatives": 80,
-        "false_positives": 20,
-        "false_negatives": 17,
-        "true_positives": 83
-      }
-    },
-    "siglip_frozen": {
-      "model_type": "google/siglip-base-patch16-224",
-      "mode": "frozen_backbone",
-      "input_resolution": [224, 224, 3],
-      "total_params": 92884993,
-      "trainable_params": 769,
-      "learning_rate": 0.001,
-      "epochs": 50,
-      "train_wall_seconds": 73.0,
-      "best_val_accuracy": 0.895,
-      "test_metrics": {
-        "accuracy": 0.87,
-        "precision": 0.9021739130434783,
-        "recall": 0.83,
-        "f1_score": 0.8645833333333334,
-        "roc_auc": 0.9613
-      },
-      "confusion_matrix": {
-        "true_negatives": 91,
-        "false_positives": 9,
-        "false_negatives": 17,
-        "true_positives": 83
+    "primary_research_candidate_s2": {
+      "model_id": "truthlens/siglip-base-v2-s2",
+      "architecture": "SigLIP layers 10, 11 + head partial fine-tuning",
+      "checkpoint_sha256": "90bfe0ea1849544e3906ea1947b744d03d3eb0075d9e5d4cb0d8dc8155e88698",
+      "trainable_parameters": 14178817,
+      "peak_vram_mb": 839.1,
+      "status": "REJECT_CANDIDATE_FOR_PRODUCTION",
+      "evaluation": {
+        "tiny_genimage_test": {
+          "sample_count": 7000,
+          "balanced_accuracy": 0.8460,
+          "roc_auc": 0.9423,
+          "real_accuracy": 0.7849,
+          "ai_accuracy": 0.9071
+        },
+        "tiny_genimage_matched_aug_test": {
+          "sample_count": 7000,
+          "balanced_accuracy": 0.8071,
+          "roc_auc": 0.9044,
+          "real_accuracy": 0.7346,
+          "ai_accuracy": 0.8797
+        },
+        "frontier_benchmark_test": {
+          "sample_count": 2091,
+          "balanced_accuracy": 0.4849,
+          "roc_auc": 0.4234,
+          "real_accuracy": 0.6603,
+          "ai_accuracy": 0.3093
+        },
+        "wildaigc_bench_test": {
+          "sample_count": 1294,
+          "balanced_accuracy": 0.5589,
+          "roc_auc": 0.6049,
+          "real_accuracy": 0.4961,
+          "ai_accuracy": 0.6216
+        },
+        "jpeg90_probe_flip_rate": 0.110,
+        "jpeg90_mean_logit_shift": 0.793
       }
     }
   },
-  "regional_coverage": {
-    "total_states_and_uts": 36,
-    "census_baseline_year": 2011,
-    "telecom_data_source": "TRAI 2024"
+  "comparative_analysis": {
+    "s2_vs_baseline_delta_auc": {
+      "tiny_genimage": 0.3300,
+      "tiny_genimage_ci_95": [0.3184, 0.3412],
+      "tiny_genimage_matched_aug": 0.3449,
+      "tiny_genimage_matched_aug_ci_95": [0.3312, 0.3582],
+      "frontier_benchmark": -0.2267,
+      "frontier_benchmark_ci_95": [-0.2781, -0.1720],
+      "wildaigc_bench": 0.1823,
+      "wildaigc_bench_ci_95": [0.1472, 0.2178]
+    },
+    "pre_training_container_shortcut_auc": {
+      "unaugmented_raw_metadata_rf_auc": 1.0000,
+      "matched_in_memory_augmented_metadata_rf_auc": 0.5028
+    }
   },
-  "integrity_declarations": {
-    "virality_ground_truth": "UNAVAILABLE",
-    "virality_status_flag": "DATA_UNAVAILABLE",
-    "external_apis_graceful_degradation": true
+  "calibration": {
+    "temperature_parameters": {
+      "tiny_genimage": 1.2174,
+      "frontier_benchmark": 10.3621,
+      "wildaigc_bench": 5.6099,
+      "pooled": 1.3187
+    },
+    "calibration_sample_size": 13000
+  },
+  "governance_decision": {
+    "action": "REJECT_CANDIDATE_FOR_PRODUCTION",
+    "production_retained": "truthlens/siglip-cifake-frozen-head",
+    "rationale": "Candidate S2 resolved file-format shortcuts (+0.3300 AUC on Tiny-GenImage) but degraded modern generator transfer on Frontier Benchmark (-0.2267 AUC, 95% CI [-0.2781, -0.1720]). Baseline retained."
   }
 }

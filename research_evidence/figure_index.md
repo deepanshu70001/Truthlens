@@ -1,107 +1,54 @@
 # TruthLens Proposed Research Paper Figure & Table Index
 
-> **Document Status:** Complete Academic Visuals Specification  
-> **Inspection Date:** 2026-10-20  
-> **Target Paper Style:** IEEE / ACM Two-Column Format
+> **Document Status:** Academic Visuals Specification Aligned with Phase 7 Results
+> **Target Format:** IEEE Two-Column Format (`docs/TruthLens_IEEE_research_paper.md`)
 
 ---
 
-## 1. Master List of Figures
+## 1. Master List of Proposed Figures
 
-### Figure 1: TruthLens System Architecture & Modular Infrastructure
-- **Type:** Architectural schematic / block diagram.
-- **Caption:** *Figure 1: End-to-end system architecture of TruthLens, depicting the React SPA client layer, asynchronous FastAPI routing layer, 19-stage analysis orchestrator, multi-model execution engines, and dual PostgreSQL/SQLite persistence layer.*
-- **Sub-panels:**
-  - (a) Client-Server REST interface and polling bus.
-  - (b) Core orchestrator with fail-soft execution boundaries.
-  - (c) Persistence and artifact filesystem.
-- **Source / Generator:** `research_evidence/architecture.mmd`, `docs/ARCHITECTURE.md`.
-- **Recommended Placement:** Section III (System Architecture).
+### Figure 1: TruthLens System Architecture & Multi-Modal Verification Flow
+- **Type:** Architectural block diagram and flowchart.
+- **Caption:** *Figure 1: End-to-end architecture of TruthLens, depicting the React SPA client layer, FastAPI asynchronous service, 19-stage orchestrator, frozen SigLIP baseline detector, forensic analyzers, OCR and claim extraction, and status-aware evidence fusion.*
+- **Placement:** Section III (System Architecture).
 
----
+### Figure 2: Group-Aware Dataset Splitting & Governance Pipeline
+- **Type:** Dataset partition schematic.
+- **Caption:** *Figure 2: Cryptographic ingestion and group-aware split protocol across Tiny-GenImage, Frontier Benchmark 2026-10, and WildAIGC-Bench ($N = 29,640$). Disjoint prompt and generator groups prevent evaluation data leakage into locked test ($N = 10,385$) and calibration ($N = 13,000$) pools.*
+- **Placement:** Section V (Experimental Setup & Dataset Governance).
 
-### Figure 2: 19-Stage Asynchronous Execution Pipeline DAG
-- **Type:** Directed Acyclic Graph (DAG) flowchart.
-- **Caption:** *Figure 2: Execution workflow and inter-stage data dependencies across the 19 automated analysis stages, highlighting sequential extraction pathways, independent forensic probes, and final evidence fusion.*
-- **Sub-panels:** Highlighting the dependency chain from Stage 5 (OCR) through Stage 10 (Fact-Check), and Stage 3 (Authenticity) to Stage 7 (Grad-CAM).
-- **Source / Generator:** `backend/app/services/orchestrator.py`.
-- **Recommended Placement:** Section IV (Methodology & Pipeline Implementation).
+### Figure 3: Container Format Shortcut Vulnerability & Matched Augmentation Neutralization
+- **Type:** Feature correlation and ROC comparison plot.
+- **Caption:** *Figure 3: Pre-training container format confounding. (a) Random Forest on non-pixel container metadata separates raw Tiny-GenImage classes with ROC-AUC = 1.0000. (b) Matched in-memory augmentation (dynamic transcoding and quality scaling) collapses metadata separability to chance level (ROC-AUC = 0.5028).*
+- **Placement:** Section V (Dataset Governance & Shortcut Discovery).
 
----
+### Figure 4: Multi-Benchmark ROC Curves on Locked Test Partitions
+- **Type:** Multi-panel ROC curve comparison (Baseline vs. Candidate S2).
+- **Caption:** *Figure 4: Locked test ROC curves across three external benchmarks. (a) Tiny-GenImage ($N=7,000$), showing +0.3300 AUC gain for Candidate S2. (b) Frontier Benchmark 2026-10 ($N=2,091$), illustrating catastrophic negative transfer on late-2026 generators (-0.2267 AUC). (c) WildAIGC-Bench ($N=1,294$), demonstrating in-the-wild generalization (+0.1823 AUC).*
+- **Placement:** Section VI (Results and Discussion).
 
-### Figure 3: Receiver Operating Characteristic (ROC) Baseline Comparison
-- **Type:** Multi-line ROC curve plot with AUC annotations.
-- **Caption:** *Figure 3: Test split ROC curves for the three benchmarked authenticity classifiers evaluated on the CIFAKE dataset (N=200): custom CNN from scratch (AUC = 0.9585), ResNet-18 frozen probe (AUC = 0.9255), and SigLIP foundation frozen probe (AUC = 0.9613).*
-- **Data Source:** `results/ml/cnn_scratch_preds.csv`, `resnet18_frozen_preds.csv`, `siglip_frozen_preds.csv`.
-- **Generator Script:** `scripts/ml/make_plots.py`.
-- **Recommended Placement:** Section V (Experimental Evaluation).
+### Figure 5: Transcoding Stability & In-Memory Compression Probes
+- **Type:** Bar chart comparing prediction flip rates and logit shifts under JPEG-90 re-compression.
+- **Caption:** *Figure 5: In-memory JPEG-90 transcoding stability. Candidate E3 (unaugmented fine-tuning) flipped 45.6% of predictions with mean logit shift 6.12. Matched in-memory augmentation (Candidate S2) stabilized predictions to an 11.0% flip rate and 0.793 logit shift.*
+- **Placement:** Section VI (Compression Robustness).
 
----
-
-### Figure 4: Training Dynamics & Validation Accuracy Convergence
-- **Type:** Dual-axis or faceted line plots (Training Loss vs. Validation Accuracy over Epochs).
-- **Caption:** *Figure 4: Convergence behavior of benchmark models. (a) Cross-entropy training loss progression showing rapid feature stabilization in SigLIP. (b) Validation accuracy trajectories demonstrating peak accuracy of 90.50% for CNN at epoch 16 and 89.50% for SigLIP.*
-- **Data Source:** `history` arrays in `results/ml/*.json`.
-- **Generator Script:** `scripts/ml/make_plots.py`.
-- **Recommended Placement:** Section V (Experimental Evaluation).
+### Figure 6: Temperature Scaling Reliability Diagrams
+- **Type:** Reliability diagrams (Confidence vs. Accuracy) before and after post-hoc calibration.
+- **Caption:** *Figure 6: Expected Calibration Error (ECE) reduction across calibration pools ($N=13,000$), demonstrating how post-hoc temperature scaling softens overconfident out-of-domain predictions.*
+- **Placement:** Section VI (Confidence Calibration).
 
 ---
 
-### Figure 5: Multi-Model Confusion Matrices
-- **Type:** $2 \times 2$ heatmap grids (Real vs. Synthetic).
-- **Caption:** *Figure 5: Normalized test split confusion matrices for (a) CNN Scratch, (b) ResNet-18 Frozen, and (c) SigLIP Frozen, illustrating the distinct error trade-offs between high-frequency convolutional kernels and pretrained vision transformers.*
-- **Data Source:** `confusion_matrix` fields in `results/ml/*.json`.
-- **Recommended Placement:** Section V (Experimental Evaluation).
+## 2. Master List of Proposed Tables
 
----
+### Table 1: Master Comparative Benchmark Evaluation on Locked Test Partitions ($N = 10,385$)
+- **Contents:** Balanced Accuracy, ROC-AUC, Real Accuracy, AI Accuracy, and 95% group-aware bootstrap confidence intervals across Tiny-GenImage, Tiny Matched Aug, Frontier Benchmark 2026-10, and WildAIGC-Bench for Baseline vs. Candidate S2.
+- **Placement:** Section VI (Results and Discussion).
 
-### Figure 6: Explainable AI: Layer-Targeted Grad-CAM Saliency Maps
-- **Type:** Three-column comparative photographic figure.
-- **Caption:** *Figure 6: Visual interpretability via layer-targeted Grad-CAM. Left: Input image (synthetic face / scene). Middle: Raw gradient activation map from SigLIP2 transformer encoder block. Right: Alpha-blended heatmap overlay localizing unnatural boundary textures and generator artifacts.*
-- **Source / Generator:** `backend/app/services/xai/gradcam.py`.
-- **Recommended Placement:** Section IV or V (Explainability & Interpretability).
+### Table 2: Phase 7 Architecture Comparison under 4 GB VRAM Envelope
+- **Contents:** S1 (linear probe), S2 (partial FT), R1 (ResNet-50 full FT), R2 (ResNet-50 stage 4 FT), A1 (unaugmented ablation) showing trainable parameters, peak VRAM, training epochs, validation scores, and candidate status.
+- **Placement:** Section VI (Ablation and Architecture Search).
 
----
-
-### Figure 7: Classical Forensics: Error Level Analysis (ELA) Differential Maps
-- **Type:** Paired visual analysis figure.
-- **Caption:** *Figure 7: Forensic artifact localization using Error Level Analysis (Q=95). (a) Authentic image displaying uniform compression degradation across all frequency bands. (b) Digitally spliced composite exhibiting high-contrast error intensity along edited contour boundaries.*
-- **Source / Generator:** `backend/app/services/forensics/analyzer.py`.
-- **Recommended Placement:** Section IV (Visual Forensics).
-
----
-
-### Figure 8: India Regional Spread Risk Geographic Choropleth
-- **Type:** 36-region choropleth map of India.
-- **Caption:** *Figure 8: Sociodemographic regional exposure mapping for Hindi-language disinformation text, illustrating weighted exposure across Uttar Pradesh, Bihar, and Madhya Pradesh based on Census 2011 linguistic distributions and TRAI telecom broadband density.*
-- **Source / Generator:** `backend/app/services/regional/engine.py`, `frontend/src/components/RegionalMap.tsx`.
-- **Recommended Placement:** Section VI (Sociodemographic Risk Assessment).
-
----
-
-### Figure 9: Multi-Hazard Social Impact Severity Radar Chart
-- **Type:** 4-axis radar / spider plot.
-- **Caption:** *Figure 9: Quantitative risk profile generated by the Social Impact Risk Engine across four critical societal dimensions: Public Order, Electoral Integrity, Public Health, and Financial Scams.*
-- **Source / Generator:** `backend/app/services/social_impact/engine.py`.
-- **Recommended Placement:** Section VI (Sociodemographic Risk Assessment).
-
----
-
-## 2. Master List of Tables
-
-### Table 1: Comprehensive Baseline Performance Benchmark
-- **Caption:** *Table 1: Quantitative evaluation of authenticity detection baselines on the CIFAKE benchmark subset (800 train, 200 val, 200 test; Seed: 20261014).*
-- **Columns:** Model, Architecture, Total Parameters, Trainable Parameters, Epochs, Training Time (s), Accuracy, Precision, Recall, F1 Score, ROC-AUC.
-- **Source:** `research_evidence/experimental_results.md`, `results/ml/comparison.csv`.
-- **Placement:** Section V.
-
-### Table 2: Module Taxonomy and Data Availability Framework
-- **Caption:** *Table 2: TruthLens module categorization distinguishing empirically validated ML models, heuristic risk engines with declared DATA_UNAVAILABLE status, and external cloud verification APIs.*
-- **Columns:** Module Name, Method Type, Underlying Backbone / Rules, Ground-Truth Status, Primary Metric.
-- **Source:** `docs/EVALUATION.md`, `docs/VIRALITY_DATA.md`.
-- **Placement:** Section III or IV.
-
-### Table 3: Summary of Identified Failure Modes and Countermeasures
-- **Caption:** *Table 3: Systematic breakdown of vulnerability vectors (concept drift, platform transcoding, cheapfakes) and corresponding system-level architectural defenses.*
-- **Source:** `research_evidence/failure_analysis.md`.
-- **Placement:** Section VII (Discussion & Limitations).
+### Table 3: Production Governance & Model Retention Decision Matrix
+- **Contents:** Evaluation gates, pre-registered pass/fail criteria, empirical delta AUCs, and final retention of the frozen baseline (`truthlens/siglip-cifake-frozen-head`) in production.
+- **Placement:** Section VI (Candidate Governance).

@@ -1,8 +1,8 @@
 # TruthLens System Architecture & Data-Flow Explanation
 
-> **Document Status:** Complete & Traced to Codebase  
-> **Inspection Date:** 2026-10-20  
-> **Corresponding Diagram:** `research_evidence/architecture.mmd`  
+> **Document Status:** Complete & Traced to Codebase
+> **Inspection Date:** 2026-10-20
+> **Corresponding Diagram:** `research_evidence/architecture.mmd`
 > **Primary Source Code:** `backend/app/services/orchestrator.py`, `backend/app/main.py`, `backend/app/config.py`
 
 ---
@@ -21,19 +21,22 @@ TruthLens is architected around four core design principles:
 ## 2. Layer-by-Layer Architectural Breakdown
 
 ### 2.1 Presentation Layer (Frontend SPA)
-The client interface is implemented as a modern Single Page Application (SPA) using React 18, Vite, and Tailwind CSS.
+The client interface is implemented as a modern Single Page Application (SPA) using React 19, Vite, and Tailwind CSS.
 - **Image Submission:** Users upload images via drag-and-drop. Client-side pre-validation validates image formats (JPEG, PNG, WebP) and size restrictions before network dispatch.
-- **Real-Time Polling Dashboard:** Communicates with `/api/v1/analysis/{analysis_id}/status` to display incremental stage progression, runtime elapsed per stage, and system status flags.
+- **Real-Time Polling Dashboard:** Communicates with `/api/v1/analysis/{analysis_id}` to display incremental stage progression, runtime elapsed per stage, and system status flags.
 - **Explainable Heatmap Viewer:** Renders interactive alpha-blended Grad-CAM overlays atop the original high-resolution image, highlighting specific pixel patches that triggered synthetic classification.
-- **Geographic Risk Choropleth:** Integrates Leaflet to render a 36-region choropleth map of India, highlighting state-level linguistic and digital exposure to detected narrative claims.
+- **Geographic Risk Choropleth:** Integrates Leaflet to render a 36-region choropleth map of India, displaying state-level linguistic and digital exposure (explicitly flagged as `DATA_UNAVAILABLE` for predictive spread).
 
 ### 2.2 API Gateway & Router Layer (FastAPI)
 The backend exposes a versioned RESTful API (`/api/v1`) built with FastAPI, using asynchronous route handlers and Pydantic v2 validation models:
-- `POST /api/v1/analyze/upload`: Accepts multipart image uploads, performs magic-byte validation, computes SHA-256 integrity hashes, records an `Analysis` entity in the database, and schedules the asynchronous pipeline.
-- `GET /api/v1/analysis/{id}/status`: Returns the real-time execution state (`pending`, `processing`, `completed`, `failed`), currently executing stage name, and completed stage list.
-- `GET /api/v1/analysis/{id}/report`: Returns the unified, audit-ready JSON report containing all evidentiary signals.
-- `GET /api/v1/datasets/*`: Provides read-only access to synthetic scenarios and benchmark catalogs when demo mode is enabled.
+- `POST /api/v1/analyze`: Accepts multipart image uploads, performs magic-byte and decode validation, computes SHA-256 integrity hashes, records an `Analysis` entity in the database, and schedules the asynchronous pipeline.
+- `GET /api/v1/analysis/{analysis_id}`: Returns real-time execution state (`queued`, `preprocessing`, `analyzing`, `completed`, `failed`, `partial`), current stage name, and completed stages.
+- `GET /api/v1/analysis/{analysis_id}/report`: Returns the unified, audit-ready JSON report containing all evidentiary signals.
+- `GET /api/v1/analysis/{analysis_id}/image`: Streams stored original media.
+- `GET /api/v1/analysis/{analysis_id}/heatmap`: Streams generated Grad-CAM heatmap visualization.
+- `GET /api/v1/analysis/{analysis_id}/forensics/ela`: Streams Error Level Analysis artifact.
 - `GET /api/v1/health`: Returns system health, database connectivity, and GPU VRAM availability.
+- `GET /api/v1/health/models`: Reports model presence and cache status.
 
 ### 2.3 The 19-Stage Asynchronous Orchestrator
 The central coordinator of TruthLens is the `AnalysisOrchestrator` (`backend/app/services/orchestrator.py`). Each stage runs within a managed wrapper `_run_stage` that captures execution time in milliseconds, tracks exceptions, and logs `SystemEvent` records.
