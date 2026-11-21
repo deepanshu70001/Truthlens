@@ -1,0 +1,127 @@
+flowchart TB
+    %% TruthLens System Architecture Diagram (Mermaid)
+
+    subgraph ClientLayer ["Client Layer (Frontend)"]
+        UI["React 18 + Vite SPA"]
+        UploadComp["Drag & Drop Upload Module"]
+        DashboardComp["Analysis Dashboard & Progress Bar"]
+        ReportComp["Comprehensive Report Viewer"]
+        HeatmapComp["Interactive Grad-CAM Heatmap Overlay"]
+        MapComp["India Regional Spread Leaflet Map"]
+    end
+
+    subgraph APILayer ["FastAPI Gateway & Routing Layer (/api/v1)"]
+        AnalyzeEP["POST /api/v1/analyze/upload"]
+        StatusEP["GET /api/v1/analysis/{id}/status"]
+        ReportEP["GET /api/v1/analysis/{id}/report"]
+        DatasetsEP["GET /api/v1/datasets/*"]
+        HealthEP["GET /api/v1/health"]
+    end
+
+    subgraph OrchestratorLayer ["Analysis Orchestrator (19 Asynchronous Stages)"]
+        Orchestrator["Analysis Orchestrator (orchestrator.py)\nFail-Soft Execution • Progress Event Bus"]
+    end
+
+    subgraph VisionForensics ["Visual Forensics & Quality Services"]
+        MetadataSvc["Stage 1: Metadata & EXIF Extraction"]
+        QualitySvc["Stage 2: Image Quality Analysis (Blur/Noise/Compression)"]
+        ForensicsSvc["Stage 4: Classical Forensics (ELA, Noise Residuals, JPEG Grids)"]
+        VisionSvc["Stage 6: YOLOv8n Object Detection"]
+        XAISvc["Stage 7: Grad-CAM Explainability Heatmap Generator"]
+    end
+
+    subgraph AuthenticityEngine ["Authenticity Detection Pipeline"]
+        AuthSvc["Stage 3: Deepfake / Synthetic Detection"]
+        SigLIP2Model["Primary: SigLIP2 (prithivMLmods/Deepfake-Real-Class-Siglip2)"]
+        BaselineModels["Baselines: CNN from scratch | ResNet-18 | SigLIP-base"]
+        AuthFallback["Fail-soft Heuristic Fallback"]
+    end
+
+    subgraph NLPServices ["Multilingual Text & Fact-Checking Pipeline"]
+        OCRSvc["Stage 5: OCR Extraction (EasyOCR / PyTesseract)"]
+        TextNormSvc["Stage 8: Multilingual Text Normalization & Indic Cleansing"]
+        ClaimsSvc["Stage 9: Claim Extraction & Stance Identification"]
+        FactCheckSvc["Stage 10: Google Fact-Check Tools API (External / Cached)"]
+    end
+
+    subgraph ProvenanceServices ["Provenance & Cross-Verification Pipeline"]
+        ProvSvc["Stage 11: Google Vision Web Detection (Reverse Lookup)"]
+        HashSvc["Stage 12: Multi-Perceptual Hashing (pHash, dHash, aHash, SHA-256)"]
+    end
+
+    subgraph SynthesisFusion ["Evidence Synthesis & Impact Assessment"]
+        CollectorSvc["Stage 13: Evidence Collection & Normalization"]
+        FusionSvc["Stage 14: Evidence Fusion Engine (Confidence-Weighted Scoring)"]
+        ExplainSvc["Stage 15: Natural Language Explanation Generator"]
+        ViralitySvc["Stage 16: Virality Risk Scoring Engine (Data-Unavailable Flagged)"]
+        RegionalSvc["Stage 17: Regional Spread Engine (36 Indian States/UTs Linguistic Demographics)"]
+        SocialImpactSvc["Stage 18: Social Impact Risk Engine (Multi-Hazard Severity Matrix)"]
+        ReportingSvc["Stage 19: Comprehensive Report Builder"]
+    end
+
+    subgraph DataStorage ["Data & Persistence Layer"]
+        DB[(PostgreSQL 16 / SQLite via SQLAlchemy Async)]
+        FileStore[("Local Artifact Storage: Raw Uploads, Thumbnails, Heatmaps")]
+    end
+
+    %% Client to API Connections
+    UploadComp -->|Multipart Form Data| AnalyzeEP
+    DashboardComp -->|Polling / Event Polling| StatusEP
+    ReportComp -->|JSON Fetch| ReportEP
+    HeatmapComp -->|Static Asset Fetch| FileStore
+    MapComp -->|Regional Metrics Fetch| ReportEP
+
+    %% API to Orchestrator
+    AnalyzeEP --> Orchestrator
+    StatusEP -.-> Orchestrator
+    ReportEP -.-> DB
+
+    %% Orchestrator Dispatches to Pipeline Stages
+    Orchestrator --> MetadataSvc
+    Orchestrator --> QualitySvc
+    Orchestrator --> AuthSvc
+    Orchestrator --> ForensicsSvc
+    Orchestrator --> OCRSvc
+    Orchestrator --> VisionSvc
+    Orchestrator --> XAISvc
+    Orchestrator --> TextNormSvc
+    Orchestrator --> ClaimsSvc
+    Orchestrator --> FactCheckSvc
+    Orchestrator --> ProvSvc
+    Orchestrator --> HashSvc
+
+    %% Sub-model linkages
+    AuthSvc --> SigLIP2Model
+    AuthSvc -.-> BaselineModels
+    AuthSvc -.-> AuthFallback
+    AuthSvc --> XAISvc
+
+    %% Sequential dependencies
+    OCRSvc --> TextNormSvc
+    TextNormSvc --> ClaimsSvc
+    ClaimsSvc --> FactCheckSvc
+
+    %% Aggregation into Synthesis & Fusion
+    MetadataSvc --> CollectorSvc
+    QualitySvc --> CollectorSvc
+    AuthSvc --> CollectorSvc
+    ForensicsSvc --> CollectorSvc
+    OCRSvc --> CollectorSvc
+    VisionSvc --> CollectorSvc
+    XAISvc --> CollectorSvc
+    FactCheckSvc --> CollectorSvc
+    ProvSvc --> CollectorSvc
+    HashSvc --> CollectorSvc
+
+    CollectorSvc --> FusionSvc
+    FusionSvc --> ExplainSvc
+    CollectorSvc --> ViralitySvc
+    TextNormSvc --> RegionalSvc
+    FusionSvc --> SocialImpactSvc
+    ViralitySvc --> SocialImpactSvc
+    RegionalSvc --> SocialImpactSvc
+
+    ExplainSvc --> ReportingSvc
+    SocialImpactSvc --> ReportingSvc
+    ReportingSvc --> DB
+    ReportingSvc --> FileStore

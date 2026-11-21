@@ -1,0 +1,118 @@
+{
+  "system": {
+    "project_name": "TruthLens",
+    "version": "0.1.0",
+    "architecture_stages_count": 19,
+    "hardware_specs": {
+      "os": "Windows 11",
+      "cpu": "Intel Core i5-12500H",
+      "cpu_cores": 12,
+      "cpu_threads": 16,
+      "ram_gb": 16,
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "vram_mb": 4096,
+      "cuda_version": "11.8",
+      "python_version": "3.12.10",
+      "torch_version": "2.7.1+cu118"
+    }
+  },
+  "dataset": {
+    "benchmark": "CIFAKE Stratified Subset",
+    "source": "Bird & Lotfi (2024)",
+    "split_seed": 20261014,
+    "sizes": {
+      "train": 800,
+      "val": 200,
+      "test": 200,
+      "total": 1200
+    },
+    "class_balance": {
+      "real_percentage": 50.0,
+      "fake_percentage": 50.0
+    }
+  },
+  "experiments": {
+    "cnn_scratch": {
+      "model_type": "Custom 4-Layer ConvNet",
+      "mode": "scratch",
+      "input_resolution": [32, 32, 3],
+      "total_params": 356097,
+      "trainable_params": 356097,
+      "learning_rate": 0.001,
+      "epochs": 20,
+      "train_wall_seconds": 500.0,
+      "best_val_accuracy": 0.905,
+      "test_metrics": {
+        "accuracy": 0.895,
+        "precision": 0.9247311827956989,
+        "recall": 0.86,
+        "f1_score": 0.8911917098445595,
+        "roc_auc": 0.9585
+      },
+      "confusion_matrix": {
+        "true_negatives": 93,
+        "false_positives": 7,
+        "false_negatives": 14,
+        "true_positives": 86
+      }
+    },
+    "resnet18_frozen": {
+      "model_type": "ImageNet-1k Pretrained ResNet-18",
+      "mode": "frozen_backbone",
+      "input_resolution": [224, 224, 3],
+      "total_params": 11177025,
+      "trainable_params": 513,
+      "learning_rate": 0.001,
+      "epochs": 10,
+      "train_wall_seconds": 382.1,
+      "best_val_accuracy": 0.855,
+      "test_metrics": {
+        "accuracy": 0.815,
+        "precision": 0.8058252427184466,
+        "recall": 0.83,
+        "f1_score": 0.8177339901477833,
+        "roc_auc": 0.9255
+      },
+      "confusion_matrix": {
+        "true_negatives": 80,
+        "false_positives": 20,
+        "false_negatives": 17,
+        "true_positives": 83
+      }
+    },
+    "siglip_frozen": {
+      "model_type": "google/siglip-base-patch16-224",
+      "mode": "frozen_backbone",
+      "input_resolution": [224, 224, 3],
+      "total_params": 92884993,
+      "trainable_params": 769,
+      "learning_rate": 0.001,
+      "epochs": 50,
+      "train_wall_seconds": 73.0,
+      "best_val_accuracy": 0.895,
+      "test_metrics": {
+        "accuracy": 0.87,
+        "precision": 0.9021739130434783,
+        "recall": 0.83,
+        "f1_score": 0.8645833333333334,
+        "roc_auc": 0.9613
+      },
+      "confusion_matrix": {
+        "true_negatives": 91,
+        "false_positives": 9,
+        "false_negatives": 17,
+        "true_positives": 83
+      }
+    }
+  },
+  "regional_coverage": {
+    "total_states_and_uts": 36,
+    "census_baseline_year": 2011,
+    "telecom_data_source": "TRAI 2024"
+  },
+  "integrity_declarations": {
+    "virality_ground_truth": "UNAVAILABLE",
+    "virality_status_flag": "DATA_UNAVAILABLE",
+    "external_apis_graceful_degradation": true
+  }
+}
