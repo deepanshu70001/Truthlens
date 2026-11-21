@@ -1,0 +1,910 @@
+{
+  "report_version": "1.0.0",
+  "phase": "Phase 7 - Step 1: True-Format & Metadata Shortcut Audit",
+  "created_at": "2026-11-21T15:43:50Z",
+  "partition_summaries": {
+    "training_manifest": {
+      "partition_name": "training_manifest",
+      "sample_count": 6995,
+      "manifest_format_mismatches": 0,
+      "format_crosstab": {
+        "likely_authentic": {
+          "JPEG": 3515
+        },
+        "ai_generated": {
+          "PNG": 3480
+        }
+      },
+      "color_mode_crosstab": {
+        "likely_authentic": {
+          "RGB": 3460,
+          "L": 55
+        },
+        "ai_generated": {
+          "RGBA": 502,
+          "RGB": 2978
+        }
+      },
+      "exif_presence_crosstab": {
+        "likely_authentic": {
+          "has_exif_true": 261,
+          "has_exif_false": 3254
+        },
+        "ai_generated": {
+          "has_exif_true": 0,
+          "has_exif_false": 3480
+        }
+      },
+      "dimension_statistics": {
+        "likely_authentic": {
+          "width": {
+            "count": 3515,
+            "mean": 473.75,
+            "std": 217.7,
+            "median": 500.0,
+            "min": 49.0,
+            "max": 3872.0
+          },
+          "height": {
+            "count": 3515,
+            "mean": 405.06,
+            "std": 190.7,
+            "median": 375.0,
+            "min": 42.0,
+            "max": 3872.0
+          },
+          "aspect_ratio": {
+            "count": 3515,
+            "mean": 1.22,
+            "std": 0.33,
+            "median": 1.33,
+            "min": 0.39,
+            "max": 3.89
+          },
+          "file_size_bytes": {
+            "count": 3515,
+            "mean": 116753.78,
+            "std": 130020.81,
+            "median": 110469.0,
+            "min": 1372.0,
+            "max": 3286989.0
+          },
+          "jpeg_quality": {
+            "count": 3515,
+            "mean": 91.88,
+            "std": 8.62,
+            "median": 96.1,
+            "min": 30.1,
+            "max": 98.5
+          }
+        },
+        "ai_generated": {
+          "width": {
+            "count": 3480,
+            "mean": 274.76,
+            "std": 106.1,
+            "median": 256.0,
+            "min": 128.0,
+            "max": 512.0
+          },
+          "height": {
+            "count": 3480,
+            "mean": 274.76,
+            "std": 106.1,
+            "median": 256.0,
+            "min": 128.0,
+            "max": 512.0
+          },
+          "aspect_ratio": {
+            "count": 3480,
+            "mean": 1.0,
+            "std": 0.0,
+            "median": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          },
+          "file_size_bytes": {
+            "count": 3480,
+            "mean": 131272.89,
+            "std": 138837.04,
+            "median": 81181.5,
+            "min": 9551.0,
+            "max": 669885.0
+          },
+          "jpeg_quality": {
+            "count": 0,
+            "mean": 0.0,
+            "std": 0.0,
+            "median": 0.0,
+            "min": 0.0,
+            "max": 0.0
+          }
+        }
+      }
+    },
+    "tiny_genimage_val": {
+      "partition_name": "tiny_genimage_val",
+      "sample_count": 5958,
+      "manifest_format_mismatches": 0,
+      "format_crosstab": {
+        "likely_authentic": {
+          "JPEG": 3410
+        },
+        "ai_generated": {
+          "PNG": 2548
+        }
+      },
+      "color_mode_crosstab": {
+        "likely_authentic": {
+          "RGB": 3360,
+          "L": 50
+        },
+        "ai_generated": {
+          "RGBA": 498,
+          "RGB": 2050
+        }
+      },
+      "exif_presence_crosstab": {
+        "likely_authentic": {
+          "has_exif_true": 244,
+          "has_exif_false": 3166
+        },
+        "ai_generated": {
+          "has_exif_true": 0,
+          "has_exif_false": 2548
+        }
+      },
+      "dimension_statistics": {
+        "likely_authentic": {
+          "width": {
+            "count": 3410,
+            "mean": 475.1,
+            "std": 194.28,
+            "median": 500.0,
+            "min": 39.0,
+            "max": 2558.0
+          },
+          "height": {
+            "count": 3410,
+            "mean": 404.44,
+            "std": 166.32,
+            "median": 375.0,
+            "min": 50.0,
+            "max": 2832.0
+          },
+          "aspect_ratio": {
+            "count": 3410,
+            "mean": 1.22,
+            "std": 0.34,
+            "median": 1.33,
+            "min": 0.33,
+            "max": 4.5
+          },
+          "file_size_bytes": {
+            "count": 3410,
+            "mean": 112037.85,
+            "std": 84221.44,
+            "median": 108124.0,
+            "min": 1144.0,
+            "max": 1468191.0
+          },
+          "jpeg_quality": {
+            "count": 3410,
+            "mean": 91.63,
+            "std": 8.84,
+            "median": 96.1,
+            "min": 17.7,
+            "max": 98.5
+          }
+        },
+        "ai_generated": {
+          "width": {
+            "count": 2548,
+            "mean": 487.43,
+            "std": 307.88,
+            "median": 512.0,
+            "min": 128.0,
+            "max": 1024.0
+          },
+          "height": {
+            "count": 2548,
+            "mean": 487.43,
+            "std": 307.88,
+            "median": 512.0,
+            "min": 128.0,
+            "max": 1024.0
+          },
+          "aspect_ratio": {
+            "count": 2548,
+            "mean": 1.0,
+            "std": 0.0,
+            "median": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          },
+          "file_size_bytes": {
+            "count": 2548,
+            "mean": 473944.98,
+            "std": 477271.54,
+            "median": 418962.0,
+            "min": 8806.0,
+            "max": 2452691.0
+          },
+          "jpeg_quality": {
+            "count": 0,
+            "mean": 0.0,
+            "std": 0.0,
+            "median": 0.0,
+            "min": 0.0,
+            "max": 0.0
+          }
+        }
+      }
+    },
+    "tiny_genimage_test": {
+      "partition_name": "tiny_genimage_test",
+      "sample_count": 7000,
+      "manifest_format_mismatches": 0,
+      "format_crosstab": {
+        "likely_authentic": {
+          "JPEG": 3500
+        },
+        "ai_generated": {
+          "PNG": 3500
+        }
+      },
+      "color_mode_crosstab": {
+        "likely_authentic": {
+          "RGB": 3445,
+          "L": 55
+        },
+        "ai_generated": {
+          "RGB": 3000,
+          "RGBA": 500
+        }
+      },
+      "exif_presence_crosstab": {
+        "likely_authentic": {
+          "has_exif_true": 140,
+          "has_exif_false": 3360
+        },
+        "ai_generated": {
+          "has_exif_true": 0,
+          "has_exif_false": 3500
+        }
+      },
+      "dimension_statistics": {
+        "likely_authentic": {
+          "width": {
+            "count": 3500,
+            "mean": 490.49,
+            "std": 182.42,
+            "median": 500.0,
+            "min": 62.0,
+            "max": 3072.0
+          },
+          "height": {
+            "count": 3500,
+            "mean": 431.29,
+            "std": 158.37,
+            "median": 375.0,
+            "min": 56.0,
+            "max": 3888.0
+          },
+          "aspect_ratio": {
+            "count": 3500,
+            "mean": 1.18,
+            "std": 0.29,
+            "median": 1.33,
+            "min": 0.38,
+            "max": 2.74
+          },
+          "file_size_bytes": {
+            "count": 3500,
+            "mean": 135081.59,
+            "std": 124705.92,
+            "median": 125950.5,
+            "min": 1055.0,
+            "max": 4362779.0
+          },
+          "jpeg_quality": {
+            "count": 3500,
+            "mean": 93.98,
+            "std": 6.45,
+            "median": 96.1,
+            "min": 23.1,
+            "max": 98.5
+          }
+        },
+        "ai_generated": {
+          "width": {
+            "count": 3500,
+            "mean": 420.57,
+            "std": 279.72,
+            "median": 256.0,
+            "min": 128.0,
+            "max": 1024.0
+          },
+          "height": {
+            "count": 3500,
+            "mean": 420.57,
+            "std": 279.72,
+            "median": 256.0,
+            "min": 128.0,
+            "max": 1024.0
+          },
+          "aspect_ratio": {
+            "count": 3500,
+            "mean": 1.0,
+            "std": 0.0,
+            "median": 1.0,
+            "min": 1.0,
+            "max": 1.0
+          },
+          "file_size_bytes": {
+            "count": 3500,
+            "mean": 360740.99,
+            "std": 433686.8,
+            "median": 136977.5,
+            "min": 6947.0,
+            "max": 2501597.0
+          },
+          "jpeg_quality": {
+            "count": 0,
+            "mean": 0.0,
+            "std": 0.0,
+            "median": 0.0,
+            "min": 0.0,
+            "max": 0.0
+          }
+        }
+      }
+    },
+    "frontier_val": {
+      "partition_name": "frontier_val",
+      "sample_count": 297,
+      "manifest_format_mismatches": 10,
+      "format_crosstab": {
+        "likely_authentic": {
+          "JPEG": 193
+        },
+        "ai_generated": {
+          "PNG": 18,
+          "JPEG": 83,
+          "WEBP": 3
+        }
+      },
+      "color_mode_crosstab": {
+        "likely_authentic": {
+          "RGB": 193
+        },
+        "ai_generated": {
+          "RGB": 104
+        }
+      },
+      "exif_presence_crosstab": {
+        "likely_authentic": {
+          "has_exif_true": 3,
+          "has_exif_false": 190
+        },
+        "ai_generated": {
+          "has_exif_true": 0,
+          "has_exif_false": 104
+        }
+      },
+      "dimension_statistics": {
+        "likely_authentic": {
+          "width": {
+            "count": 193,
+            "mean": 1873.64,
+            "std": 1569.21,
+            "median": 1280.0,
+            "min": 608.0,
+            "max": 16320.0
+          },
+          "height": {
+            "count": 193,
+            "mean": 1740.05,
+            "std": 1396.06,
+            "median": 1200.0,
+            "min": 608.0,
+            "max": 12240.0
+          },
+          "aspect_ratio": {
+            "count": 193,
+            "mean": 1.12,
+            "std": 0.33,
+            "median": 1.33,
+            "min": 0.56,
+            "max": 1.78
+          },
+          "file_size_bytes": {
+            "count": 193,
+            "mean": 1749355.78,
+            "std": 3861554.51,
+            "median": 278532.0,
+            "min": 77885.0,
+            "max": 38574374.0
+          },
+          "jpeg_quality": {
+            "count": 193,
+            "mean": 79.96,
+            "std": 9.43,
+            "median": 79.9,
+            "min": 70.1,
+            "max": 98.5
+          }
+        },
+        "ai_generated": {
+          "width": {
+            "count": 104,
+            "mean": 1040.63,
+            "std": 245.71,
+            "median": 1024.0,
+            "min": 576.0,
+            "max": 2368.0
+          },
+          "height": {
+            "count": 104,
+            "mean": 971.07,
+            "std": 256.37,
+            "median": 1024.0,
+            "min": 576.0,
+            "max": 2048.0
+          },
+          "aspect_ratio": {
+            "count": 104,
+            "mean": 1.14,
+            "std": 0.37,
+            "median": 1.0,
+            "min": 0.56,
+            "max": 1.79
+          },
+          "file_size_bytes": {
+            "count": 104,
+            "mean": 411360.0,
+            "std": 703305.96,
+            "median": 138255.5,
+            "min": 37475.0,
+            "max": 5447071.0
+          },
+          "jpeg_quality": {
+            "count": 83,
+            "mean": 75.87,
+            "std": 5.8,
+            "median": 74.7,
+            "min": 70.1,
+            "max": 95.0
+          }
+        }
+      }
+    },
+    "frontier_test": {
+      "partition_name": "frontier_test",
+      "sample_count": 2091,
+      "manifest_format_mismatches": 60,
+      "format_crosstab": {
+        "likely_authentic": {
+          "JPEG": 1351
+        },
+        "ai_generated": {
+          "PNG": 126,
+          "JPEG": 594,
+          "WEBP": 20
+        }
+      },
+      "color_mode_crosstab": {
+        "likely_authentic": {
+          "RGB": 1351
+        },
+        "ai_generated": {
+          "RGB": 740
+        }
+      },
+      "exif_presence_crosstab": {
+        "likely_authentic": {
+          "has_exif_true": 3,
+          "has_exif_false": 1348
+        },
+        "ai_generated": {
+          "has_exif_true": 0,
+          "has_exif_false": 740
+        }
+      },
+      "dimension_statistics": {
+        "likely_authentic": {
+          "width": {
+            "count": 1351,
+            "mean": 1839.07,
+            "std": 1419.56,
+            "median": 1280.0,
+            "min": 380.0,
+            "max": 16320.0
+          },
+          "height": {
+            "count": 1351,
+            "mean": 1596.62,
+            "std": 1130.87,
+            "median": 1200.0,
+            "min": 443.0,
+            "max": 12240.0
+          },
+          "aspect_ratio": {
+            "count": 1351,
+            "mean": 1.21,
+            "std": 0.41,
+            "median": 1.33,
+            "min": 0.35,
+            "max": 2.44
+          },
+          "file_size_bytes": {
+            "count": 1351,
+            "mean": 1328427.15,
+            "std": 2988989.2,
+            "median": 235714.0,
+            "min": 31891.0,
+            "max": 54232926.0
+          },
+          "jpeg_quality": {
+            "count": 1351,
+            "mean": 79.62,
+            "std": 9.2,
+            "median": 74.7,
+            "min": 63.3,
+            "max": 98.5
+          }
+        },
+        "ai_generated": {
+          "width": {
+            "count": 740,
+            "mean": 1038.15,
+            "std": 291.12,
+            "median": 1024.0,
+            "min": 576.0,
+            "max": 2816.0
+          },
+          "height": {
+            "count": 740,
+            "mean": 1001.27,
+            "std": 258.6,
+            "median": 1024.0,
+            "min": 576.0,
+            "max": 2672.0
+          },
+          "aspect_ratio": {
+            "count": 740,
+            "mean": 1.09,
+            "std": 0.36,
+            "median": 1.0,
+            "min": 0.56,
+            "max": 1.78
+          },
+          "file_size_bytes": {
+            "count": 740,
+            "mean": 408868.9,
+            "std": 746793.53,
+            "median": 126982.5,
+            "min": 28854.0,
+            "max": 7875847.0
+          },
+          "jpeg_quality": {
+            "count": 594,
+            "mean": 75.88,
+            "std": 5.81,
+            "median": 74.7,
+            "min": 70.1,
+            "max": 95.0
+          }
+        }
+      }
+    },
+    "wildaigc_val": {
+      "partition_name": "wildaigc_val",
+      "sample_count": 181,
+      "manifest_format_mismatches": 0,
+      "format_crosstab": {
+        "likely_authentic": {
+          "JPEG": 57,
+          "PNG": 1,
+          "WEBP": 5
+        },
+        "ai_generated": {
+          "JPEG": 89,
+          "PNG": 23,
+          "WEBP": 6
+        }
+      },
+      "color_mode_crosstab": {
+        "likely_authentic": {
+          "RGB": 63
+        },
+        "ai_generated": {
+          "RGB": 106,
+          "RGBA": 10,
+          "P": 2
+        }
+      },
+      "exif_presence_crosstab": {
+        "likely_authentic": {
+          "has_exif_true": 8,
+          "has_exif_false": 55
+        },
+        "ai_generated": {
+          "has_exif_true": 3,
+          "has_exif_false": 115
+        }
+      },
+      "dimension_statistics": {
+        "likely_authentic": {
+          "width": {
+            "count": 63,
+            "mean": 1868.33,
+            "std": 1100.43,
+            "median": 1600.0,
+            "min": 445.0,
+            "max": 5000.0
+          },
+          "height": {
+            "count": 63,
+            "mean": 1364.54,
+            "std": 829.99,
+            "median": 1067.0,
+            "min": 267.0,
+            "max": 3899.0
+          },
+          "aspect_ratio": {
+            "count": 63,
+            "mean": 1.43,
+            "std": 0.28,
+            "median": 1.5,
+            "min": 0.67,
+            "max": 2.17
+          },
+          "file_size_bytes": {
+            "count": 63,
+            "mean": 577657.68,
+            "std": 1040401.07,
+            "median": 248376.0,
+            "min": 19755.0,
+            "max": 6728918.0
+          },
+          "jpeg_quality": {
+            "count": 57,
+            "mean": 75.85,
+            "std": 17.62,
+            "median": 79.9,
+            "min": 32.4,
+            "max": 96.1
+          }
+        },
+        "ai_generated": {
+          "width": {
+            "count": 118,
+            "mean": 849.96,
+            "std": 258.46,
+            "median": 883.5,
+            "min": 405.0,
+            "max": 1600.0
+          },
+          "height": {
+            "count": 118,
+            "mean": 919.24,
+            "std": 308.37,
+            "median": 822.0,
+            "min": 307.0,
+            "max": 2073.0
+          },
+          "aspect_ratio": {
+            "count": 118,
+            "mean": 1.01,
+            "std": 0.44,
+            "median": 0.83,
+            "min": 0.54,
+            "max": 3.11
+          },
+          "file_size_bytes": {
+            "count": 118,
+            "mean": 241471.75,
+            "std": 327657.5,
+            "median": 132105.0,
+            "min": 29152.0,
+            "max": 1954007.0
+          },
+          "jpeg_quality": {
+            "count": 89,
+            "mean": 81.43,
+            "std": 6.94,
+            "median": 83.4,
+            "min": 54.9,
+            "max": 91.9
+          }
+        }
+      }
+    },
+    "wildaigc_test": {
+      "partition_name": "wildaigc_test",
+      "sample_count": 1294,
+      "manifest_format_mismatches": 0,
+      "format_crosstab": {
+        "likely_authentic": {
+          "JPEG": 402,
+          "PNG": 2,
+          "WEBP": 45
+        },
+        "ai_generated": {
+          "JPEG": 649,
+          "PNG": 170,
+          "WEBP": 26
+        }
+      },
+      "color_mode_crosstab": {
+        "likely_authentic": {
+          "RGB": 443,
+          "RGBA": 2,
+          "L": 4
+        },
+        "ai_generated": {
+          "RGB": 802,
+          "RGBA": 30,
+          "P": 13
+        }
+      },
+      "exif_presence_crosstab": {
+        "likely_authentic": {
+          "has_exif_true": 37,
+          "has_exif_false": 412
+        },
+        "ai_generated": {
+          "has_exif_true": 37,
+          "has_exif_false": 808
+        }
+      },
+      "dimension_statistics": {
+        "likely_authentic": {
+          "width": {
+            "count": 449,
+            "mean": 1792.78,
+            "std": 1047.64,
+            "median": 1600.0,
+            "min": 343.0,
+            "max": 6016.0
+          },
+          "height": {
+            "count": 449,
+            "mean": 1341.53,
+            "std": 820.07,
+            "median": 1067.0,
+            "min": 341.0,
+            "max": 4176.0
+          },
+          "aspect_ratio": {
+            "count": 449,
+            "mean": 1.4,
+            "std": 0.27,
+            "median": 1.5,
+            "min": 0.63,
+            "max": 1.78
+          },
+          "file_size_bytes": {
+            "count": 449,
+            "mean": 528005.86,
+            "std": 998432.79,
+            "median": 246721.0,
+            "min": 24377.0,
+            "max": 11214222.0
+          },
+          "jpeg_quality": {
+            "count": 402,
+            "mean": 79.51,
+            "std": 15.9,
+            "median": 86.9,
+            "min": 32.4,
+            "max": 98.5
+          }
+        },
+        "ai_generated": {
+          "width": {
+            "count": 845,
+            "mean": 901.48,
+            "std": 411.5,
+            "median": 864.0,
+            "min": 320.0,
+            "max": 5504.0
+          },
+          "height": {
+            "count": 845,
+            "mean": 924.39,
+            "std": 393.67,
+            "median": 878.0,
+            "min": 197.0,
+            "max": 3072.0
+          },
+          "aspect_ratio": {
+            "count": 845,
+            "mean": 1.06,
+            "std": 0.42,
+            "median": 0.98,
+            "min": 0.46,
+            "max": 2.12
+          },
+          "file_size_bytes": {
+            "count": 845,
+            "mean": 293960.0,
+            "std": 709011.31,
+            "median": 136932.0,
+            "min": 7910.0,
+            "max": 12834426.0
+          },
+          "jpeg_quality": {
+            "count": 649,
+            "mean": 81.55,
+            "std": 8.34,
+            "median": 83.4,
+            "min": 32.4,
+            "max": 98.5
+          }
+        }
+      }
+    }
+  },
+  "metadata_only_classifier": {
+    "single_feature_auc_5fold_cv": {
+      "is_jpeg": 1.0,
+      "is_png": 1.0,
+      "width": 0.817,
+      "height": 0.7996,
+      "aspect_ratio": 0.7284,
+      "file_size_kb": 0.4239,
+      "jpeg_quality": 1.0,
+      "has_exif": 0.5371
+    },
+    "combined_cv_results_training_manifest": {
+      "logistic_regression_roc_auc": 1.0,
+      "random_forest_roc_auc": 1.0,
+      "random_forest_balanced_accuracy": 1.0
+    },
+    "benchmark_solvability_without_image_content": {
+      "tiny_genimage_val": {
+        "sample_count": 5958,
+        "metadata_model_roc_auc": 1.0,
+        "metadata_model_balanced_accuracy": 1.0,
+        "metadata_model_accuracy": 1.0
+      },
+      "tiny_genimage_test": {
+        "sample_count": 7000,
+        "metadata_model_roc_auc": 1.0,
+        "metadata_model_balanced_accuracy": 1.0,
+        "metadata_model_accuracy": 1.0
+      },
+      "frontier_val": {
+        "sample_count": 297,
+        "metadata_model_roc_auc": 0.592,
+        "metadata_model_balanced_accuracy": 0.601,
+        "metadata_model_accuracy": 0.7205
+      },
+      "frontier_test": {
+        "sample_count": 2091,
+        "metadata_model_roc_auc": 0.5892,
+        "metadata_model_balanced_accuracy": 0.5986,
+        "metadata_model_accuracy": 0.7159
+      },
+      "wildaigc_val": {
+        "sample_count": 181,
+        "metadata_model_roc_auc": 0.5775,
+        "metadata_model_balanced_accuracy": 0.5753,
+        "metadata_model_accuracy": 0.4751
+      },
+      "wildaigc_test": {
+        "sample_count": 1294,
+        "metadata_model_roc_auc": 0.5718,
+        "metadata_model_balanced_accuracy": 0.5636,
+        "metadata_model_accuracy": 0.4621
+      }
+    }
+  },
+  "key_audit_findings": {
+    "format_shortcut_in_training": "In the approved Phase 4 training manifest (6,995 images), exactly 3,515 / 3,515 authentic images are JPEG (100.0%) and exactly 3,480 / 3,480 AI images are PNG (100.0%). Format alone achieves an AUC of 1.0000 on the training pool.",
+    "format_shortcut_in_tiny_genimage": "In Tiny-GenImage validation (5,958 images) and test (7,000 images), the exact same 100% JPEG vs 100% PNG separation persists. A model that only checks whether the file header is JPEG vs PNG achieves near-perfect test scores without looking at image pixels.",
+    "frontier_format_distribution": "In the Frontier Benchmark, both Real and AI classes contain mixed formats (JPEG, PNG, WEBP). Because Frontier does not conform to the Tiny-GenImage JPEG vs PNG shortcut, a model relying on format cues fails completely."
+  }
+}

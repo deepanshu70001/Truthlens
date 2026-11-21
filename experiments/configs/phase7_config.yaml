@@ -1,0 +1,153 @@
+# TruthLens Phase 7: Shortcut-Resistant Model Training Configuration
+# Hardware: NVIDIA GeForce RTX 3050 Laptop GPU (4,096 MB dedicated VRAM)
+# Pre-training shortcut gate: Passed (Metadata CV AUC = 0.5028 < 0.55)
+
+global_settings:
+  project_name: "TruthLens"
+  phase: "Phase 7 - Shortcut-Resistant Detection"
+  seed: 42
+  device: "cuda"
+  fp16: true
+  num_workers: 0
+  cache_dir: "models/cache"
+  checkpoints_dir: "experiments/checkpoints/phase7"
+  reports_dir: "experiments/reports"
+  figures_dir: "experiments/reports/figures"
+  results_dir: "experiments/results/phase7"
+
+datasets:
+  training:
+    manifest: "experiments/manifests/phase4_training_manifest.csv"
+    base_dir: "datasets/external/tiny_genimage"
+    approved_sample_count: 6995
+    authentic_count: 3515
+    ai_generated_count: 3480
+  validation_tiny:
+    manifest: "experiments/manifests/tiny_genimage_evaluation_splits.csv"
+    base_dir: "datasets/external/tiny_genimage"
+    role: "validation"
+    sample_count: 5958
+  validation_frontier:
+    manifest: "experiments/manifests/frontier_benchmark_2026_10_evaluation_splits.csv"
+    base_dir: "datasets/external/ai_image_detection_benchmark_2026_10"
+    role: "validation"
+    sample_count: 297
+  test_tiny:
+    manifest: "experiments/manifests/tiny_genimage_evaluation_splits.csv"
+    base_dir: "datasets/external/tiny_genimage"
+    role: "test"
+    sample_count: 7000
+  test_frontier:
+    manifest: "experiments/manifests/frontier_benchmark_2026_10_evaluation_splits.csv"
+    base_dir: "datasets/external/ai_image_detection_benchmark_2026_10"
+    role: "test"
+    sample_count: 2091
+  test_wildaigc:
+    manifest: "experiments/manifests/wildaigc_bench_evaluation_splits.csv"
+    base_dir: "datasets/external/wildaigc_bench"
+    role: "test"
+    sample_count: 1294
+
+matched_augmentation:
+  enabled: true
+  shorter_side_min: 224
+  shorter_side_max: 340
+  crop_size: 224
+  p_jpeg: 0.70
+  jpeg_quality_min: 40
+  jpeg_quality_max: 95
+  p_webp: 0.15
+  webp_quality_min: 50
+  webp_quality_max: 95
+  p_png: 0.15
+  p_blur: 0.15
+  blur_radius_min: 0.5
+  blur_radius_max: 1.2
+
+experiments:
+  s1_siglip_linear_probe:
+    experiment_id: "S1"
+    name: "s1_siglip_linear_probe"
+    model_id: "truthlens/siglip-base-v2-s1"
+    backbone_type: "siglip"
+    backbone_model_id: "google/siglip-base-patch16-224"
+    backbone_revision: "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed"
+    mode: "linear_probe"
+    k_augmented_views: 5
+    lr_head: 0.0001
+    lr_backbone: 0.0
+    weight_decay: 0.01
+    epochs: 10
+    batch_size: 32
+    patience: 3
+
+  s2_siglip_partial_ft:
+    experiment_id: "S2"
+    name: "s2_siglip_partial_ft"
+    model_id: "truthlens/siglip-base-v2-s2"
+    backbone_type: "siglip"
+    backbone_model_id: "google/siglip-base-patch16-224"
+    backbone_revision: "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed"
+    mode: "partial_finetuning"
+    unfrozen_layers: 2 # layers 10 and 11
+    lr_head: 0.0001
+    lr_backbone: 0.00001
+    weight_decay: 0.01
+    epochs: 10
+    batch_size: 16
+    gradient_accumulation_steps: 2
+    patience: 3
+
+  r1_resnet50_full_ft:
+    experiment_id: "R1"
+    name: "r1_resnet50_full_ft"
+    model_id: "truthlens/resnet50-v2-r1"
+    backbone_type: "resnet50"
+    weights: "IMAGENET1K_V2"
+    mode: "full_finetuning"
+    lr_head: 0.0001
+    lr_backbone: 0.00001
+    weight_decay: 0.01
+    epochs: 10
+    batch_size: 16
+    gradient_accumulation_steps: 2
+    patience: 3
+
+  r2_resnet50_last_stage:
+    experiment_id: "R2"
+    name: "r2_resnet50_last_stage"
+    model_id: "truthlens/resnet50-v2-r2"
+    backbone_type: "resnet50"
+    weights: "IMAGENET1K_V2"
+    mode: "stage4_finetuning"
+    lr_head: 0.0001
+    lr_backbone: 0.00001
+    weight_decay: 0.01
+    epochs: 10
+    batch_size: 16
+    gradient_accumulation_steps: 2
+    patience: 3
+
+  a1_siglip_no_aug_ablation:
+    experiment_id: "A1"
+    name: "a1_siglip_no_aug_ablation"
+    model_id: "truthlens/siglip-base-v2-a1"
+    backbone_type: "siglip"
+    backbone_model_id: "google/siglip-base-patch16-224"
+    backbone_revision: "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed"
+    mode: "partial_finetuning"
+    unfrozen_layers: 2
+    matched_augmentation: false
+    lr_head: 0.0001
+    lr_backbone: 0.00001
+    weight_decay: 0.01
+    epochs: 10
+    batch_size: 16
+    gradient_accumulation_steps: 2
+    patience: 3
+
+model_selection_rule:
+  weight_tiny_val: 0.50
+  weight_frontier_val: 0.50
+  metric: "balanced_accuracy"
+  tie_breaker: "frontier_val_roc_auc"
