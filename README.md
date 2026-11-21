@@ -15,7 +15,7 @@ TruthLens is an academic research prototype that combines model outputs, image-f
 - Evidence collection/fusion and a structured report with per-stage status.
 - Transparent content spread indicators and potential harm topic cues. Historical spread, state-level prediction, audience reach and observed harm outcomes are unavailable because suitable datasets are not installed.
 
-Translation, VLM analysis, C2PA parsing, authenticated multi-user access, result deletion/retention, durable jobs, and a verified demonstration corpus are not implemented. See [system audit](docs/phase5_system_audit.md) and [Phase 4 dataset inventory](docs/phase4_dataset_inventory.md).
+Translation, VLM analysis, C2PA parsing, authenticated multi-user access, result deletion/retention, durable jobs, and a verified demonstration corpus are not implemented. See [system audit](docs/implementation%20history/phase5_system_audit.md) and [Phase 4 dataset inventory](docs/implementation%20history/phase4_dataset_inventory.md).
 
 ## Architecture and stack
 
@@ -63,15 +63,17 @@ Open <http://127.0.0.1:5173>. Vite proxies `/api` to the local backend. API docs
 - Frontend build: from `frontend/`, `npm ci` and `npm run build`.
 - Focused synchronous cross-phase suite: `python -m pytest --noconftest -m "not asyncio" backend/tests/test_phase1.py backend/tests/test_phase2.py backend/tests/test_phase3.py backend/tests/test_stage3.py backend/tests/test_stage4.py backend/tests/test_phase4.py backend/tests/test_phase5.py backend/tests/test_stage5.py backend/tests/test_services.py -q`.
 
-The Phase 6 full backend suite passed 188 tests with 10 opt-in model tests skipped. This is software verification, not model evaluation. See the [Phase 6 implementation report](docs/phase6_implementation_report.md).
+The test suite includes software verification across all phases. See the [Phase 6 implementation report](docs/implementation%20history/phase6_implementation_report.md) and [Phase 7 evaluation report](docs/phase7_evaluation_report.md).
 
-## Dataset, evaluation and research limits
+## Dataset, evaluation and research status
 
-The repository has no licensed, ground-truthed diverse image corpus for accuracy claims and no observed dissemination/outcome dataset for virality, regional or social-impact prediction. Existing files under `test_data/` lack source/license/ground-truth documentation and are not designated demo samples. Unit tests generate synthetic images for code paths only. Model timing and its limits are in [performance report](docs/phase5_performance_report.md). A publishable research paper requires properly licensed data, a documented protocol, baselines, statistical evaluation, and independent review; this repository does not claim those results.
+External benchmarks (Tiny-GenImage, Frontier Benchmark October 2026, and WildAIGC-Bench) have been systematically ingested under cryptographic SHA-256 validation and partitioned using leakage-free group-aware protocols.
+
+Controlled empirical investigations revealed that unaugmented fine-tuning learned container format shortcuts (100% JPEG real vs 100% PNG AI in Tiny-GenImage). In Phase 7, matched in-memory augmentation was developed to successfully eliminate format vulnerabilities on in-distribution data (achieving 0.8071 Balanced Accuracy and 0.9044 ROC-AUC under matched augmentation). However, evaluation against modern late-2026 generators on the Frontier Benchmark indicated that the research candidate did not satisfy pre-registered promotion criteria. In accordance with strict evaluation governance, **the production detector retains the frozen baseline (`truthlens/siglip-cifake-frozen-head`)**.
 
 ## Project status and team
 
-This is the existing CSE-AI student-team project described in the implementation prompts. Verified team-member names, institution, and paper authorship details were not present in the repository, so the paper draft leaves those fields for verification. Phase 6 prepares research-readiness materials and reproducible evaluation tooling; empirical model validation remains blocked by missing licensed labeled data and independent evaluations.
+TruthLens is an academic research prototype developed as a CSE-AI project. All models, protocols, and evaluation splits are fully reproducible via local scripts under `experiments/`.
 
 ## Project documentation
 
@@ -80,13 +82,17 @@ This is the existing CSE-AI student-team project described in the implementation
 - [System architecture](docs/system_architecture.md) — Current pipeline and component map
 - [API reference](docs/api_reference.md) — REST endpoints and structured report JSON schema
 - [Deployment guide](docs/deployment_guide.md) — Local installation, configuration, and verification
-- [Security audit](docs/phase5_security_audit.md)
-- [System audit](docs/phase5_system_audit.md)
-- [E2E test report](docs/phase5_e2e_test_report.md)
-- [Performance report](docs/phase5_performance_report.md)
-- [Phase 6 research readiness audit](docs/phase6_research_readiness_audit.md)
-- [Phase 6 final research report](docs/phase6_final_research_report.md)
-- [Phase 6 IEEE paper draft](docs/TruthLens_IEEE_research_paper.md)
-- [Phase 6 viva preparation](docs/phase6_viva_preparation.md)
-- [Phase 6 experiment tooling](experiments/README.md)
+- [Phase 7 evaluation report](docs/phase7_evaluation_report.md) — Locked test evaluation, group bootstrap CIs, and candidate decision
+- [Phase 7 training report](docs/phase7_training_report.md) — Controlled training runs (S1, S2, R1, R2, A1) and robustness audit
+- [Phase 7 protocol](docs/phase7_protocol.md) — Pre-registered protocol for matched in-memory augmentation
+- [Phase 6 evaluation report](docs/phase6_evaluation_report.md) — Evaluation of E3 candidate and shortcut discovery
+- [Phase 3 evaluation report](docs/phase3_evaluation_report.md) — Benchmark evaluation of the frozen baseline
+- [Security audit](docs/implementation%20history/phase5_security_audit.md)
+- [System audit](docs/implementation%20history/phase5_system_audit.md)
+- [E2E test report](docs/implementation%20history/phase5_e2e_test_report.md)
+- [Performance report](docs/implementation%20history/phase5_performance_report.md)
+- [Research readiness audit](docs/implementation%20history/phase6_research_readiness_audit.md)
+- [Final research report](docs/implementation%20history/phase6_final_research_report.md)
+- [IEEE paper draft](docs/TruthLens_IEEE_research_paper.md)
+- [Viva preparation](docs/implementation%20history/phase6_viva_preparation.md)
 - [AI-image misclassification review](docs/ai_generation_misclassification_review.md)

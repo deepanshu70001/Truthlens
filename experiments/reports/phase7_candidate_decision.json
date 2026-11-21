@@ -1,0 +1,53 @@
+{
+  "candidate": {
+    "model_id": "truthlens/siglip-base-v2-s2",
+    "checkpoint_path": "experiments\\checkpoints\\phase7\\s2_siglip_partial_ft\\best_checkpoint.pt",
+    "checkpoint_sha256": "620e42f74bb7ae24fb1deeaedf24dbf9147162d3612c8f5171b64e53834f9805",
+    "experiment_name": "s2_siglip_partial_ft"
+  },
+  "baseline": {
+    "model_id": "truthlens/siglip-cifake-frozen-head",
+    "head_path": "models\\baselines\\siglip_frozen_head.pt",
+    "head_sha256": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538"
+  },
+  "decision": "REJECT_CANDIDATE_FOR_PRODUCTION",
+  "recommendation": "RETAIN_FROZEN_BASELINE_IN_PRODUCTION",
+  "pre_registered_criteria_evaluation": {
+    "condition_1_frontier_generalization": {
+      "description": "Frontier test Balanced Accuracy and ROC-AUC 95% bootstrap CI strictly positive (Delta > 0)",
+      "delta_balanced_accuracy_point": -0.1379,
+      "delta_balanced_accuracy_95ci": [
+        -0.1827,
+        -0.0941
+      ],
+      "delta_roc_auc_point": -0.2267,
+      "delta_roc_auc_95ci": [
+        -0.2781,
+        -0.172
+      ],
+      "passed": false
+    },
+    "condition_2_real_image_fpr": {
+      "description": "Real-image false positive rate on Frontier test partition <= 5.0%",
+      "frontier_test_far_standard_threshold": 0.3397,
+      "operating_threshold_for_5pct_fpr": 0.9293,
+      "passed": false
+    },
+    "condition_3_transcoding_robustness": {
+      "description": "Under JPEG-90 transcoding, prediction flip rate < 25.0%",
+      "jpeg90_flip_rate_pct": 11.0,
+      "passed": true
+    },
+    "condition_4_unseen_generator_recall": {
+      "description": "Detection recall on each held-out generator (Midjourney, Wukong, VQDM) >= 50.0%",
+      "unseen_generator_recalls": {
+        "Midjourney": 0.578,
+        "Wukong": 0.538,
+        "VQDM": 0.49
+      },
+      "passed": false
+    }
+  },
+  "all_conditions_satisfied": false,
+  "evaluation_timestamp_utc": "2026-11-21T18:38:59.571398+00:00"
+}

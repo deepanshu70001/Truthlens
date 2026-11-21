@@ -4,7 +4,7 @@
 **Repository Branch:** `fix/truthlens-remediation`  
 **Execution Scope:** Phase 2, Step 1 Only (Read-Only Inventory Audit)  
 **Machine / Environment:** Windows (Python 3.12, Pillow 11.3.0, ImageHash 4.3.2)  
-**Machine-Readable Report:** [experiments/reports/dataset_inventory.json](file:///d:/Projects/Truthlens/experiments/reports/dataset_inventory.json)
+**Machine-Readable Report:** [experiments/reports/dataset_inventory.json](..\experiments\reports\dataset_inventory.json)
 
 ---
 

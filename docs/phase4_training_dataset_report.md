@@ -26,7 +26,7 @@ In preparation for Phase 5 (SigLIP head re-training), Phase 4 audited and prepar
 
 ## 2. Approved Training Dataset Quality Metrics
 
-Summary of the approved training dataset ([phase4_training_manifest.csv](file:///d:/Projects/Truthlens/experiments/manifests/phase4_training_manifest.csv)):
+Summary of the approved training dataset ([phase4_training_manifest.csv](..\experiments\manifests\phase4_training_manifest.csv)):
 
 | Attribute | Value | Status |
 |---|---|---|
@@ -51,7 +51,7 @@ Summary of the approved training dataset ([phase4_training_manifest.csv](file://
 
 ## 3. Tiny-GenImage Reserve Pool Eligibility Audit
 
-Full audit table saved to [phase4_exclusion_audit.csv](file:///d:/Projects/Truthlens/experiments/reports/phase4_exclusion_audit.csv):
+Full audit table saved to [phase4_exclusion_audit.csv](..\experiments\reports\phase4_exclusion_audit.csv):
 
 | Eligibility Decision | Sample Count | Percentage | Rationale |
 |---|---|---|---|
@@ -64,7 +64,7 @@ Full audit table saved to [phase4_exclusion_audit.csv](file:///d:/Projects/Truth
 
 ## 4. Hardware-Aware Training Configuration (RTX 3050 4GB VRAM)
 
-Configuration saved to [phase4_training_config.yaml](file:///d:/Projects/Truthlens/experiments/configs/phase4_training_config.yaml):
+Configuration saved to [phase4_training_config.yaml](..\experiments\configs\phase4_training_config.yaml):
 - **Target Model**: Frozen `google/siglip-base-patch16-224` backbone with newly initialized linear head (`768 -> 1`).
 - **Batch Size**: 32 per GPU forward step.
 - **Gradient Accumulation**: 2 steps (Effective Batch Size: 64).

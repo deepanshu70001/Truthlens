@@ -10,7 +10,7 @@
 ## 1. Executive Summary & Verdict
 
 An independent research and statistical audit of the TruthLens Phase 3 evaluation pipeline was conducted.
-The underlying prediction CSVs ([tiny_genimage_predictions.csv](file:///d:/Projects/Truthlens/experiments/results/phase3/tiny_genimage_predictions.csv), [frontier_predictions.csv](file:///d:/Projects/Truthlens/experiments/results/phase3/frontier_predictions.csv), [wildaigc_predictions.csv](file:///d:/Projects/Truthlens/experiments/results/phase3/wildaigc_predictions.csv)) were verified for all 29,821 evaluated images.
+The underlying prediction CSVs ([tiny_genimage_predictions.csv](..\experiments\results\phase3\tiny_genimage_predictions.csv), [frontier_predictions.csv](..\experiments\results\phase3\frontier_predictions.csv), [wildaigc_predictions.csv](..\experiments\results\phase3\wildaigc_predictions.csv)) were verified for all 29,821 evaluated images.
 
 ### Key Findings:
 1. **Metric Reconciliation**: The underlying prediction data in `phase3_results.json` is mathematically exact. The discrepancies identified by the user (e.g. 0.5204 vs 0.5354) were caused by drafting typos in the previous narrative response text, while the JSON artifact had the exact values: Tiny-GenImage precision = `0.5354`, Frontier = `0.4459`, WildAIGC = `0.5940`.
@@ -35,7 +35,7 @@ All metrics computed with `ai_generated = 1` (positive class) and confusion matr
 
 ## 3. Metric Reconciliation Table
 
-Full reconciliation matrix saved to [phase3_5_metric_reconciliation.csv](file:///d:/Projects/Truthlens/experiments/reports/phase3_5_metric_reconciliation.csv):
+Full reconciliation matrix saved to [phase3_5_metric_reconciliation.csv](..\experiments\reports\phase3_5_metric_reconciliation.csv):
 
 | Dataset | Metric | Narrative Value | Recomputed Value | Discrepancy | Root Cause & Resolution |
 |---|---|---|---|---|---|

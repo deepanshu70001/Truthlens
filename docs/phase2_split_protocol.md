@@ -1,13 +1,13 @@
 # Phase 2 — Step 3: Group-Aware Dataset Splitting & Leakage Prevention Protocol
 
-**Document Version:** `2.0.0`  
-**Protocol ID:** `truthlens-phase2-step3-group-aware-v1`  
-**Date:** 2026-11-21  
-**Repository Branch:** `fix/truthlens-remediation`  
-**Execution Scope:** Phase 2, Step 3 Only (Data Preparation & Evaluation Readiness)  
-**Configuration File:** [experiments/configs/phase2_split_protocol.yaml](file:///d:/Projects/Truthlens/experiments/configs/phase2_split_protocol.yaml)  
-**Audit Report:** [experiments/reports/phase2_split_audit.json](file:///d:/Projects/Truthlens/experiments/reports/phase2_split_audit.json) | [experiments/reports/phase2_split_audit.md](file:///d:/Projects/Truthlens/experiments/reports/phase2_split_audit.md)  
-**Execution Utility:** [experiments/create_evaluation_splits.py](file:///d:/Projects/Truthlens/experiments/create_evaluation_splits.py)
+**Document Version:** `2.0.0`
+**Protocol ID:** `truthlens-phase2-step3-group-aware-v1`
+**Date:** 2026-11-21
+**Repository Branch:** `fix/truthlens-remediation`
+**Execution Scope:** Phase 2, Step 3 Only (Data Preparation & Evaluation Readiness)
+**Configuration File:** [experiments/configs/phase2_split_protocol.yaml](..\experiments\configs\phase2_split_protocol.yaml)
+**Audit Report:** [experiments/reports/phase2_split_audit.json](..\experiments\reports\phase2_split_audit.json) | [experiments/reports/phase2_split_audit.md](..\experiments\reports\phase2_split_audit.md)
+**Execution Utility:** [experiments/create_evaluation_splits.py](..\experiments\create_evaluation_splits.py)
 
 ---
 
@@ -145,7 +145,7 @@ TOTAL IMAGES                        13,000         6,436         10,385         
 
 ## 6. Secondary Protocol: Generator-Held-Out Evaluation
 
-To test whether detectors generalize to completely unseen generator families rather than familiar architectures, a secondary configuration is defined in [phase2_split_protocol.yaml](file:///d:/Projects/Truthlens/experiments/configs/phase2_split_protocol.yaml):
+To test whether detectors generalize to completely unseen generator families rather than familiar architectures, a secondary configuration is defined in [phase2_split_protocol.yaml](..\experiments\configs\phase2_split_protocol.yaml):
 
 * **Tiny-GenImage Generator Isolation:**
   * Calibration / Validation Generators: `Stable Diffusion v1.5`, `BigGAN`, `ADM`, `GLIDE`.
@@ -160,9 +160,9 @@ To test whether detectors generalize to completely unseen generator families rat
 
 The derived evaluation manifests are generated without altering the Step 2 ingestion manifests:
 
-1. **Tiny-GenImage:** [`experiments/manifests/tiny_genimage_evaluation_splits.csv`](file:///d:/Projects/Truthlens/experiments/manifests/tiny_genimage_evaluation_splits.csv) (35,000 rows)
-2. **Frontier Benchmark:** [`experiments/manifests/frontier_benchmark_2026_10_evaluation_splits.csv`](file:///d:/Projects/Truthlens/experiments/manifests/frontier_benchmark_2026_10_evaluation_splits.csv) (2,976 rows)
-3. **WildAIGC-Bench:** [`experiments/manifests/wildaigc_bench_evaluation_splits.csv`](file:///d:/Projects/Truthlens/experiments/manifests/wildaigc_bench_evaluation_splits.csv) (1,839 rows)
+1. **Tiny-GenImage:** [`experiments/manifests/tiny_genimage_evaluation_splits.csv`](..\experiments\manifests\tiny_genimage_evaluation_splits.csv) (35,000 rows)
+2. **Frontier Benchmark:** [`experiments/manifests/frontier_benchmark_2026_10_evaluation_splits.csv`](..\experiments\manifests\frontier_benchmark_2026_10_evaluation_splits.csv) (2,976 rows)
+3. **WildAIGC-Bench:** [`experiments/manifests/wildaigc_bench_evaluation_splits.csv`](..\experiments\manifests\wildaigc_bench_evaluation_splits.csv) (1,839 rows)
 
 ---
 

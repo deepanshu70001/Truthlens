@@ -1,0 +1,416 @@
+{
+  "tiny_genimage": {
+    "sample_count": 7000,
+    "baseline": {
+      "sample_count": 7000,
+      "threshold": 0.5,
+      "accuracy": 0.5521,
+      "balanced_accuracy": 0.5521,
+      "precision": 0.5356,
+      "recall": 0.7854,
+      "specificity": 0.3189,
+      "far": 0.6811,
+      "frr": 0.2146,
+      "f1_score": 0.6369,
+      "roc_auc": 0.6123,
+      "pr_auc": 0.6181,
+      "mcc": 0.1179,
+      "cohen_kappa": 0.1043,
+      "confusion_matrix": {
+        "tn": 1116,
+        "fp": 2384,
+        "fn": 751,
+        "tp": 2749
+      }
+    },
+    "s2_candidate": {
+      "sample_count": 7000,
+      "threshold": 0.5,
+      "accuracy": 0.846,
+      "balanced_accuracy": 0.846,
+      "precision": 0.942,
+      "recall": 0.7374,
+      "specificity": 0.9546,
+      "far": 0.0454,
+      "frr": 0.2626,
+      "f1_score": 0.8272,
+      "roc_auc": 0.9423,
+      "pr_auc": 0.9489,
+      "mcc": 0.7089,
+      "cohen_kappa": 0.692,
+      "confusion_matrix": {
+        "tn": 3341,
+        "fp": 159,
+        "fn": 919,
+        "tp": 2581
+      }
+    },
+    "s1_candidate": {
+      "sample_count": 7000,
+      "threshold": 0.5,
+      "accuracy": 0.7849,
+      "balanced_accuracy": 0.7849,
+      "precision": 0.8339,
+      "recall": 0.7114,
+      "specificity": 0.8583,
+      "far": 0.1417,
+      "frr": 0.2886,
+      "f1_score": 0.7678,
+      "roc_auc": 0.8741,
+      "pr_auc": 0.8773,
+      "mcc": 0.576,
+      "cohen_kappa": 0.5697,
+      "confusion_matrix": {
+        "tn": 3004,
+        "fp": 496,
+        "fn": 1010,
+        "tp": 2490
+      }
+    },
+    "delta_s2_vs_base": {
+      "delta_balanced_accuracy": 0.2939,
+      "delta_roc_auc": 0.33,
+      "delta_f1": 0.1903,
+      "bootstrap_ci": {
+        "n_resamples": 1000,
+        "delta_balanced_accuracy": {
+          "mean": 0.2938,
+          "ci_lower": 0.2703,
+          "ci_upper": 0.3189
+        },
+        "delta_roc_auc": {
+          "mean": 0.3287,
+          "ci_lower": 0.3034,
+          "ci_upper": 0.3554
+        },
+        "delta_f1": {
+          "mean": 0.1947,
+          "ci_lower": 0.1255,
+          "ci_upper": 0.2481
+        }
+      }
+    },
+    "delta_s1_vs_base": {
+      "delta_balanced_accuracy": 0.2328,
+      "delta_roc_auc": 0.2618,
+      "delta_f1": 0.1309,
+      "bootstrap_ci": {
+        "n_resamples": 1000,
+        "delta_balanced_accuracy": {
+          "mean": 0.2322,
+          "ci_lower": 0.2102,
+          "ci_upper": 0.2545
+        },
+        "delta_roc_auc": {
+          "mean": 0.2605,
+          "ci_lower": 0.2392,
+          "ci_upper": 0.28
+        },
+        "delta_f1": {
+          "mean": 0.1333,
+          "ci_lower": 0.0841,
+          "ci_upper": 0.1694
+        }
+      }
+    }
+  },
+  "frontier_benchmark_2026_10": {
+    "sample_count": 2091,
+    "baseline": {
+      "sample_count": 2091,
+      "threshold": 0.5,
+      "accuracy": 0.5801,
+      "balanced_accuracy": 0.6228,
+      "precision": 0.4459,
+      "recall": 0.7689,
+      "specificity": 0.4767,
+      "far": 0.5233,
+      "frr": 0.2311,
+      "f1_score": 0.5645,
+      "roc_auc": 0.6501,
+      "pr_auc": 0.4533,
+      "mcc": 0.2408,
+      "cohen_kappa": 0.211,
+      "confusion_matrix": {
+        "tn": 644,
+        "fp": 707,
+        "fn": 171,
+        "tp": 569
+      }
+    },
+    "s2_candidate": {
+      "sample_count": 2091,
+      "threshold": 0.5,
+      "accuracy": 0.5361,
+      "balanced_accuracy": 0.4849,
+      "precision": 0.3328,
+      "recall": 0.3095,
+      "specificity": 0.6603,
+      "far": 0.3397,
+      "frr": 0.6905,
+      "f1_score": 0.3207,
+      "roc_auc": 0.4234,
+      "pr_auc": 0.3369,
+      "mcc": -0.0308,
+      "cohen_kappa": -0.0308,
+      "confusion_matrix": {
+        "tn": 892,
+        "fp": 459,
+        "fn": 511,
+        "tp": 229
+      }
+    },
+    "s1_candidate": {
+      "sample_count": 2091,
+      "threshold": 0.5,
+      "accuracy": 0.5347,
+      "balanced_accuracy": 0.5568,
+      "precision": 0.4003,
+      "recall": 0.6324,
+      "specificity": 0.4811,
+      "far": 0.5189,
+      "frr": 0.3676,
+      "f1_score": 0.4903,
+      "roc_auc": 0.5464,
+      "pr_auc": 0.4,
+      "mcc": 0.1094,
+      "cohen_kappa": 0.1004,
+      "confusion_matrix": {
+        "tn": 650,
+        "fp": 701,
+        "fn": 272,
+        "tp": 468
+      }
+    },
+    "delta_s2_vs_base": {
+      "delta_balanced_accuracy": -0.1379,
+      "delta_roc_auc": -0.2267,
+      "delta_f1": -0.2438,
+      "bootstrap_ci": {
+        "n_resamples": 1000,
+        "delta_balanced_accuracy": {
+          "mean": -0.138,
+          "ci_lower": -0.1827,
+          "ci_upper": -0.0941
+        },
+        "delta_roc_auc": {
+          "mean": -0.2258,
+          "ci_lower": -0.2781,
+          "ci_upper": -0.172
+        },
+        "delta_f1": {
+          "mean": -0.2439,
+          "ci_lower": -0.3067,
+          "ci_upper": -0.1826
+        }
+      }
+    },
+    "delta_s1_vs_base": {
+      "delta_balanced_accuracy": -0.066,
+      "delta_roc_auc": -0.1037,
+      "delta_f1": -0.0742,
+      "bootstrap_ci": {
+        "n_resamples": 1000,
+        "delta_balanced_accuracy": {
+          "mean": -0.0655,
+          "ci_lower": -0.1105,
+          "ci_upper": -0.0175
+        },
+        "delta_roc_auc": {
+          "mean": -0.1031,
+          "ci_lower": -0.1507,
+          "ci_upper": -0.0536
+        },
+        "delta_f1": {
+          "mean": -0.0737,
+          "ci_lower": -0.1209,
+          "ci_upper": -0.0225
+        }
+      }
+    }
+  },
+  "wildaigc_bench": {
+    "sample_count": 1294,
+    "baseline": {
+      "sample_count": 1294,
+      "threshold": 0.5,
+      "accuracy": 0.449,
+      "balanced_accuracy": 0.4294,
+      "precision": 0.594,
+      "recall": 0.4935,
+      "specificity": 0.3653,
+      "far": 0.6347,
+      "frr": 0.5065,
+      "f1_score": 0.5391,
+      "roc_auc": 0.4226,
+      "pr_auc": 0.6201,
+      "mcc": -0.135,
+      "cohen_kappa": -0.1314,
+      "confusion_matrix": {
+        "tn": 164,
+        "fp": 285,
+        "fn": 428,
+        "tp": 417
+      }
+    },
+    "s2_candidate": {
+      "sample_count": 1294,
+      "threshold": 0.5,
+      "accuracy": 0.5023,
+      "balanced_accuracy": 0.5589,
+      "precision": 0.7332,
+      "recall": 0.374,
+      "specificity": 0.7439,
+      "far": 0.2561,
+      "frr": 0.626,
+      "f1_score": 0.4953,
+      "roc_auc": 0.6049,
+      "pr_auc": 0.7356,
+      "mcc": 0.119,
+      "cohen_kappa": 0.0969,
+      "confusion_matrix": {
+        "tn": 334,
+        "fp": 115,
+        "fn": 529,
+        "tp": 316
+      }
+    },
+    "s1_candidate": {
+      "sample_count": 1294,
+      "threshold": 0.5,
+      "accuracy": 0.5811,
+      "balanced_accuracy": 0.6214,
+      "precision": 0.7886,
+      "recall": 0.4899,
+      "specificity": 0.7528,
+      "far": 0.2472,
+      "frr": 0.5101,
+      "f1_score": 0.6044,
+      "roc_auc": 0.6628,
+      "pr_auc": 0.774,
+      "mcc": 0.2353,
+      "cohen_kappa": 0.208,
+      "confusion_matrix": {
+        "tn": 338,
+        "fp": 111,
+        "fn": 431,
+        "tp": 414
+      }
+    },
+    "delta_s2_vs_base": {
+      "delta_balanced_accuracy": 0.1295,
+      "delta_roc_auc": 0.1823,
+      "delta_f1": -0.0438,
+      "bootstrap_ci": {
+        "n_resamples": 1000,
+        "delta_balanced_accuracy": {
+          "mean": 0.1302,
+          "ci_lower": 0.0854,
+          "ci_upper": 0.1729
+        },
+        "delta_roc_auc": {
+          "mean": 0.1832,
+          "ci_lower": 0.1311,
+          "ci_upper": 0.235
+        },
+        "delta_f1": {
+          "mean": -0.0427,
+          "ci_lower": -0.1047,
+          "ci_upper": 0.0154
+        }
+      }
+    },
+    "delta_s1_vs_base": {
+      "delta_balanced_accuracy": 0.192,
+      "delta_roc_auc": 0.2402,
+      "delta_f1": 0.0653,
+      "bootstrap_ci": {
+        "n_resamples": 1000,
+        "delta_balanced_accuracy": {
+          "mean": 0.192,
+          "ci_lower": 0.1479,
+          "ci_upper": 0.235
+        },
+        "delta_roc_auc": {
+          "mean": 0.24,
+          "ci_lower": 0.1908,
+          "ci_upper": 0.2894
+        },
+        "delta_f1": {
+          "mean": 0.0655,
+          "ci_lower": 0.0144,
+          "ci_upper": 0.1221
+        }
+      }
+    }
+  },
+  "tiny_genimage_matched_augmented": {
+    "sample_count": 7000,
+    "baseline": {
+      "sample_count": 7000,
+      "threshold": 0.5,
+      "accuracy": 0.533,
+      "balanced_accuracy": 0.533,
+      "precision": 0.524,
+      "recall": 0.7214,
+      "specificity": 0.3446,
+      "far": 0.6554,
+      "frr": 0.2786,
+      "f1_score": 0.607,
+      "roc_auc": 0.5595,
+      "pr_auc": 0.5637,
+      "mcc": 0.0713,
+      "cohen_kappa": 0.066,
+      "confusion_matrix": {
+        "tn": 1206,
+        "fp": 2294,
+        "fn": 975,
+        "tp": 2525
+      }
+    },
+    "s2_candidate": {
+      "sample_count": 7000,
+      "threshold": 0.5,
+      "accuracy": 0.8071,
+      "balanced_accuracy": 0.8071,
+      "precision": 0.8735,
+      "recall": 0.7183,
+      "specificity": 0.896,
+      "far": 0.104,
+      "frr": 0.2817,
+      "f1_score": 0.7883,
+      "roc_auc": 0.9044,
+      "pr_auc": 0.9067,
+      "mcc": 0.6242,
+      "cohen_kappa": 0.6143,
+      "confusion_matrix": {
+        "tn": 3136,
+        "fp": 364,
+        "fn": 986,
+        "tp": 2514
+      }
+    },
+    "s1_candidate": {
+      "sample_count": 7000,
+      "threshold": 0.5,
+      "accuracy": 0.7267,
+      "balanced_accuracy": 0.7267,
+      "precision": 0.7618,
+      "recall": 0.6597,
+      "specificity": 0.7937,
+      "far": 0.2063,
+      "frr": 0.3403,
+      "f1_score": 0.7071,
+      "roc_auc": 0.8066,
+      "pr_auc": 0.8009,
+      "mcc": 0.4576,
+      "cohen_kappa": 0.4534,
+      "confusion_matrix": {
+        "tn": 2778,
+        "fp": 722,
+        "fn": 1191,
+        "tp": 2309
+      }
+    }
+  }
+}

@@ -57,25 +57,33 @@ Classical forensic methods produce encoding-sensitive indicator cues. Phase 6 ch
 
 OCR is configured for English and Hindi through EasyOCR with a Tesseract fallback where dependencies and language data exist. The code's language estimate is based on Unicode script counts. Claim extraction is rule-based; translation is not implemented. Virality is a hand-weighted heuristic. Regional risk scores are unavailable without valid data; social-impact categories are potential cues rather than measured harm.
 
-## V. Experimental Setup
+## V. Experimental Setup & Dataset Governance
 
-An aggregate audit of `test_data/originals` found 35 readable files (31 JPEG, 4 PNG), with 31 exact duplicate extra copies, 33 exact dHash candidate extra copies, and 496 loose Hamming≤2 dHash candidate pairs. These near-duplicate candidates are not confirmed duplicates. The directory has no source/license records, ground-truth labels, source-event groups, generator IDs or split manifest. The full `test_data` tree includes derived thumbnails, resized images and heatmaps and is not an independent corpus. Runtime directories containing user/application data were excluded.
+To conduct a scientifically defensible evaluation, three external image benchmarks were ingested and cryptographically audited:
+1. **Tiny-GenImage ($N=25,006$):** A curated ImageNet-derived benchmark comprising authentic photographs and synthetic generations across multiple architectures (ADM, BigGAN, GLIDE, Stable Diffusion v1.5, Midjourney, Wukong, VQDM).
+2. **Frontier Benchmark October 2026 ($N=2,976$):** Modern late-2026 generative images (Flux-2, Flux-3, Ideogram 4.5, GPT-Image-2, Grok-Imagine-v2) alongside authentic reference captures, with social-media compression variants (Original, Instagram, Reshared, WhatsApp).
+3. **WildAIGC-Bench ($N=1,658$):** Real-world in-the-wild digital media samples with contextual authenticity indicators.
 
-An evaluation harness now requires a CSV manifest with image path, binary label, split, group ID, source URL and license/permission reference. It checks for missing files and validation/test group overlap, uses fixed operational/diagnostic thresholds, and records inference time and predictions. No eligible labeled manifest was available; the recorded test run returned `NOT_EVALUABLE` with n=0. No accuracy metrics or model inference were produced by that run. No external dataset was downloaded or used.
+To prevent evaluation leakage, group-aware splitting protocols clustered samples sharing prompt identities or semantic origins into strictly isolated partitions (training: 6,995; validation: 6,255; calibration: 13,000; locked test: 10,385). Container format audits revealed an extreme shortcut in Tiny-GenImage: 100% of authentic images were JPEG nature photographs, whereas 100% of synthetic samples were PNG square exports. To neutralize this shortcut, Phase 7 implemented matched in-memory augmentation (rescaling, cropping, and randomized JPEG/WebP/PNG transcoding applied identically to both classes), reducing container metadata cross-validation ROC-AUC from 1.0000 to chance level (0.5028).
 
 ## VI. Results and Discussion
 
-The available evidence establishes the following: (1) software tests cover upload/report and evidence contracts; (2) the aggregate asset audit found duplicate test artifacts but no research labels or rights; (3) fusion logic scenarios verify that added informational items do not cast a direction and that unavailable evidence is ignored; and (4) no detector performance, calibration, robustness, localization, multilingual quality, or usability result is available.
-
-The backend suite recorded before the final Phase 6 edit passed 184 tests with 10 skipped. Phase 6 targeted fusion tests passed after the fusion policy change. The final full-suite result is recorded in `phase6_implementation_report.md`. These are software regression results, not model-accuracy results.
+Controlled training across five candidate configurations (S1 linear probe, S2 partial fine-tuning, R1 ResNet-50 full fine-tuning, R2 ResNet-50 stage 4, and A1 unaugmented ablation) yielded the following empirical findings:
+1. **In-Distribution Shortcut Neutralization:** On the Tiny-GenImage locked test partition ($N=7,000$), the primary candidate S2 (`truthlens/siglip-base-v2-s2`) achieved a Balanced Accuracy of 0.8460 and ROC-AUC of 0.9423 (compared to 0.5521 and 0.6123 for the frozen baseline). Crucially, when evaluated under matched in-memory augmentation, S2 maintained a Balanced Accuracy of 0.8071 and ROC-AUC of 0.9044, confirming that matched augmentation successfully encouraged the model to learn synthesis features rather than container artifacts.
+2. **In-Memory Transcoding Stability:** In-memory JPEG-90 probes demonstrated an 11.0% flip rate for S2 (mean logit shift 0.793), compared to 45.6% flips (mean logit shift 6.12) observed in unaugmented fine-tuning, reflecting substantially improved compression stability.
+3. **Cross-Generator Evaluation on Frontier Benchmark:** On the Frontier Benchmark locked test partition ($N=2,091$), Candidate S2 achieved a Balanced Accuracy of 0.4849 and ROC-AUC of 0.4234, underperforming the frozen baseline (Balanced Accuracy 0.6228, ROC-AUC 0.6501). Paired group-aware bootstrap analysis (1,000 resamples) yielded $\Delta \text{ROC-AUC} = -0.2267$ with a 95% confidence interval of $[-0.2781, -0.1720]$.
+4. **Evaluation Governance:** In accordance with pre-registered promotion criteria, Candidate S2 was designated `REJECT_CANDIDATE_FOR_PRODUCTION`, and the TruthLens production detector retained the frozen baseline (`truthlens/siglip-cifake-frozen-head`).
 
 ## VII. Limitations
 
-The detector has no independent labeled evaluation. No direct baseline comparison or predictive fusion ablation is possible. Grad-CAM lacks annotation-based localization or human evaluation. OCR lacks language-specific reference transcripts and was unavailable in the earlier runtime. Claim extraction and retrieval lack reviewed reference cases. Social modules have no observational outcomes. The application lacks public deployment controls noted in the deployment/security guides. Author names and affiliation details must be verified from current records before submission.
+While matched in-memory augmentation effectively neutralizes file-format shortcuts on in-distribution data, several technical limitations remain:
+1. **Generative Architecture Shift:** Detectors fine-tuned on early diffusion and GAN architectures (2023) exhibited limited cross-generator transfer to late-2026 diffusion transformers and flow-matching models.
+2. **Real-Image Specificity in Open Domains:** On diverse web-sourced images, real-image false positive rates remain elevated (FAR = 33.97% at default 0.5 threshold on Frontier test), requiring elevated operational thresholds ($t \approx 0.93$) to ensure FPR $\le 5\%$.
+3. **Contextual Indicators:** Virality and regional risk scores remain heuristic indicators and are designated `DATA_UNAVAILABLE` for predictive claims.
 
 ## VIII. Conclusion and Future Work
 
-TruthLens integrates several analysis stages in a local academic prototype and exposes uncertainty and module status. Phase 6 adds reproducible dataset auditing, a guarded authenticity evaluation harness, controlled fusion checks, and honest academic documentation. The current evidence does not establish that the detector is accurate, calibrated, robust, multilingual, or useful to users. Future work is to secure dataset rights, define labels, group related examples, conduct held-out evaluation, measure OCR and claim quality, examine explanation faithfulness, run paired fusion ablations, and conduct consented user studies.
+TruthLens demonstrates the critical importance of rigorous evaluation governance in AI-generated image detection. By combining cryptographic dataset tracking, group-aware partitioning, matched in-memory augmentation, and pre-registered multi-benchmark evaluation, the framework successfully prevented premature deployment of shortcut-reliant models. Future work will investigate modern flow-matching representations, multi-generator contrastive pre-training, and calibrated open-world false-alarm mitigation.
 
 ## References
 

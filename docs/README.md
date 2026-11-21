@@ -32,43 +32,68 @@ Specifications detailing how heuristic content indicators, forensics, and review
 
 ---
 
-## 3. Implementation Reports & Audits (Phases 1–6)
+## 3. Evaluation & Remediation Research Reports (Phases 2–7)
 
-Chronological and technical reports detailing the implementation and hardening of system phases:
+Chronological scientific research and audit reports detailing dataset governance, benchmark evaluations, shortcut discovery, and matched augmentation experiments:
+
+### Phase 2: Dataset Ingestion & Leakage-Free Splitting
+- [phase2_dataset_ingestion_report.md](phase2_dataset_ingestion_report.md) — Ingestion and SHA-256 validation of Tiny-GenImage, Frontier Benchmark 2026-10, and WildAIGC-Bench.
+- [phase2_dataset_inventory.md](phase2_dataset_inventory.md) — Exact counts, license boundaries, generator metadata, and near-duplicate audits.
+- [phase2_split_protocol.md](phase2_split_protocol.md) — Group-aware, leakage-free dataset splitting protocol.
+
+### Phase 3–4: Baseline Audit & Training Preparation
+- [phase3_evaluation_report.md](phase3_evaluation_report.md) — Controlled benchmark evaluation of the frozen SigLIP baseline across three external benchmarks.
+- [phase3_5_research_audit_report.md](phase3_5_research_audit_report.md) — Independent scientific and statistical audit of Phase 3 baseline evaluation.
+- [phase4_training_dataset_report.md](phase4_training_dataset_report.md) — Construction and validation of the approved 6,995-sample Phase 4 training dataset.
+
+### Phase 5–6: Initial Fine-Tuning & Shortcut Discovery
+- [phase5_training_report.md](phase5_training_report.md) — Controlled partial fine-tuning experiments (E1, E2, E3).
+- [phase6_evaluation_report.md](phase6_evaluation_report.md) — Evaluation of Candidate E3, revealing container-format shortcut learning (100% JPEG real vs 100% PNG AI) and candidate rejection.
+
+### Phase 7: Shortcut-Resistant Detection via Matched In-Memory Augmentation
+- [phase7_protocol.md](phase7_protocol.md) — Pre-registered protocol for matched in-memory augmentation and shortcut neutralization.
+- [phase7_training_report.md](phase7_training_report.md) — Controlled training across 5 configurations (S1, S2, R1, R2, A1) and validation robustness audit.
+- [phase7_evaluation_report.md](phase7_evaluation_report.md) — Locked test evaluation on all benchmarks, proving format shortcut elimination on in-distribution data while retaining production baseline due to modern generator distribution gaps.
+
+---
+
+## 4. Historical Implementation Reports & Audits (Phases 1–6)
+
+Archived engineering and hardening reports from initial software development:
 
 ### Phase 1–3: Core Analysis Pipeline
-- [phase1_implementation_report.md](phase1_implementation_report.md) — Upload validation, SigLIP detector integration, orchestrator, and report builder.
-- [phase2_implementation_report.md](phase2_implementation_report.md) — Image preprocessing, metadata extraction, classical forensics, and OCR service.
-- [phase3_implementation_report.md](phase3_implementation_report.md) — Heuristic claim extraction, fact-check adapter, and provenance search.
+- [phase1_implementation_report.md](implementation%20history/phase1_implementation_report.md) — Upload validation, SigLIP detector integration, orchestrator, and report builder.
+- [phase2_implementation_report.md](implementation%20history/phase2_implementation_report.md) — Image preprocessing, metadata extraction, classical forensics, and OCR service.
+- [phase3_implementation_report.md](implementation%20history/phase3_implementation_report.md) — Heuristic claim extraction, fact-check adapter, and provenance search.
 
 ### Phase 4: Social & Contextual Indicators
-- [phase4_implementation_report.md](phase4_implementation_report.md) — Virality, regional spread, and social impact heuristic engine implementations.
-- [phase4_dataset_inventory.md](phase4_dataset_inventory.md) — Input data audit and justification for `DATA_UNAVAILABLE` designations.
-- [phase4_evaluation.md](phase4_evaluation.md) — Evaluation boundary for indicator modules.
+- [phase4_implementation_report.md](implementation%20history/phase4_implementation_report.md) — Virality, regional spread, and social impact heuristic engine implementations.
+- [phase4_dataset_inventory.md](implementation%20history/phase4_dataset_inventory.md) — Input data audit and justification for `DATA_UNAVAILABLE` designations.
+- [phase4_evaluation.md](implementation%20history/phase4_evaluation.md) — Evaluation boundary for indicator modules.
 
 ### Phase 5: Hardening & System Audits
-- [phase5_implementation_report.md](phase5_implementation_report.md) — Error handling, partial-stage recovery, and graceful degradation.
-- [phase5_e2e_test_report.md](phase5_e2e_test_report.md) — Historical end-to-end integration and smoke test results.
-- [phase5_performance_report.md](phase5_performance_report.md) — Preprocessing and inference timing microbenchmarks.
-- [phase5_security_audit.md](phase5_security_audit.md) — Security boundaries, input validation, and upload sanitization review.
-- [phase5_system_audit.md](phase5_system_audit.md) — Architectural resilience, SQLite vs. PostgreSQL, and task lifecycle audit.
+- [phase5_implementation_report.md](implementation%20history/phase5_implementation_report.md) — Error handling, partial-stage recovery, and graceful degradation.
+- [phase5_e2e_test_report.md](implementation%20history/phase5_e2e_test_report.md) — Historical end-to-end integration and smoke test results.
+- [phase5_performance_report.md](implementation%20history/phase5_performance_report.md) — Preprocessing and inference timing microbenchmarks.
+- [phase5_security_audit.md](implementation%20history/phase5_security_audit.md) — Security boundaries, input validation, and upload sanitization review.
+- [phase5_system_audit.md](implementation%20history/phase5_system_audit.md) — Architectural resilience, SQLite vs. PostgreSQL, and task lifecycle audit.
 
 ### Phase 6: Research Readiness & Evaluation
-- [phase6_implementation_report.md](phase6_implementation_report.md) — Controlled scenario evaluation, evidence fusion hardening, and metric checks.
-- [phase6_final_research_report.md](phase6_final_research_report.md) — Comprehensive research findings, system capabilities, and empirical boundaries.
-- [phase6_authenticity_evaluation.md](phase6_authenticity_evaluation.md) — Authenticity evaluation status (`NOT_EVALUABLE` on local approved data).
-- [phase6_ablation_study.md](phase6_ablation_study.md) — Evidence fusion ablation analysis and exclusion of non-completed evidence.
-- [phase6_error_analysis.md](phase6_error_analysis.md) — Failure mode taxonomy (domain shift, OCR omissions, external provider outages).
-- [phase6_experiment_setup.md](phase6_experiment_setup.md) — Reproducibility protocol, hardware environment, and metric calculation rules.
-- [phase6_experiment_dataset_inventory.md](phase6_experiment_dataset_inventory.md) — Audit of repository image assets and license limitations.
-- [phase6_explainability_evaluation.md](phase6_explainability_evaluation.md) — Grad-CAM attribution limitations and evaluation boundaries.
-- [phase6_multilingual_evaluation.md](phase6_multilingual_evaluation.md) — OCR script estimation and multilingual coverage boundaries.
-- [phase6_social_analytics_evaluation.md](phase6_social_analytics_evaluation.md) — Evaluation status of social indicators.
-- [phase6_research_questions.md](phase6_research_questions.md) — Core academic research questions and investigation status.
-- [phase6_research_readiness_audit.md](phase6_research_readiness_audit.md) — Readiness review for academic submission.
-- [phase6_responsible_ai_assessment.md](phase6_responsible_ai_assessment.md) — Ethical considerations, bias risks, and misrepresentation safeguards.
-- [phase6_usability_protocol.md](phase6_usability_protocol.md) — Proposed (unconducted) user study protocol.
-- [phase6_viva_preparation.md](phase6_viva_preparation.md) — Comprehensive panel Q&A guide and technical defense preparation.
+- [phase6_implementation_report.md](implementation%20history/phase6_implementation_report.md) — Controlled scenario evaluation, evidence fusion hardening, and metric checks.
+- [phase6_final_research_report.md](implementation%20history/phase6_final_research_report.md) — Comprehensive research findings, system capabilities, and empirical boundaries.
+- [phase6_authenticity_evaluation.md](implementation%20history/phase6_authenticity_evaluation.md) — Authenticity evaluation status (`NOT_EVALUABLE` on local approved data).
+- [phase6_ablation_study.md](implementation%20history/phase6_ablation_study.md) — Evidence fusion ablation analysis and exclusion of non-completed evidence.
+- [phase6_error_analysis.md](implementation%20history/phase6_error_analysis.md) — Failure mode taxonomy (domain shift, OCR omissions, external provider outages).
+- [phase6_experiment_setup.md](implementation%20history/phase6_experiment_setup.md) — Reproducibility protocol, hardware environment, and metric calculation rules.
+- [phase6_experiment_dataset_inventory.md](implementation%20history/phase6_experiment_dataset_inventory.md) — Audit of repository image assets and license limitations.
+- [phase6_explainability_evaluation.md](implementation%20history/phase6_explainability_evaluation.md) — Grad-CAM attribution limitations and evaluation boundaries.
+- [phase6_multilingual_evaluation.md](implementation%20history/phase6_multilingual_evaluation.md) — OCR script estimation and multilingual coverage boundaries.
+- [phase6_social_analytics_evaluation.md](implementation%20history/phase6_social_analytics_evaluation.md) — Evaluation status of social indicators.
+- [phase6_research_questions.md](implementation%20history/phase6_research_questions.md) — Core academic research questions and investigation status.
+- [phase6_research_readiness_audit.md](implementation%20history/phase6_research_readiness_audit.md) — Readiness review for academic submission.
+- [phase6_responsible_ai_assessment.md](implementation%20history/phase6_responsible_ai_assessment.md) — Ethical considerations, bias risks, and misrepresentation safeguards.
+- [phase6_usability_protocol.md](implementation%20history/phase6_usability_protocol.md) — Proposed (unconducted) user study protocol.
+- [phase6_viva_preparation.md](implementation%20history/phase6_viva_preparation.md) — Comprehensive panel Q&A guide and technical defense preparation.
 
 ---
 

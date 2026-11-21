@@ -42,7 +42,7 @@ Prior to opening the locked test partitions, model identity, checkpoint integrit
   - Expected SHA-256: `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`
   - Actual SHA-256: `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538` (**MATCH - PRESERVED UNCHANGED**)
 - **Backbone Model ID:** `google/siglip-base-patch16-224` (Revision: `7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed`).
-- **Audit Artifact:** [phase6_model_identity_audit.json](file:///d:/Projects/Truthlens/experiments/reports/phase6_model_identity_audit.json).
+- **Audit Artifact:** [phase6_model_identity_audit.json](..\experiments\reports\phase6_model_identity_audit.json).
 
 ### 2.2 Numerical Validation Reproducibility
 Evaluation on the 5,958 validation samples confirmed exact numerical reproducibility with 0 variance:
@@ -73,7 +73,7 @@ Temperature scaling was fitted **exclusively on calibration partitions** ($N = 1
 ### Calibration Insights vs Baseline
 - On Tiny-GenImage calibration data, the E3 candidate is vastly better calibrated out-of-the-box than the baseline, requiring $T = 2.0898$ (compared to the baseline's extreme $T = 14.0373$). Uncalibrated NLL dropped from $1.1033$ (baseline) to $0.3668$ (E3).
 - On WildAIGC-Bench, the optimizer hit the upper search bound ($T=50.0$) to flatten probabilities to $0.50$, directly confirming the Phase 3.5 finding that margins do not correlate with ground truth on WildAIGC.
-- Artifacts: [phase6_calibration.json](file:///d:/Projects/Truthlens/experiments/reports/phase6_calibration.json) and [phase6_reliability_data.json](file:///d:/Projects/Truthlens/experiments/reports/phase6_reliability_data.json).
+- Artifacts: [phase6_calibration.json](..\experiments\reports\phase6_calibration.json) and [phase6_reliability_data.json](..\experiments\reports\phase6_reliability_data.json).
 
 ---
 
@@ -133,7 +133,7 @@ To test whether the model learned compression format rather than generative arti
 1. **Catastrophic Sensitivity to JPEG Transcoding:** When synthetic PNG images are compressed with standard JPEG ($Q=90$), nearly half (**45.6%**) immediately flip their prediction to "Real". At $Q=75$, **49.5% flip**.
 2. **Extreme Logit Shifts:** E3's logits dropped by an average of **$6.12$ to $6.71$ points** purely from JPEG encoding (with peak perturbations exceeding $15.9$ points). In contrast, the frozen baseline shifted by only $0.71$ to $0.83$ points.
 3. **Causal Interpretation:** Fine-tuning unfreezing transformer layer 11 on the unaugmented Tiny-GenImage dataset severely overfitted to the high-frequency spectral signature of uncompressed PNG files. The candidate treats JPEG compression artifacts as proof of authenticity.
-4. **Artifacts:** [phase6_domain_confounding.json](file:///d:/Projects/Truthlens/experiments/reports/phase6_domain_confounding.json) and [phase6_encoding_robustness.csv](file:///d:/Projects/Truthlens/experiments/reports/phase6_encoding_robustness.csv).
+4. **Artifacts:** [phase6_domain_confounding.json](..\experiments\reports\phase6_domain_confounding.json) and [phase6_encoding_robustness.csv](..\experiments\reports\phase6_encoding_robustness.csv).
 
 ---
 
@@ -157,7 +157,7 @@ Evaluating performance by generator on the Tiny-GenImage test set reveals the ex
 - On **seen generators** (ADM, BigGAN, GLIDE), E3 approaches 100% detection accuracy.
 - On **held-out unseen generators**, E3's AI recall drops precipitously: **Midjourney drops by -37.40%**, **Wukong drops by -33.40%**, and **VQDM drops by -42.40%** (detecting only 20.6% of VQDM images).
 - While balanced accuracy remains higher than the baseline due to E3's high specificity on ImageNet nature images (97.7% vs 32.0%), E3 fails to reliably identify synthetic content from unseen generative architectures.
-- Artifact: [phase6_generator_generalization.json](file:///d:/Projects/Truthlens/experiments/reports/phase6_generator_generalization.json).
+- Artifact: [phase6_generator_generalization.json](..\experiments\reports\phase6_generator_generalization.json).
 
 ---
 
@@ -173,7 +173,7 @@ Evaluating social media compression variants on the Frontier benchmark:
 | **Reshared (Multiple recompressions)** | 348 | 0.6200 | 0.6519 | 0.5446 | 0.5435 | **-0.1084** |
 
 Under every compression variant, E3 lags behind the frozen baseline by $6.5$ to $12.4$ ROC-AUC points.
-Artifact: [phase6_compression_robustness.json](file:///d:/Projects/Truthlens/experiments/reports/phase6_compression_robustness.json).
+Artifact: [phase6_compression_robustness.json](..\experiments\reports\phase6_compression_robustness.json).
 
 ---
 
@@ -196,7 +196,7 @@ Group-aware stratified bootstrap resampling ($B = 1,000$ resamples) computed 95%
 | | $\Delta \text{F1 Score}$ | **-0.1974** | `[-0.2531, -0.1407]` | Significant Drop |
 
 On the modern Frontier benchmark, the upper bound of the 95% confidence interval for $\Delta \text{Balanced Accuracy}$ is **$-0.0315$** (strictly negative). The performance drop is statistically proven and not an artifact of random sampling.
-Artifact: [phase6_statistical_comparison.json](file:///d:/Projects/Truthlens/experiments/reports/phase6_statistical_comparison.json).
+Artifact: [phase6_statistical_comparison.json](..\experiments\reports\phase6_statistical_comparison.json).
 
 ---
 
@@ -210,7 +210,7 @@ Artifact: [phase6_statistical_comparison.json](file:///d:/Projects/Truthlens/exp
 3. **Unseen Generator Fragility:** E3's AI recall drops down to $20.6\%$ on VQDM, $51.6\%$ on Midjourney, and $54.0\%$ on Wukong.
 4. **Safety & Abstention:** Under TruthLens safety standards, a candidate model that introduces domain shortcuts and worsens performance on modern frontier generators cannot be promoted to production.
 
-Artifact: [phase6_candidate_decision.json](file:///d:/Projects/Truthlens/experiments/reports/phase6_candidate_decision.json).
+Artifact: [phase6_candidate_decision.json](..\experiments\reports\phase6_candidate_decision.json).
 
 ### Recommendations for Phase 7:
 1. **Retain the frozen CIFAKE baseline** (`models/baselines/siglip_frozen_head.pt`) in the production detector.

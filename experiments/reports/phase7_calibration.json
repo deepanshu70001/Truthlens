@@ -1,0 +1,100 @@
+{
+  "metadata": {
+    "model_id": "truthlens/siglip-base-v2-s2",
+    "candidate": "s2_siglip_partial_ft",
+    "checkpoint_sha256": "620e42f74bb7ae24fb1deeaedf24dbf9147162d3612c8f5171b64e53834f9805",
+    "timestamp_utc": "2026-11-21T18:20:09.228903+00:00",
+    "method": "temperature_scaling_nll_minimization",
+    "bounds": [
+      0.05,
+      50.0
+    ],
+    "total_calibration_samples": 13000
+  },
+  "datasets": {
+    "tiny_genimage": {
+      "sample_count": 12048,
+      "positive_ratio": 0.4128,
+      "fitted_temperature": 1.2174,
+      "converged": true,
+      "status": "CONVERGED",
+      "hit_bounds": false,
+      "uncalibrated": {
+        "nll": 0.33344,
+        "brier_score": 0.10366,
+        "ece": 0.05223,
+        "mce": 0.25492
+      },
+      "calibrated": {
+        "nll": 0.32704,
+        "brier_score": 0.10179,
+        "ece": 0.04851,
+        "mce": 0.21348,
+        "ece_improvement": 0.00372
+      }
+    },
+    "frontier_benchmark_2026_10": {
+      "sample_count": 588,
+      "positive_ratio": 0.3401,
+      "fitted_temperature": 10.3621,
+      "converged": true,
+      "status": "CONVERGED",
+      "hit_bounds": false,
+      "uncalibrated": {
+        "nll": 0.96431,
+        "brier_score": 0.31857,
+        "ece": 0.24692,
+        "mce": 0.76273
+      },
+      "calibrated": {
+        "nll": 0.68909,
+        "brier_score": 0.24796,
+        "ece": 0.14307,
+        "mce": 0.22113,
+        "ece_improvement": 0.10385
+      }
+    },
+    "wildaigc_bench": {
+      "sample_count": 364,
+      "positive_ratio": 0.6538,
+      "fitted_temperature": 5.6099,
+      "converged": true,
+      "status": "CONVERGED",
+      "hit_bounds": false,
+      "uncalibrated": {
+        "nll": 0.89943,
+        "brier_score": 0.30387,
+        "ece": 0.26121,
+        "mce": 0.49415
+      },
+      "calibrated": {
+        "nll": 0.6792,
+        "brier_score": 0.24309,
+        "ece": 0.16927,
+        "mce": 0.22695,
+        "ece_improvement": 0.09194
+      }
+    },
+    "pooled": {
+      "sample_count": 13000,
+      "positive_ratio": 0.4163,
+      "fitted_temperature": 1.3187,
+      "converged": true,
+      "status": "CONVERGED",
+      "hit_bounds": false,
+      "uncalibrated": {
+        "nll": 0.37782,
+        "brier_score": 0.11899,
+        "ece": 0.06054,
+        "mce": 0.22463
+      },
+      "calibrated": {
+        "nll": 0.36482,
+        "brier_score": 0.11553,
+        "ece": 0.04708,
+        "mce": 0.18771,
+        "ece_improvement": 0.01346
+      }
+    }
+  }
+}

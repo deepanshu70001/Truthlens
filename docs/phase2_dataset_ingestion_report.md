@@ -1,11 +1,11 @@
 # Phase 2 — Step 2: External Dataset Ingestion & Validation Report
 
-**Ingestion Date:** 2026-11-21  
-**Repository Branch:** `fix/truthlens-remediation`  
-**Execution Scope:** Phase 2, Step 2 Only (External Dataset Ingestion, Validation, and Manifest Generation)  
-**Machine / Environment:** Windows (Python 3.12, Pillow 11.3.0, ImageHash 4.3.2)  
-**Machine-Readable Report:** [experiments/reports/phase2_dataset_ingestion.json](file:///d:/Projects/Truthlens/experiments/reports/phase2_dataset_ingestion.json)  
-**Ingestion Script:** [experiments/ingest_external_datasets.py](file:///d:/Projects/Truthlens/experiments/ingest_external_datasets.py)
+**Ingestion Date:** 2026-11-21
+**Repository Branch:** `fix/truthlens-remediation`
+**Execution Scope:** Phase 2, Step 2 Only (External Dataset Ingestion, Validation, and Manifest Generation)
+**Machine / Environment:** Windows (Python 3.12, Pillow 11.3.0, ImageHash 4.3.2)
+**Machine-Readable Report:** [experiments/reports/phase2_dataset_ingestion.json](..\experiments\reports\phase2_dataset_ingestion.json)
+**Ingestion Script:** [experiments/ingest_external_datasets.py](..\experiments\ingest_external_datasets.py)
 
 ---
 
@@ -81,7 +81,7 @@ Original download sources (`datasets/tiny genimage/`, `datasets/frontier-image-v
 * **Generators:** BigGAN (2,500), VQDM (2,500), Stable Diffusion v1.5 (2,500), Wukong (2,500), ADM (2,500), GLIDE (2,500), Midjourney (2,500), ImageNet-Camera (17,500).
 * **Duplicates:** 34,999 unique SHA-256 (1 exact duplicate copy), 34,995 unique dHash (5 near-duplicate candidate pairs).
 * **Licenses:** ImageNet Terms of Access for research (nature) / GenImage Open Benchmark License (ai).
-* **Manifest:** [experiments/manifests/tiny_genimage.csv](file:///d:/Projects/Truthlens/experiments/manifests/tiny_genimage.csv) (35,000 rows).
+* **Manifest:** [experiments/manifests/tiny_genimage.csv](..\experiments\manifests\tiny_genimage.csv) (35,000 rows).
 
 ---
 
@@ -98,7 +98,7 @@ Original download sources (`datasets/tiny genimage/`, `datasets/frontier-image-v
 * **Social Compression Variants:** 2,229 images represent real-world compressed copies across WhatsApp, Telegram, Messenger, Line, WeChat.
 * **Duplicates:** 2,976 unique SHA-256 (0 exact duplicate files). 975 unique dHash clusters (reflecting the exact visual correspondence between social-compressed variants and their uncompressed originals).
 * **Licenses:** 100% documented Creative Commons & Public Domain: CC BY-SA 4.0 (1,326), CC BY 4.0 WasItAIGenerated (1,044), CC BY 4.0 (302), CC0 (232), Public Domain (110), CC BY-SA 2.0/3.0.
-* **Manifest:** [experiments/manifests/frontier_benchmark_2026_10.csv](file:///d:/Projects/Truthlens/experiments/manifests/frontier_benchmark_2026_10.csv) (2,976 rows).
+* **Manifest:** [experiments/manifests/frontier_benchmark_2026_10.csv](..\experiments\manifests\frontier_benchmark_2026_10.csv) (2,976 rows).
 
 ---
 
@@ -114,7 +114,7 @@ Original download sources (`datasets/tiny genimage/`, `datasets/frontier-image-v
 * **Provenance & Metadata:** 99.89% source URL coverage. Every sample includes title, context summary, fact-check source URL (JFC, Snopes, RTVE, etc.), and original social media link.
 * **Duplicates:** 1,363 unique SHA-256. 476 duplicate clusters exist strictly between the uncropped `raw/` files and their identical copies in `processed/`.
 * **Licenses:** CC BY 4.0 for dataset annotations and metadata; third-party media used under fair-use news reporting / fact-checking research exception.
-* **Manifest:** [experiments/manifests/wildaigc_bench.csv](file:///d:/Projects/Truthlens/experiments/manifests/wildaigc_bench.csv) (1,839 rows).
+* **Manifest:** [experiments/manifests/wildaigc_bench.csv](..\experiments\manifests\wildaigc_bench.csv) (1,839 rows).
 
 ---
 
@@ -156,7 +156,7 @@ All individual manifests adhere to the TruthLens canonical manifest specificatio
 ## 6. Compliance & Constraints Verification
 
 * **Model Training:** None (no models trained or fine-tuned).
-* **Detector & Calibration Code:** Neither [detector.py](file:///d:/Projects/Truthlens/backend/app/services/authenticity/detector.py) nor [calibration.py](file:///d:/Projects/Truthlens/backend/app/services/authenticity/calibration.py) was modified.
+* **Detector & Calibration Code:** Neither [detector.py](..\backend\app\services\authenticity\detector.py) nor [calibration.py](..\backend\app\services\authenticity\calibration.py) was modified.
 * **Thresholds & Fusion:** No thresholds or fusion weights changed.
 * **Original Files:** Original download archives and files preserved completely intact.
 * **Git Hygiene:** All datasets reside in `datasets/`, which is ignored by `.gitignore`. `git diff --check` is clean.
