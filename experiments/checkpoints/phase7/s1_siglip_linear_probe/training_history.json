@@ -1,0 +1,46 @@
+[
+  {
+    "epoch": 1,
+    "train_loss": 0.5978,
+    "composite_score": 0.6678,
+    "tiny_val_balanced_accuracy": 0.757,
+    "tiny_val_roc_auc": 0.8373,
+    "frontier_val_balanced_accuracy": 0.5786,
+    "frontier_val_roc_auc": 0.5991,
+    "epoch_duration_sec": 3.16,
+    "peak_vram_mb": 700.5
+  },
+  {
+    "epoch": 2,
+    "train_loss": 0.4513,
+    "composite_score": 0.6363,
+    "tiny_val_balanced_accuracy": 0.7644,
+    "tiny_val_roc_auc": 0.8553,
+    "frontier_val_balanced_accuracy": 0.5083,
+    "frontier_val_roc_auc": 0.5431,
+    "epoch_duration_sec": 2.32,
+    "peak_vram_mb": 700.5
+  },
+  {
+    "epoch": 3,
+    "train_loss": 0.4004,
+    "composite_score": 0.6397,
+    "tiny_val_balanced_accuracy": 0.7728,
+    "tiny_val_roc_auc": 0.8616,
+    "frontier_val_balanced_accuracy": 0.5065,
+    "frontier_val_roc_auc": 0.522,
+    "epoch_duration_sec": 2.31,
+    "peak_vram_mb": 700.5
+  },
+  {
+    "epoch": 4,
+    "train_loss": 0.3755,
+    "composite_score": 0.6274,
+    "tiny_val_balanced_accuracy": 0.7742,
+    "tiny_val_roc_auc": 0.8646,
+    "frontier_val_balanced_accuracy": 0.4806,
+    "frontier_val_roc_auc": 0.5124,
+    "epoch_duration_sec": 4.21,
+    "peak_vram_mb": 700.5
+  }
+]

@@ -1,0 +1,53 @@
+{
+  "experiment_name": "a1_siglip_no_aug_ablation",
+  "model_id": "truthlens/siglip-base-v2-a1",
+  "backbone_type": "siglip",
+  "matched_augmentation": false,
+  "best_epoch": 1,
+  "best_composite_score": 0.7544,
+  "total_training_duration_sec": 569.74,
+  "peak_vram_mb": 839.08,
+  "parameter_counts": {
+    "total_params": 92884993,
+    "trainable_params": 14176513,
+    "frozen_params": 78708480
+  },
+  "best_tiny_val_metrics": {
+    "sample_count": 5958,
+    "accuracy": 0.8563,
+    "balanced_accuracy": 0.8398,
+    "precision": 0.9222,
+    "recall": 0.7253,
+    "specificity": 0.9543,
+    "f1_score": 0.812,
+    "roc_auc": 0.9258,
+    "pr_auc": 0.9206,
+    "confusion_matrix": {
+      "tn": 3254,
+      "fp": 156,
+      "fn": 700,
+      "tp": 1848
+    }
+  },
+  "best_frontier_val_metrics": {
+    "sample_count": 297,
+    "accuracy": 0.6936,
+    "balanced_accuracy": 0.6689,
+    "precision": 0.5596,
+    "recall": 0.5865,
+    "specificity": 0.7513,
+    "f1_score": 0.5728,
+    "roc_auc": 0.7495,
+    "pr_auc": 0.6068,
+    "confusion_matrix": {
+      "tn": 145,
+      "fp": 48,
+      "fn": 43,
+      "tp": 61
+    }
+  },
+  "checkpoint_path": "experiments\\checkpoints\\phase7\\a1_siglip_no_aug_ablation\\best_checkpoint.pt",
+  "checkpoint_sha256": "872b93ceff594fe6469bde42465ee1763656d65a3cf3a6c88efff1b6d4e8d02d",
+  "head_path": "experiments\\checkpoints\\phase7\\a1_siglip_no_aug_ablation\\head.pt",
+  "head_sha256": "43cc6436a37608360f9211409c611cd4c1e19a39c6d54befecc2185f653496bd"
+}

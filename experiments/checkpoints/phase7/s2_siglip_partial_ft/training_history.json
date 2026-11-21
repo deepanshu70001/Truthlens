@@ -1,0 +1,79 @@
+[
+  {
+    "epoch": 1,
+    "train_loss": 0.5416,
+    "composite_score": 0.6083,
+    "tiny_val_balanced_accuracy": 0.6841,
+    "tiny_val_roc_auc": 0.8666,
+    "frontier_val_balanced_accuracy": 0.5325,
+    "frontier_val_roc_auc": 0.5775,
+    "epoch_duration_sec": 350.3,
+    "peak_vram_mb": 839.08
+  },
+  {
+    "epoch": 2,
+    "train_loss": 0.3184,
+    "composite_score": 0.6398,
+    "tiny_val_balanced_accuracy": 0.7996,
+    "tiny_val_roc_auc": 0.9086,
+    "frontier_val_balanced_accuracy": 0.4799,
+    "frontier_val_roc_auc": 0.4725,
+    "epoch_duration_sec": 260.83,
+    "peak_vram_mb": 839.08
+  },
+  {
+    "epoch": 3,
+    "train_loss": 0.2501,
+    "composite_score": 0.6687,
+    "tiny_val_balanced_accuracy": 0.8214,
+    "tiny_val_roc_auc": 0.9236,
+    "frontier_val_balanced_accuracy": 0.5161,
+    "frontier_val_roc_auc": 0.499,
+    "epoch_duration_sec": 231.41,
+    "peak_vram_mb": 839.08
+  },
+  {
+    "epoch": 4,
+    "train_loss": 0.2033,
+    "composite_score": 0.6722,
+    "tiny_val_balanced_accuracy": 0.8275,
+    "tiny_val_roc_auc": 0.9276,
+    "frontier_val_balanced_accuracy": 0.5169,
+    "frontier_val_roc_auc": 0.4769,
+    "epoch_duration_sec": 223.76,
+    "peak_vram_mb": 839.08
+  },
+  {
+    "epoch": 5,
+    "train_loss": 0.1718,
+    "composite_score": 0.669,
+    "tiny_val_balanced_accuracy": 0.8412,
+    "tiny_val_roc_auc": 0.932,
+    "frontier_val_balanced_accuracy": 0.4969,
+    "frontier_val_roc_auc": 0.4714,
+    "epoch_duration_sec": 251.02,
+    "peak_vram_mb": 839.08
+  },
+  {
+    "epoch": 6,
+    "train_loss": 0.1609,
+    "composite_score": 0.6437,
+    "tiny_val_balanced_accuracy": 0.8501,
+    "tiny_val_roc_auc": 0.9337,
+    "frontier_val_balanced_accuracy": 0.4373,
+    "frontier_val_roc_auc": 0.4631,
+    "epoch_duration_sec": 187.11,
+    "peak_vram_mb": 839.08
+  },
+  {
+    "epoch": 7,
+    "train_loss": 0.1389,
+    "composite_score": 0.6499,
+    "tiny_val_balanced_accuracy": 0.8533,
+    "tiny_val_roc_auc": 0.9331,
+    "frontier_val_balanced_accuracy": 0.4465,
+    "frontier_val_roc_auc": 0.4705,
+    "epoch_duration_sec": 243.2,
+    "peak_vram_mb": 839.08
+  }
+]

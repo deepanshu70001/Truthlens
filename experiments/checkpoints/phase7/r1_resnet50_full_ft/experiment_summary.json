@@ -1,0 +1,53 @@
+{
+  "experiment_name": "r1_resnet50_full_ft",
+  "model_id": "truthlens/resnet50-v2-r1",
+  "backbone_type": "resnet50",
+  "matched_augmentation": true,
+  "best_epoch": 7,
+  "best_composite_score": 0.6524,
+  "total_training_duration_sec": 1578.33,
+  "peak_vram_mb": 1121.48,
+  "parameter_counts": {
+    "total_params": 23510081,
+    "trainable_params": 23510081,
+    "frozen_params": 0
+  },
+  "best_tiny_val_metrics": {
+    "sample_count": 5958,
+    "accuracy": 0.711,
+    "balanced_accuracy": 0.7072,
+    "precision": 0.6562,
+    "recall": 0.6809,
+    "specificity": 0.7334,
+    "f1_score": 0.6683,
+    "roc_auc": 0.7828,
+    "pr_auc": 0.7521,
+    "confusion_matrix": {
+      "tn": 2501,
+      "fp": 909,
+      "fn": 813,
+      "tp": 1735
+    }
+  },
+  "best_frontier_val_metrics": {
+    "sample_count": 297,
+    "accuracy": 0.6902,
+    "balanced_accuracy": 0.5976,
+    "precision": 0.625,
+    "recall": 0.2885,
+    "specificity": 0.9067,
+    "f1_score": 0.3947,
+    "roc_auc": 0.5241,
+    "pr_auc": 0.4228,
+    "confusion_matrix": {
+      "tn": 175,
+      "fp": 18,
+      "fn": 74,
+      "tp": 30
+    }
+  },
+  "checkpoint_path": "experiments\\checkpoints\\phase7\\r1_resnet50_full_ft\\best_checkpoint.pt",
+  "checkpoint_sha256": "2887136affa6406e4f09a394f0ce6be7ff7ba874ada21a6ff8538d211859a9cb",
+  "head_path": "experiments\\checkpoints\\phase7\\r1_resnet50_full_ft\\head.pt",
+  "head_sha256": "a241a20f68569b59ec604593d7614969b6f0c236b794ca2bb546f997332cee44"
+}

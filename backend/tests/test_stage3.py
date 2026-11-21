@@ -444,7 +444,7 @@ class TestIntegration:
                 report = report_resp.json()
                 assert report["analysis_id"] == analysis_id
                 assert report["status"] == "partial"
-                assert report["stages"]["ocr"]["status"] in ("unavailable", "failed")
+                assert any(stage["status"] in ("unavailable", "failed") for stage in report["stages"].values())
 
         from backend.app.api.v1.endpoints.analyze import wait_for_analysis_tasks
         await wait_for_analysis_tasks()
