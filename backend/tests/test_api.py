@@ -272,6 +272,74 @@ async def test_ocr_text_is_passed_to_text_normalization(client, mock_optional_an
 
 
 @pytest.mark.asyncio
+async def test_claim_extraction_failure_preserves_completed_ocr_output(
+    client, mock_optional_analysis_modules, monkeypatch
+):
+    import asyncio
+    from backend.app.services.ocr.service import OCRResult
+
+    raw_text = "The city opened 125 new schools in 2026."
+    mock_optional_analysis_modules["ocr"].extract = lambda _image: OCRResult(
+        text=raw_text, normalized_text=raw_text, has_text=True, word_count=8,
+        engine="mock-ocr", status="completed", language_configuration=["en"],
+    )
+
+    def fail_extraction(*args, **kwargs):
+        raise RuntimeError("private extraction detail")
+
+    monkeypatch.setattr("backend.app.services.claims.extractor.extract_claims", fail_extraction)
+    response = await client.post(
+        "/api/v1/analyze",
+        files={"image": ("claim-failure.jpg", io.BytesIO(create_test_jpeg()), "image/jpeg")},
+    )
+    assert response.status_code == 201
+    analysis_id = response.json()["analysis_id"]
+    for _ in range(100):
+        await asyncio.sleep(0.05)
+        status = (await client.get(f"/api/v1/analysis/{analysis_id}")).json()
+        if status["status"] in {"completed", "partial", "failed"}:
+            break
+    report = (await client.get(f"/api/v1/analysis/{analysis_id}/report")).json()
+    assert report["ocr"]["text"] == raw_text
+    assert report["stages"]["ocr"]["status"] == "completed"
+    assert report["stages"]["claim_extraction"]["status"] == "failed"
+    assert "private extraction detail" not in str(report)
+
+
+@pytest.mark.asyncio
+async def test_factcheck_unavailable_does_not_terminate_analysis(
+    client, mock_optional_analysis_modules
+):
+    import asyncio
+    from unittest.mock import patch
+    from backend.app.services.ocr.service import OCRResult
+
+    raw_text = "The city opened 125 new schools in 2026."
+    mock_optional_analysis_modules["ocr"].extract = lambda _image: OCRResult(
+        text=raw_text, normalized_text=raw_text, has_text=True, word_count=8,
+        engine="mock-ocr", status="completed", language_configuration=["en"],
+    )
+    with patch("backend.app.services.factcheck.service.settings") as cfg:
+        cfg.GOOGLE_API_KEY, cfg.FACTCHECK_API_KEY = "", ""
+        response = await client.post(
+            "/api/v1/analyze",
+            files={"image": ("provider-unavailable.jpg", io.BytesIO(create_test_jpeg()), "image/jpeg")},
+        )
+    assert response.status_code == 201
+    analysis_id = response.json()["analysis_id"]
+    for _ in range(100):
+        await asyncio.sleep(0.05)
+        status = (await client.get(f"/api/v1/analysis/{analysis_id}")).json()
+        if status["status"] in {"completed", "partial", "failed"}:
+            break
+    report = (await client.get(f"/api/v1/analysis/{analysis_id}/report")).json()
+    assert report["ocr"]["text"] == raw_text
+    assert report["fact_checks"]["status"] == "unavailable"
+    assert report["stages"]["fact_check"]["status"] == "unavailable"
+    assert report["status"] == "partial"
+
+
+@pytest.mark.asyncio
 async def test_unavailable_language_model_does_not_block_image_or_text_stages(
     client, mock_optional_analysis_modules
 ):

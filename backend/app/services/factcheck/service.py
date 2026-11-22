@@ -18,11 +18,12 @@ from __future__ import annotations
 
 import time
 import hashlib
+import json
 import re
 from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 import httpx
 
@@ -32,6 +33,75 @@ from backend.app.core.logging import get_logger
 log = get_logger("factcheck")
 
 FACTCHECK_API_URL = "https://factchecktools.googleapis.com/v1alpha1/claims:search"
+
+
+class ProviderResponseError(ValueError):
+    """The provider returned a response that cannot be safely normalized."""
+
+
+class ProviderResponseTooLarge(ProviderResponseError):
+    pass
+
+
+class ParsedReviews(list):
+    def __init__(self, values=(), malformed_items: int = 0):
+        super().__init__(values)
+        self.malformed_items = malformed_items
+
+
+_SENSITIVE_QUERY_KEYS = {
+    "key", "api_key", "access_token", "token", "authorization", "signature", "sig",
+    "client_secret", "password", "secret", "auth", "x_api_key", "refresh_token", "oauth_token",
+}
+_TRACKING_QUERY_KEYS = {"gclid", "fbclid", "mc_cid", "mc_eid", "ref", "ref_src"}
+
+
+def _sanitize_review_url(value: Any) -> Optional[str]:
+    if not isinstance(value, str) or not value or len(value) > 2048:
+        return None
+    if any(ord(char) < 0x20 or ord(char) == 0x7F or char.isspace() for char in value):
+        return None
+    try:
+        parsed = urlsplit(value)
+        hostname = parsed.hostname
+        # Accessing port forces urllib to reject malformed port strings.
+        _ = parsed.port
+    except ValueError:
+        return None
+    if parsed.scheme.lower() != "https" or not hostname or parsed.username or parsed.password:
+        return None
+    try:
+        parsed_query = parse_qsl(parsed.query, keep_blank_values=True, max_num_fields=100)
+    except ValueError:
+        return None
+    query = []
+    for key, val in parsed_query:
+        normalized_key = re.sub(r"[-.]", "_", key.casefold())
+        if normalized_key in _SENSITIVE_QUERY_KEYS or normalized_key in _TRACKING_QUERY_KEYS:
+            continue
+        if normalized_key.startswith("utm_"):
+            continue
+        query.append((key, val))
+    return urlunsplit(("https", parsed.netloc, parsed.path, urlencode(query, doseq=True), ""))
+
+
+def _read_bounded_body(response: Any, max_bytes: int) -> bytes:
+    headers = getattr(response, "headers", {}) or {}
+    content_length = headers.get("content-length") if hasattr(headers, "get") else None
+    try:
+        parsed_length = int(content_length) if content_length is not None else None
+    except (TypeError, ValueError):
+        parsed_length = None
+    if parsed_length is not None and parsed_length > max_bytes:
+        raise ProviderResponseTooLarge("Provider response exceeded the configured size limit")
+    body = bytearray()
+    for chunk in response.iter_bytes():
+        if not isinstance(chunk, (bytes, bytearray)):
+            raise ProviderResponseError("Provider returned malformed response bytes")
+        if len(body) + len(chunk) > max_bytes:
+            raise ProviderResponseTooLarge("Provider response exceeded the configured size limit")
+        body.extend(chunk)
+    return bytes(body)
 
 
 @dataclass
@@ -83,7 +153,7 @@ class FactCheckClaim:
 @dataclass
 class FactCheckResult:
     """Complete fact-check search result."""
-    status: str = "unavailable"  # unavailable | success | no_results | failed
+    status: str = "unavailable"  # success | no_results | partial | unavailable | failed | skipped
     provider: str = "google_fact_check_tools"
     claims: List[FactCheckClaim] = field(default_factory=list)
     total_results: int = 0
@@ -155,12 +225,17 @@ def _search_single_claim(
 
     try:
         timeout = timeout_seconds or _bounded_setting("FACTCHECK_API_TIMEOUT_SECONDS", 10.0, 0.1, 60.0)
+        max_bytes = int(_bounded_setting("FACTCHECK_MAX_RESPONSE_BYTES", 1_000_000, 1024, 10_000_000))
         with httpx.Client(timeout=timeout) as client:
-            response = client.get(FACTCHECK_API_URL, params=params)
-            response.raise_for_status()
-            data = response.json()
-            if not isinstance(data, dict) or ("claims" in data and not isinstance(data["claims"], list)):
-                raise ValueError("Malformed Fact Check API response")
+            with client.stream("GET", FACTCHECK_API_URL, params=params) as response:
+                response.raise_for_status()
+                body = _read_bounded_body(response, max_bytes)
+        try:
+            data = json.loads(body)
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise ProviderResponseError("Provider returned invalid JSON") from exc
+        if not isinstance(data, dict) or ("claims" in data and not isinstance(data["claims"], list)):
+            raise ProviderResponseError("Provider returned a malformed response")
     except httpx.HTTPStatusError as e:
         log.error("Fact Check API HTTP error (%s)", e.response.status_code)
         raise
@@ -172,49 +247,78 @@ def _search_single_claim(
         raise
 
     claims = []
+    malformed_items = 0
     retrieved_at = datetime.now(timezone.utc).isoformat()
-    for item in data.get("claims", []):
+    raw_claims = data.get("claims", [])
+    if len(raw_claims) > 100:
+        malformed_items += len(raw_claims) - 100
+        raw_claims = raw_claims[:100]
+    for item in raw_claims:
         if not isinstance(item, dict):
+            malformed_items += 1
             continue
-        claim_text = item.get("text", "") if isinstance(item.get("text", ""), str) else ""
-        claimant = item.get("claimant", "") if isinstance(item.get("claimant", ""), str) else ""
-        claim_date = item.get("claimDate", "") if isinstance(item.get("claimDate", ""), str) else ""
-        claim_text, claimant, claim_date = claim_text[:2000], claimant[:300], claim_date[:40]
+        claim_text = item.get("text", "")
+        claimant = item.get("claimant", "")
+        claim_date = item.get("claimDate", "")
+        reviews = item.get("claimReview", [])
+        if (not isinstance(claim_text, str) or not claim_text.strip() or len(claim_text) > 2000
+                or not isinstance(claimant, str) or len(claimant) > 300
+                or not isinstance(claim_date, str) or len(claim_date) > 40
+                or not isinstance(reviews, list)):
+            malformed_items += 1
+            continue
+        if len(reviews) > 100:
+            malformed_items += len(reviews) - 100
+            reviews = reviews[:100]
 
-        for review in item.get("claimReview", []):
+        for review in reviews:
             if not isinstance(review, dict):
+                malformed_items += 1
                 continue
             publisher = review.get("publisher", {})
             if not isinstance(publisher, dict):
-                publisher = {}
-            publisher_name = publisher.get("name", "") if isinstance(publisher.get("name", ""), str) else ""
-            publisher_site = publisher.get("site", "") if isinstance(publisher.get("site", ""), str) else ""
-            url = review.get("url", "")
-            if not isinstance(url, str) or len(url) > 2048:
+                malformed_items += 1
                 continue
-            parsed_url = urlparse(url)
-            if parsed_url.scheme.lower() != "https" or not parsed_url.hostname or parsed_url.username or parsed_url.password:
+            publisher_name = publisher.get("name", "")
+            publisher_site = publisher.get("site", "")
+            title = review.get("title", "")
+            review_date = review.get("reviewDate", "")
+            rating = review.get("textualRating", "")
+            review_language = review.get("languageCode", language_code or "")
+            if (not isinstance(publisher_name, str) or len(publisher_name) > 300
+                    or not isinstance(publisher_site, str) or len(publisher_site) > 300
+                    or not isinstance(title, str) or len(title) > 500
+                    or not isinstance(review_date, str) or len(review_date) > 40
+                    or not isinstance(rating, str) or len(rating) > 160
+                    or not isinstance(review_language, str) or len(review_language) > 20):
+                malformed_items += 1
                 continue
-            identity = f"{url}|{claim_id or query}|{review.get('title', '')}"
+            url = _sanitize_review_url(review.get("url"))
+            if url is None:
+                malformed_items += 1
+                continue
+            identity = f"{url}|{claim_id or query}|{title}"
             claims.append(FactCheckClaim(
                 query=query,
                 claimed_text=claim_text,
                 claimant=claimant,
                 claim_date=claim_date,
-                publisher_name=publisher_name[:300],
-                publisher_site=publisher_site[:300],
+                publisher_name=publisher_name,
+                publisher_site=publisher_site,
                 url=url,
-                title=str(review.get("title", ""))[:500],
-                review_date=str(review.get("reviewDate", ""))[:40],
-                textual_rating=str(review.get("textualRating", ""))[:160],
-                language_code=str(review.get("languageCode", language_code or ""))[:20],
+                title=title,
+                review_date=review_date,
+                textual_rating=rating,
+                language_code=review_language,
                 claim_id=claim_id,
                 evidence_id="fc_" + hashlib.sha256(identity.encode("utf-8")).hexdigest()[:20],
                 retrieved_at=retrieved_at,
                 claim_match="strong_match" if _claim_match(query, claim_text) else "related_unconfirmed",
             ))
 
-    return claims
+    if malformed_items and not claims and raw_claims:
+        raise ProviderResponseError("Provider response contained no valid review records")
+    return ParsedReviews(claims, malformed_items=malformed_items)
 
 
 def search_fact_checks(
@@ -282,6 +386,7 @@ def search_fact_checks(
     succeeded = 0
     failed_queries = 0
     timed_out = False
+    partial_data = False
     per_query_status: Dict[str, str] = {}
     per_query_errors: Dict[str, str] = {}
     result_limit = min(10, max(1, int(max_results_per_claim)))
@@ -319,6 +424,9 @@ def search_fact_checks(
                 time.sleep(min(0.25 * (2 ** attempt), 1.0))
             if results is None:
                 raise RuntimeError("Fact-check retrieval timed out before a request completed")
+            if getattr(results, "malformed_items", 0):
+                partial_data = True
+                warnings.append("Some malformed provider records were ignored.")
             for review in results:
                 if claim_id and review.claim_id is None:
                     review.claim_id = claim_id
@@ -330,6 +438,14 @@ def search_fact_checks(
             queries_performed += 1
             succeeded += 1
             per_query_status[claim_id or claim_text] = "success"
+        except ProviderResponseTooLarge:
+            failed_queries += 1
+            per_query_errors[claim_id or claim_text] = "PROVIDER_RESPONSE_TOO_LARGE"
+            warnings.append("Fact-check provider response exceeded the configured size limit.")
+        except ProviderResponseError:
+            failed_queries += 1
+            per_query_errors[claim_id or claim_text] = "PROVIDER_INVALID_RESPONSE"
+            warnings.append("Fact-check provider returned an invalid response.")
         except httpx.HTTPStatusError as e:
             per_query_errors[claim_id or claim_text] = (
                 "PROVIDER_RATE_LIMIT" if e.response.status_code == 429
@@ -355,9 +471,9 @@ def search_fact_checks(
     runtime_ms = int((time.time() - t0) * 1000)
 
     truncated = len(claim_texts) > claim_limit
-    if succeeded == attempted and not truncated:
+    if succeeded == attempted and not truncated and not partial_data:
         status = "success" if all_claims else "no_results"
-    elif succeeded or truncated or failed_queries and (succeeded or attempted > failed_queries):
+    elif succeeded or truncated or partial_data or failed_queries and (succeeded or attempted > failed_queries):
         status = "partial"
     elif attempted:
         status = "failed"

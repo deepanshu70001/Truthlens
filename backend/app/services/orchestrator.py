@@ -687,18 +687,12 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
                     "bbox": getattr(block, "bbox", None),
                 })
                 source_cursor = region_end
-            claim_language = (
-                language_result.detected_language
-                if language_result is not None and getattr(language_result, "outcome", None) == "success"
-                else "unknown"
-            )
             claims_result = await _run_stage(
                 "claim_extraction",
                 lambda: extract_claims(
                     text_result.normalized_text,
                     max_claims=settings.FACTCHECK_MAX_CLAIMS,
-                    language=claim_language,
-                    language_detection_status=getattr(language_result, "outcome", "unavailable") if language_result else "unavailable",
+                    language_result=language_result,
                     sentence_spans=text_result.sentence_spans,
                     source_regions=source_regions,
                     ocr_confidence=getattr(ocr_result, "total_confidence", None) if ocr_result else None,

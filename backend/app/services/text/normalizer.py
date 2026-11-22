@@ -126,8 +126,18 @@ def _sentence_spans(text: str) -> List[Dict[str, Any]]:
     start = 0
     for match in pattern.finditer(text):
         prefix = text[max(start, match.start() - 6):match.start()]
-        if re.search(r"(?:\b(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|St|vs|etc|e\.g|i\.e)\.)$|\b[A-Z]\.$", prefix, re.I):
-            continue
+        abbreviation = re.search(r"(?:\b(?P<word>Mr|Mrs|Ms|Dr|Prof|Sr|Jr|St|vs|etc|e\.g|i\.e)\.)$|\b(?P<initial>[A-Z])\.$", prefix, re.I)
+        if abbreviation:
+            word = (abbreviation.group("word") or "").casefold()
+            # Titles and initials before a name are not sentence boundaries.
+            if word in {"mr", "mrs", "ms", "dr", "prof", "sr", "jr", "st"} or abbreviation.group("initial"):
+                continue
+            # Some abbreviations also end sentences. A following capitalized
+            # word is treated as a boundary for etc./vs./e.g./i.e.; this remains
+            # a deliberately small heuristic, not a linguistic parser.
+            following = text[match.end():]
+            if not re.match(r"[A-Z]", following):
+                continue
         end = match.start() + 1
         value = text[start:end].strip()
         left = start + len(text[start:end]) - len(text[start:end].lstrip())

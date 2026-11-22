@@ -10,7 +10,7 @@ import re
 import time
 import unicodedata
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Mapping, Optional, Sequence
 
 from backend.app.core.logging import get_logger
 
@@ -63,6 +63,13 @@ class ExtractedClaim:
     source_regions: List[Dict[str, Any]] = field(default_factory=list)
     extraction_method: str = EXTRACTION_METHOD
     language_detection_status: str = "unavailable"
+    language_code: Optional[str] = None
+    language_name: Optional[str] = None
+    language_source: Optional[str] = None
+    language_model_id: Optional[str] = None
+    language_model_revision: Optional[str] = None
+    language_confidence: Optional[float] = None
+    language_detection_outcome: str = "unavailable"
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -70,6 +77,13 @@ class ExtractedClaim:
             "original_text": self.original_text or self.claim,
             "normalized_text": self.normalized_text or self.claim,
             "language": self.language, "translated_text": self.translated_text,
+            "language_code": self.language_code,
+            "language_name": self.language_name,
+            "language_source": self.language_source,
+            "language_model_id": self.language_model_id,
+            "language_model_revision": self.language_model_revision,
+            "language_confidence": self.language_confidence,
+            "language_detection_outcome": self.language_detection_outcome,
             "entities": self.entities, "dates": self.dates,
             "locations": self.locations, "numbers": self.numbers,
             "claim_type": self.claim_type, "confidence": round(self.confidence, 4),
@@ -104,6 +118,50 @@ class ClaimExtractionResult:
 
 def _clean(text: str) -> str:
     return re.sub(r"\s+", " ", unicodedata.normalize("NFC", text)).strip()
+
+
+def _claim_language_fields(language_result: Any) -> Dict[str, Any]:
+    """Copy provenance only from an actual successful supported E3 result."""
+    outcome = getattr(language_result, "outcome", "unavailable") if language_result is not None else "unavailable"
+    fields: Dict[str, Any] = {
+        "language": "unknown",
+        "language_detection_status": outcome if isinstance(outcome, str) else "unavailable",
+        "language_code": None,
+        "language_name": None,
+        "language_source": None,
+        "language_model_id": None,
+        "language_model_revision": None,
+        "language_confidence": None,
+        "language_detection_outcome": outcome if isinstance(outcome, str) else "unavailable",
+    }
+    if language_result is None or outcome != "success" or getattr(language_result, "status", None) != "completed":
+        return fields
+
+    from backend.app.services.nlp.language_detector import LANGUAGE_NAMES
+
+    code = getattr(language_result, "detected_language", None)
+    if not isinstance(code, str) or code not in LANGUAGE_NAMES:
+        fields["language_detection_status"] = "undetermined"
+        fields["language_detection_outcome"] = "undetermined"
+        return fields
+
+    confidence = getattr(language_result, "confidence", None)
+    if isinstance(confidence, bool) or not isinstance(confidence, (int, float)) or not 0.0 <= float(confidence) <= 1.0:
+        confidence = None
+    model_id = getattr(language_result, "model_name", None)
+    revision = getattr(language_result, "model_revision", None)
+    fields.update({
+        "language": code,
+        "language_detection_status": "success",
+        "language_code": code,
+        "language_name": LANGUAGE_NAMES[code],
+        "language_source": "e3_language_identification",
+        "language_model_id": model_id if isinstance(model_id, str) and model_id else None,
+        "language_model_revision": revision if isinstance(revision, str) and revision else None,
+        "language_confidence": float(confidence) if confidence is not None else None,
+        "language_detection_outcome": "success",
+    })
+    return fields
 
 
 def _classify(text: str) -> tuple[str, str, str, str]:
@@ -163,6 +221,7 @@ def _score(text: str, ocr_confidence: Optional[float]) -> float:
 def extract_claims(
     sentences: Sequence[str] | str, min_confidence: float = 0.1, max_claims: int = 5,
     *, language: str = "unknown", language_detection_status: str = "unavailable",
+    language_result: Any = None,
     ocr_confidence: Optional[float] = None, sentence_spans: Optional[Sequence[Dict[str, Any]]] = None,
     source_regions: Optional[Sequence[Dict[str, Any]]] = None,
 ) -> ClaimExtractionResult:
@@ -175,19 +234,78 @@ def extract_claims(
     warnings: List[str] = []
     found: Dict[str, ExtractedClaim] = {}
     items: List[Dict[str, Any]] = []
-    if isinstance(sentences, str):
+    malformed_inputs = False
+    source_text = sentences if isinstance(sentences, str) else None
+    if sentence_spans is not None:
+        try:
+            span_items = list(sentence_spans)
+        except TypeError:
+            span_items = []
+            malformed_inputs = True
+        for item in span_items:
+            if not isinstance(item, Mapping):
+                malformed_inputs = True
+                continue
+            items.append(dict(item))
+    elif isinstance(sentences, str):
         from backend.app.services.text.normalizer import _sentence_spans
         items = _sentence_spans(sentences)
-    elif sentence_spans:
-        items = [dict(item) for item in sentence_spans]
     else:
-        items = [{"text": raw} for raw in (sentences or [])]
+        try:
+            items = [{"text": raw} for raw in (sentences or [])]
+        except TypeError:
+            malformed_inputs = True
+
+    valid_regions: List[Mapping[str, Any]] = []
+    try:
+        region_items = list(source_regions or [])
+    except TypeError:
+        region_items = []
+        malformed_inputs = True
+    for region in region_items:
+        if not isinstance(region, Mapping):
+            malformed_inputs = True
+            continue
+        start, end = region.get("text_start"), region.get("text_end")
+        region_id = region.get("region_id") or region.get("id")
+        if (isinstance(start, bool) or not isinstance(start, int) or isinstance(end, bool)
+                or not isinstance(end, int) or start < 0 or end <= start
+                or (source_text is not None and end > len(source_text))
+                or not isinstance(region_id, str) or not region_id.strip() or len(region_id) > 128):
+            malformed_inputs = True
+            continue
+        valid_regions.append(region)
+
+    provenance = _claim_language_fields(language_result) if language_result is not None else {
+        "language": language if isinstance(language, str) else "unknown",
+        "language_detection_status": language_detection_status if isinstance(language_detection_status, str) else "unavailable",
+        "language_code": None,
+        "language_name": None,
+        "language_source": None,
+        "language_model_id": None,
+        "language_model_revision": None,
+        "language_confidence": None,
+        "language_detection_outcome": language_detection_status if isinstance(language_detection_status, str) else "unavailable",
+    }
     for index, item in enumerate(items):
+        if not isinstance(item, Mapping):
+            malformed_inputs = True
+            continue
         raw = item.get("text", "")
-        original = str(raw or "").strip()
+        if not isinstance(raw, str):
+            malformed_inputs = True
+            continue
+        original = raw.strip()
         normalized = _clean(original)
         if not normalized or len(normalized) < 5:
             continue
+        start, end = item.get("start"), item.get("end")
+        if start is not None or end is not None:
+            if (isinstance(start, bool) or not isinstance(start, int) or isinstance(end, bool)
+                    or not isinstance(end, int) or start < 0 or end <= start
+                    or (source_text is not None and (end > len(source_text) or source_text[start:end] != original))):
+                malformed_inputs = True
+                continue
         key = " ".join(normalized.casefold().split())
         if key in found:
             continue
@@ -201,13 +319,14 @@ def extract_claims(
         claim_warnings = []
         if ocr_confidence is not None and ocr_confidence < 0.5:
             claim_warnings.append("OCR confidence is low; verify the recognized wording.")
-        if language == "unknown" or language_detection_status != "success":
+        claim_language = provenance["language"]
+        claim_language_status = provenance["language_detection_status"]
+        if claim_language == "unknown" or claim_language_status != "success":
             claim_warnings.append("Original language could not be identified confidently.")
-        start, end = item.get("start"), item.get("end")
         region_refs = []
         matched_regions = []
         if start is not None and end is not None:
-            for region in source_regions or []:
+            for region in valid_regions:
                 if region.get("text_start") is not None and region.get("text_end") is not None and region["text_start"] < end and region["text_end"] > start:
                     ref = region.get("region_id") or region.get("id")
                     if ref:
@@ -218,18 +337,27 @@ def extract_claims(
             claim_id=claim_id, claim_type=legacy_type, classification=classification, confidence=confidence,
             entities=_entities(normalized), dates=_extract_dates(normalized),
             locations=_extract_locations(normalized), numbers=list(dict.fromkeys(_NUMBER.findall(normalized))),
-            language=language, source_text_reference=f"ocr_sentence_{index}",
+            language=claim_language, source_text_reference=f"ocr_sentence_{index}",
             verification_eligibility=eligibility, eligibility_reason=reason,
             ocr_confidence=ocr_confidence, warnings=claim_warnings,
             source_start=start, source_end=end, source_region_refs=region_refs,
             source_regions=matched_regions,
-            language_detection_status=language_detection_status,
+            language_detection_status=claim_language_status,
+            language_code=provenance["language_code"],
+            language_name=provenance["language_name"],
+            language_source=provenance["language_source"],
+            language_model_id=provenance["language_model_id"],
+            language_model_revision=provenance["language_model_revision"],
+            language_confidence=provenance["language_confidence"],
+            language_detection_outcome=provenance["language_detection_outcome"],
         )
     claims = list(found.values())[:max(0, max_claims)]
     if not claims:
         warnings.append("No candidate statements were identified in the OCR text.")
     if len(found) > max_claims:
         warnings.append(f"Candidate list capped at {max_claims} claims.")
+    if malformed_inputs:
+        warnings.append("Malformed sentence spans or OCR region references were ignored.")
     result = ClaimExtractionResult(claims=claims, total_claims=len(claims),
         runtime_ms=int((time.perf_counter() - started) * 1000), method=EXTRACTION_METHOD, warnings=warnings)
     log.info("Claims extracted: %d candidates [%d ms]", len(claims), result.runtime_ms)

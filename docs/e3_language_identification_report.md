@@ -29,7 +29,7 @@ A real service probe on a sufficiently long English sentence returned `status=un
 
 `docs/e2_ocr_completion_report.md` now records the app's explicit model-storage directory, the detector/recognition weight distinction, and the EasyOCR 1.7.2 selection logic for `en,hi` and `hi`. It also states that the historical E2 smoke output did not record the resolved recognition pathname, so actual historical file consumption cannot be independently confirmed.
 
-## Validation
+## Prior implementation validation (historical)
 
 Mocked classifier tests cover confident English, Hindi and French, unsupported labels, empty/whitespace/short/noisy/numeric input, low confidence, absent weights/dependency, initialization and inference failure, malformed/non-finite output, bounded input, score range, concurrent use, safe serialization, and old payload fields. API integration tests verify unchanged OCR text, stage outcome/status mapping, report serialization, and continued image/text stages when the language model is unavailable.
 
@@ -43,6 +43,30 @@ Final validation:
 - Real local model probe: `python -c "import json; from backend.app.config import settings; from backend.app.services.nlp.language_detector import LanguageDetector; from pathlib import Path; p=Path(settings.MODEL_CACHE_DIR)/'models--papluca--xlm-roberta-base-language-detection'; print(json.dumps({'configured_cache':settings.MODEL_CACHE_DIR,'checkpoint_cache_exists':p.exists(),'checkpoint_snapshots':sorted(x.name for x in (p/'snapshots').glob('*')) if (p/'snapshots').exists() else []},ensure_ascii=True)); print(json.dumps(LanguageDetector().detect('This is a sufficiently long English sentence for local language identification.').to_dict(),ensure_ascii=True))"` — exit **0** as a probe; checkpoint cache absent, prediction result **unavailable**. This is not counted as real inference.
 - Frontend `npm run build` — exit **1** on the existing TypeScript issues in `src/lib/pipelineProgress.test.ts` (missing `vitest` and `shared/india_regions.json`, plus implicit `any`) and `src/lib/pipelineProgress.ts` (missing `AnalysisReport` export). These are the same pre-existing issues recorded in the E1 report; those files were not changed in E3.
 
-## Limits and stop boundary
+## Initial stop boundary before provisioning (historical)
 
 Runtime availability is blocked until the approved PAPLUCA classifier files are provisioned locally and a revision is pinned and verified. Confidence is not calibrated. The model emits one document-level class and does not identify multiple languages by sentence or OCR region. Short/noisy OCR text abstains. The frontend build has the pre-existing errors listed above. E4 claim-extraction algorithm changes and E5 fact-check/API work were not started; no later milestone was started. No commit or push was made.
+
+## Initial cache audit before authorized provisioning (2026-11-22)
+
+The current task began on branch `fix/truthlens-remediation`, HEAD `1ba0d92159f4261e750b1069823f378c2c7bcdb7`. The initial worktree already contained the three E2 documentation modifications (`docs/MODULE_STATUS_REGISTER.md`, `docs/PROJECT_ROADMAP.md`, and `docs/e2_ocr_completion_report.md`); those were preserved and extended. No E3 service, orchestrator, report-builder, or frontend implementation code was changed. No models or datasets were downloaded, and protected partitions were not accessed.
+
+Only the requested PAPLUCA cache directory was checked: `models/cache/models--papluca--xlm-roberta-base-language-detection`. It is absent, including its `snapshots` directory. No local config, tokenizer files, weights, revision, or exact `id2label`/`label2id` mapping are available. Installed versions are PyTorch `2.7.1+cu118`, Transformers `4.57.6`, Tokenizers `0.22.2`, Hugging Face Hub `0.36.0`, and Safetensors `0.7.0`. The detector requests local-only loading (`local_files_only=True`) for both tokenizer and model. English and sufficiently long Hindi availability probes both returned `unavailable/unavailable`, null language/confidence/revision, and the safe generic warning. These are availability checks, not model inference. No real English or Hindi prediction was produced.
+
+Code audit confirms the optional `language_identification` stage is called after text normalization, uses the E1 stage runner with the configured 30-second timeout, and serializes under `report.language_identification`. The unavailable-model API test verifies later image/text stages continue. Source inspection shows only a successful prediction is passed to claim language metadata or fact-check language filtering; the language result is not passed to authenticity scoring or `fuse_evidence`. The frontend handles optional results and displays unavailable, insufficient-input, and undetermined states. The default language is `unknown`, not English.
+
+The current focused E3/E1/E2/E4-E5/E11 command (including the newly added malformed-label mapping and language-stage timeout tests) exited **0: 124 passed, 0 failed, 2 skipped** in 10.67 seconds. The two skips are the opt-in OCR runtime cases. The safe backend command with the six protected file exclusions exited **0: 359 passed, 0 failed, 12 skipped, 6 warnings** in 21.90 seconds. The warnings were Python 3.12 `aiosqlite` datetime-adapter deprecations. Compilation exited 0 for the service, orchestrator, report builder, config, and focused language tests. `git diff --check` exited 0.
+
+At this initial audit, the exact local checkpoint directory was absent; this snapshot predates the authorized provisioning recorded below.
+
+## PAPLUCA provisioning and real-runtime completion (2026-11-22)
+
+The official repository `papluca/xlm-roberta-base-language-detection` was pinned to commit `9865598389ca9d95637462f743f683b51d75b87b`. The model card identifies an MIT-licensed XLM-RoBERTa sequence classifier for 20 language codes. Only the six required local inference assets were provisioned into `models/cache/models--papluca--xlm-roberta-base-language-detection`; file sizes and SHA-256 values are in `docs/e3_model_verification.md`. The official checkpoint's local config was verified, including the exact `id2label` and inverse `label2id`; no class order was assumed.
+
+Offline loading succeeded with network disabled, `XLMRobertaForSequenceClassification`, and `XLMRobertaTokenizerFast`. Actual service inference succeeded for independently authored English and Hindi sentences at revision `9865598389ca9d95637462f743f683b51d75b87b`: English `en` / English, maximum softmax 0.974530; Hindi `hi` / Hindi, 0.994774. These are runtime examples, not accuracy evaluation; confidence is uncalibrated.
+
+Empty/whitespace, short input, real ambiguous input, missing-checkpoint behavior, invalid mapping, and low-confidence abstention were verified. Missing checkpoint remains `unavailable` with no language code, so English is not a silent default. The E1 timeout contract and optional pipeline continuation remain covered. Only successful E3 output is used for claim metadata/provider language filtering; E3 does not enter authenticity scoring or fusion.
+
+Final regression: focused E3/E1/E2/E4-E5/E11 selection **124 passed, 0 failed, 2 skipped**; safe backend suite **359 passed, 0 failed, 12 skipped, 6 warnings**. Compilation and `git diff --check` passed. No production model/authenticity/fusion code was changed and no commit or push was made.
+
+Current E3 status is **COMPLETE AND VERIFIED** for the requested integration/runtime scope. Limits remain: document-level language only, uncalibrated softmax scores, and no population-level language-identification accuracy claim. See `docs/e3_model_verification.md` for the full pinned model evidence.

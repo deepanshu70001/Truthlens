@@ -149,6 +149,9 @@ def test_missing_weights_are_unavailable_and_not_retried(monkeypatch):
     first = detector.detect(ENGLISH)
     second = detector.detect(ENGLISH)
     assert first.status == second.status == "unavailable"
+    assert first.detected_language == "unknown"
+    assert first.to_dict()["language_code"] is None
+    assert first.confidence is None
     assert len(calls) == 1
     assert calls[0]["local_files_only"] is True
     assert "private local path" not in str(first.to_dict())
@@ -203,6 +206,38 @@ def test_local_loader_uses_local_files_only_and_model_label_mapping(monkeypatch)
     result = LanguageDetector().detect(ENGLISH)
     assert result.detected_language == "en"
     assert len(calls) == 2 and all(call["local_files_only"] is True for call in calls)
+
+
+@pytest.mark.parametrize("mapping", [None, {}, {"bad-index": "en"}, {0: ""}, {0: None}])
+def test_invalid_checkpoint_label_mappings_are_rejected(mapping):
+    with pytest.raises(ValueError):
+        LanguageDetector._validate_label_mapping(mapping)
+
+
+@pytest.mark.asyncio
+async def test_language_identification_timeout_maps_to_e1_failed_status():
+    from backend.app.services.orchestrator import _run_stage
+
+    class DB:
+        async def commit(self): pass
+        async def rollback(self): pass
+        def add(self, _event): pass
+
+    analysis = SimpleNamespace(id="language-timeout", current_step=None, completed_steps="[]")
+    stages = {}
+    result = await _run_stage(
+        "language_identification",
+        lambda: time.sleep(.05),
+        analysis,
+        DB(),
+        stages,
+        required=False,
+        timeout_seconds=.001,
+    )
+    assert result is None
+    assert stages["language_identification"].status == "failed"
+    assert stages["language_identification"].outcome is None
+    assert stages["language_identification"].error_category == "STAGE_TIMEOUT"
 
 
 def test_inference_exception_is_failed_with_safe_message():

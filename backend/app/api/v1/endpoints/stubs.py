@@ -13,7 +13,7 @@ import asyncio
 from typing import Annotated, List, Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
-from pydantic import BaseModel, Field, StringConstraints
+from pydantic import BaseModel, Field, StringConstraints, field_validator
 
 from backend.app.config import settings
 from backend.app.core.auth import Principal, get_current_principal
@@ -25,6 +25,17 @@ router = APIRouter()
 class FactCheckRequest(BaseModel):
     claims: List[Annotated[str, StringConstraints(strip_whitespace=True, min_length=5, max_length=2000)]] = Field(..., min_length=1, max_length=20)
     language_code: Optional[str] = Field(None, min_length=2, max_length=5, pattern=r"^[a-z]{2,3}(-[A-Z]{2})?$")
+
+    @field_validator("language_code")
+    @classmethod
+    def language_code_must_be_supported(cls, value):
+        if value is None:
+            return value
+        from backend.app.services.nlp.language_detector import LANGUAGE_NAMES
+
+        if value not in LANGUAGE_NAMES:
+            raise ValueError("Unsupported fact-check language code.")
+        return value
 
 
 class FactCheckResponse(BaseModel):
@@ -81,15 +92,94 @@ async def factcheck_endpoint(
     http_request: Request,
     principal: Principal = Depends(get_current_principal),
 ):
-    from backend.app.services.factcheck.service import search_fact_checks
+    from backend.app.services.claims.extractor import extract_claims
+    from backend.app.services.factcheck.service import FactCheckResult, search_fact_checks
 
     await check_rate_limit(
         http_request, scope="fact-check", limit=settings.RATE_LIMIT_FACTCHECK_PER_MINUTE,
         principal=principal,
     )
-    result = await asyncio.to_thread(
-        search_fact_checks, request.claims, language_code=request.language_code,
-    )
+    prepared = []
+    eligible = []
+    for request_index, raw_claim in enumerate(request.claims):
+        # Treat each API list entry as one claim, even if it contains periods;
+        # this avoids silently checking only the first sentence of user input.
+        extraction = extract_claims([raw_claim], max_claims=1)
+        claim = extraction.claims[0] if extraction.claims else None
+        if claim is None:
+            prepared.append({
+                "request_index": request_index,
+                "original_claim": raw_claim,
+                "normalized_claim": " ".join(raw_claim.split()),
+                "verification_status": "SKIPPED",
+                "verdict": "UNVERIFIABLE",
+                "eligibility_status": "INELIGIBLE",
+                "eligibility_reason": "No usable claim text was produced.",
+                "confidence": None,
+            })
+            continue
+        entry = {"request_index": request_index, "claim": claim}
+        prepared.append(entry)
+        if claim.verification_eligibility == "ELIGIBLE":
+            eligible.append(entry)
+        else:
+            entry["ineligible_result"] = {
+                "request_index": request_index,
+                "claim_id": claim.claim_id,
+                "original_claim": claim.original_text,
+                "normalized_claim": claim.normalized_text,
+                "verification_status": "SKIPPED",
+                "verdict": "UNVERIFIABLE",
+                "eligibility_status": "INELIGIBLE",
+                "eligibility_reason": claim.eligibility_reason,
+                "confidence": None,
+                "limitations": ["No provider lookup was performed for this ineligible claim."],
+            }
+
+    if eligible:
+        result = await asyncio.to_thread(
+            search_fact_checks,
+            [entry["claim"].normalized_text for entry in eligible],
+            language_code=request.language_code,
+            claim_ids=[entry["claim"].claim_id for entry in eligible],
+        )
+    else:
+        result = FactCheckResult(
+            status="skipped",
+            warnings=["No eligible claims were submitted; the provider was not queried."],
+        )
+
+    by_claim_id = {
+        item.get("claim_id"): item
+        for item in result.claim_verifications
+        if isinstance(item, dict) and item.get("claim_id")
+    }
+    ordered_verifications = []
+    for entry in prepared:
+        if "ineligible_result" in entry:
+            ordered_verifications.append(entry["ineligible_result"])
+            continue
+        if "claim" not in entry:
+            ordered_verifications.append(entry)
+            continue
+        claim = entry["claim"]
+        verification = dict(by_claim_id.get(claim.claim_id, {
+            "claim_id": claim.claim_id,
+            "original_claim": claim.original_text,
+            "verdict": "INSUFFICIENT_EVIDENCE" if result.status == "no_results" else "RETRIEVAL_UNAVAILABLE",
+            "verification_status": "COMPLETED" if result.status == "no_results" else "UNAVAILABLE",
+            "confidence": None,
+        }))
+        verification.update({
+            "request_index": entry["request_index"],
+            "eligibility_status": "ELIGIBLE",
+            "eligibility_reason": claim.eligibility_reason,
+        })
+        ordered_verifications.append(verification)
+    result.claim_verifications = ordered_verifications
+    ineligible_count = sum("ineligible_result" in entry or "claim" not in entry for entry in prepared)
+    if ineligible_count:
+        result.warnings.append(f"{ineligible_count} ineligible claim(s) were skipped before provider submission.")
     return result.to_dict()
 
 

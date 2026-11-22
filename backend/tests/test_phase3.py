@@ -102,10 +102,18 @@ def test_factcheck_provider_normalizes_only_safe_real_review_links():
          "reviewDate": "2026-05-01", "textualRating": "False", "languageCode": "en"},
         {"publisher": {"name": "Unsafe"}, "url": "http://localhost/private", "textualRating": "True"},
     ]}]}
-    mock_response = type("Response", (), {"raise_for_status": lambda self: None, "json": lambda self: payload})()
+    import json
+    class MockResponse:
+        headers = {"content-length": str(len(json.dumps(payload).encode("utf-8")))}
+        def raise_for_status(self): pass
+        def iter_bytes(self):
+            yield json.dumps(payload).encode("utf-8")
+        def __enter__(self): return self
+        def __exit__(self, *args): return False
+    mock_response = MockResponse()
     mock_client = type("Client", (), {
         "__enter__": lambda self: self, "__exit__": lambda *args: False,
-        "get": lambda *args, **kwargs: mock_response,
+        "stream": lambda *args, **kwargs: mock_response,
     })()
     with patch("backend.app.services.factcheck.service.settings") as cfg:
         cfg.FACTCHECK_API_TIMEOUT_SECONDS = 3
