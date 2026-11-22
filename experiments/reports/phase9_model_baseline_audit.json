@@ -1,0 +1,161 @@
+{
+  "baseline_unchanged": true,
+  "input_manifest_and_config_sha256": {
+    "experiments/configs/phase7_config.yaml": "799119845e635153669c076a22fab05b3e7420a945db3f5050784b5b121b4674",
+    "experiments/manifests/frontier_benchmark_2026_10_evaluation_splits.csv": "e1ceea98df7eff7df4d0751fcf3dae578efe3cacf510fddc98478bf350d7645b",
+    "experiments/manifests/phase4_training_manifest.csv": "22ea2825c7ab75ef110c7a6e2a7c67e69459a3afd3ed6159adbcbed7abc168ed",
+    "experiments/manifests/tiny_genimage_evaluation_splits.csv": "5f63fdc456ae05a84b0df6d5478ccb840b7bc058587e0e832730b8a3111bd7ab",
+    "experiments/manifests/wildaigc_bench_evaluation_splits.csv": "3fde21466d12674425ec26758179c5ab4713768447691d1960458756208ff67c"
+  },
+  "models": {
+    "a1_siglip_no_aug_ablation": {
+      "checkpoint": "experiments/checkpoints/phase7/a1_siglip_no_aug_ablation/best_checkpoint.pt",
+      "checkpoint_identity_verified": true,
+      "checkpoint_sha256": "872b93ceff594fe6469bde42465ee1763656d65a3cf3a6c88efff1b6d4e8d02d",
+      "expected_checkpoint_sha256": "872b93ceff594fe6469bde42465ee1763656d65a3cf3a6c88efff1b6d4e8d02d",
+      "expected_head_sha256": "43cc6436a37608360f9211409c611cd4c1e19a39c6d54befecc2185f653496bd",
+      "head": "experiments/checkpoints/phase7/a1_siglip_no_aug_ablation/head.pt",
+      "head_identity_verified": true,
+      "head_sha256": "43cc6436a37608360f9211409c611cd4c1e19a39c6d54befecc2185f653496bd",
+      "model_id": "truthlens/siglip-base-v2-a1",
+      "parameter_counts": {
+        "frozen_params": 78708480,
+        "total_params": 92884993,
+        "trainable_params": 14176513
+      }
+    },
+    "production_baseline": {
+      "actual_sha256": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+      "checkpoint": "models/baselines/siglip_frozen_head.pt",
+      "expected_sha256": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+      "identity_verified": true,
+      "model_id": "truthlens/siglip-cifake-frozen-head",
+      "parameter_count": 769
+    },
+    "r1_resnet50_full_ft": {
+      "checkpoint": "experiments/checkpoints/phase7/r1_resnet50_full_ft/best_checkpoint.pt",
+      "checkpoint_identity_verified": true,
+      "checkpoint_sha256": "2887136affa6406e4f09a394f0ce6be7ff7ba874ada21a6ff8538d211859a9cb",
+      "expected_checkpoint_sha256": "2887136affa6406e4f09a394f0ce6be7ff7ba874ada21a6ff8538d211859a9cb",
+      "expected_head_sha256": "a241a20f68569b59ec604593d7614969b6f0c236b794ca2bb546f997332cee44",
+      "head": "experiments/checkpoints/phase7/r1_resnet50_full_ft/head.pt",
+      "head_identity_verified": true,
+      "head_sha256": "a241a20f68569b59ec604593d7614969b6f0c236b794ca2bb546f997332cee44",
+      "model_id": "truthlens/resnet50-v2-r1",
+      "parameter_counts": {
+        "frozen_params": 0,
+        "total_params": 23510081,
+        "trainable_params": 23510081
+      }
+    },
+    "r2_resnet50_last_stage": {
+      "checkpoint": "experiments/checkpoints/phase7/r2_resnet50_last_stage/best_checkpoint.pt",
+      "checkpoint_identity_verified": true,
+      "checkpoint_sha256": "b721cadc68e7b663adde68c1972475c468e3e34d25fab82d1c59da14222e2086",
+      "expected_checkpoint_sha256": "b721cadc68e7b663adde68c1972475c468e3e34d25fab82d1c59da14222e2086",
+      "expected_head_sha256": "99e24551af5e8f3747dd88914e334aaea1435133a0af92b2817638ce8c8df145",
+      "head": "experiments/checkpoints/phase7/r2_resnet50_last_stage/head.pt",
+      "head_identity_verified": true,
+      "head_sha256": "99e24551af5e8f3747dd88914e334aaea1435133a0af92b2817638ce8c8df145",
+      "model_id": "truthlens/resnet50-v2-r2",
+      "parameter_counts": {
+        "frozen_params": 8543296,
+        "total_params": 23510081,
+        "trainable_params": 14966785
+      }
+    },
+    "s1_siglip_linear_probe": {
+      "checkpoint": "experiments/checkpoints/phase7/s1_siglip_linear_probe/best_checkpoint.pt",
+      "checkpoint_identity_verified": true,
+      "checkpoint_sha256": "2554519107c8ad8de07805e55225e7d5a5ac8f9959aecb47815ac86f6fd92111",
+      "expected_checkpoint_sha256": "2554519107c8ad8de07805e55225e7d5a5ac8f9959aecb47815ac86f6fd92111",
+      "expected_head_sha256": "d7e936a3259f0e7f05a18a426300972870a1071b95b721118cfe779cae343c1e",
+      "head": "experiments/checkpoints/phase7/s1_siglip_linear_probe/head.pt",
+      "head_identity_verified": true,
+      "head_sha256": "d7e936a3259f0e7f05a18a426300972870a1071b95b721118cfe779cae343c1e",
+      "model_id": "truthlens/siglip-base-v2-s1",
+      "parameter_counts": {
+        "frozen_params": 92884224,
+        "total_params": 92884993,
+        "trainable_params": 769
+      }
+    },
+    "s2_siglip_partial_ft": {
+      "checkpoint": "experiments/checkpoints/phase7/s2_siglip_partial_ft/best_checkpoint.pt",
+      "checkpoint_identity_verified": true,
+      "checkpoint_sha256": "620e42f74bb7ae24fb1deeaedf24dbf9147162d3612c8f5171b64e53834f9805",
+      "expected_checkpoint_sha256": "620e42f74bb7ae24fb1deeaedf24dbf9147162d3612c8f5171b64e53834f9805",
+      "expected_head_sha256": "df8583ec51b51991723d6162ff59730abea96f5b5859186f63a63b91c1c9f33a",
+      "head": "experiments/checkpoints/phase7/s2_siglip_partial_ft/head.pt",
+      "head_identity_verified": true,
+      "head_sha256": "df8583ec51b51991723d6162ff59730abea96f5b5859186f63a63b91c1c9f33a",
+      "model_id": "truthlens/siglip-base-v2-s2",
+      "parameter_counts": {
+        "frozen_params": 78708480,
+        "total_params": 92884993,
+        "trainable_params": 14176513
+      }
+    }
+  },
+  "phase": 9,
+  "pretrained_backbones": {
+    "resnet50": {
+      "local_weights_verified": true,
+      "weights": "torchvision ResNet50_Weights.IMAGENET1K_V2",
+      "weights_sha256": "11ad3fa62ca79e40addfd354a8ec4b7c75143b3038b8d2a807fbc68deab379ca"
+    },
+    "siglip_base": {
+      "local_weights_verified": true,
+      "model_id": "google/siglip-base-patch16-224",
+      "revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+      "weights_sha256": "2c63cb7d1f2e95ba501893cbb8faeb4ea9a3af295498d35097126228659c2af8"
+    }
+  },
+  "production_baseline_model_id": "truthlens/siglip-cifake-frozen-head",
+  "protocol_constraints": {
+    "calibration_used_for_fitting": false,
+    "locked_test_images_or_predictions_accessed": false,
+    "training_count": 6995,
+    "training_features_only_from_approved_manifest": true,
+    "wild_aigc_contextual_label_caveat_retained": true
+  },
+  "repository_relative_paths_only": true,
+  "research_candidates_deployed": false,
+  "runtime_and_hardware": {
+    "cuda_available": true,
+    "device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "python": "3.12.10",
+    "seed": 42,
+    "torch": "2.7.1+cu118"
+  },
+  "selected_candidate_identity": {
+    "backbone_architecture": "google/siglip-base-patch16-224",
+    "backbone_revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+    "backbone_type": "siglip",
+    "best_epoch": 4,
+    "checkpoint_path": "experiments/checkpoints/phase7/s2_siglip_partial_ft/best_checkpoint.pt",
+    "checkpoint_sha256": "620e42f74bb7ae24fb1deeaedf24dbf9147162d3612c8f5171b64e53834f9805",
+    "composite_validation_score": 0.6722,
+    "experiment_name": "s2_siglip_partial_ft",
+    "frontier_val_balanced_accuracy": 0.5169,
+    "frontier_val_roc_auc": 0.4769,
+    "head_path": "experiments/checkpoints/phase7/s2_siglip_partial_ft/head.pt",
+    "head_sha256": "df8583ec51b51991723d6162ff59730abea96f5b5859186f63a63b91c1c9f33a",
+    "model_id": "truthlens/siglip-base-v2-s2",
+    "parameter_counts": {
+      "frozen_params": 78708480,
+      "total_params": 92884993,
+      "trainable_params": 14176513
+    },
+    "robustness_probes": {
+      "blur_flip_rate_pct": 32.0,
+      "jpeg50_flip_rate_pct": 17.0,
+      "jpeg75_flip_rate_pct": 13.0,
+      "jpeg90_flip_rate_pct": 11.0,
+      "jpeg90_mean_logit_shift": 0.793
+    },
+    "selection_reason": "Highest composite validation score (0.6722) among all shortcut-resistant models according to pre-registered validation selection rule.",
+    "tiny_val_balanced_accuracy": 0.8275,
+    "tiny_val_roc_auc": 0.9276
+  }
+}

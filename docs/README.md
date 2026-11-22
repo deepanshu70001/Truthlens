@@ -32,7 +32,7 @@ Specifications detailing how heuristic content indicators, forensics, and review
 
 ---
 
-## 3. Evaluation & Remediation Research Reports (Phases 2–7)
+## 3. Evaluation & Remediation Research Reports (Phases 2–9)
 
 Chronological scientific research and audit reports detailing dataset governance, benchmark evaluations, shortcut discovery, and matched augmentation experiments:
 
@@ -58,6 +58,13 @@ Chronological scientific research and audit reports detailing dataset governance
 ### Phase 8 & 8.1: Full Research Reproducibility & Audit Reconciliation
 - [phase8_reproducibility_audit.md](phase8_reproducibility_audit.md) — Comprehensive verification of Phases 0–7, 100% numerical metric reproduction, data leakage audits, checkpoint integrity verification, and Phase 9 readiness recommendation.
 - [phase8_1_audit_reconciliation_amendment.md](phase8_1_audit_reconciliation_amendment.md) — Authoritative resolution of metric conventions (Average Precision vs Trapezoidal PR-AUC), MCC verification, group bootstrap reconciliation, and R1/R2 locked-test access audit.
+
+### Phase 9: Cross-Generator and Forensic Feature Research
+- [phase9_generator_analysis.md](phase9_generator_analysis.md) — Validation-only generator/source error analysis, group-aware confidence intervals, acquisition metadata, and failure cases.
+- [phase9_feature_space_report.md](phase9_feature_space_report.md) — Frozen SigLIP and ResNet feature diagnostics, grouped linear probes, PCA plots, and projection limitations.
+- [phase9_forensic_feature_report.md](phase9_forensic_feature_report.md) — Deterministic frequency-feature extraction, grouped CV, ablations, and JPEG/resize stability checks.
+- [phase9_research_findings.md](phase9_research_findings.md) — Evidence-based conclusions and the scoped Phase 10 hypothesis.
+- [phase10_experiment_protocol_draft.md](phase10_experiment_protocol_draft.md) — Pre-registration draft; no Phase 10 training has started.
 
 ---
 

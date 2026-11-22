@@ -1,0 +1,38 @@
+{
+  "cached_analysis_refresh_runtime_seconds": 127.81824359999882,
+  "config_sha256": "d3e1042c826958ea0990023b5444274ab8f46730b533c811ada21be95dc1f882",
+  "encoder_runtime": {
+    "resnet50": {
+      "feature_dimensions": 2048,
+      "peak_vram_mb": 293.0546875,
+      "runtime_seconds": 129.78273700000136
+    },
+    "siglip": {
+      "feature_dimensions": 768,
+      "peak_vram_mb": 708.9228515625,
+      "runtime_seconds": 190.84820699999545
+    }
+  },
+  "feature_extraction_runtime_seconds": {
+    "encoders": {
+      "resnet50": 129.78273700000136,
+      "siglip": 190.84820699999545
+    },
+    "frequency": 179.2
+  },
+  "feature_vector_archive_sha256": "a1b9d3530f9555ba4b67cc4a5d2b3793ebac7804bb150eb0a2856da4efb00ed9",
+  "full_end_to_end_first_pass_wall_seconds": 658.4535765,
+  "manifest_sha256": {
+    "experiments/configs/phase7_config.yaml": "799119845e635153669c076a22fab05b3e7420a945db3f5050784b5b121b4674",
+    "experiments/manifests/frontier_benchmark_2026_10_evaluation_splits.csv": "e1ceea98df7eff7df4d0751fcf3dae578efe3cacf510fddc98478bf350d7645b",
+    "experiments/manifests/phase4_training_manifest.csv": "22ea2825c7ab75ef110c7a6e2a7c67e69459a3afd3ed6159adbcbed7abc168ed",
+    "experiments/manifests/tiny_genimage_evaluation_splits.csv": "5f63fdc456ae05a84b0df6d5478ccb840b7bc058587e0e832730b8a3111bd7ab",
+    "experiments/manifests/wildaigc_bench_evaluation_splits.csv": "3fde21466d12674425ec26758179c5ab4713768447691d1960458756208ff67c"
+  },
+  "max_peak_vram_mb": 708.9228515625,
+  "probe_runtime_seconds": {
+    "grouped_training_cv_and_univariate_ablation": 55.14475790000142,
+    "validation_diagnostics": 24.85672209999757
+  },
+  "seed": 42
+}

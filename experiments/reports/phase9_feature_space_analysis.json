@@ -1,0 +1,360 @@
+{
+  "projection_warning": "PCA/UMAP compress high-dimensional variation and may distort distances, density, overlap, and cluster geometry. Projections are descriptive only and not evidence of separability or causality.",
+  "resnet50": {
+    "feature_dimensions": 2048,
+    "generator_centroid_distance_from_training_ai": {
+      "ADM": {
+        "centroid_distance_from_training_ai": 0.8870863914489746,
+        "sample_count": 502
+      },
+      "BigGAN": {
+        "centroid_distance_from_training_ai": 2.165236234664917,
+        "sample_count": 482
+      },
+      "GLIDE": {
+        "centroid_distance_from_training_ai": 0.49935826659202576,
+        "sample_count": 2000
+      },
+      "Stable Diffusion v1.5": {
+        "centroid_distance_from_training_ai": 1.1274665594100952,
+        "sample_count": 496
+      }
+    },
+    "pca_explained_variance_ratio": [
+      0.03252359479665756,
+      0.020849307999014854
+    ],
+    "training_class_centroids": {
+      "ai_generated": {
+        "centroid_norm": 2.968956232070923,
+        "sample_count": 3480,
+        "within_class_mean_euclidean_distance": 9.792932510375977,
+        "within_class_variance_trace": 101.18292236328125
+      },
+      "authentic": {
+        "centroid_norm": 2.939988851547241,
+        "sample_count": 3515,
+        "within_class_mean_euclidean_distance": 9.615458488464355,
+        "within_class_variance_trace": 98.42881774902344
+      }
+    },
+    "training_class_distance": {
+      "class_centroid_euclidean_distance": 1.2820537090301514,
+      "within_to_between_ratio": 60.72166061401367
+    },
+    "umap": {
+      "available": false,
+      "reason": "umap-learn is not installed"
+    },
+    "valid_frequency_feature_count": 13431,
+    "validation_generator_centroid_distance_from_training_ai": {
+      "frontier_benchmark_2026_10::alibaba/qwen-image-3": {
+        "centroid_distance_from_training_ai": 9.174604415893555,
+        "sample_count": 8,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::blackforestlabs/flux-3": {
+        "centroid_distance_from_training_ai": 20.018808364868164,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::bytedance/seedream/v5/pro": {
+        "centroid_distance_from_training_ai": 13.356759071350098,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::flux-2": {
+        "centroid_distance_from_training_ai": 15.239431381225586,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::flux-2-pro": {
+        "centroid_distance_from_training_ai": 12.249162673950195,
+        "sample_count": 8,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::google/nano-banana-2.1": {
+        "centroid_distance_from_training_ai": 8.879412651062012,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::hidream-o1-image": {
+        "centroid_distance_from_training_ai": 10.7907133102417,
+        "sample_count": 8,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::ideogram/v4.5": {
+        "centroid_distance_from_training_ai": 11.620037078857422,
+        "sample_count": 8,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::kling-image/v3": {
+        "centroid_distance_from_training_ai": 11.488160133361816,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::krea-2/turbo": {
+        "centroid_distance_from_training_ai": 10.288287162780762,
+        "sample_count": 8,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::luma/agent/uni-1/v1": {
+        "centroid_distance_from_training_ai": 16.739076614379883,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::meta/muse-image": {
+        "centroid_distance_from_training_ai": 12.583451271057129,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::microsoft/mai-image-2.5": {
+        "centroid_distance_from_training_ai": 17.03751564025879,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::nano-banana-pro": {
+        "centroid_distance_from_training_ai": 12.99964427947998,
+        "sample_count": 8,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::openai/gpt-image-2": {
+        "centroid_distance_from_training_ai": 11.048442840576172,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::qwen-image-2512": {
+        "centroid_distance_from_training_ai": 10.51397705078125,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::recraft/v4.1": {
+        "centroid_distance_from_training_ai": 10.055970191955566,
+        "sample_count": 8,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::xai/grok-imagine-image/v2.0": {
+        "centroid_distance_from_training_ai": 12.745753288269043,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::z-image/turbo": {
+        "centroid_distance_from_training_ai": 9.855621337890625,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "tiny_genimage::ADM": {
+        "centroid_distance_from_training_ai": 0.9737444519996643,
+        "sample_count": 498,
+        "small_sample_caveat": false
+      },
+      "tiny_genimage::BigGAN": {
+        "centroid_distance_from_training_ai": 2.155219078063965,
+        "sample_count": 515,
+        "small_sample_caveat": false
+      },
+      "tiny_genimage::Midjourney": {
+        "centroid_distance_from_training_ai": 1.0727218389511108,
+        "sample_count": 513,
+        "small_sample_caveat": false
+      },
+      "tiny_genimage::Stable Diffusion v1.5": {
+        "centroid_distance_from_training_ai": 1.217361330986023,
+        "sample_count": 481,
+        "small_sample_caveat": false
+      },
+      "tiny_genimage::Wukong": {
+        "centroid_distance_from_training_ai": 1.230696439743042,
+        "sample_count": 541,
+        "small_sample_caveat": false
+      },
+      "wildaigc_bench::Wild-AI-Generated": {
+        "centroid_distance_from_training_ai": 5.17939567565918,
+        "sample_count": 118,
+        "small_sample_caveat": false
+      }
+    }
+  },
+  "sample_counts": {
+    "approved_training": 6995,
+    "frontier_benchmark_2026_10": 297,
+    "tiny_genimage": 5958,
+    "wildaigc_bench": 181
+  },
+  "siglip": {
+    "feature_dimensions": 768,
+    "generator_centroid_distance_from_training_ai": {
+      "ADM": {
+        "centroid_distance_from_training_ai": 2.6397621631622314,
+        "sample_count": 502
+      },
+      "BigGAN": {
+        "centroid_distance_from_training_ai": 2.46444034576416,
+        "sample_count": 482
+      },
+      "GLIDE": {
+        "centroid_distance_from_training_ai": 1.0393098592758179,
+        "sample_count": 2000
+      },
+      "Stable Diffusion v1.5": {
+        "centroid_distance_from_training_ai": 2.7312896251678467,
+        "sample_count": 496
+      }
+    },
+    "pca_explained_variance_ratio": [
+      0.07171716541051865,
+      0.04232364147901535
+    ],
+    "training_class_centroids": {
+      "ai_generated": {
+        "centroid_norm": 11.809710502624512,
+        "sample_count": 3480,
+        "within_class_mean_euclidean_distance": 10.460721969604492,
+        "within_class_variance_trace": 110.0412826538086
+      },
+      "authentic": {
+        "centroid_norm": 11.037583351135254,
+        "sample_count": 3515,
+        "within_class_mean_euclidean_distance": 11.191390991210938,
+        "within_class_variance_trace": 125.99657440185547
+      }
+    },
+    "training_class_distance": {
+      "class_centroid_euclidean_distance": 3.1542301177978516,
+      "within_to_between_ratio": 11.862191200256348
+    },
+    "umap": {
+      "available": false,
+      "reason": "umap-learn is not installed"
+    },
+    "valid_frequency_feature_count": 13431,
+    "validation_generator_centroid_distance_from_training_ai": {
+      "frontier_benchmark_2026_10::alibaba/qwen-image-3": {
+        "centroid_distance_from_training_ai": 9.578112602233887,
+        "sample_count": 8,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::blackforestlabs/flux-3": {
+        "centroid_distance_from_training_ai": 12.140902519226074,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::bytedance/seedream/v5/pro": {
+        "centroid_distance_from_training_ai": 12.523428916931152,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::flux-2": {
+        "centroid_distance_from_training_ai": 11.951632499694824,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::flux-2-pro": {
+        "centroid_distance_from_training_ai": 8.471966743469238,
+        "sample_count": 8,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::google/nano-banana-2.1": {
+        "centroid_distance_from_training_ai": 10.54328727722168,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::hidream-o1-image": {
+        "centroid_distance_from_training_ai": 8.263949394226074,
+        "sample_count": 8,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::ideogram/v4.5": {
+        "centroid_distance_from_training_ai": 9.003371238708496,
+        "sample_count": 8,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::kling-image/v3": {
+        "centroid_distance_from_training_ai": 12.066539764404297,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::krea-2/turbo": {
+        "centroid_distance_from_training_ai": 9.272505760192871,
+        "sample_count": 8,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::luma/agent/uni-1/v1": {
+        "centroid_distance_from_training_ai": 13.117914199829102,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::meta/muse-image": {
+        "centroid_distance_from_training_ai": 12.638897895812988,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::microsoft/mai-image-2.5": {
+        "centroid_distance_from_training_ai": 12.250199317932129,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::nano-banana-pro": {
+        "centroid_distance_from_training_ai": 8.626367568969727,
+        "sample_count": 8,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::openai/gpt-image-2": {
+        "centroid_distance_from_training_ai": 13.335959434509277,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::qwen-image-2512": {
+        "centroid_distance_from_training_ai": 11.264822959899902,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::recraft/v4.1": {
+        "centroid_distance_from_training_ai": 8.941224098205566,
+        "sample_count": 8,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::xai/grok-imagine-image/v2.0": {
+        "centroid_distance_from_training_ai": 12.902987480163574,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "frontier_benchmark_2026_10::z-image/turbo": {
+        "centroid_distance_from_training_ai": 11.553086280822754,
+        "sample_count": 4,
+        "small_sample_caveat": true
+      },
+      "tiny_genimage::ADM": {
+        "centroid_distance_from_training_ai": 2.696706533432007,
+        "sample_count": 498,
+        "small_sample_caveat": false
+      },
+      "tiny_genimage::BigGAN": {
+        "centroid_distance_from_training_ai": 2.5659496784210205,
+        "sample_count": 515,
+        "small_sample_caveat": false
+      },
+      "tiny_genimage::Midjourney": {
+        "centroid_distance_from_training_ai": 2.990109920501709,
+        "sample_count": 513,
+        "small_sample_caveat": false
+      },
+      "tiny_genimage::Stable Diffusion v1.5": {
+        "centroid_distance_from_training_ai": 2.8358752727508545,
+        "sample_count": 481,
+        "small_sample_caveat": false
+      },
+      "tiny_genimage::Wukong": {
+        "centroid_distance_from_training_ai": 2.8499069213867188,
+        "sample_count": 541,
+        "small_sample_caveat": false
+      },
+      "wildaigc_bench::Wild-AI-Generated": {
+        "centroid_distance_from_training_ai": 5.581210613250732,
+        "sample_count": 118,
+        "small_sample_caveat": false
+      }
+    }
+  },
+  "transform_contract": "Pillow decode; RGB conversion; shorter-side Resize(224) with bilinear; CenterCrop(224); SigLIP or ImageNet ResNet normalization per Phase 7; deterministic eval mode."
+}

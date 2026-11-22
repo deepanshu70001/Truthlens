@@ -1,6 +1,6 @@
 # TruthLens Experiments & Evaluation Infrastructure
 
-This directory contains the reproducible experimental pipelines, dataset split manifests, training scripts, post-hoc calibration utilities, and evaluation reports across TruthLens Phases 0 through 8.
+This directory contains the reproducible experimental pipelines, dataset split manifests, training scripts, post-hoc calibration utilities, and evaluation reports across TruthLens Phases 0 through 9.
 
 ---
 
@@ -77,3 +77,17 @@ TruthLens enforces strict pre-registered governance:
 - Candidate models may replace the production baseline only if they achieve statistically significant improvement or non-inferiority across all held-out benchmarks without negative transfer.
 - In Phase 7 evaluations, while Candidate S2 (`truthlens/siglip-base-v2-s2`) achieved a 0.9423 ROC-AUC on Tiny-GenImage (+0.3300 gain), it suffered negative transfer on late-2026 generators on the Frontier Benchmark (ROC-AUC 0.4234 vs. baseline 0.6501, $\Delta = -0.2267$, 95% CI: $[-0.2781, -0.1720]$).
 - In accordance with pre-registered safety rules, Candidate S2 was rejected for production, and the production detector retains the frozen baseline (`truthlens/siglip-cifake-frozen-head`, SHA-256: `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`).
+
+## 5. Phase 9: Cross-Generator and Forensic Feature Diagnostics
+
+Run from the repository root after installing the backend research dependencies and ensuring the approved local datasets and pinned pretrained weights are already available:
+
+```powershell
+python experiments/analyze_phase9.py
+python experiments/analyze_phase9_candidate_validation.py
+python experiments/analyze_phase9_baseline_validation.py
+```
+
+The first runner verifies baseline and Phase 7 checkpoint hashes, then uses only the approved 6,995-sample training role and validation roles (Tiny-GenImage 5,958; Frontier 297; WildAIGC 181). The next two scripts evaluate existing Phase 7 candidate checkpoints and the production frozen head on those same validation roles. They do no training or model selection. None of the Phase 9 scripts opens calibration or locked test images. Feature vectors are cached in `experiments/reports/phase9_feature_vectors.npz`; the archive is reused only when sample identities and dimensions match.
+
+Outputs include the machine-readable reports `phase9_model_baseline_audit.json`, `phase9_generator_error_analysis.json`, `phase9_candidate_validation_errors.json`, `phase9_feature_space_analysis.json`, `phase9_frequency_feature_analysis.json`, `phase9_feature_complementarity.json`, group/source failure cases, the univariate ablation CSV, and PCA figures. The forensic extractor has focused edge-case tests at `experiments/forensics/test_phase9_frequency_features.py`. The Phase 10 document is a draft protocol; these scripts do not train a detector or alter production.
