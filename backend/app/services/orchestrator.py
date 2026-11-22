@@ -125,6 +125,23 @@ def _record_skipped_stage(stage_results: Dict[str, StageResult], name: str, reas
     stage_results[name] = stage
 
 
+def _record_unavailable_stage(stage_results: Dict[str, StageResult], name: str, reason: str, analysis_id: str) -> None:
+    stage = StageResult(name)
+    stage.stage_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"truthlens:{analysis_id}:{name}"))
+    stage.correlation_id = analysis_id
+    stage.status = "unavailable"
+    stage.outcome = "unavailable"
+    stage.error_category = "OPTIONAL_DEPENDENCY_OR_MODEL_UNAVAILABLE"
+    stage.error = "The optional stage could not run because a required model or resource was unavailable."
+    stage.error_message = stage.error
+    stage.warnings = [_safe_message(reason)]
+    now = datetime.now(timezone.utc).isoformat()
+    stage.started_at = now
+    stage.completed_at = now
+    stage.output_reference = _output_reference(name)
+    stage_results[name] = stage
+
+
 async def _run_stage(
     stage_name: str,
     func,
@@ -252,7 +269,11 @@ async def _run_stage(
 def _module_identity(result: Any) -> Optional[Dict[str, Any]]:
     if result is None:
         return None
-    keys = ("model_name", "model_version", "model_id", "provider", "engine", "model_revision", "method", "method_version")
+    keys = (
+        "model_name", "model_version", "model_id", "model_sha256", "provider",
+        "engine", "model_revision", "implementation", "implementation_version",
+        "method", "method_version",
+    )
     identity = {
         key: _safe_message(getattr(result, key))
         for key in keys if getattr(result, key, None) is not None
@@ -518,7 +539,10 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
             lambda: analyze_forensics(image_data, image_format, analysis_id=analysis_id),
             analysis, db, stage_results,
             required=False,
+            timeout_seconds=settings.FORENSIC_TIMEOUT_SECONDS,
         )
+        if forensics_result is not None:
+            stage_results["forensics"].outcome = getattr(forensics_result, "outcome", None)
 
         # ── Stage 5: OCR ─────────────────────────────────────────
         from backend.app.services.ocr.service import OCRResult, get_ocr_service
@@ -566,13 +590,16 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
             run_vision,
             analysis, db, stage_results,
             required=False,
+            timeout_seconds=settings.VISION_TIMEOUT_SECONDS,
         )
+        if vision_result is not None:
+            stage_results["vision"].outcome = getattr(vision_result, "outcome", None)
 
         # ── Stage 7: XAI (Heatmap) ──────────────────────────────
         from backend.app.services.xai.gradcam import generate_heatmap
 
         xai_result = None
-        if auth_result is not None and detector.is_loaded:
+        if auth_result is not None and stage_results.get("authenticity") is not None and stage_results["authenticity"].status == "completed" and detector.is_loaded:
 
             def run_xai():
                 model = detector.get_internal_model()
@@ -593,9 +620,12 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
                 run_xai,
                 analysis, db, stage_results,
                 required=False,
+                timeout_seconds=settings.XAI_TIMEOUT_SECONDS,
             )
+            if xai_result is not None:
+                stage_results["xai"].outcome = getattr(xai_result, "outcome", None)
         else:
-            _record_skipped_stage(stage_results, "xai", "Authenticity model unavailable; heatmap skipped.", analysis_id)
+            _record_unavailable_stage(stage_results, "xai", "The authenticity model output or compatible target layer was unavailable.", analysis_id)
 
         # ── Stage 8: Text Normalization ──────────────────────────
         from backend.app.services.text.normalizer import normalize_text
@@ -725,7 +755,10 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
             lambda: search_provenance(image_data),
             analysis, db, stage_results,
             required=False,
+            timeout_seconds=settings.PROVENANCE_API_TIMEOUT_SECONDS + 5.0,
         )
+        if provenance_result is not None:
+            stage_results["provenance"].outcome = getattr(provenance_result, "outcome", None)
 
         # ── Stage 12: Image Hashing ──────────────────────────────
         from backend.app.services.hashing.service import compute_hashes

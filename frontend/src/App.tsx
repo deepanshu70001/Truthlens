@@ -409,12 +409,15 @@ function FactCheckSection({ data }: { data: any }) {
 /* ────── PROVENANCE SECTION ────── */
 function ProvenanceSection({ data }: { data: any }) {
   if (!data) return null;
+  const webStatus = data.web_detection?.status || data.status;
+  const credentials = data.content_credentials || {};
   return (
     <Card title="Web Provenance" icon={Globe} badge={<StatusBadge status={data.status} />}>
-      {data.status === 'unavailable' && <p className="text-sm text-text-muted">Web detection API not configured. Set <code className="bg-surface px-1.5 py-0.5 rounded text-xs">GOOGLE_API_KEY</code> in .env.</p>}
-      {data.status === 'failed' && <p className="text-sm text-danger">{data.error || 'API request failed.'}</p>}
-      {data.status === 'no_results' && <p className="text-sm text-text-muted">No web matches found for this image.</p>}
-      {data.status === 'success' && (
+      {data.status === 'partial' && <p className="text-sm text-text-muted">Some provenance checks completed while another check was unavailable or failed.</p>}
+      {webStatus === 'unavailable' && <p className="text-sm text-text-muted">Web detection is unavailable because provider credentials or service support are missing.</p>}
+      {webStatus === 'failed' && <p className="text-sm text-danger">{data.error || 'Web detection request failed.'}</p>}
+      {webStatus === 'no_results' && <p className="text-sm text-text-muted">No web matches found for this image.</p>}
+      {(webStatus === 'success' || webStatus === 'partial') && (
         <>
           {data.best_guess_labels?.length > 0 && <p className="text-sm text-text mb-3">Web suggests: <span className="font-medium">{data.best_guess_labels.join(', ')}</span></p>}
           {data.matching_pages?.length > 0 && (
@@ -429,9 +432,19 @@ function ProvenanceSection({ data }: { data: any }) {
             </div>
           )}
           {data.similar_images?.length > 0 && <div className="space-y-1 text-xs text-text-muted"><p className="font-semibold uppercase">Similar images</p>{data.similar_images.slice(0, 5).map((item: any, i: number) => <div key={i}>{safeSourceUrl(item.url) ? <a href={safeSourceUrl(item.url)!} target="_blank" rel="noopener noreferrer" className="text-primary-light hover:underline">Open result</a> : 'Result URL unavailable'} <span>· {item.match_type}</span></div>)}</div>}
-          {data.content_credentials && <p className="text-xs text-text-muted mt-3">Content Credentials: {data.content_credentials.status === 'unavailable' ? 'Not assessed' : data.content_credentials.status}. {data.content_credentials.reason || ''}</p>}
         </>
       )}
+      {Object.keys(credentials).length > 0 && <div className="mt-3 border-t border-border/50 pt-3 space-y-1 text-xs text-text-muted">
+        <p className="font-semibold text-text">C2PA Content Credentials</p>
+        <p>Verifier: {credentials.status || 'unavailable'} · finding: {credentials.verification_outcome || 'unverified'}</p>
+        {credentials.manifest_present !== null && credentials.manifest_present !== undefined && <p>Manifest present: {credentials.manifest_present ? 'yes' : 'no'}</p>}
+        {credentials.signature_status && <p>Signature: {credentials.signature_status} · content binding: {credentials.content_binding_status || 'unverified'}</p>}
+        {credentials.signer_trust_status && <p>Signer trust: {credentials.signer_trust_status}{credentials.trust_check_configured === false ? ' (trust anchors not configured)' : ''}</p>}
+        {credentials.signer_identity?.common_name && <p>Signer identity: {credentials.signer_identity.common_name}</p>}
+        {credentials.status === 'completed' && credentials.verification_outcome === 'no_manifest' && <p>No manifest is not evidence of manipulation.</p>}
+        <p>Credential validity does not establish whether the depicted event is true.</p>
+      </div>}
+      {data.image_integrity?.value && <p className="mt-3 text-xs text-text-muted">Original-file SHA-256: <code className="break-all">{data.image_integrity.value}</code></p>}
       {data.note && <p className="mt-3 text-xs text-yellow-400/70 italic">{data.note}</p>}
     </Card>
   );

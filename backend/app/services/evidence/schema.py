@@ -415,13 +415,41 @@ def build_evidence_from_factcheck(factcheck_result) -> List[EvidenceItem]:
 
 
 def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
-    """Convert provenance result into evidence items."""
+    """Keep C2PA verification and external web matches as independent evidence."""
     if provenance_result is None:
         return []
 
     items = []
+    credentials = getattr(provenance_result, "content_credentials", None)
+    if isinstance(credentials, dict):
+        c2pa_status = credentials.get("status", "unavailable")
+        verification = credentials.get("verification_outcome", "unverified")
+        if c2pa_status == "completed":
+            if verification == "no_manifest":
+                c2pa_description = "No C2PA manifest was found; absence of credentials does not establish manipulation."
+            elif verification == "verification_failed":
+                c2pa_description = "C2PA verification reported an invalid signature or content-binding mismatch. This does not determine event truth."
+            elif verification == "verified":
+                c2pa_description = "C2PA signature and content binding were reported valid; signer trust and event truth are separate."
+            else:
+                c2pa_description = "C2PA manifest was read, but one or more verification properties remain unverified."
+        elif c2pa_status == "failed":
+            c2pa_description = "C2PA verification could not complete. See the stage warnings for a safe summary."
+        else:
+            c2pa_description = "C2PA verification is unavailable in this runtime."
+        items.append(EvidenceItem(
+            type="provenance_evidence", source="c2pa_content_credentials",
+            strength="low", direction="informational",
+            description=c2pa_description,
+            data={key: value for key, value in credentials.items() if key not in {"warnings"}},
+            status=c2pa_status if c2pa_status in {"completed", "partial", "failed", "unavailable", "skipped"} else "unavailable",
+            stage_name="provenance",
+        ))
 
-    if provenance_result.status == "unavailable":
+    web_status = getattr(provenance_result, "web_detection_status", None)
+    if web_status not in {"success", "no_results", "failed", "unavailable", "partial"}:
+        web_status = provenance_result.status
+    if web_status == "unavailable":
         items.append(EvidenceItem(
             type="provenance_evidence",
             source="google_vision_web_detection",
@@ -430,18 +458,20 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
             description="Web detection API not configured. No provenance data available.",
             data={"status": "unavailable"},
             status="unavailable",
+            stage_name="provenance",
         ))
-    elif provenance_result.status == "failed":
+    elif web_status in {"failed", "partial"}:
         items.append(EvidenceItem(
             type="provenance_evidence",
             source="google_vision_web_detection",
             strength="low",
             direction="informational",
             description="Web provenance request failed. See module status for details.",
-            data={"status": "failed"},
-            status="failed",
+            data={"status": web_status},
+            status=web_status,
+            stage_name="provenance",
         ))
-    elif provenance_result.status == "success":
+    elif web_status == "success":
         if provenance_result.matching_images:
             exact_count = sum(1 for i in provenance_result.matching_images if i.match_type == "exact")
             partial_count = sum(1 for i in provenance_result.matching_images if i.match_type == "partial")
@@ -462,8 +492,9 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
                     "pages": len(provenance_result.matching_pages),
                     "matching_pages": [page.to_dict() for page in provenance_result.matching_pages[:10]],
                     "matching_images": [image.to_dict() for image in provenance_result.matching_images[:10]],
-                    "content_credentials": provenance_result.content_credentials,
+                    "outcome": getattr(provenance_result, "web_detection_outcome", "success"),
                 },
+                stage_name="provenance",
             ))
 
         if provenance_result.best_guess_labels:
@@ -479,17 +510,19 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
                 data={"labels": provenance_result.best_guess_labels,
                       "provider": provenance_result.provider,
                       "retrieved_at": provenance_result.retrieved_at,
-                      "content_credentials": provenance_result.content_credentials},
+                      "outcome": getattr(provenance_result, "web_detection_outcome", "success")},
+                stage_name="provenance",
             ))
-    elif provenance_result.status == "no_results":
+    elif web_status == "no_results":
         items.append(EvidenceItem(
             type="provenance_evidence",
             source="google_vision_web_detection",
             strength="low",
             direction="informational",
             description="No web matches found for this image.",
-            data={"status": "no_results"},
+            data={"status": "no_results", "outcome": "no_results"},
             status="completed",
+            stage_name="provenance",
         ))
 
     return items

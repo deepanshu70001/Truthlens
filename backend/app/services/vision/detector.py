@@ -9,7 +9,9 @@ from __future__ import annotations
 
 import time
 import threading
+import hashlib
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import numpy as np
@@ -21,6 +23,11 @@ from backend.app.config import settings
 log = get_logger("vision")
 
 YOLO_MODEL_NAME = settings.VISION_MODEL
+
+
+def _public_model_identity() -> str:
+    """Expose the configured model filename, never a local filesystem path."""
+    return Path(str(YOLO_MODEL_NAME)).name[:160] or "configured-yolo"
 
 
 @dataclass
@@ -46,6 +53,11 @@ class VisionResult:
     status: str = "completed"
     image_width: Optional[int] = None
     image_height: Optional[int] = None
+    outcome: Optional[str] = None
+    model_sha256: Optional[str] = None
+    coordinate_space: str = "exif_corrected_input_pixels"
+    confidence_semantics: str = "YOLO detection confidence; not an authenticity probability."
+    limitations: List[str] = field(default_factory=lambda: ["Object presence or absence is not proof of authenticity, generation, or manipulation."])
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -59,6 +71,7 @@ class VisionResult:
             ],
             "object_count": self.object_count,
             "status": self.status,
+            "outcome": self.outcome or ("no_results" if self.status == "completed" and not self.objects else "success" if self.status == "completed" else self.status),
             "image_width": self.image_width,
             "image_height": self.image_height,
             "unique_classes": self.unique_classes,
@@ -66,6 +79,10 @@ class VisionResult:
             "has_text_objects": self.has_text_objects,
             "runtime_ms": self.runtime_ms,
             "model_name": self.model_name,
+            "model_sha256": self.model_sha256,
+            "coordinate_space": self.coordinate_space,
+            "confidence_semantics": self.confidence_semantics,
+            "limitations": self.limitations,
             "note": self.note,
             "warnings": self.warnings,
         }
@@ -79,6 +96,7 @@ class ObjectDetector:
         self._loaded = False
         self._device: Optional[str] = None
         self._load_warning = "Object detection model is not loaded."
+        self._model_sha256: Optional[str] = None
         self._lock = threading.RLock()
 
     @property
@@ -101,12 +119,23 @@ class ObjectDetector:
             self._load_warning = "Ultralytics is not installed."
             return
 
-        log.info("Loading YOLO model: %s", YOLO_MODEL_NAME)
+        model_path = Path(YOLO_MODEL_NAME).expanduser()
+        if not model_path.is_file():
+            self._load_warning = "Configured YOLO weights are not present locally; automatic model downloads are disabled."
+            log.warning("YOLO weights are unavailable locally for configured model identity")
+            return
+
+        log.info("Loading configured local YOLO weights (%s)", _public_model_identity())
         t0 = time.time()
 
         try:
-            self._model = YOLO(YOLO_MODEL_NAME)
+            self._model = YOLO(str(model_path.resolve()))
             self._device = None if device == "auto" else device
+            digest = hashlib.sha256()
+            with model_path.open("rb") as stream:
+                for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                    digest.update(chunk)
+            self._model_sha256 = digest.hexdigest()
         except Exception as exc:
             self._model = None
             self._load_warning = f"Object detector could not load ({type(exc).__name__})."
@@ -135,7 +164,8 @@ class ObjectDetector:
         if not self._loaded or self._model is None:
             return VisionResult(
                 status="unavailable",
-                model_name=YOLO_MODEL_NAME,
+                model_name=_public_model_identity(),
+                outcome="unavailable",
                 warnings=[self._load_warning],
             )
 
@@ -143,16 +173,21 @@ class ObjectDetector:
         warnings: List[str] = []
 
         try:
+            if image.width <= 0 or image.height <= 0 or image.width * image.height > settings.MAX_IMAGE_PIXELS:
+                raise ValueError("Image dimensions exceed configured detector limits")
             if not 0 <= conf_threshold <= 1:
                 raise ValueError("Confidence threshold must be between 0 and 1")
             # Ultralytics maps returned xyxy boxes back into this original PIL image's coordinates.
-            results = self._model.predict(source=image.convert("RGB"), verbose=False, conf=conf_threshold, device=self._device)
+            results = self._model.predict(source=image.convert("RGB"), verbose=False,
+                conf=conf_threshold, device=self._device, imgsz=640, max_det=100)
         except Exception as e:
-            log.error("Object detection failed: %s", e)
+            log.error("Object detection inference failed (%s)", type(e).__name__)
             return VisionResult(
                 status="failed",
+                outcome="failed",
                 runtime_ms=int((time.time() - t0) * 1000),
-                warnings=[f"Detection failed: {e}"],
+                model_name=_public_model_identity(), model_sha256=self._model_sha256,
+                warnings=[f"Detection failed ({type(e).__name__})."],
             )
 
         objects: List[DetectedObject] = []
@@ -166,13 +201,15 @@ class ObjectDetector:
                 for box in result.boxes:
                     cls_id = int(box.cls[0])
                     conf = float(box.conf[0])
-                    xyxy = box.xyxy[0].tolist()
-                    class_name = result.names.get(cls_id, f"class_{cls_id}")
-                    if not class_name or not np.isfinite(conf) or not 0 <= conf <= 1 or len(xyxy) != 4 or not np.isfinite(xyxy).all():
+                    raw_xyxy = box.xyxy[0]
+                    xyxy = raw_xyxy.tolist() if hasattr(raw_xyxy, "tolist") else list(raw_xyxy)
+                    names = result.names
+                    class_name = names.get(cls_id, f"class_{cls_id}") if isinstance(names, dict) else names[cls_id] if isinstance(names, (list, tuple)) and 0 <= cls_id < len(names) else f"class_{cls_id}"
+                    if cls_id < 0 or not isinstance(class_name, str) or not class_name.strip() or len(class_name) > 100 or not np.isfinite(conf) or not 0 <= conf <= 1 or len(xyxy) != 4 or not np.isfinite(xyxy).all():
                         raise ValueError("Object detector returned invalid class, confidence, or coordinates")
                     width, height = image.size
                     x1, y1, x2, y2 = xyxy
-                    if x1 < -1 or y1 < -1 or x2 > width + 1 or y2 > height + 1 or x2 < x1 or y2 < y1:
+                    if x1 < 0 or y1 < 0 or x2 > width or y2 > height or x2 <= x1 or y2 <= y1:
                         raise ValueError("Object detector returned a box outside original image coordinates")
 
                     objects.append(DetectedObject(
@@ -185,7 +222,7 @@ class ObjectDetector:
                         has_people = True
         except Exception as e:
             log.warning("Object detector output invalid (%s)", type(e).__name__)
-            return VisionResult(status="failed", runtime_ms=int((time.time()-t0)*1000), model_name=YOLO_MODEL_NAME, warnings=[f"Detection output invalid ({type(e).__name__})."])
+            return VisionResult(status="failed", outcome="failed", runtime_ms=int((time.time()-t0)*1000), model_name=_public_model_identity(), model_sha256=self._model_sha256, warnings=[f"Detection output invalid ({type(e).__name__})."])
 
         runtime_ms = int((time.time() - t0) * 1000)
 
@@ -197,9 +234,11 @@ class ObjectDetector:
             unique_classes=sorted(class_set),
             has_people=has_people,
             runtime_ms=runtime_ms,
-            model_name=YOLO_MODEL_NAME,
+            model_name=_public_model_identity(),
+            model_sha256=self._model_sha256,
             warnings=warnings,
             status="completed",
+            outcome="success" if objects else "no_results",
         )
 
 

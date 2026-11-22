@@ -188,12 +188,19 @@ def test_provenance_response_marks_parser_unavailable_and_filters_unsafe_urls():
         "__enter__": lambda self: self, "__exit__": lambda *args: False,
         "post": lambda *args, **kwargs: mock_response,
     })()
-    with patch("backend.app.services.provenance.service.settings") as cfg:
+    with patch("backend.app.services.provenance.service.settings") as cfg, patch(
+        "backend.app.services.provenance.service.verify_content_credentials"
+    ) as mock_c2pa:
         cfg.GOOGLE_API_KEY = "configured"
         cfg.PROVENANCE_API_TIMEOUT_SECONDS = 1
+        cfg.max_upload_bytes = 5 * 1024 * 1024
+        from backend.app.services.provenance.c2pa_verifier import C2PAResult
+        mock_c2pa.return_value = C2PAResult(status="unavailable", outcome="unavailable")
         with patch("backend.app.services.provenance.service.httpx.Client", return_value=mock_client):
             result = search_provenance(b"image bytes")
-    assert result.status == "success"
+    assert result.status == "partial"
+    assert result.content_credentials["status"] == "unavailable"
+    assert result.web_detection_status == "success"
     data = result.to_dict()
     assert len(data["matching_pages"]) == 1
     assert data["matching_pages"][0]["publisher"] == "publisher.example"

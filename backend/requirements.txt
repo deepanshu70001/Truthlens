@@ -29,6 +29,9 @@ huggingface-hub>=0.20.0
 accelerate>=1.0.0
 easyocr>=1.7.2
 ultralytics>=8.3.0
+# Official Content Authenticity Initiative binding; optional at runtime and
+# reported as unavailable when its native SDK wheel is not installed.
+c2pa-python>=0.39.0,<0.40.0
 
 # Security
 filetype>=1.2.0

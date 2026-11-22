@@ -12,7 +12,7 @@ from __future__ import annotations
 import asyncio
 from typing import Annotated, List, Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field, StringConstraints
 
 router = APIRouter()
@@ -33,6 +33,26 @@ class FactCheckResponse(BaseModel):
     error: Optional[str] = None
     warnings: List[str] = Field(default_factory=list)
     claim_verifications: list = Field(default_factory=list)
+    note: Optional[str] = None
+
+
+class ProvenanceResponse(BaseModel):
+    status: str
+    outcome: Optional[str] = None
+    provider: Optional[str] = None
+    image_integrity: Optional[dict] = None
+    metadata_status: Optional[str] = None
+    metadata: dict = Field(default_factory=dict)
+    content_credentials: dict = Field(default_factory=dict)
+    web_detection: dict = Field(default_factory=dict)
+    web_entities: list = Field(default_factory=list)
+    matching_pages: list = Field(default_factory=list)
+    matching_images: list = Field(default_factory=list)
+    similar_images: list = Field(default_factory=list)
+    best_guess_labels: list = Field(default_factory=list)
+    total_matches: int = 0
+    runtime_ms: int = 0
+    warnings: List[str] = Field(default_factory=list)
     note: Optional[str] = None
 
 
@@ -63,12 +83,28 @@ async def factcheck_endpoint(request: FactCheckRequest):
 
 @router.post(
     "/provenance",
-    summary="Reverse image search",
-    description="Search for image provenance. (Will be implemented in Stage 4.)",
-    status_code=501,
+    summary="Image provenance and content credentials",
+    description="Inspect original image bytes for C2PA credentials and search Google Vision Web Detection when configured.",
+    response_model=ProvenanceResponse,
 )
-async def provenance_endpoint():
-    return {"detail": "Provenance endpoint will be implemented in Stage 4.", "error_code": "NOT_IMPLEMENTED"}
+async def provenance_endpoint(image: UploadFile = File(...)):
+    from backend.app.config import settings
+    from backend.app.core.security import validate_image_file
+    from backend.app.services.provenance.service import search_provenance
+
+    image_data = await image.read(settings.max_upload_bytes + 1)
+    if len(image_data) > settings.max_upload_bytes:
+        raise HTTPException(status_code=413, detail="File exceeds the configured upload size limit.")
+    try:
+        validate_image_file(image_data, image.filename or "image", image.content_type)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+    timeout = max(1.0, min(125.0, float(settings.PROVENANCE_API_TIMEOUT_SECONDS) + 5.0))
+    try:
+        result = await asyncio.wait_for(asyncio.to_thread(search_provenance, image_data), timeout=timeout)
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="Image provenance checks exceeded the configured time limit.") from None
+    return result.to_dict()
 
 
 @router.get(

@@ -55,6 +55,8 @@ class Settings(BaseSettings):
     AUTHENTICITY_MODEL_REVISION: str = ""
     AUTHENTICITY_CALIBRATION_PATH: str = ""
     VISION_MODEL: str = "yolov8n.pt"
+    VISION_TIMEOUT_SECONDS: float = 30.0
+    XAI_TIMEOUT_SECONDS: float = 30.0
     OCR_LANGUAGES: str = "en,hi"
     OCR_MODEL_DIR: str = str(_project_root() / "models" / "ocr")
     OCR_TIMEOUT_SECONDS: float = 60.0
@@ -73,6 +75,10 @@ class Settings(BaseSettings):
     CLAIMBUSTER_API_KEY: str = ""
     FACTCHECK_API_TIMEOUT_SECONDS: float = 10.0
     PROVENANCE_API_TIMEOUT_SECONDS: float = 30.0
+    PROVENANCE_RETRY_ATTEMPTS: int = 1
+    PROVENANCE_MAX_TOTAL_SECONDS: float = 35.0
+    C2PA_TRUST_ANCHORS_PATH: str = ""
+    FORENSIC_TIMEOUT_SECONDS: float = 30.0
     FACTCHECK_MAX_CLAIMS: int = 5
     FACTCHECK_MAX_RESULTS_PER_CLAIM: int = 5
     FACTCHECK_MAX_TOTAL_SECONDS: float = 25.0

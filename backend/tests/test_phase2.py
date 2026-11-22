@@ -26,12 +26,12 @@ def test_forensics_contract_format_scope_and_hashes():
     assert result.status == "completed"
     assert len(data["signals"]) == 6
     assert data["overall_anomaly_score"] is None
-    assert all(s["status"] in {"completed", "skipped"} for s in data["signals"])
+    assert all(s["status"] == "completed" for s in data["signals"])
     assert compute_hashes(jpeg).sha256 == hashlib.sha256(jpeg).hexdigest() == compute_hashes(jpeg).sha256
     assert compute_hashes(jpeg).phash != compute_hashes(jpeg).sha256
     png = analyze_forensics(image_bytes("PNG"), "PNG").to_dict()
     jpeg_signal = next(s for s in png["signals"] if s["name"] == "jpeg_artifacts")
-    assert jpeg_signal["status"] == "skipped" and jpeg_signal["score"] is None
+    assert jpeg_signal["status"] == "completed" and jpeg_signal["outcome"] == "not_applicable" and jpeg_signal["score"] is None
     ela = next(s for s in png["signals"] if s["name"] == "error_level_analysis")
     assert "not directly comparable" in ela["limitations"]
     from backend.app.services.metadata.service import extract_metadata
@@ -214,4 +214,4 @@ def test_gradcam_incompatible_model_is_explicit_failure():
     from backend.app.services.xai.gradcam import generate_heatmap
 
     result = generate_heatmap(torch.nn.Linear(2, 2), _ToyProcessor(), Image.new("RGB", (4,4)), "analysis-id", torch.device("cpu"))
-    assert result.status == "failed" and result.heatmap_path is None
+    assert result.status == "unavailable" and result.heatmap_path is None

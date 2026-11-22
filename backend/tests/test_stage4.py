@@ -237,7 +237,11 @@ class TestProvenance:
 
         with patch("backend.app.services.provenance.service.settings") as mock_settings:
             mock_settings.GOOGLE_API_KEY = ""
-            result = search_provenance(b"fake image data")
+            mock_settings.max_upload_bytes = 5 * 1024 * 1024
+            with patch("backend.app.services.provenance.service.verify_content_credentials") as mock_c2pa:
+                from backend.app.services.provenance.c2pa_verifier import C2PAResult
+                mock_c2pa.return_value = C2PAResult(status="unavailable", outcome="unavailable")
+                result = search_provenance(b"fake image data")
 
         assert result.status == "unavailable"
         assert len(result.warnings) > 0
@@ -248,8 +252,13 @@ class TestProvenance:
 
         with patch("backend.app.services.provenance.service.settings") as mock_settings:
             mock_settings.GOOGLE_API_KEY = "fake-key"
+            mock_settings.max_upload_bytes = 5 * 1024 * 1024
+            mock_settings.PROVENANCE_API_TIMEOUT_SECONDS = 1
+            mock_settings.PROVENANCE_RETRY_ATTEMPTS = 0
 
-            with patch("httpx.Client") as mock_client_cls:
+            with patch("backend.app.services.provenance.service.verify_content_credentials") as mock_c2pa, patch("httpx.Client") as mock_client_cls:
+                from backend.app.services.provenance.c2pa_verifier import C2PAResult
+                mock_c2pa.return_value = C2PAResult(status="unavailable", outcome="unavailable")
                 mock_client = MagicMock()
                 mock_client.__enter__ = MagicMock(return_value=mock_client)
                 mock_client.__exit__ = MagicMock(return_value=False)
@@ -264,8 +273,13 @@ class TestProvenance:
 
         with patch("backend.app.services.provenance.service.settings") as mock_settings:
             mock_settings.GOOGLE_API_KEY = "fake-key"
+            mock_settings.max_upload_bytes = 5 * 1024 * 1024
+            mock_settings.PROVENANCE_API_TIMEOUT_SECONDS = 1
+            mock_settings.PROVENANCE_RETRY_ATTEMPTS = 0
 
-            with patch("httpx.Client") as mock_client_cls:
+            with patch("backend.app.services.provenance.service.verify_content_credentials") as mock_c2pa, patch("httpx.Client") as mock_client_cls:
+                from backend.app.services.provenance.c2pa_verifier import C2PAResult
+                mock_c2pa.return_value = C2PAResult(status="unavailable", outcome="unavailable")
                 mock_client = MagicMock()
                 mock_client.__enter__ = MagicMock(return_value=mock_client)
                 mock_client.__exit__ = MagicMock(return_value=False)
@@ -276,7 +290,8 @@ class TestProvenance:
                 mock_client_cls.return_value = mock_client
                 result = search_provenance(b"fake image data")
 
-        assert result.status == "no_results"
+        assert result.status == "partial"
+        assert result.web_detection_status == "no_results"
 
     def test_result_to_dict(self):
         from backend.app.services.provenance.service import ProvenanceResult

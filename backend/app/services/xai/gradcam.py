@@ -32,10 +32,13 @@ class XAIResult:
     model_name: str = ""
     heatmap_url: Optional[str] = None
     overlay_url: Optional[str] = None
+    outcome: Optional[str] = None
+    limitations: List[str] = field(default_factory=lambda: [ATTRIBUTION_CAVEAT])
+    score_semantics: str = "Uncalibrated softmax score for the explained class; not a manipulation probability."
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "status": self.status, "model": self.model_name, "method": self.method,
+            "status": self.status, "outcome": self.outcome or ("success" if self.status == "completed" else "unavailable" if self.status == "unavailable" else self.status), "model": self.model_name, "method": self.method,
             "target_class": self.target_class,
             "target_score": round(self.target_score, 4) if self.target_score is not None else None,
             "heatmap_path": self.heatmap_path, "overlay_path": self.overlay_path,
@@ -44,6 +47,8 @@ class XAIResult:
             "suspicious_regions": self.suspicious_regions, "runtime_ms": self.runtime_ms,
             "warnings": self.warnings + ([ATTRIBUTION_CAVEAT] if self.status == "completed" else []),
             "note": ATTRIBUTION_CAVEAT,
+            "limitations": self.limitations,
+            "score_semantics": self.score_semantics,
         }
 
 
@@ -138,6 +143,7 @@ class GradCAM:
 def generate_heatmap(model, processor, image: Image.Image, analysis_id: str, device: torch.device, target_class: Optional[int] = None, model_name: Optional[str] = None) -> XAIResult:
     started = time.perf_counter()
     grad_cam = None
+    was_training = bool(getattr(model, "training", False))
     try:
         grad_cam = GradCAM(model)
         if grad_cam.target_layer is None:
@@ -159,8 +165,12 @@ def generate_heatmap(model, processor, image: Image.Image, analysis_id: str, dev
         height, width = rgb.shape[:2]
         cam_full = cv2.resize(cam, (width, height), interpolation=cv2.INTER_LINEAR)
         cam_full = np.clip(cam_full, 0.0, 1.0)
+        if cam_full.shape != (height, width):
+            raise ValueError("Attribution map dimensions do not match the source image")
         color = cv2.cvtColor(cv2.applyColorMap(np.uint8(cam_full * 255), cv2.COLORMAP_JET), cv2.COLOR_BGR2RGB)
         overlay = cv2.addWeighted(rgb, 0.6, color, 0.4, 0)
+        if overlay.shape != rgb.shape:
+            raise ValueError("Attribution overlay dimensions do not match the source image")
         settings.ensure_storage_dirs()
         analysis_dir = settings.heatmaps_dir / analysis_id
         analysis_dir.mkdir(parents=True, exist_ok=True)
@@ -181,18 +191,25 @@ def generate_heatmap(model, processor, image: Image.Image, analysis_id: str, dev
             heatmap_path=str(raw_path), overlay_path=str(overlay_path),
             suspicious_regions=regions, target_class=target_label,
             target_score=grad_cam.target_score, status="completed", model_name=model_name or getattr(model.config, "_name_or_path", type(model).__name__),
-            runtime_ms=int((time.perf_counter()-started)*1000), warnings=[],
+            runtime_ms=int((time.perf_counter()-started)*1000), warnings=[], outcome="success",
         )
         result.heatmap_url = f"/api/v1/analysis/{analysis_id}/heatmap?variant=raw"
         result.overlay_url = f"/api/v1/analysis/{analysis_id}/heatmap?variant=overlay"
         return result
     except Exception as exc:
-        log.warning("XAI generation failed (%s): %s", type(exc).__name__, exc)
-        return XAIResult(status="failed", runtime_ms=int((time.perf_counter()-started)*1000), model_name=model_name or getattr(getattr(model, "config", None), "_name_or_path", type(model).__name__), warnings=[f"Attribution unavailable ({type(exc).__name__})."])
+        log.warning("XAI generation failed (%s)", type(exc).__name__)
+        unavailable = isinstance(exc, ValueError) and ("unsupported" in str(exc).casefold() or "target layer" in str(exc).casefold())
+        status = "unavailable" if unavailable else "failed"
+        return XAIResult(status=status, outcome="unavailable" if unavailable else "failed",
+            runtime_ms=int((time.perf_counter()-started)*1000),
+            model_name=model_name or getattr(getattr(model, "config", None), "_name_or_path", type(model).__name__),
+            warnings=["Attribution is unavailable for this model configuration." if unavailable else f"Attribution generation failed ({type(exc).__name__})."])
     finally:
         if grad_cam is not None:
             grad_cam.cleanup()
         if hasattr(model, "zero_grad"):
             model.zero_grad(set_to_none=True)
-        if hasattr(model, "eval"):
+        if callable(getattr(model, "train", None)):
+            model.train(was_training)
+        elif hasattr(model, "eval"):
             model.eval()

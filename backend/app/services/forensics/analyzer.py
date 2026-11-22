@@ -8,7 +8,8 @@ from typing import Any, Dict, List, Optional
 
 import cv2
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
+from backend.app.config import settings
 
 from backend.app.core.logging import get_logger
 
@@ -23,6 +24,13 @@ class ForensicSignal:
     limitations: str
     details: Dict[str, Any] = field(default_factory=dict)
     status: str = "completed"
+    outcome: Optional[str] = "success"
+    method: str = ""
+    method_version: str = "1"
+    parameters: Dict[str, Any] = field(default_factory=dict)
+    runtime_ms: int = 0
+    error_category: Optional[str] = None
+    output_reference: Optional[str] = None
 
 
 @dataclass
@@ -32,6 +40,7 @@ class ForensicsResult:
     overall_anomaly_score: Optional[float] = None
     runtime_ms: int = 0
     status: str = "completed"
+    outcome: str = "success"
     warnings: List[str] = field(default_factory=list)
     caveat: str = (
         "Classical forensic indicators are content- and encoding-dependent heuristics. "
@@ -41,12 +50,17 @@ class ForensicsResult:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "status": self.status,
+            "outcome": self.outcome,
             "signals": [{
                 "name": s.name, "status": s.status,
+                "outcome": s.outcome,
                 "score": round(float(s.score), 4) if s.score is not None else None,
-                "score_type": "heuristic_indicator_not_probability" if s.score is not None else None,
+                "score_type": "uncalibrated_heuristic_indicator_0_to_1_not_probability" if s.score is not None else None,
                 "interpretation": s.interpretation, "limitations": s.limitations,
-                "details": s.details,
+                "details": s.details, "method": s.method,
+                "method_version": s.method_version, "parameters": s.parameters,
+                "runtime_ms": s.runtime_ms, "error_category": s.error_category,
+                "output_reference": s.output_reference,
             } for s in self.signals],
             "overall_anomaly_score": None,
             "runtime_ms": self.runtime_ms,
@@ -57,15 +71,35 @@ class ForensicsResult:
 
 def _signal(name: str, compute, limitations: str, not_applicable: bool = False) -> ForensicSignal:
     if not_applicable:
-        return ForensicSignal(name, None, "Not applicable to this image format.", limitations, status="skipped")
+        return ForensicSignal(name, None, "Not applicable to this image format.", limitations,
+            status="completed", outcome="not_applicable", method=name,
+            parameters=_SIGNAL_PARAMETERS.get(name, {}))
+    started = time.perf_counter()
     try:
         score, interpretation, details = compute()
         if not np.isfinite(score) or not 0 <= score <= 1:
             raise ValueError("computed indicator is not finite or outside [0, 1]")
-        return ForensicSignal(name, float(score), interpretation, limitations, details)
+        return ForensicSignal(name, float(score), interpretation, limitations, details,
+            status="completed", outcome="success", method=name,
+            parameters=details.get("parameters", _SIGNAL_PARAMETERS.get(name, {})),
+            runtime_ms=int((time.perf_counter()-started)*1000))
     except Exception as exc:
         log.warning("Forensic signal %s failed (%s)", name, type(exc).__name__)
-        return ForensicSignal(name, None, f"{name} computation failed.", limitations, status="failed")
+        return ForensicSignal(name, None, f"{name} computation failed.", limitations,
+            status="failed", outcome="failed", method=name,
+            parameters=_SIGNAL_PARAMETERS.get(name, {}),
+            runtime_ms=int((time.perf_counter()-started)*1000),
+            error_category="SIGNAL_EXECUTION_ERROR")
+
+
+_SIGNAL_PARAMETERS = {
+    "error_level_analysis": {"reencode_quality": 90, "score": "min(std_difference / mean_difference / 3, 1)"},
+    "noise_consistency": {"method": "Laplacian residual standard deviation across four quadrants", "score": "min(quadrant_cv / 0.5, 1)"},
+    "jpeg_artifacts": {"block_size_pixels": 8, "score": "clamp(max(block_boundary_ratio - 1, 0) / 0.5, 0, 1)"},
+    "edge_consistency": {"operator": "Canny", "thresholds": [50, 150], "grid": [3, 3], "score": "min(edge_density_cv / 1.5, 1)"},
+    "texture_consistency": {"operator": "Gabor", "kernel_size": [31, 31], "sigma": 4.0, "wavelength": 10.0, "gamma": 0.5, "orientations_degrees": [0, 45, 90, 135], "score": "clamp((1 - response_cv - 0.7) / 0.3, 0, 1)"},
+    "resampling_clues": {"method": "second-difference sign zero-crossing rates", "score": "clamp((0.5 - average_crossing_rate) / 0.5, 0, 1)"},
+}
 
 
 def analyze_forensics(
@@ -78,16 +112,24 @@ def analyze_forensics(
     started = time.perf_counter()
     warnings: List[str] = []
     try:
+        if not isinstance(image_data, (bytes, bytearray)) or not image_data:
+            raise ValueError("image bytes are empty or invalid")
+        if len(image_data) > settings.max_upload_bytes:
+            raise ValueError("image byte size exceeds configured upload limit")
         with Image.open(io.BytesIO(image_data)) as source:
             source_format = (source.format or image_format or "UNKNOWN").upper()
+            width, height = source.size
+            if width <= 0 or height <= 0 or width * height > settings.MAX_IMAGE_PIXELS:
+                raise ValueError("image dimensions exceed configured safety limits")
             source.load()
-            rgb = np.asarray(source.convert("RGB"))
-        if rgb.ndim != 3 or rgb.shape[0] < 3 or rgb.shape[1] < 3:
-            raise ValueError("image dimensions are too small")
+            working = ImageOps.exif_transpose(source.copy()).convert("RGB")
+            rgb = np.asarray(working)
+        if rgb.ndim != 3 or rgb.shape[0] < 1 or rgb.shape[1] < 1:
+            raise ValueError("image dimensions are invalid")
         bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
         gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
     except Exception as exc:
-        return ForensicsResult(status="failed", warnings=[f"Image decode failed ({type(exc).__name__})."])
+        return ForensicsResult(status="failed", outcome="failed", warnings=[f"Image decode or validation failed ({type(exc).__name__})."])
 
     limitations = {
         "error_level_analysis": "Compares decoded pixels with a JPEG quality-90 re-encode; highly encoding-dependent. For non-JPEG sources it is not directly comparable to native JPEG ELA. Recompression and ordinary editing affect it.",
@@ -99,6 +141,13 @@ def analyze_forensics(
     }
     h, w = gray.shape
     signals: List[ForensicSignal] = []
+
+    def not_applicable(name: str, reason: str) -> ForensicSignal:
+        return ForensicSignal(
+            name, None, reason, limitations[name], status="completed",
+            outcome="not_applicable", method=name,
+            parameters=_SIGNAL_PARAMETERS.get(name, {}),
+        )
 
     def ela():
         ok, encoded = cv2.imencode(".jpg", bgr, [cv2.IMWRITE_JPEG_QUALITY, 90])
@@ -119,7 +168,8 @@ def analyze_forensics(
             "source_format": source_format,
         }
 
-    signals.append(_signal("error_level_analysis", ela, limitations["error_level_analysis"]))
+    signals.append(_signal("error_level_analysis", ela, limitations["error_level_analysis"],
+        not_applicable=source_format not in {"JPEG", "JPG"}))
 
     def noise():
         residual = cv2.Laplacian(gray.astype(np.float64), cv2.CV_64F)
@@ -128,7 +178,10 @@ def analyze_forensics(
         cv = float(np.std(levels) / mean) if mean > 0 else 0.0
         return min(cv / 0.5, 1.0), f"Laplacian residual standard deviation varies across quadrants (coefficient of variation {cv:.4f}).", {"global_residual_std": round(float(residual.std()), 3), "quadrant_residual_stds": [round(x, 3) for x in levels], "quadrant_cv": round(cv, 5)}
 
-    signals.append(_signal("noise_consistency", noise, limitations["noise_consistency"]))
+    if h < 4 or w < 4:
+        signals.append(not_applicable("noise_consistency", "Noise consistency analysis needs at least 4 pixels in each dimension."))
+    else:
+        signals.append(_signal("noise_consistency", noise, limitations["noise_consistency"]))
 
     def jpeg():
         if source_format not in {"JPEG", "JPG"}:
@@ -149,7 +202,9 @@ def analyze_forensics(
         return score, f"8-pixel boundary mean difference {block_mean:.3f}; other-boundary mean difference {other_mean:.3f}.", {"block_boundary_difference": round(block_mean, 4), "non_block_boundary_difference": round(other_mean, 4), "ratio": round(ratio, 5)}
 
     if source_format not in {"JPEG", "JPG"}:
-        signals.append(ForensicSignal("jpeg_artifacts", None, f"JPEG artifact analysis is not applicable to {source_format} input (skipped).", limitations["jpeg_artifacts"], status="skipped"))
+        signals.append(not_applicable("jpeg_artifacts", f"JPEG artifact analysis is not applicable to {source_format} input."))
+    elif h < 16 or w < 16:
+        signals.append(not_applicable("jpeg_artifacts", "JPEG artifact analysis needs at least 16 pixels in each dimension."))
     else:
         signals.append(_signal("jpeg_artifacts", jpeg, limitations["jpeg_artifacts"]))
 
@@ -161,7 +216,10 @@ def analyze_forensics(
         cv = std / mean if mean > 0 else 0.0
         return min(cv / 1.5, 1.0), f"Canny edge density varies across a 3x3 grid (coefficient of variation {cv:.4f}).", {"mean_density": round(mean, 6), "std_density": round(std, 6), "grid_densities": [round(x, 6) for x in densities]}
 
-    signals.append(_signal("edge_consistency", edge, limitations["edge_consistency"]))
+    if h < 3 or w < 3:
+        signals.append(not_applicable("edge_consistency", "Edge consistency analysis needs at least 3 pixels in each dimension."))
+    else:
+        signals.append(_signal("edge_consistency", edge, limitations["edge_consistency"]))
 
     def texture():
         responses = []
@@ -185,12 +243,18 @@ def analyze_forensics(
         score = max(0.0, 0.5 - avg) / 0.5
         return min(score, 1.0), f"Second-difference zero-crossing rate is {avg:.5f}.", {"zero_crossing_x": round(zcx, 6), "zero_crossing_y": round(zcy, 6), "average_zero_crossing": round(avg, 6)}
 
-    signals.append(_signal("resampling_clues", resampling, limitations["resampling_clues"]))
+    if h < 4 or w < 4:
+        signals.append(not_applicable("resampling_clues", "Resampling analysis needs at least 4 pixels in each dimension."))
+    else:
+        signals.append(_signal("resampling_clues", resampling, limitations["resampling_clues"]))
+
+    for signal in signals:
+        if signal.output_reference is None:
+            signal.output_reference = f"report.forensics.signals.{signal.name}"
 
     ela_signal = signals[0]
     if generate_artifacts and analysis_id and ela_signal.score is not None:
         try:
-            from backend.app.config import settings
             settings.ensure_storage_dirs()
             ok, encoded = cv2.imencode(".jpg", bgr, [cv2.IMWRITE_JPEG_QUALITY, 90])
             recompressed = cv2.imdecode(encoded, cv2.IMREAD_COLOR) if ok else None
@@ -203,14 +267,20 @@ def analyze_forensics(
             if not cv2.imwrite(str(output / f"{analysis_id}_ela.png"), scaled):
                 raise OSError("ELA artifact could not be written")
             ela_signal.details["artifact_url"] = f"/api/v1/analysis/{analysis_id}/forensics/ela"
+            ela_signal.output_reference = f"report.forensics.signals.{ela_signal.name}.artifact_url"
         except Exception as exc:
             warnings.append(f"ELA artifact could not be saved ({type(exc).__name__}).")
             ela_signal.status = "partial"
+            ela_signal.outcome = "partial"
 
     for signal in signals:
         if signal.status in {"failed", "unavailable"}:
             warnings.append(f"{signal.name}: {signal.interpretation}")
-    status = "partial" if warnings or any(s.status in {"failed", "unavailable", "partial"} for s in signals) else "completed"
-    result = ForensicsResult(signals=signals, runtime_ms=int((time.perf_counter()-started)*1000), status=status, warnings=warnings)
+    failed_signals = sum(s.status in {"failed", "unavailable"} for s in signals)
+    completed_signals = sum(s.status == "completed" for s in signals)
+    partial_signals = any(s.status == "partial" for s in signals)
+    status = "failed" if failed_signals and not completed_signals else "partial" if failed_signals or partial_signals else "completed"
+    outcome = "success" if status == "completed" else "partial" if status == "partial" else "failed"
+    result = ForensicsResult(signals=signals, runtime_ms=int((time.perf_counter()-started)*1000), status=status, outcome=outcome, warnings=warnings)
     log.info("Forensics complete: %d signals (%s) in %dms", len(signals), status, result.runtime_ms)
     return result
