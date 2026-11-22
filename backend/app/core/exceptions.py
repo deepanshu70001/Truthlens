@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 
 
 class TruthLensError(Exception):
@@ -63,16 +64,31 @@ def register_exception_handlers(app: FastAPI) -> None:
         return JSONResponse(
             status_code=422,
             content={
-                "detail": str(exc),
+                "detail": "Invalid request value.",
                 "error_code": "VALIDATION_ERROR",
             },
+        )
+
+    @app.exception_handler(RequestValidationError)
+    async def request_validation_error_handler(request: Request, exc: RequestValidationError):
+        # Never echo the submitted value: validation input can contain a
+        # password, API token, local path, or uploaded metadata.
+        details = [
+            {"loc": list(error.get("loc", ())), "type": error.get("type", "value_error")}
+            for error in exc.errors()
+        ]
+        return JSONResponse(
+            status_code=422,
+            content={"detail": details, "error_code": "VALIDATION_ERROR"},
         )
 
     @app.exception_handler(Exception)
     async def generic_error_handler(request: Request, exc: Exception):
         from backend.app.core.logging import get_logger
 
-        get_logger("api.errors").exception("Unhandled API exception")
+        get_logger("api.errors").error(
+            "Unhandled API exception (%s)", type(exc).__name__
+        )
         return JSONResponse(
             status_code=500,
             content={

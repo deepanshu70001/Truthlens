@@ -8,6 +8,7 @@ Never hard-code secrets.
 from __future__ import annotations
 
 import os
+import json
 from pathlib import Path
 from typing import List
 
@@ -26,11 +27,15 @@ class Settings(BaseSettings):
     # ── Application ──────────────────────────────────────────────
     APP_NAME: str = "TruthLens"
     APP_ENV: str = "development"
-    APP_DEBUG: bool = True
-    APP_HOST: str = "0.0.0.0"
+    APP_DEBUG: bool = False
+    APP_HOST: str = "127.0.0.1"
     APP_PORT: int = 8000
     APP_VERSION: str = "0.1.0"
-    SECRET_KEY: str = "CHANGE_ME_TO_A_RANDOM_SECRET"
+    SECRET_KEY: str = ""
+    DEV_AUTH_BYPASS: bool = False
+    AUTH_USERS_JSON: str = "{}"
+    ACCESS_TOKEN_TTL_SECONDS: int = 3600
+    TRUSTED_HOSTS: str = "localhost,127.0.0.1,testserver"
 
     # ── Database ─────────────────────────────────────────────────
     DATABASE_URL: str = "sqlite+aiosqlite:///./truthlens.db"
@@ -38,6 +43,7 @@ class Settings(BaseSettings):
 
     # ── Storage ──────────────────────────────────────────────────
     STORAGE_PATH: str = str(_project_root() / "data")
+    TEMP_UPLOAD_MAX_AGE_SECONDS: int = 86400
     MAX_UPLOAD_SIZE_MB: int = 20
     MAX_IMAGE_PIXELS: int = 40_000_000
     ALLOWED_MIME_TYPES: str = "image/jpeg,image/png,image/webp,image/gif,image/bmp,image/tiff"
@@ -92,6 +98,20 @@ class Settings(BaseSettings):
 
     # ── Rate Limiting ────────────────────────────────────────────
     RATE_LIMIT_PER_MINUTE: int = 30
+    RATE_LIMIT_ANALYSIS_PER_MINUTE: int = 4
+    RATE_LIMIT_FACTCHECK_PER_MINUTE: int = 10
+    RATE_LIMIT_PROVENANCE_PER_MINUTE: int = 4
+    RATE_LIMIT_AUTH_PER_MINUTE: int = 10
+    RATE_LIMIT_RETRIEVAL_PER_MINUTE: int = 120
+
+    # Durable job lifecycle. A single global worker lease serializes model/GPU work.
+    ANALYSIS_QUEUE_MAX_OUTSTANDING: int = 25
+    ANALYSIS_JOB_MAX_ATTEMPTS: int = 3
+    ANALYSIS_JOB_LEASE_SECONDS: int = 120
+    ANALYSIS_JOB_HEARTBEAT_SECONDS: int = 20
+    ANALYSIS_JOB_POLL_SECONDS: float = 1.0
+    ANALYSIS_RETRY_BASE_SECONDS: int = 2
+    ANALYSIS_RETRY_MAX_SECONDS: int = 30
 
     @field_validator("AI_GENERATED_THRESHOLD", "AUTHENTIC_THRESHOLD")
     @classmethod
@@ -113,6 +133,50 @@ class Settings(BaseSettings):
     @property
     def cors_origin_list(self) -> List[str]:
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
+
+    @property
+    def trusted_host_list(self) -> List[str]:
+        return [host.strip() for host in self.TRUSTED_HOSTS.split(",") if host.strip()]
+
+    @property
+    def auth_users(self) -> dict[str, str]:
+        try:
+            users = json.loads(self.AUTH_USERS_JSON)
+        except (TypeError, json.JSONDecodeError):
+            return {}
+        if not isinstance(users, dict):
+            return {}
+        return {
+            str(user_id): str(password_hash)
+            for user_id, password_hash in users.items()
+            if isinstance(user_id, str) and isinstance(password_hash, str)
+        }
+
+    def validate_runtime_security(self) -> None:
+        """Fail closed on unsafe production auth, host, CORS, or DB settings."""
+        env = self.APP_ENV.strip().lower()
+        if self.DEV_AUTH_BYPASS and env not in {"development", "test"}:
+            raise ValueError("Development authentication bypass is forbidden outside development/test.")
+        if not self.trusted_host_list or any(host == "*" for host in self.trusted_host_list):
+            raise ValueError("TRUSTED_HOSTS must contain explicit host names.")
+        if env != "production":
+            return
+        if self.APP_DEBUG:
+            raise ValueError("APP_DEBUG must be false in production.")
+        if len(self.SECRET_KEY.encode("utf-8")) < 32 or self.SECRET_KEY.strip().lower() in {
+            "change_me", "change_me_to_a_random_secret", "secret", ""
+        }:
+            raise ValueError("Production requires a non-placeholder SECRET_KEY of at least 32 bytes.")
+        if self.DEV_AUTH_BYPASS:
+            raise ValueError("DEV_AUTH_BYPASS must be disabled in production.")
+        if not self.auth_users or any(not _valid_password_hash(value) for value in self.auth_users.values()):
+            raise ValueError("Production AUTH_USERS_JSON must contain pre-provisioned scrypt password hashes.")
+        if not self.cors_origin_list or "*" in self.cors_origin_list:
+            raise ValueError("Production CORS_ORIGINS must explicitly list trusted frontend origins.")
+        if not self.DATABASE_URL.startswith("postgresql+asyncpg://"):
+            raise ValueError("Production requires the shared PostgreSQL async driver for durable workers and rate limits.")
+        if self.DATABASE_ECHO:
+            raise ValueError("DATABASE_ECHO must be disabled in production.")
 
     @property
     def is_debug(self) -> bool:
@@ -146,6 +210,10 @@ class Settings(BaseSettings):
     def artifacts_dir(self) -> Path:
         return self.storage_dir / "artifacts"
 
+    @property
+    def temp_uploads_dir(self) -> Path:
+        return self.storage_dir / "tmp_uploads"
+
     def ensure_storage_dirs(self) -> None:
         """Create all storage sub-directories if they don't exist."""
         for d in (
@@ -155,6 +223,7 @@ class Settings(BaseSettings):
             self.heatmaps_dir,
             self.reports_dir,
             self.artifacts_dir,
+            self.temp_uploads_dir,
         ):
             d.mkdir(parents=True, exist_ok=True)
 
@@ -168,3 +237,14 @@ class Settings(BaseSettings):
 
 # Singleton instance
 settings = Settings()
+
+
+def _valid_password_hash(value: str) -> bool:
+    parts = value.split("$")
+    if len(parts) != 6 or parts[0] != "scrypt":
+        return False
+    try:
+        n, r, p = (int(item) for item in parts[1:4])
+        return n >= 2**14 and r >= 8 and p >= 1 and len(parts[4]) >= 16 and len(parts[5]) >= 32
+    except ValueError:
+        return False

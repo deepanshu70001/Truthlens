@@ -18,9 +18,17 @@ os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./test_truthlens.db"
 os.environ["STORAGE_PATH"] = str(Path(tempfile.gettempdir()) / "truthlens-phase1-tests")
 os.environ["APP_DEBUG"] = "true"
 os.environ["APP_ENV"] = "test"
+os.environ["DEV_AUTH_BYPASS"] = "true"
+os.environ["TRUSTED_HOSTS"] = "localhost,127.0.0.1,testserver,test"
+os.environ["RATE_LIMIT_ANALYSIS_PER_MINUTE"] = "500"
+os.environ["RATE_LIMIT_FACTCHECK_PER_MINUTE"] = "500"
+os.environ["RATE_LIMIT_PROVENANCE_PER_MINUTE"] = "500"
+os.environ["RATE_LIMIT_AUTH_PER_MINUTE"] = "500"
+os.environ["RATE_LIMIT_RETRIEVAL_PER_MINUTE"] = "1000"
 
 from backend.app.main import app  # noqa: E402
 from backend.app.db.session import engine  # noqa: E402
+from backend.app.db.session import async_session_factory  # noqa: E402
 from backend.app.db.base import Base  # noqa: E402
 import backend.app.models  # noqa: E402, F401
 
@@ -38,6 +46,15 @@ async def setup_db():
     """Create all tables before tests, drop after."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    from sqlalchemy import select
+    from backend.app.models import QueueCapacity, WorkerLease
+    from backend.app.db.session import async_session_factory
+    async with async_session_factory() as db:
+        if await db.get(QueueCapacity, 1) is None:
+            db.add(QueueCapacity(id=1, outstanding_count=0))
+        if await db.get(WorkerLease, "analysis-pipeline") is None:
+            db.add(WorkerLease(name="analysis-pipeline"))
+        await db.commit()
     yield
     # Dispose engine connections first to avoid SQLite lock
     await engine.dispose()
@@ -83,12 +100,40 @@ def mock_auth_detector(monkeypatch):
 
 @pytest_asyncio.fixture
 async def client(mock_auth_detector, mock_optional_analysis_modules):
-    """Async HTTP test client."""
+    """API client plus an explicitly separate deterministic test worker."""
+    transport = ASGITransport(app=app)
+    from backend.app.services.job_queue import run_worker
+    stop_event = asyncio.Event()
+    worker_task = asyncio.create_task(run_worker(async_session_factory, stop_event=stop_event))
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        yield ac
+    stop_event.set()
+    await worker_task
+
+
+@pytest_asyncio.fixture
+async def client_without_worker(mock_auth_detector, mock_optional_analysis_modules):
+    """Client for tests that assert durable submission before any worker claims it."""
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
-    from backend.app.api.v1.endpoints.analyze import wait_for_analysis_tasks
-    await wait_for_analysis_tasks()
+
+
+async def await_analysis_terminal(client, analysis_id: str, *, timeout: float = 30.0):
+    """Poll the durable status API until a terminal analysis state is persisted."""
+    deadline = asyncio.get_running_loop().time() + timeout
+    last_response = None
+    while asyncio.get_running_loop().time() < deadline:
+        last_response = await client.get(f"/api/v1/analysis/{analysis_id}")
+        if last_response.status_code == 200 and last_response.json().get("status") in {
+            "completed", "partial", "failed"
+        }:
+            return last_response
+        await asyncio.sleep(0.05)
+    raise AssertionError(
+        f"Analysis {analysis_id} did not reach a terminal status; last response: "
+        f"{last_response.status_code if last_response else 'none'}"
+    )
 
 
 @pytest.fixture

@@ -128,6 +128,16 @@ def validate_image_file(
             f"Accepted types: {', '.join(settings.allowed_mime_list)}"
         )
 
+    # Content-Type is user supplied, so use magic-byte detection as the source
+    # of truth and reject a contradictory declaration instead of silently
+    # treating a spoofed MIME type as an image.
+    claimed_mime = (content_type or "").split(";", 1)[0].strip().lower()
+    claimed_mime = {"image/jpg": "image/jpeg", "image/x-png": "image/png"}.get(
+        claimed_mime, claimed_mime
+    )
+    if claimed_mime and claimed_mime != "application/octet-stream" and claimed_mime != detected_mime:
+        raise ValueError("Declared MIME type does not match the uploaded image content.")
+
     expected_extensions = {
         "image/jpeg": {".jpg", ".jpeg"},
         "image/png": {".png"},

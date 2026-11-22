@@ -15,7 +15,21 @@ from pydantic import BaseModel, Field
 class AnalysisCreate(BaseModel):
     """Returned immediately after image upload."""
     analysis_id: str
+    job_id: Optional[str] = None
     status: str = "queued"
+
+
+class JobProgress(BaseModel):
+    """Internal durable delivery details; pipeline stage status remains E1."""
+    job_id: str
+    state: str
+    attempt_count: int = 0
+    max_attempts: int = 0
+    created_at: Optional[datetime] = None
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    error_category: Optional[str] = None
+    error_message: Optional[str] = None
 
 
 class ImageAssetOut(BaseModel):
@@ -79,6 +93,7 @@ class StageResultOut(BaseModel):
 class AnalysisOut(BaseModel):
     """Full analysis response."""
     analysis_id: str
+    job: Optional[JobProgress] = None
     status: str
     progress: AnalysisProgress
     truth_score: Optional[float] = None
@@ -114,6 +129,7 @@ class HealthResponse(BaseModel):
     environment: str
     gpu: GPUInfo
     database: str = "unknown"
+    worker: str = "unknown"
     uptime_seconds: float = 0.0
 
 

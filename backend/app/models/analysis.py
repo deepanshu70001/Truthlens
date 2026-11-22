@@ -10,7 +10,7 @@ import enum
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, Enum, Float, Integer, String, Text
+from sqlalchemy import DateTime, Enum, Float, Index, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.app.db.base import Base
@@ -29,6 +29,9 @@ class Analysis(Base):
     id: Mapped[str] = mapped_column(
         String(36), primary_key=True, default=lambda: str(uuid.uuid4())
     )
+    # Null for records created before authentication/ownership was introduced.
+    # Such legacy records are never exposed to authenticated users by default.
+    owner_id: Mapped[str | None] = mapped_column(String(128), nullable=True, index=True)
     status: Mapped[str] = mapped_column(
         Enum(AnalysisStatus), default=AnalysisStatus.QUEUED, nullable=False
     )
@@ -68,3 +71,6 @@ class Analysis(Base):
     system_events: Mapped[list["SystemEvent"]] = relationship(  # noqa: F821
         "SystemEvent", back_populates="analysis", lazy="selectin"
     )
+
+
+Index("ix_analyses_created_at", Analysis.created_at)

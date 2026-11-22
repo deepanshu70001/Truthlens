@@ -414,14 +414,27 @@ def test_provenance_missing_credentials_is_unavailable_for_web_check(monkeypatch
 
 
 def test_provenance_endpoint_reuses_validation_and_response_service(monkeypatch):
-    from fastapi import HTTPException, UploadFile
+    from fastapi import HTTPException, UploadFile, Request
     from backend.app.api.v1.endpoints import stubs
+    from backend.app.core.auth import Principal
     from backend.app.services.provenance import service
 
     monkeypatch.setattr(service, "search_provenance", lambda _data: SimpleNamespace(to_dict=lambda: {"status": "unavailable"}))
+    async def allow_rate_limit(*_args, **_kwargs):
+        return None
+    monkeypatch.setattr(stubs, "check_rate_limit", allow_rate_limit)
+    request = Request({
+        "type": "http", "http_version": "1.1", "method": "POST", "scheme": "http",
+        "path": "/api/v1/provenance", "raw_path": b"/api/v1/provenance",
+        "query_string": b"", "headers": [], "client": ("test", 1234), "server": ("test", 80),
+    })
 
     async def invoke(data, name="image.jpg"):
-        return await stubs.provenance_endpoint(UploadFile(filename=name, file=io.BytesIO(data)))
+        return await stubs.provenance_endpoint(
+            http_request=request,
+            image=UploadFile(filename=name, file=io.BytesIO(data)),
+            principal=Principal(subject="e6e7-test"),
+        )
 
     import asyncio
     valid = asyncio.run(invoke(image_bytes()))

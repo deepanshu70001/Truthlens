@@ -28,17 +28,25 @@ jobs:
       - name: Install backend dependencies
         run: pip install -r backend/requirements-dev.txt
 
-      - name: Python compile check (backend + experiments)
-        run: python -m compileall -q backend/app experiments
+      - name: Audit Python dependencies
+        run: |
+          pip install pip-audit
+          pip-audit -r backend/requirements-dev.txt
 
-      - name: Run deterministic backend tests
-        run: python -m pytest backend/tests -q -rs --ignore=backend/tests/integration
+      - name: Python compile check (backend application and migrations)
+        run: python -m compileall -q backend/app backend/migrations
+
+      - name: Run backend tests without protected research artifacts
+        run: >-
+          python -m pytest backend/tests -q -rs
+          --ignore-glob='backend/tests/test_phase*.py'
+          --ignore=backend/tests/test_authenticity_calibration.py
+          --ignore=backend/tests/integration
         env:
           APP_ENV: test
           APP_DEBUG: "true"
-          # Real model / provider tests stay optional
-          # Set TRUTHLENS_REAL_MODEL_TESTS=1 in repo secrets to enable
-          TRUTHLENS_REAL_MODEL_TESTS: ${{ vars.TRUTHLENS_REAL_MODEL_TESTS || '0' }}
+          DEV_AUTH_BYPASS: "true"
+          TRUTHLENS_REAL_MODEL_TESTS: "0"
 
   # ── Frontend: build and lint ───────────────────────────────────
   frontend:
@@ -58,7 +66,22 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
-      - name: TypeScript build
+      - name: Audit frontend dependencies
+        run: npm audit --audit-level=high
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Unit and component tests
+        run: npm test -- --reporter=dot
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser workflow test
+        run: npm run test:e2e
+
+      - name: Production build
         run: npm run build
 
       - name: Lint
@@ -69,6 +92,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Whitespace check
-        run: git diff --check HEAD~1 || true
+        env:
+          BASE_SHA: ${{ github.event.before }}
+          BASE_REF: ${{ github.base_ref }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            git diff --check "origin/$BASE_REF...HEAD"
+          elif [[ -n "$BASE_SHA" && ! "$BASE_SHA" =~ ^0+$ ]]; then
+            git diff --check "$BASE_SHA" HEAD
+          else
+            git diff --check HEAD^ HEAD
+          fi

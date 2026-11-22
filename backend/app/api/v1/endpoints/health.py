@@ -12,11 +12,14 @@ import importlib.util
 from pathlib import Path
 
 from fastapi import APIRouter, Depends
+from datetime import datetime, timezone
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.config import settings
+from backend.app.core.auth import Principal, get_current_principal
 from backend.app.db.session import get_db
+from backend.app.models import WorkerLease
 from backend.app.schemas import GPUInfo, HealthResponse
 
 router = APIRouter()
@@ -58,12 +61,26 @@ async def health_check(db: AsyncSession = Depends(get_db)):
     except Exception:
         db_status = "disconnected"
 
+    worker_status = "unavailable"
+    try:
+        lease = await db.get(WorkerLease, "analysis-pipeline")
+        if lease and lease.heartbeat_at:
+            heartbeat = lease.heartbeat_at
+            if heartbeat.tzinfo is None:
+                heartbeat = heartbeat.replace(tzinfo=timezone.utc)
+            age_seconds = (datetime.now(timezone.utc) - heartbeat).total_seconds()
+            if age_seconds <= max(60, settings.ANALYSIS_JOB_LEASE_SECONDS * 2):
+                worker_status = "available"
+    except Exception:
+        worker_status = "unknown"
+
     return HealthResponse(
         status="healthy" if db_status == "connected" else "degraded",
         version=settings.APP_VERSION,
         environment=settings.APP_ENV,
         gpu=gpu,
         database=db_status,
+        worker=worker_status,
         uptime_seconds=round(time.time() - _start_time, 1),
     )
 
@@ -73,7 +90,7 @@ async def health_check(db: AsyncSession = Depends(get_db)):
     summary="Model health status",
     description="Returns loaded/available model status. (Stub — models loaded in Stage 3.)",
 )
-async def model_health():
+async def model_health(principal: Principal = Depends(get_current_principal)):
     model_root = Path(settings.MODEL_CACHE_DIR)
     finetuned_backend = settings.AUTHENTICITY_BACKEND.strip().lower() == "finetuned_siglip"
     if finetuned_backend:
@@ -115,7 +132,6 @@ async def model_health():
         "models": [
             {"name": "authenticity", "model_id": authenticity_model_id,
              "backbone_model_id": authenticity_backbone_id,
-             "checkpoint_path": str(authenticity_checkpoint) if authenticity_checkpoint else None,
              "checkpoint_present": authenticity_checkpoint_present,
              "status": authenticity_status,
              "dependency_available": importlib.util.find_spec("transformers") is not None,

@@ -379,81 +379,30 @@ class TestIntegration:
     """Pipeline integration test using the API and mocked detector."""
 
     @pytest.mark.asyncio
-    async def test_full_pipeline_via_api(self, monkeypatch):
-        """Upload an image and verify the pipeline under a deterministic mock detector."""
-        import asyncio
-        from httpx import AsyncClient, ASGITransport
-        from backend.app.services.authenticity.detector import AuthenticityResult
+    async def test_full_pipeline_via_api(self, client, mock_optional_analysis_modules):
+        """Exercise durable submission and report retrieval with mocked inference."""
+        from backend.tests.conftest import await_analysis_terminal, create_test_jpeg
 
-        class MockDetector:
-            is_loaded = False
-
-            def load(self, device="auto"):
-                return None
-
-            def detect(self, image):
-                return AuthenticityResult(
-                    label="inconclusive", ai_generated_score=0.5,
-                    authentic_score=0.5, confidence=0.5,
-                    model_name="mock-detector", model_version="test",
-                )
-
-            def get_device(self):
-                return None
-
-        monkeypatch.setattr(
-            "backend.app.services.authenticity.detector.get_detector",
-            lambda: MockDetector(),
+        response = await client.post(
+            "/api/v1/analyze",
+            files={"image": ("test_photo.jpg", io.BytesIO(create_test_jpeg()), "image/jpeg")},
         )
+        assert response.status_code == 201
+        analysis_id = response.json()["analysis_id"]
+        assert response.json()["job_id"] == analysis_id
 
-        os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./test_stage3.db"
-        os.environ["APP_ENV"] = "test"
-
-        # Re-import to get fresh settings
-        from backend.app.main import app
-        from backend.app.db.session import engine
-        from backend.app.db.base import Base
-        import backend.app.models
-
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-
-        transport = ASGITransport(app=app)
-        async with AsyncClient(transport=transport, base_url="http://test") as client:
-            # Upload
-            image_data = TEST_IMAGE_PATH.read_bytes()
-            resp = await client.post(
-                "/api/v1/analyze",
-                files={"image": ("test_photo.jpg", io.BytesIO(image_data), "image/jpeg")},
+        terminal = await await_analysis_terminal(client, analysis_id)
+        data = terminal.json()
+        assert data["status"] in ("completed", "partial"), (
+            f"Pipeline ended with status: {data['status']}"
+        )
+        assert data["progress"]["completed_steps"]
+        if data["status"] == "partial":
+            report_response = await client.get(f"/api/v1/analysis/{analysis_id}/report")
+            report = report_response.json()
+            assert report["analysis_id"] == analysis_id
+            assert report["status"] == "partial"
+            assert any(
+                stage["status"] in ("unavailable", "failed")
+                for stage in report["stages"].values()
             )
-            assert resp.status_code == 201
-            analysis_id = resp.json()["analysis_id"]
-
-            # Wait for pipeline (may take time with model inference)
-            for _ in range(60):  # Wait up to 60 seconds
-                await asyncio.sleep(1)
-                resp = await client.get(f"/api/v1/analysis/{analysis_id}")
-                data = resp.json()
-                if data["status"] in ("completed", "partial", "failed"):
-                    break
-
-            assert data["status"] in ("completed", "partial"), f"Pipeline ended with status: {data['status']}"
-            assert data["progress"]["completed_steps"]
-            if data["status"] == "partial":
-                report_resp = await client.get(f"/api/v1/analysis/{analysis_id}/report")
-                report = report_resp.json()
-                assert report["analysis_id"] == analysis_id
-                assert report["status"] == "partial"
-                assert any(stage["status"] in ("unavailable", "failed") for stage in report["stages"].values())
-
-        from backend.app.api.v1.endpoints.analyze import wait_for_analysis_tasks
-        await wait_for_analysis_tasks()
-
-        # Cleanup
-        await engine.dispose()
-        db_path = Path("./test_stage3.db")
-        if db_path.exists():
-            try:
-                db_path.unlink()
-            except OSError:
-                pass

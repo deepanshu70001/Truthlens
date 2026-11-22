@@ -9,12 +9,42 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell
 } from 'recharts';
 import { MapContainer, TileLayer, Tooltip as MapTooltip, CircleMarker } from 'react-leaflet';
-import { uploadImage, getAnalysisStatus, getAnalysisReport, getHeatmapUrl, getAnalysisImageUrl } from './services/api';
+import {
+  uploadImage, getAnalysisStatus, getAnalysisReport, getHeatmapUrl, getAnalysisImageUrl,
+  getAuthMode, getAccessToken, getProtectedAsset, login, logout,
+} from './services/api';
 import './index.css';
 
 /* ────── helpers ────── */
 const pct = (v?: number) => v != null ? `${(v * 100).toFixed(1)}%` : '—';
 const clsx = (...cls: (string | false | undefined)[]) => cls.filter(Boolean).join(' ');
+
+function useProtectedAssetUrl(url?: string) {
+  const [assetUrl, setAssetUrl] = useState('');
+  useEffect(() => {
+    if (!url) { setAssetUrl(''); return; }
+    if (url.startsWith('data:') || url.startsWith('blob:')) { setAssetUrl(url); return; }
+    let active = true;
+    let objectUrl = '';
+    setAssetUrl('');
+    getProtectedAsset(url).then(blob => {
+      if (!active) return;
+      objectUrl = URL.createObjectURL(blob);
+      setAssetUrl(objectUrl);
+    }).catch(() => { if (active) setAssetUrl(''); });
+    return () => {
+      active = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [url]);
+  return assetUrl;
+}
+
+function ProtectedAssetLink({ url, children }: { url: string; children: React.ReactNode }) {
+  const assetUrl = useProtectedAssetUrl(url);
+  if (!assetUrl) return null;
+  return <a className="text-xs text-primary" href={assetUrl} target="_blank" rel="noopener noreferrer">{children}</a>;
+}
 
 const STEPS = [
   'Preprocessing', 'Metadata', 'Quality', 'Authenticity', 'Forensics', 'OCR',
@@ -199,7 +229,7 @@ function ForensicsSection({ forensics, quality, objects, statuses }: { forensics
   return <Card title="Forensics and visual analysis" icon={Eye}>
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div><p className="text-xs uppercase text-text-muted mb-1">Image quality</p>{quality ? <pre className="text-xs text-text-muted whitespace-pre-wrap">{JSON.stringify(quality, null, 2)}</pre> : <p className="text-xs text-text-muted">{statuses?.quality || 'Unavailable'}</p>}</div>
-      <div><p className="text-xs uppercase text-text-muted mb-1">Forensic signals</p>{forensics?.signals?.length ? <>{forensics.signals.map((s: any, i: number) => <p key={i} className="text-xs text-text-muted">{s.name} [{s.status}]{s.score != null ? ` · indicator ${Number(s.score).toFixed(3)}` : ''}: {s.interpretation}</p>)}<p className="text-[10px] text-text-muted mt-2">Indicators are encoding and content dependent; they are not manipulation probabilities.</p>{forensics.signals.find((s: any) => s.details?.artifact_url)?.details?.artifact_url && <a className="text-xs text-primary" href={forensics.signals.find((s: any) => s.details?.artifact_url).details.artifact_url} target="_blank" rel="noreferrer">View ELA visualization</a>}</> : <p className="text-xs text-text-muted">{statuses?.forensics || 'Unavailable'}</p>}</div>
+      <div><p className="text-xs uppercase text-text-muted mb-1">Forensic signals</p>{forensics?.signals?.length ? <>{forensics.signals.map((s: any, i: number) => <p key={i} className="text-xs text-text-muted">{s.name} [{s.status}]{s.score != null ? ` · indicator ${Number(s.score).toFixed(3)}` : ''}: {s.interpretation}</p>)}<p className="text-[10px] text-text-muted mt-2">Indicators are encoding and content dependent; they are not manipulation probabilities.</p>{forensics.signals.find((s: any) => s.details?.artifact_url)?.details?.artifact_url && <ProtectedAssetLink url={forensics.signals.find((s: any) => s.details?.artifact_url).details.artifact_url}>View ELA visualization</ProtectedAssetLink>}</> : <p className="text-xs text-text-muted">{statuses?.forensics || 'Unavailable'}</p>}</div>
       <div><p className="text-xs uppercase text-text-muted mb-1">Detected objects</p>{objects?.objects?.length ? objects.objects.map((o: any, i: number) => <p key={i} className="text-xs text-text-muted">{o.class_name || o.label || 'Object'}{o.confidence != null ? ` (${pct(o.confidence)})` : ''}</p>) : <p className="text-xs text-text-muted">{statuses?.vision || 'Unavailable or none detected'}</p>}</div>
     </div>
   </Card>;
@@ -209,6 +239,8 @@ function ForensicsSection({ forensics, quality, objects, statuses }: { forensics
 function ImageViewer({ imageUrl, heatmapUrl, objects, xai }: { imageUrl?: string; heatmapUrl?: string; objects?: any; xai?: any }) {
   const [view, setView] = useState<'original' | 'heatmap'>('original');
   const [heatmapOk, setHeatmapOk] = useState(true);
+  const authorizedImageUrl = useProtectedAssetUrl(imageUrl);
+  const authorizedHeatmapUrl = useProtectedAssetUrl(heatmapUrl);
   return (
     <Card title="Image Analysis" icon={Eye}>
       <div className="flex gap-2 mb-4">
@@ -216,8 +248,8 @@ function ImageViewer({ imageUrl, heatmapUrl, objects, xai }: { imageUrl?: string
         {heatmapUrl && heatmapOk && <button onClick={() => setView('heatmap')} className={clsx('px-4 py-2 rounded-lg text-sm font-medium transition-colors', view === 'heatmap' ? 'bg-primary text-white' : 'bg-surface/50 text-text-muted hover:text-text')}>Heatmap</button>}
       </div>
       <div className="rounded-xl overflow-hidden bg-surface border border-border">
-        {view === 'original' && imageUrl && (objects?.status === 'completed' ? <div className="w-full max-h-[500px] overflow-auto"><svg role="img" aria-label="Uploaded image with detected object boxes" viewBox={`0 0 ${objects.image_width || 1} ${objects.image_height || 1}`} className="block w-full max-h-[500px]" style={{ aspectRatio: `${objects.image_width || 1} / ${objects.image_height || 1}` }}><image href={imageUrl} width={objects.image_width || 1} height={objects.image_height || 1} preserveAspectRatio="none" />{(objects.objects || []).map((object: any, i: number) => { const [x1, y1, x2, y2] = object.bbox || []; if (![x1, y1, x2, y2].every(Number.isFinite)) return null; return <g key={i}><rect x={x1} y={y1} width={Math.max(0, x2-x1)} height={Math.max(0, y2-y1)} fill="none" stroke="#22d3ee" strokeWidth={Math.max(2, objects.image_width/300)} /><title>{object.class_name} ({pct(object.confidence)})</title></g>; })}</svg></div> : <img src={imageUrl} alt="Uploaded" className="w-full max-h-[500px] object-contain" />)}
-        {view === 'heatmap' && heatmapUrl && <img src={heatmapUrl} alt="XAI Heatmap" className="w-full max-h-[500px] object-contain" onError={() => setHeatmapOk(false)} />}
+        {view === 'original' && authorizedImageUrl && (objects?.status === 'completed' ? <div className="w-full max-h-[500px] overflow-auto"><svg role="img" aria-label="Uploaded image with detected object boxes" viewBox={`0 0 ${objects.image_width || 1} ${objects.image_height || 1}`} className="block w-full max-h-[500px]" style={{ aspectRatio: `${objects.image_width || 1} / ${objects.image_height || 1}` }}><image href={authorizedImageUrl} width={objects.image_width || 1} height={objects.image_height || 1} preserveAspectRatio="none" />{(objects.objects || []).map((object: any, i: number) => { const [x1, y1, x2, y2] = object.bbox || []; if (![x1, y1, x2, y2].every(Number.isFinite)) return null; return <g key={i}><rect x={x1} y={y1} width={Math.max(0, x2-x1)} height={Math.max(0, y2-y1)} fill="none" stroke="#22d3ee" strokeWidth={Math.max(2, objects.image_width/300)} /><title>{object.class_name} ({pct(object.confidence)})</title></g>; })}</svg></div> : <img src={authorizedImageUrl} alt="Uploaded" className="w-full max-h-[500px] object-contain" />)}
+        {view === 'heatmap' && authorizedHeatmapUrl && <img src={authorizedHeatmapUrl} alt="XAI Heatmap" className="w-full max-h-[500px] object-contain" onError={() => setHeatmapOk(false)} />}
         {!imageUrl && <div className="h-64 flex items-center justify-center text-text-muted">No image available</div>}
       </div>
       {view === 'heatmap' && <div className="mt-3 text-xs text-text-muted"><p>Grad-CAM attribution highlights image regions that influenced the selected model output. It does not show tampering or prove authenticity.</p>{xai?.target_class && <p className="mt-1">Target class: {xai.target_class}{xai.target_score != null ? ` · model score ${pct(xai.target_score)}` : ''}</p>}{xai?.suspicious_regions?.length > 0 && <p className="mt-1">High-activation regions (pixel boxes): {xai.suspicious_regions.slice(0, 5).map((region: any) => `[${(region.bbox || []).join(', ')}]`).join('; ')}</p>}</div>}
@@ -700,7 +732,7 @@ function LimitationsSection({ limitations, disclaimer }: { limitations?: string[
 }
 
 /* ═══════════════ MAIN APP ═══════════════ */
-export default function App() {
+function AnalysisApp({ onLogout, showLogout }: { onLogout: () => void; showLogout: boolean }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>('');
   const [uploading, setUploading] = useState(false);
@@ -711,12 +743,14 @@ export default function App() {
   const [dragOver, setDragOver] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const idempotencyKeyRef = useRef<string>('');
 
   /* ── File select ── */
   const handleFile = useCallback((f: File) => {
     if (!f.type.startsWith('image/')) { setError('Please select an image file.'); return; }
     if (f.size > 20 * 1024 * 1024) { setError('File too large (max 20 MB).'); return; }
     setFile(f); setError(''); setReport(null); setStatus(null); setAnalysisId('');
+    idempotencyKeyRef.current = crypto.randomUUID();
     sessionStorage.removeItem('truthlens.analysisId');
     window.history.replaceState({}, '', window.location.pathname);
     const reader = new FileReader();
@@ -729,7 +763,7 @@ export default function App() {
     if (!file) return;
     setUploading(true); setError('');
     try {
-      const result = await uploadImage(file);
+      const result = await uploadImage(file, idempotencyKeyRef.current || crypto.randomUUID());
       setAnalysisId(result.analysis_id);
       sessionStorage.setItem('truthlens.analysisId', result.analysis_id);
       window.history.replaceState({}, '', `?analysis=${encodeURIComponent(result.analysis_id)}`);
@@ -800,7 +834,10 @@ export default function App() {
               <p className="text-xs text-text-muted">AI-Assisted Image Verification & Social Impact Analysis</p>
             </div>
           </div>
-          {report?.processing_time_ms && <span className="text-xs text-text-muted">{(report.processing_time_ms / 1000).toFixed(1)}s</span>}
+          <div className="flex items-center gap-4">
+            {report?.processing_time_ms && <span className="text-xs text-text-muted">{(report.processing_time_ms / 1000).toFixed(1)}s</span>}
+            {showLogout && <button onClick={onLogout} className="text-xs text-text-muted hover:text-text">Sign out</button>}
+          </div>
         </div>
       </header>
 
@@ -833,7 +870,7 @@ export default function App() {
                   <p className="text-xs text-text-muted">{(file.size / 1024).toFixed(1)} KB · {file.type}</p>
                 </div>
                 <div className="flex gap-3 ml-auto">
-                  <button onClick={(e) => { e.stopPropagation(); setFile(null); setPreview(''); setAnalysisId(''); setStatus(null); setReport(null); }} className="px-4 py-2 rounded-lg bg-surface border border-border text-sm text-text-muted hover:text-text transition-colors">Clear</button>
+              <button onClick={(e) => { e.stopPropagation(); setFile(null); setPreview(''); setAnalysisId(''); setStatus(null); setReport(null); idempotencyKeyRef.current = ''; }} className="px-4 py-2 rounded-lg bg-surface border border-border text-sm text-text-muted hover:text-text transition-colors">Clear</button>
                   <button onClick={(e) => { e.stopPropagation(); handleUpload(); }} disabled={uploading || isProcessing} className="px-6 py-2 rounded-lg bg-gradient-to-r from-primary to-primary-dark text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-all flex items-center gap-2">
                     {(uploading || isProcessing) && <Loader2 className="w-4 h-4 animate-spin" />}
                     {uploading ? 'Uploading…' : isProcessing ? 'Analyzing…' : 'Analyze'}
@@ -851,6 +888,7 @@ export default function App() {
           <Card title="Analysis Progress" icon={Loader2}>
             <ProgressTracker completed={status.progress?.completed_steps || status.completed_steps || []} current={status.progress?.current_step || status.current_step} stageStatuses={status.progress?.stage_statuses} />
             <p className="mt-3 text-xs text-text-muted">Progress reflects completed backend stages. Optional model initialization or external services can extend runtime.</p>
+            {status.job && <p className="mt-1 text-xs text-text-muted">Job {status.job.job_id} · {status.job.state} · attempt {status.job.attempt_count} of {status.job.max_attempts}</p>}
           </Card>
         )}
 
@@ -922,4 +960,81 @@ export default function App() {
       </footer>
     </div>
   );
+}
+
+function LoginScreen({ onSuccess, onRetry, unavailable }: { onSuccess: () => void; onRetry: () => void; unavailable: boolean }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setBusy(true); setError('');
+    try {
+      await login(username, password);
+      onSuccess();
+    } catch (cause: any) {
+      setError(cause.response?.data?.detail || 'Sign in failed. Check your credentials and try again.');
+    } finally { setBusy(false); }
+  };
+  return (
+    <main className="min-h-screen flex items-center justify-center px-6 py-10 bg-surface">
+      <section className="w-full max-w-md rounded-2xl border border-border bg-surface-2 p-8 shadow-xl">
+        <div className="flex items-center gap-3 mb-6">
+          <Shield className="w-8 h-8 text-primary-light" />
+          <div><h1 className="text-xl font-bold text-text">TruthLens</h1><p className="text-xs text-text-muted">Sign in to your workspace</p></div>
+        </div>
+        {unavailable ? (
+          <div role="alert" className="space-y-4"><p className="text-sm text-danger">The authentication service could not be reached.</p><button onClick={onRetry} className="px-4 py-2 rounded-lg bg-primary text-white text-sm">Retry</button></div>
+        ) : (
+          <form onSubmit={submit} className="space-y-4">
+            <label className="block text-sm text-text">Username<input autoComplete="username" required value={username} onChange={event => setUsername(event.target.value)} className="mt-1 block w-full rounded-lg border border-border bg-surface px-3 py-2 text-text" /></label>
+            <label className="block text-sm text-text">Password<input autoComplete="current-password" type="password" required value={password} onChange={event => setPassword(event.target.value)} className="mt-1 block w-full rounded-lg border border-border bg-surface px-3 py-2 text-text" /></label>
+            {error && <p role="alert" className="text-sm text-danger">{error}</p>}
+            <button type="submit" disabled={busy} className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-primary to-primary-dark text-white text-sm font-medium disabled:opacity-50">{busy ? 'Signing in…' : 'Sign in'}</button>
+          </form>
+        )}
+      </section>
+    </main>
+  );
+}
+
+export default function App() {
+  const [authRequired, setAuthRequired] = useState<boolean | null>(null);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [authUnavailable, setAuthUnavailable] = useState(false);
+
+  const loadAuthMode = useCallback(() => {
+    setAuthUnavailable(false);
+    getAuthMode().then(mode => {
+      setAuthRequired(mode.auth_required);
+      setAuthenticated(!mode.auth_required || Boolean(getAccessToken()));
+    }).catch(() => {
+      setAuthRequired(true);
+      setAuthenticated(false);
+      setAuthUnavailable(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    loadAuthMode();
+    const expired = () => setAuthenticated(false);
+    window.addEventListener('truthlens:auth-expired', expired);
+    return () => window.removeEventListener('truthlens:auth-expired', expired);
+  }, [loadAuthMode]);
+
+  const signOut = () => {
+    logout();
+    sessionStorage.removeItem('truthlens.analysisId');
+    window.history.replaceState({}, '', window.location.pathname);
+    setAuthenticated(false);
+  };
+
+  if (authRequired === null) {
+    return <main className="min-h-screen grid place-items-center bg-surface text-sm text-text-muted">Connecting to TruthLens…</main>;
+  }
+  if (authRequired && !authenticated) {
+    return <LoginScreen onSuccess={() => setAuthenticated(true)} onRetry={loadAuthMode} unavailable={authUnavailable} />;
+  }
+  return <AnalysisApp onLogout={signOut} showLogout={authRequired} />;
 }

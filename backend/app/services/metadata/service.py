@@ -170,10 +170,10 @@ def extract_metadata(image_data: bytes) -> MetadataResult:
         )
 
     log.info(
-        "Metadata extracted: exif=%s camera=%s software=%s gps=%s anomalies=%d",
+        "Metadata inspected: exif=%s camera_present=%s software_present=%s gps_present=%s anomalies=%d",
         result.has_exif,
-        result.camera_model,
-        result.software,
+        bool(result.camera_model),
+        bool(result.software),
         result.gps_available,
         len(result.anomalies),
     )

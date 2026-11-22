@@ -8,23 +8,32 @@ GET /api/v1/analysis/{analysis_id}/heatmap
 
 from __future__ import annotations
 
+import asyncio
 import json
+import shutil
 from pathlib import Path
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from fastapi.responses import FileResponse
+from sqlalchemy import delete, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-from backend.app.core.exceptions import AnalysisNotFoundError
 from backend.app.config import settings
+from backend.app.core.auth import Principal, get_current_principal
 from backend.app.db.session import get_db
-from backend.app.models import Analysis
+from backend.app.core.ownership import require_analysis_owner
+from backend.app.core.public_output import safe_public_text, sanitize_public_payload
+from backend.app.core.rate_limit import check_rate_limit
+from backend.app.models import Analysis, AnalysisJob, ImageAsset, ModelRun, SystemEvent
+from backend.app.services.job_queue import release_job_capacity
 from backend.app.schemas import (
     AnalysisOut,
     AnalysisProgress,
     ImageAssetOut,
+    JobProgress,
     ModelRunOut,
 )
 
@@ -36,9 +45,15 @@ router = APIRouter()
     summary="Retrieve uploaded analysis image",
     description="Serves the validated original image for this analysis without exposing its storage path.",
 )
-async def get_analysis_image(analysis_id: str, db: AsyncSession = Depends(get_db)):
-    analysis = await db.get(Analysis, analysis_id)
-    if not analysis or not analysis.image_asset:
+async def get_analysis_image(
+    analysis_id: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    principal: Principal = Depends(get_current_principal),
+):
+    await check_rate_limit(request, scope="analysis-retrieval", limit=settings.RATE_LIMIT_RETRIEVAL_PER_MINUTE, principal=principal)
+    analysis = await require_analysis_owner(analysis_id, principal, db)
+    if not analysis.image_asset:
         raise HTTPException(status_code=404, detail="Image not found")
     try:
         UUID(analysis_id)
@@ -72,11 +87,12 @@ def _parse_completed_steps(raw: str | None) -> List[str]:
 )
 async def get_analysis(
     analysis_id: str,
+    request: Request,
     db: AsyncSession = Depends(get_db),
+    principal: Principal = Depends(get_current_principal),
 ):
-    analysis = await db.get(Analysis, analysis_id)
-    if not analysis:
-        raise AnalysisNotFoundError(analysis_id)
+    await check_rate_limit(request, scope="analysis-retrieval", limit=settings.RATE_LIMIT_RETRIEVAL_PER_MINUTE, principal=principal)
+    analysis = await require_analysis_owner(analysis_id, principal, db)
 
     completed_steps = _parse_completed_steps(analysis.completed_steps)
     total_steps = 20
@@ -117,12 +133,29 @@ async def get_analysis(
     if analysis.image_asset:
         image_out = ImageAssetOut.model_validate(analysis.image_asset)
 
-    model_runs_out = [
-        ModelRunOut.model_validate(mr) for mr in (analysis.model_runs or [])
-    ]
+    model_runs_out = []
+    for model_run in analysis.model_runs or []:
+        public_run = ModelRunOut.model_validate(model_run)
+        if public_run.error_message:
+            public_run.error_message = safe_public_text(public_run.error_message)
+        model_runs_out.append(public_run)
+
+    job = await db.get(AnalysisJob, analysis_id)
+    job_out = JobProgress(
+        job_id=job.analysis_id,
+        state=job.state,
+        attempt_count=job.attempt_count,
+        max_attempts=job.max_attempts,
+        created_at=job.created_at,
+        started_at=job.started_at,
+        completed_at=job.completed_at,
+        error_category=job.error_category,
+        error_message=safe_public_text(job.error_message) if job.error_message else None,
+    ) if job else None
 
     return AnalysisOut(
         analysis_id=analysis.id,
+        job=job_out,
         status=response_status,
         progress=progress,
         truth_score=analysis.truth_score,
@@ -131,7 +164,7 @@ async def get_analysis(
         image=image_out,
         model_runs=model_runs_out,
         processing_time_ms=analysis.processing_time_ms,
-        error_message=analysis.error_message,
+        error_message=safe_public_text(analysis.error_message) if analysis.error_message else None,
         created_at=analysis.created_at,
         updated_at=analysis.updated_at,
         completed_at=analysis.completed_at,
@@ -149,16 +182,17 @@ async def get_analysis(
 )
 async def get_analysis_report(
     analysis_id: str,
+    request: Request,
     db: AsyncSession = Depends(get_db),
+    principal: Principal = Depends(get_current_principal),
 ):
-    analysis = await db.get(Analysis, analysis_id)
-    if not analysis:
-        raise AnalysisNotFoundError(analysis_id)
+    await check_rate_limit(request, scope="analysis-retrieval", limit=settings.RATE_LIMIT_RETRIEVAL_PER_MINUTE, principal=principal)
+    analysis = await require_analysis_owner(analysis_id, principal, db)
 
     # If report is stored, return it directly
     if analysis.report_json:
         try:
-            return json.loads(analysis.report_json)
+            return sanitize_public_payload(json.loads(analysis.report_json))
         except (json.JSONDecodeError, TypeError):
             pass
 
@@ -180,7 +214,7 @@ async def get_analysis_report(
         return {
             "analysis_id": analysis_id,
             "status": "failed",
-            "error": analysis.error_message,
+            "error": safe_public_text(analysis.error_message) if analysis.error_message else "Analysis failed.",
             "message": "Analysis failed. No report available.",
         }
 
@@ -207,12 +241,13 @@ async def get_analysis_report(
 )
 async def get_analysis_heatmap(
     analysis_id: str,
+    request: Request,
     variant: str = "overlay",
     db: AsyncSession = Depends(get_db),
+    principal: Principal = Depends(get_current_principal),
 ):
-    analysis = await db.get(Analysis, analysis_id)
-    if not analysis:
-        raise AnalysisNotFoundError(analysis_id)
+    await check_rate_limit(request, scope="analysis-retrieval", limit=settings.RATE_LIMIT_RETRIEVAL_PER_MINUTE, principal=principal)
+    analysis = await require_analysis_owner(analysis_id, principal, db)
 
     if variant not in {"overlay", "raw"}:
         raise HTTPException(status_code=422, detail="variant must be 'overlay' or 'raw'")
@@ -234,11 +269,12 @@ async def get_analysis_heatmap(
 )
 async def get_forensics_ela_artifact(
     analysis_id: str,
+    request: Request,
     db: AsyncSession = Depends(get_db),
+    principal: Principal = Depends(get_current_principal),
 ):
-    analysis = await db.get(Analysis, analysis_id)
-    if not analysis:
-        raise AnalysisNotFoundError(analysis_id)
+    await check_rate_limit(request, scope="analysis-retrieval", limit=settings.RATE_LIMIT_RETRIEVAL_PER_MINUTE, principal=principal)
+    await require_analysis_owner(analysis_id, principal, db)
     try:
         safe_id = str(UUID(analysis_id))
     except ValueError:
@@ -248,3 +284,106 @@ async def get_forensics_ela_artifact(
     if not path.is_relative_to(base) or not path.is_file():
         raise HTTPException(status_code=404, detail="ELA artifact is not available for this analysis")
     return FileResponse(path, media_type="image/png", filename="ela.png")
+
+
+@router.get("/analysis")
+async def list_analyses(
+    request: Request,
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0, le=100_000),
+    db: AsyncSession = Depends(get_db),
+    principal: Principal = Depends(get_current_principal),
+):
+    await check_rate_limit(request, scope="analysis-retrieval", limit=settings.RATE_LIMIT_RETRIEVAL_PER_MINUTE, principal=principal)
+    query = select(Analysis).options(selectinload(Analysis.image_asset)).order_by(Analysis.created_at.desc()).limit(limit).offset(offset)
+    if principal.development_bypass:
+        query = query.where(or_(Analysis.owner_id == principal.subject, Analysis.owner_id.is_(None)))
+    else:
+        query = query.where(Analysis.owner_id == principal.subject)
+    rows = (await db.scalars(query)).all()
+    return [{
+        "analysis_id": row.id,
+        "status": _response_status(row),
+        "created_at": row.created_at,
+        "completed_at": row.completed_at,
+        "original_filename": row.image_asset.original_filename if row.image_asset else None,
+    } for row in rows]
+
+
+def _response_status(analysis: Analysis) -> str:
+    value = analysis.status.value if hasattr(analysis.status, "value") else analysis.status
+    if value == "completed" and analysis.report_json:
+        try:
+            if json.loads(analysis.report_json).get("status") == "partial":
+                return "partial"
+        except (json.JSONDecodeError, TypeError, AttributeError):
+            pass
+    return value
+
+
+def _analysis_storage_targets(analysis_id: str, image_asset: ImageAsset | None) -> list[Path]:
+    """Build deletion targets only from known per-analysis storage roots/names."""
+    try:
+        safe_id = str(UUID(analysis_id))
+    except ValueError:
+        return []
+    roots = [settings.originals_dir, settings.thumbnails_dir, settings.processed_dir,
+             settings.heatmaps_dir, settings.artifacts_dir / "forensics"]
+    targets: set[Path] = set()
+    if image_asset is not None:
+        for raw in (image_asset.storage_path, image_asset.thumbnail_path):
+            if raw:
+                path = Path(raw).resolve()
+                if any(path.is_relative_to(root.resolve()) for root in roots):
+                    targets.add(path)
+    for root in roots:
+        resolved_root = root.resolve()
+        if not resolved_root.exists():
+            continue
+        if root == settings.heatmaps_dir:
+            candidate = (root / safe_id).resolve()
+            if candidate.is_relative_to(resolved_root) and candidate.exists():
+                targets.add(candidate)
+        else:
+            for candidate in root.glob(f"{safe_id}*"):
+                resolved = candidate.resolve()
+                if resolved.is_relative_to(resolved_root):
+                    targets.add(resolved)
+    return list(targets)
+
+
+@router.delete("/analysis/{analysis_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_analysis(
+    analysis_id: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    principal: Principal = Depends(get_current_principal),
+):
+    await check_rate_limit(request, scope="analysis-delete", limit=10, principal=principal)
+    analysis = await require_analysis_owner(analysis_id, principal, db)
+    job = await db.get(AnalysisJob, analysis_id)
+    if job is not None and job.state == "running":
+        raise HTTPException(status_code=409, detail="A running analysis cannot be deleted.")
+    if job is not None and job.state in {"queued", "retry_wait"}:
+        await release_job_capacity(db)
+    targets = _analysis_storage_targets(analysis_id, analysis.image_asset)
+    # Delete dependent rows explicitly; the legacy schema has no ON DELETE CASCADE.
+    await db.execute(delete(AnalysisJob).where(AnalysisJob.analysis_id == analysis_id))
+    await db.execute(delete(ModelRun).where(ModelRun.analysis_id == analysis_id))
+    await db.execute(delete(SystemEvent).where(SystemEvent.analysis_id == analysis_id))
+    await db.execute(delete(ImageAsset).where(ImageAsset.analysis_id == analysis_id))
+    await db.delete(analysis)
+    await db.commit()
+    if targets:
+        def remove_owned_targets():
+            for path in targets:
+                try:
+                    if path.is_dir():
+                        shutil.rmtree(path)
+                    elif path.is_file():
+                        path.unlink()
+                except OSError:
+                    # DB deletion is authoritative. Orphan reporting is dry-run only.
+                    pass
+        await asyncio.to_thread(remove_owned_targets)
+    return None

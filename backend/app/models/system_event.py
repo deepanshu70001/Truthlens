@@ -9,7 +9,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, ForeignKey, String, Text
+from sqlalchemy import DateTime, ForeignKey, Index, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.app.db.base import Base
@@ -40,3 +40,6 @@ class SystemEvent(Base):
     analysis: Mapped["Analysis | None"] = relationship(  # noqa: F821
         "Analysis", back_populates="system_events"
     )
+
+
+Index("ix_system_events_analysis_id", SystemEvent.analysis_id)

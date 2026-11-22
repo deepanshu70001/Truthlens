@@ -240,7 +240,6 @@ async def _run_stage(
         stage.error = "The stage could not complete."
         stage.error_message = stage.error
 
-        log.exception("Stage '%s' failed for analysis %s", stage_name, analysis.id)
         log.error("Analysis stage failed", extra={"analysis_id": str(analysis.id), "stage_id": stage.stage_id, "stage": stage_name, "status": stage.status, "duration_ms": stage.runtime_ms, "error_category": stage.error_category})
 
         # Log system event
@@ -256,9 +255,9 @@ async def _run_stage(
             db.add(event)
             _store_progress(analysis, stage_results, None)
             await db.commit()
-        except Exception:
+        except Exception as persist_exc:
             await _rollback_safely(db)
-            log.exception("Could not persist stage failure state for %s", stage_name)
+            log.error("Could not persist stage failure state for %s (%s)", stage_name, type(persist_exc).__name__)
 
         if required:
             raise
@@ -293,8 +292,8 @@ def _output_reference(stage_name: str) -> str:
 async def _rollback_safely(db: AsyncSession) -> None:
     try:
         await db.rollback()
-    except Exception:
-        log.exception("Database rollback failed while recording terminal analysis state")
+    except Exception as exc:
+        log.error("Database rollback failed while recording terminal analysis state (%s)", type(exc).__name__)
 
 
 async def _persist_terminal_failure(
@@ -302,8 +301,13 @@ async def _persist_terminal_failure(
     db: AsyncSession,
     stage_results: Dict[str, StageResult],
     user_message: str = "Analysis could not be completed due to an internal pipeline error.",
-) -> None:
-    """Best-effort terminal failure persistence, including a safe report."""
+) -> Exception | None:
+    """Persist a safe terminal report, returning an error if persistence failed.
+
+    The worker needs to distinguish an analysis failure that was durably
+    recorded from a database outage that prevented terminal persistence. In
+    the latter case it can apply its bounded retry and lease recovery policy.
+    """
     await _rollback_safely(db)
     for name in PIPELINE_STAGES:
         stage = stage_results.get(name)
@@ -331,7 +335,7 @@ async def _persist_terminal_failure(
         analysis = await db.get(Analysis, analysis_id)
         if analysis is None:
             log.error("Cannot persist terminal failure: analysis %s was not found", analysis_id)
-            return
+            return RuntimeError("Analysis record is unavailable for terminal persistence.")
 
         stages = {name: stage.to_dict() for name, stage in stage_results.items()}
         try:
@@ -354,8 +358,8 @@ async def _persist_terminal_failure(
                 assessment=None, stages=stages,
                 submitted_at=analysis.created_at.isoformat() if analysis.created_at else None,
             )
-        except Exception:
-            log.exception("Report builder failed during terminal error recovery")
+        except Exception as report_exc:
+            log.error("Report builder failed during terminal error recovery (%s)", type(report_exc).__name__)
             report = {
                 "analysis_id": analysis_id, "status": "failed", "stages": stages,
                 "warnings": ["The analysis pipeline could not complete."],
@@ -368,7 +372,9 @@ async def _persist_terminal_failure(
         _store_progress(analysis, stage_results, None)
         analysis.processing_time_ms = analysis.processing_time_ms or 0
         await db.commit()
-    except Exception:
+        return None
+    except Exception as commit_exc:
+        log.error("Initial terminal failure persistence failed (%s)", type(commit_exc).__name__)
         await _rollback_safely(db)
         # A transient commit/report serialization failure gets one bounded
         # retry with a minimal report so the row does not remain processing.
@@ -388,9 +394,11 @@ async def _persist_terminal_failure(
             _store_progress(analysis, stage_results, None)
             analysis.processing_time_ms = analysis.processing_time_ms or 0
             await db.commit()
-        except Exception:
+            return None
+        except Exception as persist_exc:
             await _rollback_safely(db)
-            log.exception("Could not persist terminal failure for analysis %s", analysis_id)
+            log.error("Could not persist terminal failure for analysis %s (%s)", analysis_id, type(persist_exc).__name__)
+            return persist_exc
 
 
 async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
@@ -450,19 +458,23 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
         # Get image asset
         if not analysis.image_asset:
             log.error("No image asset for analysis %s", analysis_id)
-            await _persist_terminal_failure(
+            persistence_error = await _persist_terminal_failure(
                 analysis_id, db, stage_results,
                 "No image file was available for analysis.",
             )
+            if persistence_error is not None:
+                raise persistence_error
             return
 
         image_path = Path(analysis.image_asset.storage_path)
         if not image_path.exists():
             log.error("Image file not found: %s", image_path)
-            await _persist_terminal_failure(
+            persistence_error = await _persist_terminal_failure(
                 analysis_id, db, stage_results,
                 "The uploaded image is no longer available in storage.",
             )
+            if persistence_error is not None:
+                raise persistence_error
             return
 
         # Read image data
@@ -1012,5 +1024,9 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
                  analysis_id, report.get("status"), len(completed_steps), len(stage_results), total_time_ms)
 
     except Exception as e:
-        log.exception("Pipeline failed for analysis %s", analysis_id)
-        await _persist_terminal_failure(analysis_id, db, stage_results)
+        log.error("Pipeline failed for analysis %s (%s)", analysis_id, type(e).__name__)
+        persistence_error = await _persist_terminal_failure(analysis_id, db, stage_results)
+        if persistence_error is not None:
+            # Surface the persistence error so the durable worker can classify
+            # transient database failures and retry within the configured cap.
+            raise persistence_error from e

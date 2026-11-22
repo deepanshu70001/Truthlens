@@ -426,11 +426,10 @@ async def test_heatmap_and_ela_routes_serve_analysis_artifacts(client):
     )
     analysis_id = resp.json()["analysis_id"]
 
-    # The asynchronous analysis may generate its own ELA artifact. Wait before
-    # replacing the file with a route fixture so the background task cannot
-    # race and overwrite the dimensions being asserted below.
-    from backend.app.api.v1.endpoints.analyze import wait_for_analysis_tasks
-    await wait_for_analysis_tasks()
+    # The durable worker may generate its own ELA artifact. Wait for the
+    # persisted terminal state before replacing it with a route fixture.
+    from backend.tests.conftest import await_analysis_terminal
+    await await_analysis_terminal(client, analysis_id)
 
     from backend.app.config import settings
     from PIL import Image

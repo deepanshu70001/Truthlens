@@ -9,7 +9,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import DateTime, Float, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.app.db.base import Base
@@ -44,3 +44,6 @@ class ModelRun(Base):
     analysis: Mapped["Analysis"] = relationship(  # noqa: F821
         "Analysis", back_populates="model_runs"
     )
+
+
+Index("ix_model_runs_analysis_id", ModelRun.analysis_id)

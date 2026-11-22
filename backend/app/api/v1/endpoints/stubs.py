@@ -12,8 +12,12 @@ from __future__ import annotations
 import asyncio
 from typing import Annotated, List, Optional
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 from pydantic import BaseModel, Field, StringConstraints
+
+from backend.app.config import settings
+from backend.app.core.auth import Principal, get_current_principal
+from backend.app.core.rate_limit import check_rate_limit
 
 router = APIRouter()
 
@@ -62,7 +66,7 @@ class ProvenanceResponse(BaseModel):
     description="Extract text from an image. (Will be implemented in Stage 4.)",
     status_code=501,
 )
-async def ocr_endpoint():
+async def ocr_endpoint(principal: Principal = Depends(get_current_principal)):
     return {"detail": "OCR endpoint will be implemented in Stage 4.", "error_code": "NOT_IMPLEMENTED"}
 
 
@@ -72,9 +76,17 @@ async def ocr_endpoint():
     description="Retrieve existing third-party fact-check reviews for supplied factual claims.",
     response_model=FactCheckResponse,
 )
-async def factcheck_endpoint(request: FactCheckRequest):
+async def factcheck_endpoint(
+    request: FactCheckRequest,
+    http_request: Request,
+    principal: Principal = Depends(get_current_principal),
+):
     from backend.app.services.factcheck.service import search_fact_checks
 
+    await check_rate_limit(
+        http_request, scope="fact-check", limit=settings.RATE_LIMIT_FACTCHECK_PER_MINUTE,
+        principal=principal,
+    )
     result = await asyncio.to_thread(
         search_fact_checks, request.claims, language_code=request.language_code,
     )
@@ -87,11 +99,18 @@ async def factcheck_endpoint(request: FactCheckRequest):
     description="Inspect original image bytes for C2PA credentials and search Google Vision Web Detection when configured.",
     response_model=ProvenanceResponse,
 )
-async def provenance_endpoint(image: UploadFile = File(...)):
-    from backend.app.config import settings
+async def provenance_endpoint(
+    http_request: Request,
+    image: UploadFile = File(...),
+    principal: Principal = Depends(get_current_principal),
+):
     from backend.app.core.security import validate_image_file
     from backend.app.services.provenance.service import search_provenance
 
+    await check_rate_limit(
+        http_request, scope="provenance", limit=settings.RATE_LIMIT_PROVENANCE_PER_MINUTE,
+        principal=principal,
+    )
     image_data = await image.read(settings.max_upload_bytes + 1)
     if len(image_data) > settings.max_upload_bytes:
         raise HTTPException(status_code=413, detail="File exceeds the configured upload size limit.")
