@@ -117,6 +117,9 @@ class OCRService:
                 gpu=self._gpu,
                 verbose=False,
                 model_storage_directory=model_dir,
+                # Inference must be reproducible and must never make an
+                # implicit network request to fetch model weights.
+                download_enabled=False,
             )
             self._engine = "EasyOCR"
             return
@@ -128,13 +131,27 @@ class OCRService:
     def _load_tesseract(self) -> None:
         try:
             import pytesseract
-            if not shutil.which("tesseract") and not getattr(pytesseract.pytesseract, "tesseract_cmd", None):
-                raise RuntimeError("Tesseract executable not found")
+            command = getattr(pytesseract.pytesseract, "tesseract_cmd", "tesseract") or "tesseract"
+            if not shutil.which(command) and not Path(command).is_file():
+                raise FileNotFoundError("Tesseract executable not found")
             pytesseract.get_tesseract_version()
+            available_languages = set(pytesseract.get_languages(config=""))
+            requested_languages = set(_tesseract_languages(self._languages).split("+"))
+            missing_languages = sorted(requested_languages - available_languages)
+            if missing_languages:
+                raise RuntimeError(
+                    "Tesseract language packs unavailable: " + ", ".join(missing_languages)
+                )
             self._tesseract = pytesseract
             self._engine = "PyTesseract"
         except Exception as exc:
-            self._load_warnings.append(f"Tesseract fallback unavailable ({type(exc).__name__}).")
+            if str(exc).startswith("Tesseract language packs unavailable:"):
+                detail = f"{type(exc).__name__}: {exc}"
+            elif isinstance(exc, FileNotFoundError):
+                detail = "FileNotFoundError: Tesseract executable not found"
+            else:
+                detail = type(exc).__name__
+            self._load_warnings.append(f"Tesseract fallback unavailable ({detail}).")
 
     def unload(self) -> None:
         with self._lock:
@@ -144,6 +161,7 @@ class OCRService:
     def _run_tesseract(self, image: Image.Image) -> List[OCRBlock]:
         data = self._tesseract.image_to_data(image.convert("RGB"), lang=_tesseract_languages(self._languages), output_type=self._tesseract.Output.DICT)
         blocks: List[OCRBlock] = []
+        image_width, image_height = image.size
         for i, text in enumerate(data.get("text", [])):
             text = str(text).strip()
             if not text:
@@ -155,7 +173,13 @@ class OCRService:
                 conf = conf_raw / 100 if np.isfinite(conf_raw) and 0 <= conf_raw <= 100 else None
                 if w <= 0 or h <= 0:
                     continue
-                blocks.append(OCRBlock(text, conf, [[x,y],[x+w,y],[x+w,y+h],[x,y+h]]))
+                # Tesseract returns xywh boxes. Clip them to the EXIF-corrected
+                # original image frame, then discard boxes with no visible area.
+                left, top = max(0, x), max(0, y)
+                right, bottom = min(image_width, x + w), min(image_height, y + h)
+                if right <= left or bottom <= top:
+                    continue
+                blocks.append(OCRBlock(text, conf, [[left,top],[right,top],[right,bottom],[left,bottom]]))
             except (KeyError, ValueError, TypeError, IndexError):
                 continue
         return blocks

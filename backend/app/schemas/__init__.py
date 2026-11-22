@@ -5,7 +5,7 @@ TruthLens — Pydantic schemas for API request/response validation.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -53,8 +53,27 @@ class AnalysisProgress(BaseModel):
     """Tracks pipeline progress."""
     current_step: Optional[str] = None
     completed_steps: List[str] = Field(default_factory=list)
+    stage_statuses: Dict[str, str] = Field(default_factory=dict)
     total_steps: int = 0
     percentage: float = 0.0
+
+
+class StageResultOut(BaseModel):
+    """Public stage execution record embedded in a report."""
+    name: str
+    status: Literal["pending", "running", "completed", "partial", "failed", "unavailable", "skipped"]
+    outcome: Optional[str] = None
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    runtime_ms: Optional[int] = None
+    stage_id: Optional[str] = None
+    correlation_id: Optional[str] = None
+    error_category: Optional[str] = None
+    error_message: Optional[str] = None
+    warnings: List[str] = Field(default_factory=list)
+    limitations: List[str] = Field(default_factory=list)
+    output_reference: Optional[str] = None
+    module_identity: Optional[Dict[str, Any]] = None
 
 
 class AnalysisOut(BaseModel):

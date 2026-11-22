@@ -363,6 +363,7 @@ def build_evidence_from_factcheck(factcheck_result) -> List[EvidenceItem]:
             direction="informational",
             description="Fact-check API not configured. No fact-check data available.",
             data={"status": "unavailable"},
+            status="unavailable",
         ))
     elif factcheck_result.status == "failed":
         items.append(EvidenceItem(
@@ -372,6 +373,7 @@ def build_evidence_from_factcheck(factcheck_result) -> List[EvidenceItem]:
             direction="informational",
             description="Fact-check API request failed. See module status for details.",
             data={"status": "failed", "error": factcheck_result.error},
+            status="failed",
         ))
     elif factcheck_result.status == "no_results":
         items.append(EvidenceItem(
@@ -381,6 +383,7 @@ def build_evidence_from_factcheck(factcheck_result) -> List[EvidenceItem]:
             direction="informational",
             description="No matching fact-checks found for extracted claims.",
             data={"status": "no_results", "queries": factcheck_result.queries_performed},
+            status="completed",
         ))
     elif factcheck_result.status in {"success", "partial"}:
         for claim in factcheck_result.claims:
@@ -426,6 +429,7 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
             direction="informational",
             description="Web detection API not configured. No provenance data available.",
             data={"status": "unavailable"},
+            status="unavailable",
         ))
     elif provenance_result.status == "failed":
         items.append(EvidenceItem(
@@ -435,6 +439,7 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
             direction="informational",
             description="Web provenance request failed. See module status for details.",
             data={"status": "failed"},
+            status="failed",
         ))
     elif provenance_result.status == "success":
         if provenance_result.matching_images:
@@ -484,6 +489,7 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
             direction="informational",
             description="No web matches found for this image.",
             data={"status": "no_results"},
+            status="completed",
         ))
 
     return items

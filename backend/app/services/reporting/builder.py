@@ -32,6 +32,7 @@ Report structure:
 from __future__ import annotations
 
 import time
+import re
 from datetime import datetime, timezone
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
@@ -73,6 +74,12 @@ def _safe_report_value(value: Any) -> Any:
         return safe
     if isinstance(value, (list, tuple)):
         return [_safe_report_value(item) for item in value]
+    if isinstance(value, str):
+        value = re.sub(r"(?i)(?:[a-z]:\\|/)(?:[^\s:]+[\\/])+[^\s:]*", "[redacted path]", value)
+        value = re.sub(
+            r"(?i)(api[_ -]?key|key|token|secret|password)\s*[:=]\s*\S+",
+            r"\1=[redacted]", value,
+        )
     return value
 
 

@@ -14,6 +14,7 @@ from __future__ import annotations
 import asyncio
 import io
 import json
+import re
 import time
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -26,24 +27,63 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.config import settings
 from backend.app.core.logging import get_logger
 from backend.app.models import Analysis, AnalysisStatus, ImageAsset, ModelRun, SystemEvent
+from backend.app.services.stage_contract import (
+    normalize_service_status,
+)
 
 log = get_logger("orchestrator")
+
+PIPELINE_STAGES = (
+    "preprocessing", "metadata", "quality", "authenticity", "forensics", "ocr",
+    "vision", "xai", "text_normalization", "claim_extraction", "fact_check",
+    "provenance", "hashing", "evidence_collection", "fusion", "explanation",
+    "virality", "regional_spread", "social_impact", "report_assembly",
+)
+
+
+def _safe_message(value: Any) -> str:
+    """Keep public diagnostics useful without exposing paths or exception text."""
+    value = str(value)
+    value = re.sub(r"(?i)(?:[a-z]:\\|/)(?:[^\s:]+[\\/])+[^\s:]*", "[redacted path]", value)
+    value = re.sub(r"(?i)(api[_ -]?key|key|token|secret|password)\s*[:=]\s*\S+", r"\1=[redacted]", value)
+    return value[:500]
+
+
+def _safe_messages(values: Any) -> List[str]:
+    if not isinstance(values, (list, tuple)):
+        return []
+    return [_safe_message(value) for value in values if isinstance(value, str)][:50]
+
+
+def _store_progress(analysis: Analysis, stage_results: Dict[str, "StageResult"], current: str | None) -> None:
+    statuses = {name: "pending" for name in PIPELINE_STAGES}
+    statuses.update({name: stage.status for name, stage in stage_results.items() if name in statuses})
+    if current in statuses:
+        statuses[current] = "running"
+    completed = [name for name in PIPELINE_STAGES if statuses[name] == "completed"]
+    analysis.current_step = current
+    # Keep the API-facing completed_steps list stable while retaining detailed
+    # terminal statuses for accurate progress recovery.
+    analysis.completed_steps = json.dumps({"completed_steps": completed, "stage_statuses": statuses})
 
 
 class StageResult:
     """Result of a single pipeline stage."""
     def __init__(self, name: str):
         self.name = name
-        self.status: str = "pending"  # pending | running | completed | failed | skipped
+        self.status: str = "pending"
+        self.outcome: Optional[str] = None
         self.runtime_ms: int = 0
         self.result: Optional[Dict[str, Any]] = None
         self.error: Optional[str] = None
+        self.error_message: Optional[str] = None
         self.started_at: Optional[str] = None
         self.completed_at: Optional[str] = None
         self.stage_id: Optional[str] = None
         self.correlation_id: Optional[str] = None
         self.error_category: Optional[str] = None
         self.output_reference: Optional[str] = None
+        self.module_identity: Optional[Dict[str, Any]] = None
         self.warnings: List[str] = []
         self.limitations: List[str] = []
 
@@ -51,8 +91,10 @@ class StageResult:
         return {
             "name": self.name,
             "status": self.status,
+            "outcome": self.outcome,
             "runtime_ms": self.runtime_ms,
             "error": self.error,
+            "error_message": self.error_message,
             "result": self.result,
             "started_at": self.started_at,
             "completed_at": self.completed_at,
@@ -60,6 +102,7 @@ class StageResult:
             "correlation_id": self.correlation_id,
             "error_category": self.error_category,
             "output_reference": self.output_reference,
+            "module_identity": self.module_identity,
             "warnings": self.warnings,
             "limitations": self.limitations,
         }
@@ -70,10 +113,11 @@ def _record_skipped_stage(stage_results: Dict[str, StageResult], name: str, reas
     stage.stage_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"truthlens:{analysis_id}:{name}"))
     stage.correlation_id = analysis_id
     stage.status = "skipped"
-    stage.error = reason
-    stage.error_category = "PREREQUISITE_UNAVAILABLE"
-    stage.started_at = datetime.now(timezone.utc).isoformat()
-    stage.completed_at = stage.started_at
+    stage.outcome = "not_applicable"
+    stage.warnings = [_safe_message(reason)]
+    now = datetime.now(timezone.utc).isoformat()
+    stage.started_at = now
+    stage.completed_at = now
     stage_results[name] = stage
 
 
@@ -100,53 +144,74 @@ async def _run_stage(
     log.info("Analysis stage started", extra={"analysis_id": str(analysis.id), "stage_id": stage.stage_id, "stage": stage_name, "status": "running"})
 
     # Update analysis progress
-    analysis.current_step = stage_name
-    completed = [s for s, r in stage_results.items() if r.status == "completed"]
-    analysis.completed_steps = json.dumps(completed)
+    _store_progress(analysis, stage_results, stage_name)
     await db.commit()
 
-    t0 = time.time()
+    t0 = time.perf_counter()
     try:
         # Run the stage function in a thread pool to avoid blocking the event loop
         result = await asyncio.to_thread(func)
-        result_status = getattr(result, "status", None)
-        stage.status = result_status if result_status in {"partial", "failed", "unavailable", "skipped"} else "completed"
+        stage.status, stage.outcome, invalid_result = normalize_service_status(result)
+        if invalid_result:
+            stage.error_category = "INVALID_MODULE_RESULT"
+            stage.error = invalid_result
+            stage.error_message = invalid_result
+        elif stage.status in {"failed", "unavailable"}:
+            stage.error_category = "MODULE_REPORTED_FAILURE" if stage.status == "failed" else "DEPENDENCY_UNAVAILABLE"
+            stage.error = "The stage reported that it could not complete."
+            stage.error_message = stage.error
+        elif stage.status == "skipped":
+            stage.outcome = stage.outcome or "not_applicable"
         if stage.status == "failed":
-            stage.error_category = "MODULE_REPORTED_FAILURE"
+            stage.error_category = stage.error_category or "MODULE_REPORTED_FAILURE"
         elif stage.status == "unavailable":
             stage.error_category = "OPTIONAL_DEPENDENCY_OR_SERVICE_UNAVAILABLE"
         elif stage.status == "skipped":
             stage.error_category = "PREREQUISITE_UNAVAILABLE"
-        stage.runtime_ms = int((time.time() - t0) * 1000)
+        stage.runtime_ms = max(0, int((time.perf_counter() - t0) * 1000))
         stage.completed_at = datetime.now(timezone.utc).isoformat()
 
         # Convert dataclass results to dict
-        if hasattr(result, "to_dict"):
+        if invalid_result is None and hasattr(result, "to_dict"):
             result_dict = result.to_dict()
             stage.result = {"available": True, "type": type(result).__name__}
-            stage.output_reference = f"report.{stage_name}"
-            stage.warnings = list(result_dict.get("warnings") or []) if isinstance(result_dict, dict) else []
-            stage.limitations = list(result_dict.get("limitations") or []) if isinstance(result_dict, dict) else []
-        elif hasattr(result, "__dict__"):
+            stage.output_reference = _output_reference(stage_name)
+            stage.warnings = _safe_messages(result_dict.get("warnings") if isinstance(result_dict, dict) else [])
+            stage.limitations = _safe_messages(result_dict.get("limitations") if isinstance(result_dict, dict) else [])
+        elif invalid_result is None and isinstance(result, dict):
+            stage.result = {"available": True, "type": "dict"}
+            stage.output_reference = _output_reference(stage_name)
+            stage.warnings = _safe_messages(result.get("warnings"))
+            stage.limitations = _safe_messages(result.get("limitations"))
+        elif invalid_result is None and hasattr(result, "__dict__"):
             stage.result = {"available": True, "type": type(result).__name__}
-            stage.output_reference = f"report.{stage_name}"
-        stage.warnings = list(getattr(result, "warnings", []) or [])
-        stage.limitations = list(getattr(result, "limitations", []) or [])
+            stage.output_reference = _output_reference(stage_name)
+            stage.warnings = _safe_messages(getattr(result, "warnings", []))
+            stage.limitations = _safe_messages(getattr(result, "limitations", []))
+        stage.module_identity = _module_identity(result)
+        # Persist terminal status and progress at the stage boundary.
+        _store_progress(analysis, stage_results, None)
+        await db.commit()
         log.info("Analysis stage finished", extra={"analysis_id": str(analysis.id), "stage_id": stage.stage_id, "stage": stage_name, "status": stage.status, "duration_ms": stage.runtime_ms})
+
+        if invalid_result:
+            return None
 
         return result
 
     except Exception as e:
         stage.status = "unavailable" if isinstance(e, ImportError) else "failed"
         stage.error_category = "DEPENDENCY_UNAVAILABLE" if isinstance(e, ImportError) else "STAGE_EXECUTION_ERROR"
-        stage.runtime_ms = int((time.time() - t0) * 1000)
+        stage.runtime_ms = max(0, int((time.perf_counter() - t0) * 1000))
         stage.completed_at = datetime.now(timezone.utc).isoformat()
-        stage.error = f"{type(e).__name__}: stage execution failed"
+        stage.error = "The stage could not complete."
+        stage.error_message = stage.error
 
         log.exception("Stage '%s' failed for analysis %s", stage_name, analysis.id)
         log.error("Analysis stage failed", extra={"analysis_id": str(analysis.id), "stage_id": stage.stage_id, "stage": stage_name, "status": stage.status, "duration_ms": stage.runtime_ms, "error_category": stage.error_category})
 
         # Log system event
+        await _rollback_safely(db)
         event = SystemEvent(
             analysis_id=analysis.id,
             event_type="stage_failed",
@@ -154,13 +219,141 @@ async def _run_stage(
             source=f"orchestrator.{stage_name}",
             message=f"Stage '{stage_name}' failed ({type(e).__name__}).",
         )
-        db.add(event)
-        await db.commit()
+        try:
+            db.add(event)
+            _store_progress(analysis, stage_results, None)
+            await db.commit()
+        except Exception:
+            await _rollback_safely(db)
+            log.exception("Could not persist stage failure state for %s", stage_name)
 
         if required:
             raise
 
         return None
+
+
+def _module_identity(result: Any) -> Optional[Dict[str, Any]]:
+    if result is None:
+        return None
+    keys = ("model_name", "model_version", "model_id", "provider", "engine", "model_revision")
+    identity = {
+        key: _safe_message(getattr(result, key))
+        for key in keys if getattr(result, key, None) is not None
+    }
+    return identity or None
+
+
+def _output_reference(stage_name: str) -> str:
+    report_fields = {
+        "vision": "objects", "claim_extraction": "claims",
+        "fact_check": "fact_checks", "evidence_collection": "evidence",
+        "fusion": "fusion",
+    }
+    return f"report.{report_fields.get(stage_name, stage_name)}"
+
+
+async def _rollback_safely(db: AsyncSession) -> None:
+    try:
+        await db.rollback()
+    except Exception:
+        log.exception("Database rollback failed while recording terminal analysis state")
+
+
+async def _persist_terminal_failure(
+    analysis_id: str,
+    db: AsyncSession,
+    stage_results: Dict[str, StageResult],
+    user_message: str = "Analysis could not be completed due to an internal pipeline error.",
+) -> None:
+    """Best-effort terminal failure persistence, including a safe report."""
+    await _rollback_safely(db)
+    for name in PIPELINE_STAGES:
+        stage = stage_results.get(name)
+        if stage is None or stage.status == "pending":
+            _record_skipped_stage(
+                stage_results, name, "Pipeline terminated before this stage was run.", analysis_id
+            )
+        elif stage.status == "running":
+            stage.status = "failed"
+            stage.error_category = "PIPELINE_ABORTED"
+            stage.error = "The pipeline terminated before this stage completed."
+            stage.error_message = stage.error
+            stage.completed_at = datetime.now(timezone.utc).isoformat()
+
+    failed = StageResult("pipeline")
+    failed.stage_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"truthlens:{analysis_id}:pipeline"))
+    failed.correlation_id = analysis_id
+    failed.status = "failed"
+    failed.error_category = "PIPELINE_EXECUTION_ERROR"
+    failed.error = user_message
+    failed.error_message = user_message
+    failed.started_at = failed.completed_at = datetime.now(timezone.utc).isoformat()
+    stage_results["pipeline"] = failed
+    try:
+        analysis = await db.get(Analysis, analysis_id)
+        if analysis is None:
+            log.error("Cannot persist terminal failure: analysis %s was not found", analysis_id)
+            return
+
+        stages = {name: stage.to_dict() for name, stage in stage_results.items()}
+        try:
+            from backend.app.services.reporting.builder import build_report
+            asset = analysis.image_asset
+            image_info = None
+            if asset:
+                image_info = {
+                    "original_filename": asset.original_filename,
+                    "sha256_hash": asset.sha256_hash,
+                    "perceptual_hash": asset.perceptual_hash,
+                    "mime_type": asset.mime_type,
+                    "file_size_bytes": asset.file_size_bytes,
+                    "width": asset.width,
+                    "height": asset.height,
+                    "format": asset.format,
+                }
+            report = build_report(
+                analysis_id=analysis_id, status="failed", image_info=image_info,
+                assessment=None, stages=stages,
+                submitted_at=analysis.created_at.isoformat() if analysis.created_at else None,
+            )
+        except Exception:
+            log.exception("Report builder failed during terminal error recovery")
+            report = {
+                "analysis_id": analysis_id, "status": "failed", "stages": stages,
+                "warnings": ["The analysis pipeline could not complete."],
+            }
+
+        analysis.report_json = json.dumps(report, default=str)
+        analysis.status = AnalysisStatus.FAILED
+        analysis.error_message = user_message
+        analysis.completed_at = datetime.now(timezone.utc)
+        _store_progress(analysis, stage_results, None)
+        analysis.processing_time_ms = analysis.processing_time_ms or 0
+        await db.commit()
+    except Exception:
+        await _rollback_safely(db)
+        # A transient commit/report serialization failure gets one bounded
+        # retry with a minimal report so the row does not remain processing.
+        try:
+            analysis = await db.get(Analysis, analysis_id)
+            if analysis is None:
+                return
+            analysis.status = AnalysisStatus.FAILED
+            analysis.error_message = user_message
+            analysis.completed_at = datetime.now(timezone.utc)
+            analysis.report_json = json.dumps({
+                "analysis_id": analysis_id,
+                "status": "failed",
+                "stages": {name: stage.to_dict() for name, stage in stage_results.items()},
+                "warnings": ["The analysis pipeline could not complete."],
+            }, default=str)
+            _store_progress(analysis, stage_results, None)
+            analysis.processing_time_ms = analysis.processing_time_ms or 0
+            await db.commit()
+        except Exception:
+            await _rollback_safely(db)
+            log.exception("Could not persist terminal failure for analysis %s", analysis_id)
 
 
 async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
@@ -201,8 +394,11 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
             preprocessing_stage.started_at = (preprocessing_event.created_at - timedelta(milliseconds=preprocessing_stage.runtime_ms)).isoformat()
             preprocessing_stage.result = {key: value for key, value in preprocessing_result.items() if key != "status"}
             preprocessing_stage.output_reference = "report.preprocessing"
-            preprocessing_stage.warnings = list(preprocessing_result.get("warnings") or [])
+            preprocessing_stage.warnings = _safe_messages(preprocessing_result.get("warnings"))
             preprocessing_stage.error_category = None if preprocessing_stage.status == "completed" else "PREPROCESSING_FAILED"
+            if preprocessing_stage.status in {"failed", "unavailable"}:
+                preprocessing_stage.error = "Preprocessing could not be completed."
+                preprocessing_stage.error_message = preprocessing_stage.error
             stage_results["preprocessing"] = preprocessing_stage
         else:
             preprocessing_result = {"status": "unavailable", "warnings": ["No preprocessing record exists for this analysis."]}
@@ -217,17 +413,19 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
         # Get image asset
         if not analysis.image_asset:
             log.error("No image asset for analysis %s", analysis_id)
-            analysis.status = AnalysisStatus.FAILED
-            analysis.error_message = "No image file found for this analysis."
-            await db.commit()
+            await _persist_terminal_failure(
+                analysis_id, db, stage_results,
+                "No image file was available for analysis.",
+            )
             return
 
         image_path = Path(analysis.image_asset.storage_path)
         if not image_path.exists():
             log.error("Image file not found: %s", image_path)
-            analysis.status = AnalysisStatus.FAILED
-            analysis.error_message = "Image file missing from storage."
-            await db.commit()
+            await _persist_terminal_failure(
+                analysis_id, db, stage_results,
+                "The uploaded image is no longer available in storage.",
+            )
             return
 
         # Read image data
@@ -495,6 +693,8 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
 
         evidence = EvidenceCollection(analysis_id=analysis_id)
         collection_stage = StageResult("evidence_collection")
+        collection_stage.stage_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"truthlens:{analysis_id}:evidence_collection"))
+        collection_stage.correlation_id = analysis_id
         collection_t0 = time.time()
         collection_stage.status = "running"
         collection_stage.started_at = datetime.now(timezone.utc).isoformat()
@@ -521,6 +721,7 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
         collection_stage.runtime_ms = int((time.time() - collection_t0) * 1000)
         collection_stage.completed_at = datetime.now(timezone.utc).isoformat()
         collection_stage.result = {"evidence_count": evidence.count}
+        collection_stage.output_reference = "report.evidence"
 
         # ── Stage 14: Evidence Fusion ────────────────────────────
         from backend.app.services.fusion.engine import fuse_evidence
@@ -542,6 +743,10 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
                 lambda: generate_explanation(evidence, assessment.label),
                 analysis, db, stage_results,
                 required=False,
+            )
+        else:
+            _record_skipped_stage(
+                stage_results, "explanation", "Evidence fusion did not produce an assessment.", analysis_id
             )
 
         # ── Stage 16: Virality Estimation ────────────────────────
@@ -656,6 +861,7 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
         report_stage.runtime_ms = int((time.time() - report_t0) * 1000)
         report_stage.completed_at = datetime.now(timezone.utc).isoformat()
         report_stage.result = {"report_created": True}
+        report_stage.output_reference = "report"
         report["stages"]["report_assembly"] = report_stage.to_dict()
 
         # Store report as JSON in the analysis
@@ -671,14 +877,21 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
             analysis.truth_label = assessment.label
 
         analysis.processing_time_ms = total_time_ms
+        has_degraded_stage = any(
+            stage.status in {"partial", "failed", "unavailable"}
+            for stage in stage_results.values()
+        )
+        # The persisted enum remains backward compatible. The report and GET
+        # status endpoint expose `partial` when optional stages degraded.
         analysis.status = AnalysisStatus.COMPLETED
         analysis.current_step = None
         analysis.completed_at = datetime.now(timezone.utc)
 
-        completed_steps = [
-            s for s, r in stage_results.items() if r.status == "completed"
-        ]
-        analysis.completed_steps = json.dumps(completed_steps)
+        completed_steps = [s for s, r in stage_results.items() if r.status == "completed"]
+        _store_progress(analysis, stage_results, None)
+        if has_degraded_stage and report.get("status") == "completed":
+            report["status"] = "partial"
+            analysis.report_json = json.dumps(report, default=str)
 
         await db.commit()
 
@@ -702,51 +915,9 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
         db.add(event)
         await db.commit()
 
-        log.info(
-            "Analysis %s completed: %d/%d stages OK, %d ms total",
-            analysis_id, len(completed_steps), len(stage_results), total_time_ms,
-        )
+        log.info("Analysis %s terminal: report_status=%s, %d/%d stages completed, %d ms total",
+                 analysis_id, report.get("status"), len(completed_steps), len(stage_results), total_time_ms)
 
     except Exception as e:
         log.exception("Pipeline failed for analysis %s", analysis_id)
-        try:
-            analysis = await db.get(Analysis, analysis_id)
-            if analysis:
-                failed_stage = StageResult("pipeline")
-                failed_stage.stage_id = str(uuid.uuid5(uuid.NAMESPACE_URL, f"truthlens:{analysis_id}:pipeline"))
-                failed_stage.correlation_id = analysis_id
-                failed_stage.status = "failed"
-                failed_stage.error = "Internal pipeline error."
-                failed_stage.completed_at = datetime.now(timezone.utc).isoformat()
-                stage_results["pipeline"] = failed_stage
-                from backend.app.services.reporting.builder import build_report
-                asset = analysis.image_asset
-                image_info = None
-                if asset:
-                    image_info = {
-                        "original_filename": asset.original_filename,
-                        "sha256_hash": asset.sha256_hash,
-                        "perceptual_hash": asset.perceptual_hash,
-                        "mime_type": asset.mime_type,
-                        "file_size_bytes": asset.file_size_bytes,
-                        "width": asset.width,
-                        "height": asset.height,
-                        "format": asset.format,
-                    }
-                analysis.report_json = json.dumps(build_report(
-                    analysis_id=analysis_id,
-                    status="failed",
-                    image_info=image_info,
-                    assessment=None,
-                    stages={name: stage.to_dict() for name, stage in stage_results.items()},
-                    submitted_at=analysis.created_at.isoformat() if analysis.created_at else None,
-                ), default=str)
-                analysis.status = AnalysisStatus.FAILED
-                analysis.error_message = "Analysis could not be completed due to an internal pipeline error."
-                analysis.completed_steps = json.dumps(
-                    [s for s, r in stage_results.items() if r.status == "completed"]
-                )
-                await db.commit()
-        except Exception:
-            log.exception("Failed to persist failure report for analysis %s", analysis_id)
-            pass
+        await _persist_terminal_failure(analysis_id, db, stage_results)

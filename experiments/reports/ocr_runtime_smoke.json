@@ -1,0 +1,2138 @@
+{
+  "created_at_utc": "2026-11-22T07:59:22.157329+00:00",
+  "repository_head": "8e7d5511e8a84737260e4d3ff935338feea1eb8b",
+  "environment": {
+    "platform": "Windows-11-10.0.26300-SP0",
+    "python": "3.12.10",
+    "easyocr_version": "1.7.2",
+    "pytesseract_version": "0.3.13",
+    "torch_version": "2.7.1+cu118",
+    "cuda_available": true,
+    "cuda_device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "model_cache_dir": "D:\\Projects\\Truthlens\\models\\ocr"
+  },
+  "easyocr": {
+    "package_available": true,
+    "weights_available": {
+      "craft_mlt_25k.pth": true,
+      "english_g2.pth": false,
+      "devanagari.pth": true
+    },
+    "application_configured_languages": [
+      "en",
+      "hi"
+    ],
+    "download_policy": "Reader(download_enabled=False); local weights only",
+    "language_configurations": {
+      "cpu:en": {
+        "status": "unavailable",
+        "engine": null,
+        "load_ms": 2381.075,
+        "warnings": [
+          "EasyOCR unavailable (FileNotFoundError).",
+          "Tesseract fallback unavailable (FileNotFoundError: Tesseract executable not found)."
+        ],
+        "device_requested": "cpu",
+        "device_used": null,
+        "download_enabled": false,
+        "reason": "Local English recognition weight english_g2.pth is missing; automatic downloads are disabled."
+      },
+      "cpu:hi": {
+        "status": "ready",
+        "engine": "EasyOCR",
+        "load_ms": 1778.97,
+        "warnings": [],
+        "device_requested": "cpu",
+        "device_used": "cpu",
+        "download_enabled": false
+      },
+      "cpu:en+hi": {
+        "status": "ready",
+        "engine": "EasyOCR",
+        "load_ms": 1734.193,
+        "warnings": [],
+        "device_requested": "cpu",
+        "device_used": "cpu",
+        "download_enabled": false
+      },
+      "cuda:en": {
+        "status": "unavailable",
+        "engine": null,
+        "load_ms": 131.027,
+        "warnings": [
+          "EasyOCR unavailable (FileNotFoundError).",
+          "Tesseract fallback unavailable (FileNotFoundError: Tesseract executable not found)."
+        ],
+        "device_requested": "cuda",
+        "device_used": null,
+        "download_enabled": false,
+        "reason": "Local English recognition weight english_g2.pth is missing; automatic downloads are disabled."
+      },
+      "cuda:hi": {
+        "status": "ready",
+        "engine": "EasyOCR",
+        "load_ms": 2312.606,
+        "warnings": [],
+        "device_requested": "cuda",
+        "device_used": "cuda",
+        "download_enabled": false
+      },
+      "cuda:en+hi": {
+        "status": "ready",
+        "engine": "EasyOCR",
+        "load_ms": 1795.564,
+        "warnings": [],
+        "device_requested": "cuda",
+        "device_used": "cuda",
+        "download_enabled": false
+      }
+    }
+  },
+  "tesseract": {
+    "pytesseract_package": true,
+    "executable_path": null,
+    "version": null,
+    "available_language_packs": [],
+    "configurations": {
+      "en": {
+        "status": "unavailable",
+        "engine": null,
+        "warnings": [
+          "Tesseract fallback unavailable (FileNotFoundError: Tesseract executable not found)."
+        ]
+      },
+      "hi": {
+        "status": "unavailable",
+        "engine": null,
+        "warnings": [
+          "Tesseract fallback unavailable (FileNotFoundError: Tesseract executable not found)."
+        ]
+      },
+      "en+hi": {
+        "status": "unavailable",
+        "engine": null,
+        "warnings": [
+          "Tesseract fallback unavailable (FileNotFoundError: Tesseract executable not found)."
+        ]
+      }
+    }
+  },
+  "synthetic_fixtures": [
+    "english",
+    "hindi",
+    "mixed_hindi_english",
+    "blank",
+    "rotated_hindi",
+    "blurred_hindi",
+    "low_resolution_hindi",
+    "jpeg_compressed_hindi_q22"
+  ],
+  "fixture_recipe": {
+    "base_dimensions_px": [
+      1600,
+      280
+    ],
+    "english_reference": "THE CITY OPENED 125 NEW SCHOOLS IN 2026",
+    "hindi_reference": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+    "mixed_reference": "दिल्ली में 125 new schools 2026 में खुले",
+    "rotated_degrees": 7,
+    "blur_gaussian_radius": 1.5,
+    "low_resolution_dimensions_px": [
+      400,
+      70
+    ],
+    "jpeg_quality": 22,
+    "generation": "Synthetic PIL images created in memory; no source image or dataset fixture is read."
+  },
+  "results": [
+    {
+      "case": "english",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": "THE CITY OPENED 125 NEW SCHOOLS IN 2026",
+      "predicted_text": "7== टढ( ट६ल६२ १२५ 1 ड०00_$ | २०२६",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 2141.078,
+      "engine_reported_runtime_ms": 2141,
+      "ocr_confidence": 0.007012383870295066,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            28,
+            104
+          ],
+          [
+            1574,
+            104
+          ],
+          [
+            1574,
+            176
+          ],
+          [
+            28,
+            176
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.8205128205128205,
+      "wer": 1.0
+    },
+    {
+      "case": "hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "दल्ली में १२५ नए वदियालय २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 1083.555,
+      "engine_reported_runtime_ms": 1083,
+      "ocr_confidence": 0.5847414414277823,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            231,
+            83
+          ],
+          [
+            1365,
+            83
+          ],
+          [
+            1365,
+            199
+          ],
+          [
+            231,
+            199
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.25,
+      "wer": 0.5
+    },
+    {
+      "case": "mixed_hindi_english",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 new schools 2026 में खुले",
+      "predicted_text": "दल़्ली में १२५ ७९ळ डटत+0ौड २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 1493.754,
+      "engine_reported_runtime_ms": 1493,
+      "ocr_confidence": 0.3844382064075878,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            226,
+            91
+          ],
+          [
+            620,
+            91
+          ],
+          [
+            620,
+            189
+          ],
+          [
+            226,
+            189
+          ]
+        ],
+        [
+          [
+            629,
+            91
+          ],
+          [
+            1243,
+            91
+          ],
+          [
+            1243,
+            179
+          ],
+          [
+            629,
+            179
+          ]
+        ],
+        [
+          [
+            1228,
+            85
+          ],
+          [
+            1371,
+            85
+          ],
+          [
+            1371,
+            195
+          ],
+          [
+            1228,
+            195
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.475,
+      "wer": 0.625
+    },
+    {
+      "case": "blank",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": null,
+      "predicted_text": "",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 769.065,
+      "engine_reported_runtime_ms": 769,
+      "ocr_confidence": null,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [],
+      "coordinate_bounds_valid": true,
+      "has_text": false,
+      "warnings": [],
+      "cer": null,
+      "wer": null
+    },
+    {
+      "case": "rotated_hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "में खुले में नए वदियालय 2026 1२५ दल्ली",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 1490.133,
+      "engine_reported_runtime_ms": 1490,
+      "ocr_confidence": 0.714781206874055,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            1151,
+            24
+          ],
+          [
+            1359,
+            24
+          ],
+          [
+            1359,
+            145
+          ],
+          [
+            1151,
+            145
+          ]
+        ],
+        [
+          [
+            437,
+            135
+          ],
+          [
+            501,
+            135
+          ],
+          [
+            501,
+            211
+          ],
+          [
+            437,
+            211
+          ]
+        ],
+        [
+          [
+            628,
+            118
+          ],
+          [
+            732,
+            118
+          ],
+          [
+            732,
+            194
+          ],
+          [
+            628,
+            194
+          ]
+        ],
+        [
+          [
+            719,
+            78
+          ],
+          [
+            1007,
+            78
+          ],
+          [
+            1007,
+            194
+          ],
+          [
+            719,
+            194
+          ]
+        ],
+        [
+          [
+            998,
+            75
+          ],
+          [
+            1160,
+            61
+          ],
+          [
+            1162,
+            137
+          ],
+          [
+            1000,
+            151
+          ]
+        ],
+        [
+          [
+            504,
+            136
+          ],
+          [
+            626,
+            126
+          ],
+          [
+            627,
+            203
+          ],
+          [
+            506,
+            212
+          ]
+        ],
+        [
+          [
+            236,
+            158
+          ],
+          [
+            437,
+            135
+          ],
+          [
+            442,
+            233
+          ],
+          [
+            241,
+            256
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.5,
+      "wer": 0.75
+    },
+    {
+      "case": "blurred_hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "दल्िली में १२५ नए वदियालय २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 1138.824,
+      "engine_reported_runtime_ms": 1138,
+      "ocr_confidence": 0.21652195766690688,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            233,
+            84
+          ],
+          [
+            1361,
+            84
+          ],
+          [
+            1361,
+            194
+          ],
+          [
+            233,
+            194
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.275,
+      "wer": 0.5
+    },
+    {
+      "case": "low_resolution_hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "ल्ली में १२५ नए वदियालय २०२६ में",
+      "image": {
+        "width": 400,
+        "height": 70,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 381.504,
+      "engine_reported_runtime_ms": 381,
+      "ocr_confidence": 0.423878947237309,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            68,
+            20
+          ],
+          [
+            310,
+            20
+          ],
+          [
+            310,
+            48
+          ],
+          [
+            68,
+            48
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.4,
+      "wer": 0.625
+    },
+    {
+      "case": "jpeg_compressed_hindi_q22",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "दल्ली में १२५ नए वदियालय २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "JPEG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 1219.899,
+      "engine_reported_runtime_ms": 1219,
+      "ocr_confidence": 0.49208411526469487,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            232,
+            88
+          ],
+          [
+            1360,
+            88
+          ],
+          [
+            1360,
+            190
+          ],
+          [
+            232,
+            190
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.25,
+      "wer": 0.5
+    },
+    {
+      "case": "english",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": "THE CITY OPENED 125 NEW SCHOOLS IN 2026",
+      "predicted_text": "THE CITY OPENED १२५ NEW SCHOOLS IN २०२६",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 1411.863,
+      "engine_reported_runtime_ms": 1411,
+      "ocr_confidence": 0.6084596872983596,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            28,
+            104
+          ],
+          [
+            1574,
+            104
+          ],
+          [
+            1574,
+            176
+          ],
+          [
+            28,
+            176
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.1794871794871795,
+      "wer": 0.25
+    },
+    {
+      "case": "hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "दल्ली में १२५ नए वदियालय २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 1091.402,
+      "engine_reported_runtime_ms": 1091,
+      "ocr_confidence": 0.5846634647438691,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            231,
+            83
+          ],
+          [
+            1365,
+            83
+          ],
+          [
+            1365,
+            199
+          ],
+          [
+            231,
+            199
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.25,
+      "wer": 0.5
+    },
+    {
+      "case": "mixed_hindi_english",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 new schools 2026 में खुले",
+      "predicted_text": "दल़्ली में १२५ new schools २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 1263.215,
+      "engine_reported_runtime_ms": 1263,
+      "ocr_confidence": 0.578367244286459,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            226,
+            91
+          ],
+          [
+            620,
+            91
+          ],
+          [
+            620,
+            189
+          ],
+          [
+            226,
+            189
+          ]
+        ],
+        [
+          [
+            629,
+            91
+          ],
+          [
+            1243,
+            91
+          ],
+          [
+            1243,
+            179
+          ],
+          [
+            629,
+            179
+          ]
+        ],
+        [
+          [
+            1228,
+            85
+          ],
+          [
+            1371,
+            85
+          ],
+          [
+            1371,
+            195
+          ],
+          [
+            1228,
+            195
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.225,
+      "wer": 0.375
+    },
+    {
+      "case": "blank",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": null,
+      "predicted_text": "",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 756.93,
+      "engine_reported_runtime_ms": 756,
+      "ocr_confidence": null,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [],
+      "coordinate_bounds_valid": true,
+      "has_text": false,
+      "warnings": [],
+      "cer": null,
+      "wer": null
+    },
+    {
+      "case": "rotated_hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "में खुले में नए वदियालय 2026 1२५ दल्ली",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 1452.742,
+      "engine_reported_runtime_ms": 1452,
+      "ocr_confidence": 0.7146797273090719,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            1151,
+            24
+          ],
+          [
+            1359,
+            24
+          ],
+          [
+            1359,
+            145
+          ],
+          [
+            1151,
+            145
+          ]
+        ],
+        [
+          [
+            437,
+            135
+          ],
+          [
+            501,
+            135
+          ],
+          [
+            501,
+            211
+          ],
+          [
+            437,
+            211
+          ]
+        ],
+        [
+          [
+            628,
+            118
+          ],
+          [
+            732,
+            118
+          ],
+          [
+            732,
+            194
+          ],
+          [
+            628,
+            194
+          ]
+        ],
+        [
+          [
+            719,
+            78
+          ],
+          [
+            1007,
+            78
+          ],
+          [
+            1007,
+            194
+          ],
+          [
+            719,
+            194
+          ]
+        ],
+        [
+          [
+            998,
+            75
+          ],
+          [
+            1160,
+            61
+          ],
+          [
+            1162,
+            137
+          ],
+          [
+            1000,
+            151
+          ]
+        ],
+        [
+          [
+            504,
+            136
+          ],
+          [
+            626,
+            126
+          ],
+          [
+            627,
+            203
+          ],
+          [
+            506,
+            212
+          ]
+        ],
+        [
+          [
+            236,
+            158
+          ],
+          [
+            437,
+            135
+          ],
+          [
+            442,
+            233
+          ],
+          [
+            241,
+            256
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.5,
+      "wer": 0.75
+    },
+    {
+      "case": "blurred_hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "दल्िली में १२५ नए वदियालय २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 1112.854,
+      "engine_reported_runtime_ms": 1112,
+      "ocr_confidence": 0.2164695960039501,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            233,
+            84
+          ],
+          [
+            1361,
+            84
+          ],
+          [
+            1361,
+            194
+          ],
+          [
+            233,
+            194
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.275,
+      "wer": 0.5
+    },
+    {
+      "case": "low_resolution_hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "ल्ली में १२५ नए वदियालय २०२६ में",
+      "image": {
+        "width": 400,
+        "height": 70,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 368.952,
+      "engine_reported_runtime_ms": 368,
+      "ocr_confidence": 0.42381655390545375,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            68,
+            20
+          ],
+          [
+            310,
+            20
+          ],
+          [
+            310,
+            48
+          ],
+          [
+            68,
+            48
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.4,
+      "wer": 0.625
+    },
+    {
+      "case": "jpeg_compressed_hindi_q22",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cpu",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "दल्ली में १२५ नए वदियालय २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "JPEG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 1153.973,
+      "engine_reported_runtime_ms": 1153,
+      "ocr_confidence": 0.4919949357297498,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            232,
+            88
+          ],
+          [
+            1360,
+            88
+          ],
+          [
+            1360,
+            190
+          ],
+          [
+            232,
+            190
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.25,
+      "wer": 0.5
+    },
+    {
+      "case": "english",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": "THE CITY OPENED 125 NEW SCHOOLS IN 2026",
+      "predicted_text": "7== ट:( ट६ल६२ १२५ 1 ड०00_$ | २०२६",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 483.045,
+      "engine_reported_runtime_ms": 483,
+      "ocr_confidence": 0.00665934535421657,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            28,
+            104
+          ],
+          [
+            1574,
+            104
+          ],
+          [
+            1574,
+            176
+          ],
+          [
+            28,
+            176
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.8205128205128205,
+      "wer": 1.0
+    },
+    {
+      "case": "hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "दल्ली में १२५ नए वदियालय २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 151.877,
+      "engine_reported_runtime_ms": 151,
+      "ocr_confidence": 0.5792506897494867,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            231,
+            83
+          ],
+          [
+            1365,
+            83
+          ],
+          [
+            1365,
+            199
+          ],
+          [
+            231,
+            199
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.25,
+      "wer": 0.5
+    },
+    {
+      "case": "mixed_hindi_english",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 new schools 2026 में खुले",
+      "predicted_text": "दल़्ली में १२५ ^९ळ डटत+0ौड २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 245.3,
+      "engine_reported_runtime_ms": 245,
+      "ocr_confidence": 0.39165650185619666,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            226,
+            91
+          ],
+          [
+            620,
+            91
+          ],
+          [
+            620,
+            189
+          ],
+          [
+            226,
+            189
+          ]
+        ],
+        [
+          [
+            629,
+            91
+          ],
+          [
+            1243,
+            91
+          ],
+          [
+            1243,
+            179
+          ],
+          [
+            629,
+            179
+          ]
+        ],
+        [
+          [
+            1228,
+            85
+          ],
+          [
+            1371,
+            85
+          ],
+          [
+            1371,
+            195
+          ],
+          [
+            1228,
+            195
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.475,
+      "wer": 0.625
+    },
+    {
+      "case": "blank",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": null,
+      "predicted_text": "",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 89.546,
+      "engine_reported_runtime_ms": 89,
+      "ocr_confidence": null,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [],
+      "coordinate_bounds_valid": true,
+      "has_text": false,
+      "warnings": [],
+      "cer": null,
+      "wer": null
+    },
+    {
+      "case": "rotated_hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "में खुले में नए वदियालय 2026 1२५ दल्ली",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 230.284,
+      "engine_reported_runtime_ms": 230,
+      "ocr_confidence": 0.7549496238864231,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            1151,
+            24
+          ],
+          [
+            1359,
+            24
+          ],
+          [
+            1359,
+            145
+          ],
+          [
+            1151,
+            145
+          ]
+        ],
+        [
+          [
+            437,
+            135
+          ],
+          [
+            501,
+            135
+          ],
+          [
+            501,
+            211
+          ],
+          [
+            437,
+            211
+          ]
+        ],
+        [
+          [
+            628,
+            118
+          ],
+          [
+            732,
+            118
+          ],
+          [
+            732,
+            194
+          ],
+          [
+            628,
+            194
+          ]
+        ],
+        [
+          [
+            719,
+            78
+          ],
+          [
+            1007,
+            78
+          ],
+          [
+            1007,
+            194
+          ],
+          [
+            719,
+            194
+          ]
+        ],
+        [
+          [
+            998,
+            75
+          ],
+          [
+            1160,
+            61
+          ],
+          [
+            1162,
+            137
+          ],
+          [
+            1000,
+            151
+          ]
+        ],
+        [
+          [
+            504,
+            136
+          ],
+          [
+            626,
+            126
+          ],
+          [
+            627,
+            203
+          ],
+          [
+            506,
+            212
+          ]
+        ],
+        [
+          [
+            236,
+            158
+          ],
+          [
+            437,
+            135
+          ],
+          [
+            442,
+            233
+          ],
+          [
+            241,
+            256
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.5,
+      "wer": 0.75
+    },
+    {
+      "case": "blurred_hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "दलि्िली में १२५ नए वदियालय २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 149.35,
+      "engine_reported_runtime_ms": 149,
+      "ocr_confidence": 0.20115241343291224,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            233,
+            84
+          ],
+          [
+            1361,
+            84
+          ],
+          [
+            1361,
+            194
+          ],
+          [
+            233,
+            194
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.3,
+      "wer": 0.5
+    },
+    {
+      "case": "low_resolution_hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "ल्ली में १२५ नए वदियालय २०२६ में",
+      "image": {
+        "width": 400,
+        "height": 70,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 73.574,
+      "engine_reported_runtime_ms": 73,
+      "ocr_confidence": 0.35354967288475947,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            68,
+            20
+          ],
+          [
+            310,
+            20
+          ],
+          [
+            310,
+            48
+          ],
+          [
+            68,
+            48
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.4,
+      "wer": 0.625
+    },
+    {
+      "case": "jpeg_compressed_hindi_q22",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "दल्ली में १२५ नए वदियालय २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "JPEG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 153.028,
+      "engine_reported_runtime_ms": 153,
+      "ocr_confidence": 0.41223526617295486,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            232,
+            88
+          ],
+          [
+            1360,
+            88
+          ],
+          [
+            1360,
+            190
+          ],
+          [
+            232,
+            190
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.25,
+      "wer": 0.5
+    },
+    {
+      "case": "english",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": "THE CITY OPENED 125 NEW SCHOOLS IN 2026",
+      "predicted_text": "THE CITY OPENED १२५ NEW SCHOOLS IN २०२६",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 220.34,
+      "engine_reported_runtime_ms": 220,
+      "ocr_confidence": 0.5096078879387601,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            28,
+            104
+          ],
+          [
+            1574,
+            104
+          ],
+          [
+            1574,
+            176
+          ],
+          [
+            28,
+            176
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.1794871794871795,
+      "wer": 0.25
+    },
+    {
+      "case": "hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "दल्ली में १२५ नए वदियालय २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 142.728,
+      "engine_reported_runtime_ms": 142,
+      "ocr_confidence": 0.5791755237031678,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            231,
+            83
+          ],
+          [
+            1365,
+            83
+          ],
+          [
+            1365,
+            199
+          ],
+          [
+            231,
+            199
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.25,
+      "wer": 0.5
+    },
+    {
+      "case": "mixed_hindi_english",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 new schools 2026 में खुले",
+      "predicted_text": "दल़्ली में १२५ new schools २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 171.24,
+      "engine_reported_runtime_ms": 171,
+      "ocr_confidence": 0.5948855765053066,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            226,
+            91
+          ],
+          [
+            620,
+            91
+          ],
+          [
+            620,
+            189
+          ],
+          [
+            226,
+            189
+          ]
+        ],
+        [
+          [
+            629,
+            91
+          ],
+          [
+            1243,
+            91
+          ],
+          [
+            1243,
+            179
+          ],
+          [
+            629,
+            179
+          ]
+        ],
+        [
+          [
+            1228,
+            85
+          ],
+          [
+            1371,
+            85
+          ],
+          [
+            1371,
+            195
+          ],
+          [
+            1228,
+            195
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.225,
+      "wer": 0.375
+    },
+    {
+      "case": "blank",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": null,
+      "predicted_text": "",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 89.444,
+      "engine_reported_runtime_ms": 89,
+      "ocr_confidence": null,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [],
+      "coordinate_bounds_valid": true,
+      "has_text": false,
+      "warnings": [],
+      "cer": null,
+      "wer": null
+    },
+    {
+      "case": "rotated_hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "में खुले में नए वदियालय 2026 1२५ दल्ली",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 217.756,
+      "engine_reported_runtime_ms": 217,
+      "ocr_confidence": 0.7548544239338298,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            1151,
+            24
+          ],
+          [
+            1359,
+            24
+          ],
+          [
+            1359,
+            145
+          ],
+          [
+            1151,
+            145
+          ]
+        ],
+        [
+          [
+            437,
+            135
+          ],
+          [
+            501,
+            135
+          ],
+          [
+            501,
+            211
+          ],
+          [
+            437,
+            211
+          ]
+        ],
+        [
+          [
+            628,
+            118
+          ],
+          [
+            732,
+            118
+          ],
+          [
+            732,
+            194
+          ],
+          [
+            628,
+            194
+          ]
+        ],
+        [
+          [
+            719,
+            78
+          ],
+          [
+            1007,
+            78
+          ],
+          [
+            1007,
+            194
+          ],
+          [
+            719,
+            194
+          ]
+        ],
+        [
+          [
+            998,
+            75
+          ],
+          [
+            1160,
+            61
+          ],
+          [
+            1162,
+            137
+          ],
+          [
+            1000,
+            151
+          ]
+        ],
+        [
+          [
+            504,
+            136
+          ],
+          [
+            626,
+            126
+          ],
+          [
+            627,
+            203
+          ],
+          [
+            506,
+            212
+          ]
+        ],
+        [
+          [
+            236,
+            158
+          ],
+          [
+            437,
+            135
+          ],
+          [
+            442,
+            233
+          ],
+          [
+            241,
+            256
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.5,
+      "wer": 0.75
+    },
+    {
+      "case": "blurred_hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "दलि्िली में १२५ नए वदियालय २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 142.98,
+      "engine_reported_runtime_ms": 142,
+      "ocr_confidence": 0.20110148422551233,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            233,
+            84
+          ],
+          [
+            1361,
+            84
+          ],
+          [
+            1361,
+            194
+          ],
+          [
+            233,
+            194
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.3,
+      "wer": 0.5
+    },
+    {
+      "case": "low_resolution_hindi",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "ल्ली में १२५ नए वदियालय २०२६ में",
+      "image": {
+        "width": 400,
+        "height": 70,
+        "format": "PNG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 56.519,
+      "engine_reported_runtime_ms": 56,
+      "ocr_confidence": 0.35349418158905,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            68,
+            20
+          ],
+          [
+            310,
+            20
+          ],
+          [
+            310,
+            48
+          ],
+          [
+            68,
+            48
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.4,
+      "wer": 0.625
+    },
+    {
+      "case": "jpeg_compressed_hindi_q22",
+      "status": "completed",
+      "engine": "EasyOCR",
+      "device": "cuda",
+      "language_configuration": [
+        "en",
+        "hi"
+      ],
+      "reference_transcript": "दिल्ली में 125 नए विद्यालय 2026 में खुले",
+      "predicted_text": "दल्ली में १२५ नए वदियालय २०२६ में खुले",
+      "image": {
+        "width": 1600,
+        "height": 280,
+        "format": "JPEG",
+        "mode": "RGB"
+      },
+      "elapsed_ms_wall": 152.223,
+      "engine_reported_runtime_ms": 152,
+      "ocr_confidence": 0.4121592319112495,
+      "confidence_semantics": "Arithmetic mean of available engine block confidences; not a calibrated probability.",
+      "bounding_boxes": [
+        [
+          [
+            232,
+            88
+          ],
+          [
+            1360,
+            88
+          ],
+          [
+            1360,
+            190
+          ],
+          [
+            232,
+            190
+          ]
+        ]
+      ],
+      "coordinate_bounds_valid": true,
+      "has_text": true,
+      "warnings": [],
+      "cer": 0.25,
+      "wer": 0.5
+    }
+  ],
+  "metric_method": "NFC + casefold + whitespace collapse; CER uses Unicode code points; WER uses whitespace-delimited tokens; punctuation is retained."
+}

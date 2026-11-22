@@ -63,8 +63,8 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 /* ────── PROGRESS TRACKER ────── */
-function ProgressTracker({ completed, current, failed }: {
-  completed: string[]; current?: string; failed?: string[];
+function ProgressTracker({ completed, current, failed, stageStatuses }: {
+  completed: string[]; current?: string; failed?: string[]; stageStatuses?: Record<string, string>;
 }) {
   const norm = (s: string) => s.toLowerCase().replace(/\s+/g, '_');
   const cSet = new Set((completed || []).map(norm));
@@ -77,8 +77,11 @@ function ProgressTracker({ completed, current, failed }: {
         const key = norm(step);
         let icon = <Clock className="w-3.5 h-3.5 text-text-muted" />;
         let color = 'text-text-muted';
-        if (cSet.has(key)) { icon = <CheckCircle className="w-3.5 h-3.5 text-success" />; color = 'text-success'; }
-        else if (fSet.has(key)) { icon = <XCircle className="w-3.5 h-3.5 text-danger" />; color = 'text-danger'; }
+        const stageStatus = stageStatuses?.[key];
+        if (stageStatus === 'completed' || (!stageStatus && cSet.has(key))) { icon = <CheckCircle className="w-3.5 h-3.5 text-success" />; color = 'text-success'; }
+        else if (stageStatus === 'partial') { icon = <AlertTriangle className="w-3.5 h-3.5 text-warning" />; color = 'text-warning'; }
+        else if (stageStatus === 'failed' || stageStatus === 'unavailable' || fSet.has(key)) { icon = <XCircle className="w-3.5 h-3.5 text-danger" />; color = 'text-danger'; }
+        else if (stageStatus === 'skipped') { icon = <Clock className="w-3.5 h-3.5 text-text-muted" />; color = 'text-text-muted'; }
         else if (key === cur) { icon = <Loader2 className="w-3.5 h-3.5 text-primary-light animate-spin" />; color = 'text-primary-light'; }
         return (
           <div key={step} className={`flex items-center gap-2 px-3 py-2 rounded-lg bg-surface/50 ${color}`}>
@@ -812,7 +815,7 @@ export default function App() {
         {/* ── PROGRESS ── */}
         {isProcessing && status && (
           <Card title="Analysis Progress" icon={Loader2}>
-            <ProgressTracker completed={status.progress?.completed_steps || status.completed_steps || []} current={status.progress?.current_step || status.current_step} />
+            <ProgressTracker completed={status.progress?.completed_steps || status.completed_steps || []} current={status.progress?.current_step || status.current_step} stageStatuses={status.progress?.stage_statuses} />
             <p className="mt-3 text-xs text-text-muted">Progress reflects completed backend stages. Optional model initialization or external services can extend runtime.</p>
           </Card>
         )}

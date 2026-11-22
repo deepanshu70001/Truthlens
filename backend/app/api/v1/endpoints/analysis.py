@@ -52,11 +52,14 @@ async def get_analysis_image(analysis_id: str, db: AsyncSession = Depends(get_db
 
 
 def _parse_completed_steps(raw: str | None) -> List[str]:
-    """Parse completed_steps JSON string to list."""
+    """Parse the current progress object or the legacy JSON list."""
     if not raw:
         return []
     try:
-        return json.loads(raw)
+        value = json.loads(raw)
+        if isinstance(value, dict):
+            value = value.get("completed_steps", [])
+        return value if isinstance(value, list) else []
     except (json.JSONDecodeError, TypeError):
         return []
 
@@ -77,6 +80,22 @@ async def get_analysis(
 
     completed_steps = _parse_completed_steps(analysis.completed_steps)
     total_steps = 20
+    try:
+        progress_state = json.loads(analysis.completed_steps or "[]")
+    except (json.JSONDecodeError, TypeError):
+        progress_state = {}
+    stage_statuses = progress_state.get("stage_statuses", {}) if isinstance(progress_state, dict) else {}
+    if not isinstance(stage_statuses, dict):
+        stage_statuses = {}
+    else:
+        stage_statuses = dict(stage_statuses)
+    if not stage_statuses:
+        stage_statuses = {name: "completed" for name in completed_steps}
+    if analysis.current_step:
+        stage_statuses.setdefault(analysis.current_step, "running")
+    percentage = round(sum(1 for value in stage_statuses.values() if value in {
+        "completed", "partial", "failed", "unavailable", "skipped"
+    }) / total_steps * 100, 1)
     response_status = analysis.status.value if hasattr(analysis.status, 'value') else analysis.status
     if response_status == "completed" and analysis.report_json:
         try:
@@ -90,9 +109,8 @@ async def get_analysis(
         current_step=analysis.current_step,
         completed_steps=completed_steps,
         total_steps=total_steps,
-        percentage=round(len(completed_steps) / total_steps * 100, 1)
-        if total_steps > 0
-        else 0.0,
+        stage_statuses=stage_statuses,
+        percentage=percentage,
     )
 
     image_out = None

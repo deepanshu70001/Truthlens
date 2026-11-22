@@ -12,6 +12,13 @@ export interface AnalysisStatus {
   truth_confidence?: number;
   current_step?: string;
   completed_steps?: string[];
+  progress?: {
+    current_step?: string;
+    completed_steps?: string[];
+    stage_statuses?: Record<string, 'pending' | 'running' | 'completed' | 'partial' | 'failed' | 'unavailable' | 'skipped'>;
+    total_steps?: number;
+    percentage?: number;
+  };
   processing_time_ms?: number;
   error_message?: string;
 }
