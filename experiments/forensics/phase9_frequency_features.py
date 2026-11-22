@@ -163,16 +163,20 @@ def extract_frequency_features(image: Image.Image) -> dict[str, Any]:
         dx = np.diff(gray, axis=1)
         dy = np.diff(gray, axis=0)
 
-        def periodicity(values: np.ndarray) -> tuple[float, int]:
+        def periodicity(values: np.ndarray, spatial_axis: int) -> tuple[float, int]:
+            # Average across the orthogonal axis first. This keeps the statistic
+            # deterministic and avoids tens of millions of redundant per-pixel
+            # correlations for a single image.
+            signal = values.mean(axis=0 if spatial_axis == 1 else 1).ravel()
             scores = []
             for lag in range(2, 17):
-                score = _safe_corr(values[..., :-lag], values[..., lag:])
+                score = _safe_corr(signal[:-lag], signal[lag:])
                 scores.append(score)
             index = int(np.argmax(scores))
             return float(scores[index]), index + 2
 
-        px, peak_x = periodicity(dx)
-        py, peak_y = periodicity(dy)
+        px, peak_x = periodicity(dx, 1)
+        py, peak_y = periodicity(dy, 0)
 
         values = [
             np.log1p(total_fft), np.log1p(fft_bands[0]), np.log1p(fft_bands[1]), np.log1p(fft_bands[2]),
