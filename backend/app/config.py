@@ -57,6 +57,8 @@ class Settings(BaseSettings):
     VISION_MODEL: str = "yolov8n.pt"
     OCR_LANGUAGES: str = "en,hi"
     OCR_MODEL_DIR: str = str(_project_root() / "models" / "ocr")
+    OCR_TIMEOUT_SECONDS: float = 60.0
+    LANGUAGE_DETECTION_TIMEOUT_SECONDS: float = 30.0
     AI_GENERATED_THRESHOLD: float = 0.65
     AUTHENTIC_THRESHOLD: float = 0.35
 

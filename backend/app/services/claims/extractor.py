@@ -10,7 +10,7 @@ import re
 import time
 import unicodedata
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
 from backend.app.core.logging import get_logger
 
@@ -33,6 +33,7 @@ _FACTUAL = re.compile(r"\b(?:is|are|was|were|has|have|had|will|did|does|reported
 _FRAGMENT = re.compile(r"^(?:breaking|exclusive|urgent|alert|viral|shocking|must watch|share now)[!:.\s]*$", re.I)
 _NUMBER = re.compile(r"(?<!\w)\d[\d,]*(?:\.\d+)?%?(?!\w)")
 _ENTITY = re.compile(r"\b[A-Z][\w-]*(?:\s+[A-Z][\w-]*){0,3}\b")
+EXTRACTION_METHOD = "conservative_rules_v2"
 
 
 @dataclass
@@ -56,6 +57,12 @@ class ExtractedClaim:
     eligibility_reason: str = ""
     ocr_confidence: Optional[float] = None
     warnings: List[str] = field(default_factory=list)
+    source_start: Optional[int] = None
+    source_end: Optional[int] = None
+    source_region_refs: List[str] = field(default_factory=list)
+    source_regions: List[Dict[str, Any]] = field(default_factory=list)
+    extraction_method: str = EXTRACTION_METHOD
+    language_detection_status: str = "unavailable"
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -67,7 +74,11 @@ class ExtractedClaim:
             "locations": self.locations, "numbers": self.numbers,
             "claim_type": self.claim_type, "confidence": round(self.confidence, 4),
             "classification": self.classification,
-            "language_detection_status": "script_estimate" if self.language != "unknown" else "unavailable",
+            "language_detection_status": self.language_detection_status,
+            "source_start": self.source_start, "source_end": self.source_end,
+            "source_region_refs": self.source_region_refs,
+            "source_regions": self.source_regions,
+            "extraction_method": self.extraction_method,
             "confidence_semantics": "heuristic extraction score; not truth probability",
             "source": self.source, "source_text_reference": self.source_text_reference,
             "ocr_confidence": round(self.ocr_confidence, 4) if self.ocr_confidence is not None else None,
@@ -112,7 +123,7 @@ def _classify(text: str) -> tuple[str, str, str, str]:
         # Short claims without an event, entity, number or attribution can be
         # incomplete; mark ambiguous rather than dispatching noisy searches.
         words = text.split()
-        if len(words) < 4:
+        if len(words) < 3:
             return "unclassified", "AMBIGUOUS", "INELIGIBLE", "Statement is too short to identify a verifiable proposition."
         subtype = "statistical" if _NUMBER.search(text) else "factual"
         return subtype, "FACTUAL", "ELIGIBLE", "Text contains a factual assertion candidate."
@@ -150,8 +161,10 @@ def _score(text: str, ocr_confidence: Optional[float]) -> float:
 
 
 def extract_claims(
-    sentences: List[str], min_confidence: float = 0.1, max_claims: int = 5,
-    *, language: str = "unknown", ocr_confidence: Optional[float] = None,
+    sentences: Sequence[str] | str, min_confidence: float = 0.1, max_claims: int = 5,
+    *, language: str = "unknown", language_detection_status: str = "unavailable",
+    ocr_confidence: Optional[float] = None, sentence_spans: Optional[Sequence[Dict[str, Any]]] = None,
+    source_regions: Optional[Sequence[Dict[str, Any]]] = None,
 ) -> ClaimExtractionResult:
     """Extract OCR-grounded candidates while preserving ineligible text.
 
@@ -161,12 +174,21 @@ def extract_claims(
     started = time.perf_counter()
     warnings: List[str] = []
     found: Dict[str, ExtractedClaim] = {}
-    for index, raw in enumerate(sentences or []):
+    items: List[Dict[str, Any]] = []
+    if isinstance(sentences, str):
+        from backend.app.services.text.normalizer import _sentence_spans
+        items = _sentence_spans(sentences)
+    elif sentence_spans:
+        items = [dict(item) for item in sentence_spans]
+    else:
+        items = [{"text": raw} for raw in (sentences or [])]
+    for index, item in enumerate(items):
+        raw = item.get("text", "")
         original = str(raw or "").strip()
         normalized = _clean(original)
         if not normalized or len(normalized) < 5:
             continue
-        key = normalized.casefold()
+        key = " ".join(normalized.casefold().split())
         if key in found:
             continue
         legacy_type, classification, eligibility, reason = _classify(normalized)
@@ -179,8 +201,18 @@ def extract_claims(
         claim_warnings = []
         if ocr_confidence is not None and ocr_confidence < 0.5:
             claim_warnings.append("OCR confidence is low; verify the recognized wording.")
-        if language == "unknown":
+        if language == "unknown" or language_detection_status != "success":
             claim_warnings.append("Original language could not be identified confidently.")
+        start, end = item.get("start"), item.get("end")
+        region_refs = []
+        matched_regions = []
+        if start is not None and end is not None:
+            for region in source_regions or []:
+                if region.get("text_start") is not None and region.get("text_end") is not None and region["text_start"] < end and region["text_end"] > start:
+                    ref = region.get("region_id") or region.get("id")
+                    if ref:
+                        region_refs.append(str(ref))
+                        matched_regions.append({"region_id": str(ref), "bbox": region.get("bbox")})
         found[key] = ExtractedClaim(
             claim=original, original_text=original, normalized_text=normalized,
             claim_id=claim_id, claim_type=legacy_type, classification=classification, confidence=confidence,
@@ -189,6 +221,9 @@ def extract_claims(
             language=language, source_text_reference=f"ocr_sentence_{index}",
             verification_eligibility=eligibility, eligibility_reason=reason,
             ocr_confidence=ocr_confidence, warnings=claim_warnings,
+            source_start=start, source_end=end, source_region_refs=region_refs,
+            source_regions=matched_regions,
+            language_detection_status=language_detection_status,
         )
     claims = list(found.values())[:max(0, max_claims)]
     if not claims:
@@ -196,6 +231,6 @@ def extract_claims(
     if len(found) > max_claims:
         warnings.append(f"Candidate list capped at {max_claims} claims.")
     result = ClaimExtractionResult(claims=claims, total_claims=len(claims),
-        runtime_ms=int((time.perf_counter() - started) * 1000), warnings=warnings)
+        runtime_ms=int((time.perf_counter() - started) * 1000), method=EXTRACTION_METHOD, warnings=warnings)
     log.info("Claims extracted: %d candidates [%d ms]", len(claims), result.runtime_ms)
     return result

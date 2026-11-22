@@ -84,6 +84,7 @@ class FactCheckClaim:
 class FactCheckResult:
     """Complete fact-check search result."""
     status: str = "unavailable"  # unavailable | success | no_results | failed
+    provider: str = "google_fact_check_tools"
     claims: List[FactCheckClaim] = field(default_factory=list)
     total_results: int = 0
     queries_performed: int = 0
@@ -95,6 +96,7 @@ class FactCheckResult:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "status": self.status,
+            "provider": self.provider,
             "claims": [c.to_dict() for c in self.claims],
             "total_results": self.total_results,
             "queries_performed": self.queries_performed,
@@ -132,7 +134,7 @@ def _bounded_setting(name: str, default: float, minimum: float, maximum: float) 
 def _search_single_claim(
     query: str,
     api_key: str,
-    language_code: str = "en",
+    language_code: Optional[str] = None,
     max_age_days: Optional[int] = None,
     claim_id: Optional[str] = None,
     timeout_seconds: Optional[float] = None,
@@ -145,8 +147,9 @@ def _search_single_claim(
     params = {
         "key": api_key,
         "query": query,
-        "languageCode": language_code,
     }
+    if language_code and re.fullmatch(r"[a-z]{2,3}(?:-[A-Z]{2})?", language_code):
+        params["languageCode"] = language_code
     if max_age_days:
         params["maxAgeDays"] = str(max_age_days)
 
@@ -173,9 +176,10 @@ def _search_single_claim(
     for item in data.get("claims", []):
         if not isinstance(item, dict):
             continue
-        claim_text = item.get("text", "")
-        claimant = item.get("claimant", "")
-        claim_date = item.get("claimDate", "")
+        claim_text = item.get("text", "") if isinstance(item.get("text", ""), str) else ""
+        claimant = item.get("claimant", "") if isinstance(item.get("claimant", ""), str) else ""
+        claim_date = item.get("claimDate", "") if isinstance(item.get("claimDate", ""), str) else ""
+        claim_text, claimant, claim_date = claim_text[:2000], claimant[:300], claim_date[:40]
 
         for review in item.get("claimReview", []):
             if not isinstance(review, dict):
@@ -183,8 +187,10 @@ def _search_single_claim(
             publisher = review.get("publisher", {})
             if not isinstance(publisher, dict):
                 publisher = {}
+            publisher_name = publisher.get("name", "") if isinstance(publisher.get("name", ""), str) else ""
+            publisher_site = publisher.get("site", "") if isinstance(publisher.get("site", ""), str) else ""
             url = review.get("url", "")
-            if not isinstance(url, str):
+            if not isinstance(url, str) or len(url) > 2048:
                 continue
             parsed_url = urlparse(url)
             if parsed_url.scheme.lower() != "https" or not parsed_url.hostname or parsed_url.username or parsed_url.password:
@@ -195,13 +201,13 @@ def _search_single_claim(
                 claimed_text=claim_text,
                 claimant=claimant,
                 claim_date=claim_date,
-                publisher_name=publisher.get("name", ""),
-                publisher_site=publisher.get("site", ""),
+                publisher_name=publisher_name[:300],
+                publisher_site=publisher_site[:300],
                 url=url,
                 title=str(review.get("title", ""))[:500],
                 review_date=str(review.get("reviewDate", ""))[:40],
                 textual_rating=str(review.get("textualRating", ""))[:160],
-                language_code=str(review.get("languageCode", language_code))[:20],
+                language_code=str(review.get("languageCode", language_code or ""))[:20],
                 claim_id=claim_id,
                 evidence_id="fc_" + hashlib.sha256(identity.encode("utf-8")).hexdigest()[:20],
                 retrieved_at=retrieved_at,
@@ -213,7 +219,7 @@ def _search_single_claim(
 
 def search_fact_checks(
     claim_texts: List[str],
-    language_code: str = "en",
+    language_code: Optional[str] = None,
     max_results_per_claim: int = 5,
     claim_ids: Optional[List[str]] = None,
 ) -> FactCheckResult:
@@ -229,6 +235,22 @@ def search_fact_checks(
         FactCheckResult with all found reviews
     """
     t0 = time.time()
+    # Reject malformed/oversized input and collapse repeated normalized queries.
+    inputs = []
+    seen_queries = set()
+    for index, text in enumerate(claim_texts or []):
+        query = re.sub(r"\s+", " ", text).strip() if isinstance(text, str) else ""
+        if not query or len(query) > 2000:
+            continue
+        key = query.casefold()
+        if key in seen_queries:
+            continue
+        seen_queries.add(key)
+        inputs.append((query, claim_ids[index] if claim_ids and index < len(claim_ids) else None))
+    claim_texts = [item[0] for item in inputs]
+    claim_ids = [item[1] for item in inputs]
+    if language_code and not re.fullmatch(r"[a-z]{2,3}(?:-[A-Z]{2})?", language_code):
+        language_code = None
 
     claim_ids = claim_ids or [None] * len(claim_texts)
     claim_ids = (claim_ids + [None] * len(claim_texts))[:len(claim_texts)]
@@ -258,7 +280,10 @@ def search_fact_checks(
 
     attempted = 0
     succeeded = 0
+    failed_queries = 0
+    timed_out = False
     per_query_status: Dict[str, str] = {}
+    per_query_errors: Dict[str, str] = {}
     result_limit = min(10, max(1, int(max_results_per_claim)))
     retry_attempts = int(_bounded_setting("FACTCHECK_RETRY_ATTEMPTS", 0, 0, 2))
     deadline = time.monotonic() + _bounded_setting("FACTCHECK_MAX_TOTAL_SECONDS", 25, 1, 120)
@@ -285,6 +310,8 @@ def search_fact_checks(
                     break
                 except httpx.HTTPStatusError as retry_error:
                     if retry_error.response.status_code not in {429, 500, 502, 503, 504} or attempt >= retry_attempts or time.monotonic() >= deadline:
+                        if retry_error.response.status_code in {429, 500, 502, 503, 504}:
+                            timed_out = timed_out or retry_error.response.status_code == 429
                         raise
                 except httpx.RequestError:
                     if attempt >= retry_attempts or time.monotonic() >= deadline:
@@ -304,19 +331,25 @@ def search_fact_checks(
             succeeded += 1
             per_query_status[claim_id or claim_text] = "success"
         except httpx.HTTPStatusError as e:
+            per_query_errors[claim_id or claim_text] = (
+                "PROVIDER_RATE_LIMIT" if e.response.status_code == 429
+                else "PROVIDER_AUTH_OR_QUOTA" if e.response.status_code == 403
+                else "PROVIDER_HTTP_ERROR"
+            )
             if e.response.status_code == 403:
-                return FactCheckResult(
-                    status="failed",
-                    error="API key invalid or quota exceeded.",
-                    runtime_ms=int((time.time() - t0) * 1000),
-                    claim_verifications=[_verification(cid, text, "RETRIEVAL_UNAVAILABLE", [], "Fact-check provider rejected the configured credentials or quota.") for text, cid in zip(claim_texts[:claim_limit], claim_ids[:claim_limit])],
-                )
+                failed_queries += 1
+                warnings.append("Fact-check provider rejected credentials or quota for a query.")
             elif e.response.status_code == 429:
+                failed_queries += 1
+                timed_out = True
                 warnings.append("Rate limit reached — some claims not checked.")
                 break
             else:
+                failed_queries += 1
                 warnings.append(f"Fact-check request failed with HTTP {e.response.status_code}.")
         except Exception as e:
+            failed_queries += 1
+            per_query_errors[claim_id or claim_text] = "PROVIDER_TIMEOUT" if isinstance(e, httpx.TimeoutException) else "PROVIDER_REQUEST_ERROR"
             warnings.append(f"Fact-check request failed ({type(e).__name__}).")
 
     runtime_ms = int((time.time() - t0) * 1000)
@@ -324,7 +357,7 @@ def search_fact_checks(
     truncated = len(claim_texts) > claim_limit
     if succeeded == attempted and not truncated:
         status = "success" if all_claims else "no_results"
-    elif succeeded or truncated:
+    elif succeeded or truncated or failed_queries and (succeeded or attempted > failed_queries):
         status = "partial"
     elif attempted:
         status = "failed"
@@ -358,9 +391,12 @@ def search_fact_checks(
             verdict, reason = "RETRIEVAL_UNAVAILABLE", "Fact-check retrieval did not complete for this claim."
         verifications.append({
             "claim_id": claim_id, "original_claim": text, "verdict": verdict,
+            "publisher_rating_summary": verdict,
+            "verdict_semantics": "summary_of_third_party_publisher_ratings_not_truthlens_finding",
             "reasoning_summary": reason, "supporting_evidence_ids": supporting,
             "contradicting_evidence_ids": contradicting, "conflicting_evidence_ids": conflicting,
             "verification_status": "COMPLETED" if retrieval_status else "UNAVAILABLE",
+            "retrieval_error_category": per_query_errors.get(claim_id or text),
             "confidence": None,
             "limitations": ["Verdict summarizes third-party fact-check ratings; it is not an independent TruthLens investigation."],
         })
@@ -372,6 +408,7 @@ def search_fact_checks(
         queries_performed=queries_performed,
         runtime_ms=runtime_ms,
         warnings=warnings,
+        error="Fact-check provider rate limit reached." if timed_out and succeeded == 0 else None,
         claim_verifications=verifications,
     )
 

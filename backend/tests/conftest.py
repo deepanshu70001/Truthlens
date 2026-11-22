@@ -109,11 +109,25 @@ def mock_optional_analysis_modules(monkeypatch):
         def detect(self, image):
             return VisionResult(status="completed", model_name="mock-yolov8n", image_width=image.width, image_height=image.height)
 
+    class MockLanguageDetector:
+        received_text = None
+        def detect(self, text, **_kwargs):
+            from backend.app.services.nlp.language_detector import LanguageDetectionResult
+            self.received_text = text
+            if not text:
+                return LanguageDetectionResult(status="completed", outcome="no_text")
+            return LanguageDetectionResult(
+                status="completed", outcome="success", detected_language="en",
+                language_name="English", confidence=0.96,
+            )
+
     ocr = MockOCR()
     vision = MockVision()
+    language = MockLanguageDetector()
     monkeypatch.setattr("backend.app.services.ocr.service.get_ocr_service", lambda **kwargs: ocr)
     monkeypatch.setattr("backend.app.services.vision.detector.get_object_detector", lambda: vision)
-    return {"ocr": ocr, "vision": vision}
+    monkeypatch.setattr("backend.app.services.nlp.language_detector.get_language_detector", lambda: language)
+    return {"ocr": ocr, "vision": vision, "language": language}
 
 
 def create_test_jpeg(width: int = 100, height: int = 100) -> bytes:

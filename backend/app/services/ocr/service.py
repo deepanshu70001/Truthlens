@@ -90,6 +90,8 @@ class OCRService:
         self._tesseract = None
         self._engine: Optional[str] = None
         self._load_warnings: List[str] = []
+        self._load_attempted = False
+        self._tesseract_attempted = False
         self._lock = threading.RLock()
 
     @property
@@ -101,8 +103,9 @@ class OCRService:
             self._load()
 
     def _load(self) -> None:
-        if self.is_loaded:
+        if self.is_loaded or self._load_attempted:
             return
+        self._load_attempted = True
         if not self._languages or any(not isinstance(code, str) or not code.strip() for code in self._languages):
             self._load_warnings.append("OCR language configuration is invalid.")
             return
@@ -129,6 +132,9 @@ class OCRService:
         self._load_tesseract()
 
     def _load_tesseract(self) -> None:
+        if self._tesseract_attempted or self._tesseract is not None:
+            return
+        self._tesseract_attempted = True
         try:
             import pytesseract
             command = getattr(pytesseract.pytesseract, "tesseract_cmd", "tesseract") or "tesseract"
@@ -157,8 +163,78 @@ class OCRService:
         with self._lock:
             self._reader = self._tesseract = None
             self._engine = None
+            self._load_attempted = False
+            self._tesseract_attempted = False
+            self._load_warnings.clear()
 
-    def _run_tesseract(self, image: Image.Image) -> List[OCRBlock]:
+    def _run_easyocr(self, image: Image.Image, warnings: List[str]) -> tuple[List[OCRBlock], bool]:
+        blocks: List[OCRBlock] = []
+        had_invalid_output = False
+        width, height = image.size
+        raw_results = self._reader.readtext(np.asarray(image))
+        for item in raw_results or []:
+            try:
+                bbox, raw_text, raw_confidence = item
+                text = str(raw_text).strip()
+                points = np.asarray(bbox, dtype=float)
+                if not text:
+                    continue
+                if points.shape != (4, 2) or not np.isfinite(points).all():
+                    warnings.append("An OCR region with invalid coordinates was discarded.")
+                    had_invalid_output = True
+                    continue
+                # No geometric transform is applied; clipping retains the
+                # coordinate frame of the original image.
+                points[:, 0] = np.clip(points[:, 0], 0, width)
+                points[:, 1] = np.clip(points[:, 1], 0, height)
+                if points[:, 0].max() <= points[:, 0].min() or points[:, 1].max() <= points[:, 1].min():
+                    warnings.append("An OCR region with zero visible area was discarded.")
+                    had_invalid_output = True
+                    continue
+                try:
+                    confidence = float(raw_confidence)
+                except (TypeError, ValueError):
+                    confidence = float("nan")
+                if not np.isfinite(confidence) or not 0.0 <= confidence <= 1.0:
+                    confidence = None
+                    warnings.append("An OCR region had invalid confidence; its text was retained without confidence.")
+                    had_invalid_output = True
+                blocks.append(OCRBlock(
+                    text, confidence,
+                    [[int(round(x)), int(round(y))] for x, y in points],
+                ))
+            except (TypeError, ValueError, IndexError):
+                warnings.append("An OCR region with malformed output was discarded.")
+                had_invalid_output = True
+        return blocks, had_invalid_output
+
+    def _result_from_blocks(
+        self,
+        blocks: List[OCRBlock],
+        engine: Optional[str],
+        warnings: List[str],
+        started: float,
+        partial: bool = False,
+    ) -> OCRResult:
+        raw_text = "\n".join(block.text for block in blocks)
+        normalized = _normalize_text(raw_text)
+        confidences = [b.confidence for b in blocks if b.confidence is not None]
+        reason = None if normalized else (
+            f"{engine or 'OCR'} ran for {', '.join(self._languages) or 'the configured languages'} "
+            "but found no readable text regions. The image may contain no text, or text may be too small, blurry, or low-contrast to recognize."
+        )
+        return OCRResult(
+            text=raw_text, normalized_text=normalized, language=_detect_primary_script(raw_text),
+            blocks=blocks,
+            total_confidence=float(np.mean(confidences)) if confidences else None,
+            word_count=len(normalized.split()) if normalized else 0,
+            runtime_ms=max(0, int((time.perf_counter() - started) * 1000)),
+            has_text=bool(normalized), warnings=warnings,
+            status="partial" if partial else "completed", engine=engine,
+            no_text_reason=reason, language_configuration=self._languages,
+        )
+
+    def _run_tesseract(self, image: Image.Image, warnings: Optional[List[str]] = None) -> List[OCRBlock]:
         data = self._tesseract.image_to_data(image.convert("RGB"), lang=_tesseract_languages(self._languages), output_type=self._tesseract.Output.DICT)
         blocks: List[OCRBlock] = []
         image_width, image_height = image.size
@@ -169,8 +245,13 @@ class OCRService:
             try:
                 x, y = int(data["left"][i]), int(data["top"][i])
                 w, h = int(data["width"][i]), int(data["height"][i])
-                conf_raw = float(data["conf"][i])
-                conf = conf_raw / 100 if np.isfinite(conf_raw) and 0 <= conf_raw <= 100 else None
+                try:
+                    conf_raw = float(data.get("conf", [])[i])
+                    conf = conf_raw / 100 if np.isfinite(conf_raw) and 0 <= conf_raw <= 100 else None
+                except (ValueError, TypeError, IndexError, KeyError):
+                    conf = None
+                if conf is None and warnings is not None:
+                    warnings.append("A Tesseract OCR region had invalid confidence; its text was retained without confidence.")
                 if w <= 0 or h <= 0:
                     continue
                 # Tesseract returns xywh boxes. Clip them to the EXIF-corrected
@@ -191,77 +272,82 @@ class OCRService:
     def _extract(self, image: Image.Image) -> OCRResult:
         started = time.perf_counter()
         warnings = list(self._load_warnings)
+        if not isinstance(image, Image.Image):
+            reason = "OCR input is not a decoded image."
+            return OCRResult(status="failed", runtime_ms=max(0, int((time.perf_counter() - started) * 1000)), warnings=[reason], no_text_reason=reason, language_configuration=self._languages)
+        try:
+            width, height = image.size
+            if width <= 0 or height <= 0 or width * height > settings.MAX_IMAGE_PIXELS:
+                reason = "Image dimensions exceed the configured OCR safety limit."
+                return OCRResult(status="failed", runtime_ms=max(0, int((time.perf_counter() - started) * 1000)), warnings=[reason], no_text_reason=reason, language_configuration=self._languages)
+            supported_formats = {None, "JPEG", "PNG", "WEBP", "GIF", "BMP", "TIFF"}
+            if image.format and image.format.upper() not in supported_formats:
+                reason = "Image format is not supported for OCR."
+                return OCRResult(status="failed", runtime_ms=max(0, int((time.perf_counter() - started) * 1000)), warnings=[reason], no_text_reason=reason, language_configuration=self._languages)
+            image.load()
+            # Work on an OCR-local copy; leave the caller's decoded image intact.
+            ocr_image = image.copy().convert("RGB")
+        except Exception:
+            reason = "Image could not be decoded for OCR."
+            return OCRResult(status="failed", runtime_ms=max(0, int((time.perf_counter() - started) * 1000)), warnings=[reason], no_text_reason=reason, language_configuration=self._languages)
         if not self.is_loaded:
             reason = "OCR could not run because no configured OCR engine is available."
             return OCRResult(status="unavailable", runtime_ms=int((time.perf_counter()-started)*1000), warnings=warnings or [reason], no_text_reason=reason, language_configuration=self._languages)
-        blocks: List[OCRBlock] = []
-        engine = self._engine
-        fallback_succeeded = False
-        try:
-            if self._reader is not None:
-                raw_results = self._reader.readtext(np.asarray(image.convert("RGB")))
-                for item in raw_results or []:
-                    try:
-                        bbox, text, confidence = item
-                        text = str(text).strip()
-                        points = np.asarray(bbox, dtype=float)
-                        conf = float(confidence)
-                        width, height = image.size
-                        if not text or points.shape != (4, 2) or not np.isfinite(points).all() or np.any(points < 0) or np.any(points[:, 0] > width) or np.any(points[:, 1] > height) or not np.isfinite(conf) or not 0 <= conf <= 1:
-                            warnings.append("An invalid EasyOCR block was discarded.")
-                            continue
-                        blocks.append(OCRBlock(text, conf, [[int(x), int(y)] for x,y in points]))
-                    except (TypeError, ValueError, IndexError):
-                        warnings.append("An invalid EasyOCR block was discarded.")
-            else:
-                blocks = self._run_tesseract(image)
-        except Exception as exc:
-            warnings.append(f"{engine} inference failed ({type(exc).__name__}).")
-            if self._reader is not None:
-                self._reader = None
-                self._load_tesseract()
-                if self._tesseract is not None:
-                    engine = self._engine
-                    try:
-                        blocks = self._run_tesseract(image)
-                        fallback_succeeded = True
-                    except Exception as fallback_exc:
-                        warnings.append(f"Tesseract inference failed ({type(fallback_exc).__name__}).")
-                        blocks = []
-                    else:
-                        warnings.append("OCR output was produced by the Tesseract fallback.")
-                else:
-                    engine = "EasyOCR"
-            if not blocks:
-                if fallback_succeeded:
-                    reason = f"{engine} ran for {', '.join(self._languages) or 'the configured languages'} but found no readable text regions. The image may contain no text, or text may be too small, blurry, or low-contrast to recognize."
-                    return OCRResult(status="completed", engine=engine, runtime_ms=int((time.perf_counter()-started)*1000), warnings=warnings, no_text_reason=reason, language_configuration=self._languages)
-                reason = f"OCR could not complete using {engine or 'an available engine'}; check the OCR warnings for details."
-                return OCRResult(status="failed" if engine else "unavailable", engine=engine, runtime_ms=int((time.perf_counter()-started)*1000), warnings=warnings, no_text_reason=reason, language_configuration=self._languages)
+        if self._reader is None:
+            try:
+                blocks = self._run_tesseract(ocr_image, warnings)
+            except Exception as exc:
+                warnings.append(f"Tesseract inference failed ({type(exc).__name__}).")
+                reason = "OCR could not complete using the configured engine."
+                return OCRResult(status="failed", engine="PyTesseract", runtime_ms=max(0, int((time.perf_counter() - started) * 1000)), warnings=warnings, no_text_reason=reason, language_configuration=self._languages)
+            return self._result_from_blocks(blocks, "PyTesseract", warnings, started)
 
-        raw_text = "\n".join(block.text for block in blocks)
-        normalized = _normalize_text(raw_text)
-        confidences = [b.confidence for b in blocks if b.confidence is not None]
-        mean_confidence = float(np.mean(confidences)) if confidences else None
-        no_text_reason = None if normalized else (
-            f"{engine or 'OCR'} ran for {', '.join(self._languages) or 'the configured languages'} "
-            "but found no readable text regions. The image may contain no text, or text may be too small, blurry, or low-contrast to recognize."
-        )
-        return OCRResult(
-            text=raw_text, normalized_text=normalized, language=_detect_primary_script(raw_text),
-            blocks=blocks, total_confidence=mean_confidence,
-            word_count=len(normalized.split()) if normalized else 0,
-            runtime_ms=int((time.perf_counter()-started)*1000), has_text=bool(normalized),
-            warnings=warnings, status="partial" if any("discarded" in w for w in warnings) else "completed",
-            engine=engine, no_text_reason=no_text_reason, language_configuration=self._languages,
-        )
+        primary_engine = "EasyOCR"
+        primary_failed = False
+        invalid_output = False
+        blocks: List[OCRBlock] = []
+        try:
+            blocks, invalid_output = self._run_easyocr(ocr_image, warnings)
+        except Exception as exc:
+            primary_failed = True
+            warnings.append(f"EasyOCR inference failed ({type(exc).__name__}).")
+            # Do not retry a broken primary model on every subsequent image.
+            self._reader = None
+        if blocks:
+            return self._result_from_blocks(blocks, primary_engine, warnings, started, partial=invalid_output)
+
+        warnings.append("EasyOCR produced no usable text; attempting the Tesseract fallback.")
+        self._load_tesseract()
+        if self._tesseract is not None:
+            try:
+                fallback_blocks = self._run_tesseract(ocr_image, warnings)
+            except Exception as exc:
+                warnings.append(f"Tesseract inference failed ({type(exc).__name__}).")
+                if primary_failed:
+                    reason = "All available OCR engines failed during inference."
+                    return OCRResult(status="failed", engine="PyTesseract", runtime_ms=max(0, int((time.perf_counter() - started) * 1000)), warnings=warnings, no_text_reason=reason, language_configuration=self._languages)
+                # EasyOCR completed, so its no-text result remains valid even
+                # though the optional second opinion failed.
+                warnings.append("The primary OCR engine completed without readable text.")
+                return self._result_from_blocks([], primary_engine, warnings, started, partial=invalid_output)
+            if fallback_blocks:
+                warnings.append("Readable OCR text was produced by the Tesseract fallback.")
+                return self._result_from_blocks(fallback_blocks, "PyTesseract", warnings, started)
+            warnings.append("Tesseract completed but found no readable text.")
+
+        if primary_failed and self._tesseract is None:
+            reason = "OCR could not complete using the available engine."
+            return OCRResult(status="failed", engine=primary_engine, runtime_ms=max(0, int((time.perf_counter() - started) * 1000)), warnings=warnings, no_text_reason=reason, language_configuration=self._languages)
+        return self._result_from_blocks([], "PyTesseract" if self._tesseract is not None else primary_engine, warnings, started, partial=invalid_output)
 
 
 _ocr_service: Optional[OCRService] = None
+_ocr_service_lock = threading.RLock()
 
 
 def get_ocr_service(gpu: bool = True, languages: Optional[List[str]] = None) -> OCRService:
     global _ocr_service
-    if _ocr_service is None or _ocr_service._gpu != gpu or (languages is not None and _ocr_service._languages != languages):
-        _ocr_service = OCRService(languages=languages, gpu=gpu)
-    return _ocr_service
+    with _ocr_service_lock:
+        if _ocr_service is None or _ocr_service._gpu != gpu or (languages is not None and _ocr_service._languages != languages):
+            _ocr_service = OCRService(languages=languages, gpu=gpu)
+        return _ocr_service

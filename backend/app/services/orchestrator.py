@@ -35,10 +35,14 @@ log = get_logger("orchestrator")
 
 PIPELINE_STAGES = (
     "preprocessing", "metadata", "quality", "authenticity", "forensics", "ocr",
-    "vision", "xai", "text_normalization", "claim_extraction", "fact_check",
+    "vision", "xai", "text_normalization", "language_identification", "claim_extraction", "fact_check",
     "provenance", "hashing", "evidence_collection", "fusion", "explanation",
     "virality", "regional_spread", "social_impact", "report_assembly",
 )
+
+
+class StageTimeoutError(Exception):
+    """Raised when the orchestrator's bounded wait expires for a stage."""
 
 
 def _safe_message(value: Any) -> str:
@@ -128,6 +132,7 @@ async def _run_stage(
     db: AsyncSession,
     stage_results: Dict[str, StageResult],
     required: bool = False,
+    timeout_seconds: Optional[float] = None,
 ) -> Optional[Any]:
     """
     Run a single pipeline stage with error handling.
@@ -150,7 +155,14 @@ async def _run_stage(
     t0 = time.perf_counter()
     try:
         # Run the stage function in a thread pool to avoid blocking the event loop
-        result = await asyncio.to_thread(func)
+        work = asyncio.to_thread(func)
+        if timeout_seconds:
+            try:
+                result = await asyncio.wait_for(work, timeout=timeout_seconds)
+            except asyncio.TimeoutError as exc:
+                raise StageTimeoutError from exc
+        else:
+            result = await work
         stage.status, stage.outcome, invalid_result = normalize_service_status(result)
         if invalid_result:
             stage.error_category = "INVALID_MODULE_RESULT"
@@ -201,7 +213,11 @@ async def _run_stage(
 
     except Exception as e:
         stage.status = "unavailable" if isinstance(e, ImportError) else "failed"
-        stage.error_category = "DEPENDENCY_UNAVAILABLE" if isinstance(e, ImportError) else "STAGE_EXECUTION_ERROR"
+        stage.error_category = (
+            "DEPENDENCY_UNAVAILABLE" if isinstance(e, ImportError)
+            else "STAGE_TIMEOUT" if isinstance(e, StageTimeoutError)
+            else "STAGE_EXECUTION_ERROR"
+        )
         stage.runtime_ms = max(0, int((time.perf_counter() - t0) * 1000))
         stage.completed_at = datetime.now(timezone.utc).isoformat()
         stage.error = "The stage could not complete."
@@ -236,7 +252,7 @@ async def _run_stage(
 def _module_identity(result: Any) -> Optional[Dict[str, Any]]:
     if result is None:
         return None
-    keys = ("model_name", "model_version", "model_id", "provider", "engine", "model_revision")
+    keys = ("model_name", "model_version", "model_id", "provider", "engine", "model_revision", "method", "method_version")
     identity = {
         key: _safe_message(getattr(result, key))
         for key in keys if getattr(result, key, None) is not None
@@ -248,7 +264,7 @@ def _output_reference(stage_name: str) -> str:
     report_fields = {
         "vision": "objects", "claim_extraction": "claims",
         "fact_check": "fact_checks", "evidence_collection": "evidence",
-        "fusion": "fusion",
+        "fusion": "fusion", "language_identification": "language_identification",
     }
     return f"report.{report_fields.get(stage_name, stage_name)}"
 
@@ -520,7 +536,11 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
             run_ocr,
             analysis, db, stage_results,
             required=False,
+            timeout_seconds=settings.OCR_TIMEOUT_SECONDS,
         )
+        ocr_stage = stage_results.get("ocr")
+        if ocr_stage and ocr_result is not None and ocr_stage.status in {"completed", "partial"}:
+            ocr_stage.outcome = "success" if getattr(ocr_result, "has_text", False) else "no_text"
         if ocr_result is None:
             ocr_stage = stage_results.get("ocr")
             failure_reason = getattr(ocr_stage, "error", None) or "The OCR stage returned no result."
@@ -591,17 +611,54 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
         else:
             _record_skipped_stage(stage_results, "text_normalization", "No OCR text was available.", analysis_id)
 
+        from backend.app.services.nlp.language_detector import get_language_detector
+        language_detector = get_language_detector()
+        language_text = text_result.normalized_text if text_result is not None else ""
+        language_result = await _run_stage(
+            "language_identification",
+            lambda: language_detector.detect(language_text, device=settings.DEVICE),
+            analysis, db, stage_results, required=False,
+            timeout_seconds=settings.LANGUAGE_DETECTION_TIMEOUT_SECONDS,
+        )
+        if language_result is not None:
+            stage_results["language_identification"].outcome = getattr(language_result, "outcome", None)
+
         # ── Stage 9: Claim Extraction ────────────────────────────
         from backend.app.services.claims.extractor import extract_claims
 
         claims_result = None
         if text_result is not None:
+            source_regions = []
+            source_cursor = 0
+            for region_index, block in enumerate(getattr(ocr_result, "blocks", []) or []):
+                block_text = getattr(block, "text", "")
+                if not isinstance(block_text, str) or not block_text.strip():
+                    continue
+                region_start = text_result.normalized_text.find(block_text.strip(), source_cursor)
+                if region_start < 0:
+                    continue
+                region_end = region_start + len(block_text.strip())
+                source_regions.append({
+                    "region_id": f"ocr_region_{region_index}",
+                    "text_start": region_start,
+                    "text_end": region_end,
+                    "bbox": getattr(block, "bbox", None),
+                })
+                source_cursor = region_end
+            claim_language = (
+                language_result.detected_language
+                if language_result is not None and getattr(language_result, "outcome", None) == "success"
+                else "unknown"
+            )
             claims_result = await _run_stage(
                 "claim_extraction",
                 lambda: extract_claims(
-                    text_result.sentences,
+                    text_result.normalized_text,
                     max_claims=settings.FACTCHECK_MAX_CLAIMS,
-                    language=getattr(ocr_result, "language", "unknown") if ocr_result else "unknown",
+                    language=claim_language,
+                    language_detection_status=getattr(language_result, "outcome", "unavailable") if language_result else "unavailable",
+                    sentence_spans=text_result.sentence_spans,
+                    source_regions=source_regions,
                     ocr_confidence=getattr(ocr_result, "total_confidence", None) if ocr_result else None,
                 ),
                 analysis, db, stage_results,
@@ -618,9 +675,11 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
         if eligible_claims:
             claim_texts = [c.normalized_text or c.claim for c in eligible_claims]
             claim_ids = [c.claim_id for c in eligible_claims]
-            language_code = getattr(ocr_result, "language", "en") if ocr_result else "en"
-            if not isinstance(language_code, str) or len(language_code) != 2:
-                language_code = "en"
+            language_code = (
+                getattr(language_result, "detected_language", None)
+                if language_result is not None and getattr(language_result, "outcome", None) == "success"
+                else None
+            )
 
             factcheck_result = await _run_stage(
                 "fact_check",
@@ -841,6 +900,7 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
             forensics=forensics_result.to_dict() if forensics_result else None,
             objects=vision_result.to_dict() if vision_result else None,
             ocr=ocr_result.to_dict() if ocr_result else None,
+            language_identification=language_result.to_dict() if language_result else None,
             text_normalized=text_result.to_dict() if text_result else None,
             claims=claims_result.to_dict() if claims_result else None,
             fact_checks=factcheck_result.to_dict() if factcheck_result else None,

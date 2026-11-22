@@ -98,7 +98,7 @@ def test_ocr_empty_invalid_unavailable_and_fallback(monkeypatch):
         service._tesseract = object()
         service._engine = "PyTesseract"
     monkeypatch.setattr(service, "_load_tesseract", fallback_available)
-    monkeypatch.setattr(service, "_run_tesseract", lambda _image: [OCRBlock("fallback", None, [[0,0],[1,0],[1,1],[0,1]])])
+    monkeypatch.setattr(service, "_run_tesseract", lambda _image, _warnings=None: [OCRBlock("fallback", None, [[0,0],[1,0],[1,1],[0,1]])])
     fallback = service.extract(Image.new("RGB", (16, 16)))
     assert fallback.status == "completed" and fallback.text == "fallback"
     assert fallback.engine == "PyTesseract"

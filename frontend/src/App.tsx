@@ -18,7 +18,7 @@ const clsx = (...cls: (string | false | undefined)[]) => cls.filter(Boolean).joi
 
 const STEPS = [
   'Preprocessing', 'Metadata', 'Quality', 'Authenticity', 'Forensics', 'OCR',
-  'Vision', 'XAI', 'Text Normalization', 'Claim Extraction', 'Fact Check',
+  'Vision', 'XAI', 'Text Normalization', 'Language Identification', 'Claim Extraction', 'Fact Check',
   'Provenance', 'Hashing', 'Evidence Collection', 'Fusion', 'Explanation',
   'Virality', 'Regional Spread', 'Social Impact', 'Report Assembly'
 ];
@@ -286,6 +286,27 @@ function OcrSection({ data }: { data: any }) {
   );
 }
 
+function LanguageIdentificationSection({ data }: { data?: any }) {
+  if (!data) return null;
+  const language = data.language_name || data.language_code || data.detected_language;
+  return (
+    <Card title="Language Identification" icon={Globe} badge={<StatusBadge status={data.status || 'unavailable'} />}>
+      {data.outcome === 'success' && language && language !== 'unknown' ? (
+        <p className="text-sm text-text">Document language: <span className="font-medium">{language}</span></p>
+      ) : (
+        <p className="text-sm text-text-muted">
+          {data.outcome === 'no_text' ? 'No OCR text was available.' :
+            data.outcome === 'insufficient_input' ? 'OCR text was too short or noisy to identify reliably.' :
+              data.outcome === 'undetermined' ? 'The model could not identify a language confidently.' :
+                'Language identification is unavailable for this analysis.'}
+        </p>
+      )}
+      {typeof data.confidence === 'number' && <p className="mt-2 text-xs text-text-muted">Model confidence: {pct(data.confidence)} (not calibrated)</p>}
+      <p className="mt-2 text-xs text-text-muted">One document-level language is estimated; mixed-language regions are not identified separately.</p>
+    </Card>
+  );
+}
+
 /* ────── METADATA SECTION ────── */
 function MetadataSection({ data, imageInfo }: { data: any; imageInfo: any }) {
   const rows: [string, any][] = [];
@@ -359,7 +380,7 @@ function FactCheckSection({ data }: { data: any }) {
         <div className="space-y-3 mb-4">
           {data.claim_verifications.map((v: any) => (
             <div key={v.claim_id || v.original_claim} className="bg-surface rounded-xl p-4 border border-border">
-              <div className="flex flex-wrap items-center justify-between gap-2 mb-1"><span className="text-sm font-semibold text-text">{v.verdict?.replace(/_/g, ' ') || 'UNVERIFIABLE'}</span><span className="text-xs text-text-muted">{v.verification_status || ''}</span></div>
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-1"><span className="text-sm font-semibold text-text">Publisher rating summary: {(v.publisher_rating_summary || v.verdict)?.replace(/_/g, ' ') || 'UNVERIFIABLE'}</span><span className="text-xs text-text-muted">{v.verification_status || ''}</span></div>
               <p className="text-sm text-text">{v.original_claim}</p>
               <p className="text-xs text-text-muted mt-1">{v.reasoning_summary}</p>
               {v.limitations?.length > 0 && <p className="text-xs text-text-muted mt-1">{v.limitations.join(' ')}</p>}
@@ -852,6 +873,7 @@ export default function App() {
 
             {/* 4. OCR */}
             <OcrSection data={report.ocr} />
+            <LanguageIdentificationSection data={report.language_identification} />
 
             {/* 5. Metadata */}
             <MetadataSection data={report.metadata} imageInfo={report.image} />

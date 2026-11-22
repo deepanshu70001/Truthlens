@@ -1,6 +1,6 @@
 # TruthLens project roadmap
 
-This roadmap preserves the five-stage sequence supplied for the fresh execution. E0 records the current state; it does not authorize E1 implementation. Historical research artifacts, model identity, calibration, inference routing, thresholds, and inconclusive gating remain under their existing governance.
+This roadmap preserves the five-stage sequence supplied for the fresh execution. E0 records the repository state; later milestones are performed only under their task scope. Historical research artifacts, model identity, calibration, inference routing, thresholds, and inconclusive gating remain under their existing governance.
 
 ## Main development sequence
 
@@ -11,6 +11,10 @@ This roadmap preserves the five-stage sequence supplied for the fresh execution.
 | 3 | **E6 and E7 — Forensics, YOLO, Grad-CAM, manipulation detection, provenance and C2PA** | Integrate and validate visual analysis and forensic capabilities, manipulation analysis, reverse-image provenance, and content-credential parsing. Keep evidence limitations explicit. |
 | 4 | **E8, E9 and E10 — Durable jobs, security, database lifecycle and frontend E2E** | Replace process-local job execution with durable work, address authentication/authorization and privacy controls, establish schema migration/lifecycle management, and add frontend end-to-end coverage. |
 | 5 | **E11, R10, R11, R12 and R13 — Integration, hybrid research, uncertainty, final evaluation and paper** | Integrate the product and research paths, conduct governed hybrid research and uncertainty work, perform final evaluation under the research protocol, and complete the paper. |
+
+## Current milestone progress
+
+As of 2026-11-22, E0, E1, and E2 are recorded complete. E3 language identification is integrated as an optional OCR-text stage and covered by mocked tests, but real inference is unavailable because the configured local PAPLUCA checkpoint is not present. No model weights were downloaded. E3 remains partially implemented until a locally provisioned checkpoint can be verified. E4/E5 claim extraction, fact-check retrieval contracts, and the standalone fact-check endpoint are implemented and mock-tested; live provider operation remains unverified. E6 and later milestones have not been started by this work.
 
 ## Separate synthetic demo-data workstream
 

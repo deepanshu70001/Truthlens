@@ -40,6 +40,7 @@ class NormalizedTextResult:
     raw_text: str = ""
     normalized_text: str = ""
     sentences: List[str] = field(default_factory=list)
+    sentence_spans: List[Dict[str, Any]] = field(default_factory=list)
     word_count: int = 0
     char_count: int = 0
     has_urls: bool = False
@@ -56,6 +57,7 @@ class NormalizedTextResult:
             "raw_text": self.raw_text,
             "normalized_text": self.normalized_text,
             "sentences": self.sentences,
+            "sentence_spans": self.sentence_spans,
             "word_count": self.word_count,
             "char_count": self.char_count,
             "has_urls": self.has_urls,
@@ -112,9 +114,31 @@ def _split_sentences(text: str) -> List[str]:
         return []
 
     # Split on sentence-ending punctuation followed by space/newline
-    parts = re.split(r"(?<=[.!?])\s+", text)
-    sentences = [s.strip() for s in parts if s.strip() and len(s.strip()) > 2]
-    return sentences
+    return [span["text"] for span in _sentence_spans(text)]
+
+
+def _sentence_spans(text: str) -> List[Dict[str, Any]]:
+    # Keep source offsets and avoid splitting common title/initial abbreviations.
+    if not text:
+        return []
+    pattern = re.compile(r"(?<=[.!?])\s+(?=[^\W_\"'“‘])")
+    spans: List[Dict[str, Any]] = []
+    start = 0
+    for match in pattern.finditer(text):
+        prefix = text[max(start, match.start() - 6):match.start()]
+        if re.search(r"(?:\b(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|St|vs|etc|e\.g|i\.e)\.)$|\b[A-Z]\.$", prefix, re.I):
+            continue
+        end = match.start() + 1
+        value = text[start:end].strip()
+        left = start + len(text[start:end]) - len(text[start:end].lstrip())
+        if len(value) > 2:
+            spans.append({"text": value, "start": left, "end": left + len(value)})
+        start = match.end()
+    value = text[start:].strip()
+    left = start + len(text[start:]) - len(text[start:].lstrip())
+    if len(value) > 2:
+        spans.append({"text": value, "start": left, "end": left + len(value)})
+    return spans
 
 
 def normalize_text(raw_text: str) -> NormalizedTextResult:
@@ -161,7 +185,8 @@ def normalize_text(raw_text: str) -> NormalizedTextResult:
 
     result.detected_numbers = _extract_numbers(raw_text)
 
-    result.sentences = _split_sentences(normalized)
+    result.sentence_spans = _sentence_spans(normalized)
+    result.sentences = [item["text"] for item in result.sentence_spans]
 
     log.info(
         "Text normalized: %d chars, %d words, %d sentences, "

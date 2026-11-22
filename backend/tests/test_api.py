@@ -219,9 +219,13 @@ async def test_upload_to_partial_report_and_image_retrieval(client):
     report = report_response.json()
     assert report["analysis_id"] == analysis_id
     assert report["stages"]["preprocessing"]["status"] == "completed"
+    assert report["stages"]["ocr"]["status"] == "completed"
+    assert report["stages"]["ocr"]["outcome"] == "no_text"
+    assert report["stages"]["language_identification"]["status"] == "completed"
+    assert report["stages"]["language_identification"]["outcome"] == "no_text"
     assert report["preprocessing"]["original_width"] == 160
     assert report["preprocessing"]["original_height"] == 120
-    assert len(report["stages"]) == 20
+    assert len(report["stages"]) == 21
     assert report["stages"]["preprocessing"]["correlation_id"] == analysis_id
     assert report["summary"]["spread"]["regional_data_status"] == "DATA_UNAVAILABLE"
     assert "storage_path" not in json.dumps(report)
@@ -229,6 +233,82 @@ async def test_upload_to_partial_report_and_image_retrieval(client):
     image_response = await client.get(f"/api/v1/analysis/{analysis_id}/image")
     assert image_response.status_code == 200
     assert image_response.content == image_bytes
+
+
+@pytest.mark.asyncio
+async def test_ocr_text_is_passed_to_text_normalization(client, mock_optional_analysis_modules):
+    import asyncio
+    from backend.app.services.ocr.service import OCRResult
+
+    raw_text = "The city opened 125 new schools in 2026."
+    mock_optional_analysis_modules["ocr"].extract = lambda _image: OCRResult(
+        text=raw_text, normalized_text=raw_text, has_text=True, word_count=8,
+        engine="mock-ocr", status="completed", language_configuration=["en"],
+    )
+    response = await client.post(
+        "/api/v1/analyze",
+        files={"image": ("ocr-text.jpg", io.BytesIO(create_test_jpeg()), "image/jpeg")},
+    )
+    assert response.status_code == 201
+    analysis_id = response.json()["analysis_id"]
+    for _ in range(100):
+        await asyncio.sleep(0.05)
+        status = (await client.get(f"/api/v1/analysis/{analysis_id}")).json()
+        if status["status"] in {"completed", "partial", "failed"}:
+            break
+    assert status["status"] in {"completed", "partial"}
+    report = (await client.get(f"/api/v1/analysis/{analysis_id}/report")).json()
+    assert report["ocr"]["text"] == raw_text
+    assert mock_optional_analysis_modules["language"].received_text == raw_text
+    assert report["language_identification"]["language_code"] == "en"
+    assert report["language_identification"]["language_name"] == "English"
+    assert report["stages"]["language_identification"]["status"] == "completed"
+    assert report["stages"]["language_identification"]["outcome"] == "success"
+    assert report["text_normalized"]["raw_text"] == raw_text
+    assert report["claims"]["claims"]
+    assert all(claim["language"] == "en" for claim in report["claims"]["claims"])
+    assert report["stages"]["ocr"]["status"] == "completed"
+    assert report["stages"]["ocr"]["outcome"] == "success"
+
+
+@pytest.mark.asyncio
+async def test_unavailable_language_model_does_not_block_image_or_text_stages(
+    client, mock_optional_analysis_modules
+):
+    import asyncio
+    from backend.app.services.nlp.language_detector import LanguageDetectionResult
+    from backend.app.services.ocr.service import OCRResult
+
+    raw_text = "The city opened 125 new schools in 2026."
+    mock_optional_analysis_modules["ocr"].extract = lambda _image: OCRResult(
+        text=raw_text, normalized_text=raw_text, has_text=True, word_count=8,
+        engine="mock-ocr", status="completed", language_configuration=["en"],
+    )
+
+    def unavailable(_text, **_kwargs):
+        return LanguageDetectionResult(
+            status="unavailable", outcome="unavailable",
+            warnings=["The local language model is unavailable."],
+        )
+
+    mock_optional_analysis_modules["language"].detect = unavailable
+    response = await client.post(
+        "/api/v1/analyze",
+        files={"image": ("language-unavailable.jpg", io.BytesIO(create_test_jpeg()), "image/jpeg")},
+    )
+    assert response.status_code == 201
+    analysis_id = response.json()["analysis_id"]
+    for _ in range(100):
+        await asyncio.sleep(0.05)
+        status = (await client.get(f"/api/v1/analysis/{analysis_id}")).json()
+        if status["status"] in {"completed", "partial", "failed"}:
+            break
+    report = (await client.get(f"/api/v1/analysis/{analysis_id}/report")).json()
+    assert status["status"] in {"completed", "partial"}
+    assert report["stages"]["language_identification"]["status"] == "unavailable"
+    assert report["stages"]["language_identification"]["outcome"] == "unavailable"
+    assert report["stages"]["vision"]["status"] == "completed"
+    assert report["text_normalized"]["raw_text"] == raw_text
 
 
 @pytest.mark.asyncio

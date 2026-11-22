@@ -9,9 +9,31 @@ GET  /api/v1/models
 
 from __future__ import annotations
 
+import asyncio
+from typing import Annotated, List, Optional
+
 from fastapi import APIRouter
+from pydantic import BaseModel, Field, StringConstraints
 
 router = APIRouter()
+
+
+class FactCheckRequest(BaseModel):
+    claims: List[Annotated[str, StringConstraints(strip_whitespace=True, min_length=5, max_length=2000)]] = Field(..., min_length=1, max_length=20)
+    language_code: Optional[str] = Field(None, min_length=2, max_length=5, pattern=r"^[a-z]{2,3}(-[A-Z]{2})?$")
+
+
+class FactCheckResponse(BaseModel):
+    status: str
+    provider: Optional[str] = None
+    claims: list
+    total_results: int
+    queries_performed: int
+    runtime_ms: int
+    error: Optional[str] = None
+    warnings: List[str] = Field(default_factory=list)
+    claim_verifications: list = Field(default_factory=list)
+    note: Optional[str] = None
 
 
 @router.post(
@@ -27,11 +49,16 @@ async def ocr_endpoint():
 @router.post(
     "/fact-check",
     summary="Standalone fact-check query",
-    description="Check claims against fact-check databases. (Will be implemented in Stage 4.)",
-    status_code=501,
+    description="Retrieve existing third-party fact-check reviews for supplied factual claims.",
+    response_model=FactCheckResponse,
 )
-async def factcheck_endpoint():
-    return {"detail": "Fact-check endpoint will be implemented in Stage 4.", "error_code": "NOT_IMPLEMENTED"}
+async def factcheck_endpoint(request: FactCheckRequest):
+    from backend.app.services.factcheck.service import search_fact_checks
+
+    result = await asyncio.to_thread(
+        search_fact_checks, request.claims, language_code=request.language_code,
+    )
+    return result.to_dict()
 
 
 @router.post(
