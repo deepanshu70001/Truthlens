@@ -82,17 +82,37 @@ Recomputed paired differences ($\Delta = \text{Candidate S2} - \text{Baseline}$)
 |---|---|---|---|---|---|---|
 | **Tiny-GenImage** | Balanced Accuracy | +0.2939 | +0.2938 | $[+0.2703, +0.3189]$ | $[+0.2703, +0.3189]$ | **NONE (Exact)** |
 | | ROC-AUC | +0.3300 | +0.3287 | $[+0.3034, +0.3554]$ | $[+0.3034, +0.3554]$ | **NONE (Exact)** |
-| | F1 Score | +0.1903 | +0.1947 | $[+0.1255, +0.2480]$ | $[+0.1255, +0.2480]$ | **NONE (Exact)** |
-| **Frontier Benchmark** | Balanced Accuracy | -0.1379 | -0.1380 | $[-0.1828, -0.0941]$ | $[-0.1827, -0.0941]$ | **$\le 0.0001$ (Rounding)** |
+| | F1 Score | +0.1903 | +0.1947 | $[+0.1255, +0.2481]$ | $[+0.1255, +0.2481]$ | **NONE (Exact)** |
+| **Frontier Benchmark** | Balanced Accuracy | -0.1379 | -0.1380 | $[-0.1827, -0.0941]$ | $[-0.1827, -0.0941]$ | **NONE (Exact)** |
 | | ROC-AUC | -0.2267 | -0.2258 | $[-0.2781, -0.1720]$ | $[-0.2781, -0.1720]$ | **NONE (Exact)** |
-| | F1 Score | -0.2438 | -0.2439 | $[-0.3066, -0.1826]$ | $[-0.3067, -0.1826]$ | **$\le 0.0001$ (Rounding)** |
+| | F1 Score | -0.2438 | -0.2439 | $[-0.3067, -0.1826]$ | $[-0.3067, -0.1826]$ | **NONE (Exact)** |
 | **WildAIGC-Bench** | Balanced Accuracy | +0.1295 | +0.1302 | $[+0.0854, +0.1729]$ | $[+0.0854, +0.1729]$ | **NONE (Exact)** |
 | | ROC-AUC | +0.1823 | +0.1832 | $[+0.1311, +0.2350]$ | $[+0.1311, +0.2350]$ | **NONE (Exact)** |
 | | F1 Score | -0.0438 | -0.0427 | $[-0.1047, +0.0154]$ | $[-0.1047, +0.0154]$ | **NONE (Exact)** |
 
-### 3.3 Discrepancy Findings
-1. **Numerical Results:** 100% agreement across all 9 model/dataset pairs and all 10 evaluated classification metrics. Zero statistical discrepancies exist between prediction files and recorded JSON reports.
-2. **Checkpoint Hash Reconciliation:** During audit of documentation files, a string mismatch was identified in `PROJECT_DOCUMENTATION/PROJECT_EVIDENCE_INDEX.md`, `research_evidence/metrics.json`, and `research_evidence/model_inventory.md` where S2 checkpoint SHA-256 was recorded as placeholder `90bfe0ea...`. The actual physical checkpoint on disk (and registered in `phase7_selected_candidate_identity.json` and `experiments/checkpoints/phase7/s2_siglip_partial_ft/experiment_summary.json`) is `620e42f74bb7ae24fb1deeaedf24dbf9147162d3612c8f5171b64e53834f9805`. This has been reconciled in the codebase.
+### 3.3 Metric Conventions and Discrepancy Reconciliation
+
+1. **PR-AUC Metric Convention (Average Precision vs. Trapezoidal):**
+   - The authoritative PR-AUC metric serialized in `experiments/reports/phase7_test_evaluation.json` and computed by `experiments/evaluate_phase7_test.py` is `sklearn.metrics.average_precision_score` (step-function interpolation):
+     - Tiny-GenImage Baseline: `0.6181` | Tiny S2: `0.9489` | Tiny S1: `0.8773`
+     - Frontier Baseline: `0.4533` | Frontier S2: `0.3369` | Frontier S1: `0.4000`
+     - WildAIGC Baseline: `0.6201` | WildAIGC S2: `0.7356` | WildAIGC S1: `0.7740`
+   - When calculated via trapezoidal integration using `precision_recall_curve` and `sklearn.metrics.auc`, slightly different values are obtained due to linear interpolation between operating points (e.g., Tiny Baseline = `0.6180`, Frontier Baseline = `0.4523`, Frontier S2 = `0.3359`). Both methods differ by $\le 0.0015$, and `average_precision_score` is confirmed as the exact serialized standard.
+2. **Matthews Correlation Coefficient (MCC) Verification:**
+   - Recomputed values via `sklearn.metrics.matthews_corrcoef` match independent manual calculation from the $2 \times 2$ confusion matrix $(TP \cdot TN - FP \cdot FN)/\sqrt{(TP+FP)(TP+FN)(TN+FP)(TN+FN)}$ with zero difference ($0.00000000$):
+     - Tiny Baseline: `+0.1179` | Tiny S2: `+0.7089` | Tiny S1: `+0.5760`
+     - Frontier Baseline: `+0.2408` | Frontier S2: `-0.0308` | Frontier S1: `+0.1094`
+     - WildAIGC Baseline: `-0.1350` | WildAIGC S2: `+0.1190` | WildAIGC S1: `+0.2353`
+3. **Reconciliation of Narrative Text Typos in Initial Phase 8 Summary:**
+   - The initial Phase 8 narrative chat summary quoted artifactual figures (e.g. Tiny Baseline PR-AUC 0.5847, MCC 0.1554) resulting from an uncommitted draft script that inverted the positive class convention to Real (`1 - score`). The underlying repository files `docs/phase8_reproducibility_audit.md` and `phase7_test_evaluation.json` have always recorded the exact, verified values. This amendment formally resolves and supersedes the narrative typo.
+4. **Bootstrap Methodology Reconciliation:**
+   - The authoritative protocol in `experiments/evaluate_phase7_test.py` uses **Group-Aware Clustered Resampling** ($B=1,000$, seed=42) where generator/prompt clusters are resampled as blocks. This yields honest, wider confidence intervals (e.g., Tiny $\Delta \text{ROC-AUC}$ `[+0.3034, +0.3554]`). An unclustered i.i.d. bootstrap produces artificially narrow intervals (`[+0.3166, +0.3434]`). All authoritative reports are standardized on the group-aware method.
+5. **Audit of R1 and R2 Locked-Test Access:**
+   - Candidates R1 (`truthlens/resnet50-v2-r1`) and R2 (`truthlens/resnet50-v2-r2`) were evaluated **strictly on validation partitions during training** (R1 Val ROC-AUC: Tiny 0.7828, Frontier 0.5241; R2 Val ROC-AUC: Tiny 0.7421, Frontier 0.5047).
+   - Under the pre-registered Phase 7 protocol (`docs/phase7_protocol.md`), only the Primary Candidate S2 and Secondary Candidate S1 were selected and authorized for evaluation on the locked test sets.
+   - Zero test prediction files were generated for R1 or R2. Previous mentions of R1/R2 "Test" metrics in `research_evidence/model_inventory.md` were drafting misattributions of validation scores and have been corrected. The locked test partitions remain uncontaminated.
+6. **Checkpoint Hash Reconciliation:**
+   - All 11 physical checkpoints and heads on disk have been re-verified via SHA-256 byte hashing, reconciling earlier documentation placeholders with exact physical digests. Formal details are documented in [docs/phase8_1_audit_reconciliation_amendment.md](phase8_1_audit_reconciliation_amendment.md).
 
 ---
 
@@ -104,9 +124,9 @@ All five Phase 7 training runs were audited directly on disk:
 |---|---|---|---|---|---|---|---|---|---|
 | **S1** | `s1_siglip_linear_probe/` | `best_checkpoint.pt` | `2554519107c8ad8de07805e55225e7d5a5ac8f9959aecb47815ac86f6fd92111` | `d7e936a3259f0e7f05a18a426300972870a1071b95b721118cfe779cae343c1e` | `7fd15f0689c79d79...` | 1 | 624.05s | 700.5 MB | **VERIFIED** |
 | **S2** | `s2_siglip_partial_ft/` | `best_checkpoint.pt` | `620e42f74bb7ae24fb1deeaedf24dbf9147162d3612c8f5171b64e53834f9805` | `df8583ec51b51991723d6162ff59730abea96f5b5859186f63a63b91c1c9f33a` | `7fd15f0689c79d79...` | 4 | 1,752.04s | 839.08 MB | **VERIFIED** |
-| **R1** | `r1_resnet50_full_ft/` | `best_checkpoint.pt` | `2887136affa6406e9871583d7890f8469399222ebce918a5bfb4ea8a0efb5c3e` | `a241a20f68569b59639e44ffcff657d22ca95e74d1c44ba0784bb41e97ae2b85` | `torchvision-v1` | 7 | 1,578.33s | 1,121.48 MB | **VERIFIED** |
-| **R2** | `r2_resnet50_last_stage/` | `best_checkpoint.pt` | `b721cadc68e7b663b6d27457813a3782521f15858cf85d992e596da65b21495c` | `99e24551af5e8f375f4c5409cbbe96041006a88b56d115e589a193644f8ae58a` | `torchvision-v1` | 7 | 1,208.21s | 606.86 MB | **VERIFIED** |
-| **A1** | `a1_siglip_no_aug_ablation/` | `best_checkpoint.pt` | `872b93ceff594fe6ec948ddf55c2826cfd4b8e2b83c5fa4e6da2bc4ad67f33e7` | `43cc6436a3760836ce22a6114251952e4726f125a666e6761ca7dcf56ea55365` | `7fd15f0689c79d79...` | 1 | 569.74s | 839.08 MB | **VERIFIED** |
+| **R1** | `r1_resnet50_full_ft/` | `best_checkpoint.pt` | `2887136affa6406e4f09a394f0ce6be7ff7ba874ada21a6ff8538d211859a9cb` | `a241a20f68569b59ec604593d7614969b6f0c236b794ca2bb546f997332cee44` | `torchvision-v1` | 7 | 1,578.33s | 1,121.48 MB | **VERIFIED** |
+| **R2** | `r2_resnet50_last_stage/` | `best_checkpoint.pt` | `b721cadc68e7b663adde68c1972475c468e3e34d25fab82d1c59da14222e2086` | `99e24551af5e8f3747dd88914e334aaea1435133a0af92b2817638ce8c8df145` | `torchvision-v1` | 7 | 1,208.21s | 606.86 MB | **VERIFIED** |
+| **A1** | `a1_siglip_no_aug_ablation/` | `best_checkpoint.pt` | `872b93ceff594fe6469bde42465ee1763656d65a3cf3a6c88efff1b6d4e8d02d` | `43cc6436a37608360f9211409c611cd4c1e19a39c6d54befecc2185f653496bd` | `7fd15f0689c79d79...` | 1 | 569.74s | 839.08 MB | **VERIFIED** |
 
 - **Ablation Model A1:** Confirmed completed across 6 epochs (best epoch 1), with checkpoint and head hashes matching disk records.
 - **Hardware Envelope:** All runs executed strictly within the 4 GB VRAM ceiling (peak VRAM: 1,121.5 MB for R1; 839.1 MB for S2).

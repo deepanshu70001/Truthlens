@@ -55,8 +55,9 @@ Chronological scientific research and audit reports detailing dataset governance
 - [phase7_training_report.md](phase7_training_report.md) — Controlled training across 5 configurations (S1, S2, R1, R2, A1) and validation robustness audit.
 - [phase7_evaluation_report.md](phase7_evaluation_report.md) — Locked test evaluation on all benchmarks, proving format shortcut elimination on in-distribution data while retaining production baseline due to modern generator distribution gaps.
 
-### Phase 8: Full Research Reproducibility & Repository Audit
+### Phase 8 & 8.1: Full Research Reproducibility & Audit Reconciliation
 - [phase8_reproducibility_audit.md](phase8_reproducibility_audit.md) — Comprehensive verification of Phases 0–7, 100% numerical metric reproduction, data leakage audits, checkpoint integrity verification, and Phase 9 readiness recommendation.
+- [phase8_1_audit_reconciliation_amendment.md](phase8_1_audit_reconciliation_amendment.md) — Authoritative resolution of metric conventions (Average Precision vs Trapezoidal PR-AUC), MCC verification, group bootstrap reconciliation, and R1/R2 locked-test access audit.
 
 ---
 

@@ -133,7 +133,7 @@
         "delta_roc_auc": -0.2267,
         "delta_f1": -0.2438,
         "bootstrap_ci_95": {
-          "delta_balanced_accuracy": [-0.1828, -0.0941],
+          "delta_balanced_accuracy": [-0.1827, -0.0941],
           "delta_roc_auc": [-0.2781, -0.1720]
         }
       }
@@ -196,24 +196,24 @@
       },
       "r1": {
         "model_id": "truthlens/resnet50-v2-r1",
-        "checkpoint_sha256": "2887136affa6406e9871583d7890f8469399222ebce918a5bfb4ea8a0efb5c3e",
-        "head_sha256": "a241a20f68569b59639e44ffcff657d22ca95e74d1c44ba0784bb41e97ae2b85",
+        "checkpoint_sha256": "2887136affa6406e4f09a394f0ce6be7ff7ba874ada21a6ff8538d211859a9cb",
+        "head_sha256": "a241a20f68569b59ec604593d7614969b6f0c236b794ca2bb546f997332cee44",
         "trainable_params": 23510081,
         "best_epoch": 7,
         "status": "VERIFIED"
       },
       "r2": {
         "model_id": "truthlens/resnet50-v2-r2",
-        "checkpoint_sha256": "b721cadc68e7b663b6d27457813a3782521f15858cf85d992e596da65b21495c",
-        "head_sha256": "99e24551af5e8f375f4c5409cbbe96041006a88b56d115e589a193644f8ae58a",
+        "checkpoint_sha256": "b721cadc68e7b663adde68c1972475c468e3e34d25fab82d1c59da14222e2086",
+        "head_sha256": "99e24551af5e8f3747dd88914e334aaea1435133a0af92b2817638ce8c8df145",
         "trainable_params": 14966785,
         "best_epoch": 7,
         "status": "VERIFIED"
       },
       "a1": {
         "model_id": "truthlens/siglip-base-v2-a1",
-        "checkpoint_sha256": "872b93ceff594fe6ec948ddf55c2826cfd4b8e2b83c5fa4e6da2bc4ad67f33e7",
-        "head_sha256": "43cc6436a3760836ce22a6114251952e4726f125a666e6761ca7dcf56ea55365",
+        "checkpoint_sha256": "872b93ceff594fe6469bde42465ee1763656d65a3cf3a6c88efff1b6d4e8d02d",
+        "head_sha256": "43cc6436a37608360f9211409c611cd4c1e19a39c6d54befecc2185f653496bd",
         "trainable_params": 14176513,
         "best_epoch": 1,
         "status": "VERIFIED"

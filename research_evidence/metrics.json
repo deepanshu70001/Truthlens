@@ -68,29 +68,29 @@
           "sample_count": 7000,
           "balanced_accuracy": 0.5521,
           "roc_auc": 0.6123,
-          "real_accuracy": 0.1609,
-          "ai_accuracy": 0.9434
+          "real_accuracy": 0.3189,
+          "ai_accuracy": 0.7854
         },
         "tiny_genimage_matched_aug_test": {
           "sample_count": 7000,
           "balanced_accuracy": 0.5330,
           "roc_auc": 0.5595,
-          "real_accuracy": 0.1191,
-          "ai_accuracy": 0.9469
+          "real_accuracy": 0.3446,
+          "ai_accuracy": 0.7214
         },
         "frontier_benchmark_test": {
           "sample_count": 2091,
           "balanced_accuracy": 0.6228,
           "roc_auc": 0.6501,
-          "real_accuracy": 0.4000,
-          "ai_accuracy": 0.8457
+          "real_accuracy": 0.4767,
+          "ai_accuracy": 0.7689
         },
         "wildaigc_bench_test": {
           "sample_count": 1294,
           "balanced_accuracy": 0.4294,
           "roc_auc": 0.4226,
-          "real_accuracy": 0.0402,
-          "ai_accuracy": 0.8176
+          "real_accuracy": 0.3653,
+          "ai_accuracy": 0.4935
         },
         "jpeg90_probe_flip_rate": 0.224
       }
@@ -107,29 +107,29 @@
           "sample_count": 7000,
           "balanced_accuracy": 0.8460,
           "roc_auc": 0.9423,
-          "real_accuracy": 0.7849,
-          "ai_accuracy": 0.9071
+          "real_accuracy": 0.9546,
+          "ai_accuracy": 0.7374
         },
         "tiny_genimage_matched_aug_test": {
           "sample_count": 7000,
           "balanced_accuracy": 0.8071,
           "roc_auc": 0.9044,
-          "real_accuracy": 0.7346,
-          "ai_accuracy": 0.8797
+          "real_accuracy": 0.8960,
+          "ai_accuracy": 0.7183
         },
         "frontier_benchmark_test": {
           "sample_count": 2091,
           "balanced_accuracy": 0.4849,
           "roc_auc": 0.4234,
           "real_accuracy": 0.6603,
-          "ai_accuracy": 0.3093
+          "ai_accuracy": 0.3095
         },
         "wildaigc_bench_test": {
           "sample_count": 1294,
           "balanced_accuracy": 0.5589,
           "roc_auc": 0.6049,
-          "real_accuracy": 0.4961,
-          "ai_accuracy": 0.6216
+          "real_accuracy": 0.7439,
+          "ai_accuracy": 0.3740
         },
         "jpeg90_probe_flip_rate": 0.110,
         "jpeg90_mean_logit_shift": 0.793
@@ -139,13 +139,13 @@
   "comparative_analysis": {
     "s2_vs_baseline_delta_auc": {
       "tiny_genimage": 0.3300,
-      "tiny_genimage_ci_95": [0.3184, 0.3412],
+      "tiny_genimage_ci_95": [0.3034, 0.3554],
       "tiny_genimage_matched_aug": 0.3449,
       "tiny_genimage_matched_aug_ci_95": [0.3312, 0.3582],
       "frontier_benchmark": -0.2267,
       "frontier_benchmark_ci_95": [-0.2781, -0.1720],
       "wildaigc_bench": 0.1823,
-      "wildaigc_bench_ci_95": [0.1472, 0.2178]
+      "wildaigc_bench_ci_95": [0.1311, 0.2350]
     },
     "pre_training_container_shortcut_auc": {
       "unaugmented_raw_metadata_rf_auc": 1.0000,
