@@ -100,6 +100,15 @@ Detailed E6/E7 file changes, commands, results and operational limits are in `do
 
 Combined evidence and remaining work are in `docs/e8_e10_production_reliability_report.md`. These statuses do not mark Stage 4 complete; E11 and R10–R13 remain untouched.
 
+## Stage 5 update — E11 and R10 (2026-11-22)
+
+| Milestone | Status | Evidence and boundary |
+|---|---|---|
+| E11 — Evidence fusion and report integration | COMPLETED AND VERIFIED | Versioned conservative fusion contract, stage-outcome separation, eligibility checks, deduplication, legacy report compatibility and frontend display implemented. Focused E11/E1–E7 selection: 153 passed; safe backend suite: 270 passed, 12 skipped. See `docs/e11_evidence_fusion_contract.md` and `docs/e11_r10_completion_report.md`. |
+| R10 — Frozen SigLIP plus frequency residual | PARTIALLY IMPLEMENTED | Preregistered fixed candidate fit and validation executed; primary Frontier AUC delta +0.0631, paired group-bootstrap 95% CI [+0.0173,+0.1182]. Frontier zero-threshold balanced accuracy fell 0.0801, so the operating-point tradeoff remains material. This is development evidence only; no production integration, calibration, or locked evaluation. See `docs/r10_experiment_report.md`. |
+
+No status change is made for R11–R13. Production SigLIP checkpoint, calibration, inference routing, and fusion decision policy remain unchanged.
+
 ## Verification performed for E0
 
 Commands run: git branch/HEAD/status/log/diff checks at baseline; scoped `rg --files` and source inspection for the module register; targeted filename search in `data`, `datasets`, `research_evidence`, and `storage`. The archive search returned only unrelated WildAIGC release manifests and no expected synthetic demo files. No test command, training, calibration, evaluation, or application runtime was run in E0. Existing OCR runtime evidence is cited as already recorded in the preserved local OCR report, not rerun evidence.

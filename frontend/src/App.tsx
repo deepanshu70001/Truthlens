@@ -142,14 +142,14 @@ function AuthenticitySection({ data }: { data: any }) {
   ].filter(s => s.value != null);
 
   return (
-    <Card title="Authenticity Assessment" icon={Shield}>
+    <Card title="Primary model output" icon={Shield}>
       {cfg ? <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-xl border ${cfg.bg} mb-4`}>
         <Shield className={`w-6 h-6 ${cfg.color}`} />
         <span className={`text-xl font-bold ${cfg.color}`}>{cfg.text}</span>
       </div> : <p className="text-sm text-text-muted mb-4">Prediction unavailable</p>}
       {scores.length > 0 && (
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <p className="col-span-2 text-xs text-text-muted">The larger raw score selects the tag; these scores are not calibrated probabilities.</p>
+          <p className="col-span-2 text-xs text-text-muted">This raw classifier output is separate from the final evidence assessment. These scores are not calibrated probabilities.</p>
           {scores.map(s => (
             <div key={s.name} className="bg-surface/50 rounded-xl p-4 text-center">
               <p className="text-2xl font-bold text-text">{Number(s.value).toFixed(3)}</p>
@@ -164,6 +164,56 @@ function AuthenticitySection({ data }: { data: any }) {
 }
 
 /* ────── EVIDENCE SECTION ────── */
+function FusionAssessmentSection({ data }: { data: any }) {
+  if (!data) return null;
+  const category = data.category || data.label;
+  const categoryLabel: Record<string, string> = {
+    likely_authentic: 'Likely authentic',
+    likely_ai_generated: 'Likely AI-generated',
+    likely_manipulated: 'Likely manipulated',
+    inconclusive: 'Inconclusive',
+  };
+  const groups: [string, any[]][] = [
+    ['Supporting findings', data.supporting_findings || []],
+    ['Contradictory findings', data.contradictory_findings || []],
+    ['Conflicting findings', data.conflicting_findings || []],
+    ['Informational findings', data.informational_findings || []],
+    ['Excluded evidence', data.evidence_excluded || []],
+    ['Missing or unavailable evidence', data.missing_evidence || []],
+  ];
+  const hasDisposition = groups.some(([, entries]) => entries.length > 0)
+    || Boolean(data.policy_version || data.schema_version);
+  return <Card title="Final evidence assessment" icon={Shield} badge={<StatusBadge status={data.status || 'unavailable'} />}>
+    <div className="mb-4">
+      <p className="text-xl font-semibold text-text">{category ? (categoryLabel[category] || category.replace(/_/g, ' ')) : (data.status === 'failed' || data.status === 'unavailable' ? 'Assessment unavailable' : 'Inconclusive')}</p>
+      <p className="text-sm text-text-muted mt-1">Uncertainty is unquantified. No displayed score is a calibrated probability.</p>
+      {data.policy_version && <p className="text-xs text-text-muted mt-1">Policy {data.policy_version}</p>}
+    </div>
+    {data.status && data.status !== 'completed' && <p className="mb-3 rounded-lg bg-warning/10 p-3 text-sm text-warning">Execution status: {data.status}. Review unavailable, failed, or skipped stages below.</p>}
+    {data.warnings?.map((warning: string, index: number) => <p key={index} className="mb-2 text-xs text-warning">{warning}</p>)}
+    {data.reasoning?.length > 0 && <div className="mb-4 space-y-1">{data.reasoning.map((reason: string, index: number) => <p key={index} className="text-xs text-text-muted">{reason}</p>)}</div>}
+    {hasDisposition ? <div className="space-y-4">
+      {groups.map(([title, entries]) => entries.length > 0 && <section key={title}>
+        <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">{title}</h4>
+        <div className="space-y-2">{entries.map((entry: any, index: number) => <div key={entry.evidence_id || `${title}-${index}`} className="rounded-lg bg-surface/60 p-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-medium text-text">{entry.source || entry.stage_name || 'Evidence'}</span>
+            {entry.status && <StatusBadge status={entry.status} />}
+            {entry.outcome && <span className="text-xs text-text-muted">{entry.outcome.replace(/_/g, ' ')}</span>}
+          </div>
+          {entry.description && <p className="mt-1 text-xs text-text-muted">{entry.description}</p>}
+          {entry.reason && <p className="mt-1 text-xs text-text-muted">{entry.reason.replace(/_/g, ' ')}</p>}
+        </div>)}</div>
+      </section>)}
+      {Object.keys(data.stage_execution_summary || {}).length > 0 && <details className="rounded-lg bg-surface/40 p-3">
+        <summary className="cursor-pointer text-xs font-semibold text-text-muted">Stage execution summary</summary>
+        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">{Object.entries(data.stage_execution_summary).map(([name, stage]: [string, any]) => <div key={name} className="flex items-center justify-between gap-2 rounded bg-surface/60 px-3 py-2"><span className="text-xs text-text">{name.replace(/_/g, ' ')}</span><StatusBadge status={stage?.status || 'unavailable'} /></div>)}</div>
+      </details>}
+    </div> : <p className="text-sm text-text-muted">Detailed evidence dispositions are unavailable in this historical report. The legacy assessment remains readable.</p>}
+    {data.limitations?.length > 0 && <div className="mt-4 border-t border-border pt-3"><p className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">Limitations</p>{data.limitations.map((limitation: string, index: number) => <p key={index} className="text-xs text-text-muted">{limitation}</p>)}</div>}
+  </Card>;
+}
+
 function EvidenceSection({ data, explanation }: { data: any; explanation: any }) {
   if (!explanation && !data) return null;
   const hasModelPrediction = Boolean(data?.items?.some((item: any) => item.type === 'model_evidence'));
@@ -172,7 +222,7 @@ function EvidenceSection({ data, explanation }: { data: any; explanation: any })
   return (
     <Card title="Supporting Evidence" icon={HelpCircle}>
       {hasModelPrediction
-        ? <p className="text-sm text-text-muted mb-4">The tag above follows the comparison of the AI-generated and authentic raw scores. Other signals below provide context.</p>
+        ? <p className="text-sm text-text-muted mb-4">The primary classifier output is a raw model result. Other signals below provide context; the final evidence assessment is shown separately.</p>
         : explanation?.summary && <p className="text-sm text-text-muted mb-4">{explanation.summary}</p>}
       {explanation?.key_findings?.length > 0 && (
         <div className="space-y-2 mb-4">
@@ -912,7 +962,8 @@ function AnalysisApp({ onLogout, showLogout }: { onLogout: () => void; showLogou
               </button>
             </div>
 
-            {/* 1. Authenticity */}
+            {/* 1. Final evidence assessment and primary model output */}
+            <FusionAssessmentSection data={report.fusion || report.assessment} />
             <AuthenticitySection data={report.authenticity} />
 
             {/* 2. Evidence / Why */}

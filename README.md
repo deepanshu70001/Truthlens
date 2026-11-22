@@ -15,7 +15,7 @@ TruthLens is an academic research prototype that combines model outputs, image-f
 - Evidence collection/fusion and a structured report with per-stage status.
 - Transparent content spread indicators and potential harm topic cues. Historical spread, state-level prediction, audience reach and observed harm outcomes are unavailable because suitable datasets are not installed.
 
-Translation, VLM analysis, C2PA parsing, authenticated multi-user access, result deletion/retention, durable jobs, and a verified demonstration corpus are not implemented. See [system audit](docs/implementation%20history/phase5_system_audit.md) and [Phase 4 dataset inventory](docs/implementation%20history/phase4_dataset_inventory.md).
+Durable jobs, bearer authentication with ownership checks, and database migrations are implemented, with production infrastructure limitations documented. Translation and VLM analysis are unavailable; C2PA requires its optional SDK and trust configuration. See the [current status register](docs/MODULE_STATUS_REGISTER.md) and [roadmap](docs/PROJECT_ROADMAP.md).
 
 ## Architecture and stack
 
@@ -24,7 +24,7 @@ Translation, VLM analysis, C2PA parsing, authenticated multi-user access, result
 - Image/ML: Pillow, OpenCV, PyTorch/Transformers, EasyOCR optional, Ultralytics optional.
 - Database: SQLite by default; PostgreSQL supported by async URL/driver.
 - Storage: local filesystem under `STORAGE_PATH`.
-- Background processing: in-process async task; restart can interrupt active analyses.
+- Background processing: database-backed durable job queue with a separate worker; delivery is at-least-once and real multi-process PostgreSQL recovery remains deployment verification work.
 
 The API owns one orchestration pipeline and one report builder. See [system architecture](docs/system_architecture.md).
 
@@ -77,22 +77,12 @@ TruthLens is an academic research prototype developed as a CSE-AI project. All m
 
 ## Project documentation
 
-- [Master Project Dossier](PROJECT_DOCUMENTATION/PROJECT_MASTER_DOSSIER.md) — Comprehensive master documentation suite
-- [Documentation Index](docs/README.md) — Complete catalogue of all reference documents, audits, and phase reports
-- [System architecture](docs/system_architecture.md) — Current pipeline and component map
-- [API reference](docs/api_reference.md) — REST endpoints and structured report JSON schema
-- [Deployment guide](docs/deployment_guide.md) — Local installation, configuration, and verification
-- [Phase 7 evaluation report](docs/phase7_evaluation_report.md) — Locked test evaluation, group bootstrap CIs, and candidate decision
-- [Phase 7 training report](docs/phase7_training_report.md) — Controlled training runs (S1, S2, R1, R2, A1) and robustness audit
-- [Phase 7 protocol](docs/phase7_protocol.md) — Pre-registered protocol for matched in-memory augmentation
-- [Phase 6 evaluation report](docs/phase6_evaluation_report.md) — Evaluation of E3 candidate and shortcut discovery
-- [Phase 3 evaluation report](docs/phase3_evaluation_report.md) — Benchmark evaluation of the frozen baseline
-- [Security audit](docs/implementation%20history/phase5_security_audit.md)
-- [System audit](docs/implementation%20history/phase5_system_audit.md)
-- [E2E test report](docs/implementation%20history/phase5_e2e_test_report.md)
-- [Performance report](docs/implementation%20history/phase5_performance_report.md)
-- [Research readiness audit](docs/implementation%20history/phase6_research_readiness_audit.md)
-- [Final research report](docs/implementation%20history/phase6_final_research_report.md)
-- [IEEE paper draft](docs/TruthLens_IEEE_research_paper.md)
-- [Viva preparation](docs/implementation%20history/phase6_viva_preparation.md)
-- [AI-image misclassification review](docs/ai_generation_misclassification_review.md)
+- [Documentation index](docs/README.md)
+- [Current module status](docs/MODULE_STATUS_REGISTER.md)
+- [Roadmap](docs/PROJECT_ROADMAP.md)
+- [System architecture](docs/system_architecture.md)
+- [API reference](docs/api_reference.md)
+- [Deployment guide](docs/deployment_guide.md)
+- [Migration runbook](docs/migration_runbook.md)
+- [E11/R10 completion report](docs/e11_r10_completion_report.md)
+- [Research and evaluation history](docs/README.md#research-evidence)

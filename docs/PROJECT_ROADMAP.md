@@ -14,7 +14,7 @@ This roadmap preserves the five-stage sequence supplied for the fresh execution.
 
 ## Current milestone progress
 
-As of 2026-11-22, E0, E1, and E2 are recorded complete. E3 language identification is integrated as an optional OCR-text stage and covered by mocked tests, but real inference is unavailable because the configured local PAPLUCA checkpoint is not present. No model weights were downloaded. E3 remains partially implemented until a locally provisioned checkpoint can be verified. E4/E5 claim extraction, fact-check retrieval contracts, and the standalone fact-check endpoint are implemented and mock-tested; live provider operation remains unverified. E6 and E7 are partially implemented. E8, E9 and E10 have implementations and focused evidence, with production database/worker and deployment verification limitations recorded below. E11 and R10–R13 remain unstarted.
+As of 2026-11-22, E0–E2 are recorded complete. E3 remains partially implemented pending local checkpoint runtime verification. E4/E5 are implemented and mock-tested; live provider operation remains unverified. E6/E7 are partially implemented. E8–E10 have focused evidence with deployment limitations. E11 is completed and verified; R10's preregistered candidate has been fit and development validation shows a positive Frontier ROC-AUC delta, with a substantial fixed-threshold balanced-accuracy tradeoff. R10 remains partially implemented pending later governed evaluation and any separately authorized production work. R11–R13 remain unstarted.
 
 | Milestone | Status | Current boundary |
 |---|---|---|
@@ -23,8 +23,10 @@ As of 2026-11-22, E0, E1, and E2 are recorded complete. E3 language identificati
 | E8 — Durable jobs and background processing | **PARTIALLY IMPLEMENTED** | Database-backed jobs, queue capacity, retries, lease recovery, stable IDs and a separate worker are implemented. SQLite tests simulate worker loss and report-commit recovery; no real multi-process PostgreSQL crash/restart test was run. Delivery is at-least-once, not exactly-once. |
 | E9 — Security and production hardening | **PARTIALLY IMPLEMENTED** | Pre-provisioned bearer auth, ownership checks, shared DB rate limits, upload/resource protections, redaction, restrictive config and focused security tests are implemented. Production proxy, PostgreSQL rate-limit and penetration testing remain unverified; user lifecycle is operator-managed. |
 | E10 — Database lifecycle and frontend testing | **PARTIALLY IMPLEMENTED** | Alembic fresh/legacy SQLite upgrades preserve reports and recover queued work; schema drift, integrity, deletion and dry-run orphan tests pass. Frontend unit/component and mocked Chromium workflow tests, typecheck and build pass. PostgreSQL migration/restore and production UI integration were not exercised. |
+| E11 — Evidence fusion and report integration | **COMPLETED AND VERIFIED** | Conservative versioned fusion and report/UI compatibility implemented; focused regression selection passes. No production decision weights changed. |
+| R10 — Frozen SigLIP plus frequency residual | **PARTIALLY IMPLEMENTED** | Fixed preregistered fit and permitted validation executed. Results are development evidence only; fixed-threshold Frontier balanced accuracy declined, and no calibration, locked evaluation, or production integration occurred. |
 
-Implementation and exact E6/E7 validation evidence: `docs/e6_e7_forensics_provenance_report.md`. E8–E10 evidence: `docs/e8_e10_production_reliability_report.md` and the linked milestone designs/reports.
+Implementation and exact E6/E7 validation evidence: `docs/e6_e7_forensics_provenance_report.md`. E8–E10 evidence: `docs/e8_e10_production_reliability_report.md` and linked reports. E11/R10 evidence: `docs/e11_r10_completion_report.md`.
 
 ## Separate synthetic demo-data workstream
 

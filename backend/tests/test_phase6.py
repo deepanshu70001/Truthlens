@@ -4,8 +4,18 @@ from backend.app.services.fusion.engine import fuse_evidence
 
 
 def _item(kind="model_evidence", source="detector", direction="synthetic", status="completed", description="signal", calibrated=False):
+    if source == "detector":
+        source = "authenticity_detector"
+    labels = {"authentic": "likely_authentic", "synthetic": "likely_ai_generated", "manipulated": "likely_manipulated"}
+    probability = {"authentic": 0.1, "synthetic": 0.9, "manipulated": 0.7}.get(direction, 0.9)
+    data = ({"label": labels.get(direction, "inconclusive"),
+             "calibrated_candidate_label": labels.get(direction, "inconclusive"), "model": "test-model",
+             "calibration_status": "validated_temperature_scaling",
+             "domain_validation_status": "validated_for_input_domain",
+             "calibrated_ai_generated_probability": probability} if calibrated else {})
     return EvidenceItem(type=kind, source=source, strength="high", direction=direction,
-                        description=description, status=status, confidence=0.9, calibrated=calibrated)
+                        description=description, data=data, stage_name="authenticity" if kind == "model_evidence" else None,
+                        status=status, confidence=probability, calibrated=calibrated)
 
 
 def test_unavailable_directional_evidence_does_not_vote():
@@ -103,8 +113,8 @@ def test_calibrated_candidate_is_not_application_label_without_domain_validation
 
 def test_conflicting_calibrated_models_are_inconclusive():
     assessment = fuse_evidence(EvidenceCollection(items=[
-        _item(source="model_a", direction="authentic", calibrated=True),
-        _item(source="model_b", direction="synthetic", calibrated=True),
+        _item(direction="authentic", calibrated=True),
+        _item(direction="synthetic", calibrated=True, description="conflicting output"),
     ]))
     assert assessment.label == "inconclusive"
     assert assessment.conflicting is True

@@ -71,6 +71,7 @@ describe('authenticated analysis flow', () => {
       status: 'completed',
       stages: {},
       summary: {},
+      assessment: { label: 'inconclusive', overall_score: null, confidence: null },
       fact_checks: { status: 'no_results', claims: [] },
       provenance: { status: 'unavailable' },
     })
@@ -80,6 +81,7 @@ describe('authenticated analysis flow', () => {
     expect(screen.getByText('OCR result unavailable: this report contains no OCR result.')).toBeInTheDocument()
     expect(screen.getByText('No conclusive review was available for some or all eligible claims.')).toBeInTheDocument()
     expect(screen.getByText('Web detection is unavailable because provider credentials or service support are missing.')).toBeInTheDocument()
+    expect(screen.getByText('Detailed evidence dispositions are unavailable in this historical report. The legacy assessment remains readable.')).toBeInTheDocument()
     expect(api.getAnalysisStatus).toHaveBeenCalledWith(analysisId)
     expect(api.getAnalysisReport).toHaveBeenCalledWith(analysisId)
   })
@@ -94,5 +96,46 @@ describe('authenticated analysis flow', () => {
       window.dispatchEvent(new CustomEvent('truthlens:auth-expired'))
     })
     expect(await screen.findByText('Sign in to your workspace')).toBeInTheDocument()
+  })
+
+  it('renders versioned fusion dispositions and unavailable stages without probability percentages', async () => {
+    window.history.replaceState({}, '', `/?analysis=${analysisId}`)
+    api.getAuthMode.mockResolvedValue({ auth_required: false })
+    api.getAnalysisStatus.mockResolvedValue({ analysis_id: analysisId, status: 'partial' })
+    api.getAnalysisReport.mockResolvedValue({
+      analysis_id: analysisId,
+      status: 'partial',
+      summary: {},
+      stages: { provenance: { status: 'unavailable' } },
+      fusion: {
+        status: 'completed',
+        schema_version: 'truthlens.fusion.v1',
+        policy_version: 'e11.conservative.v1',
+        category: 'inconclusive',
+        overall_score: 0.9,
+        confidence: 0.8,
+        assessment_confidence: null,
+        uncertainty: { status: 'unquantified' },
+        informational_findings: [{
+          evidence_id: 'ocr-1', source: 'tesseract', status: 'completed', outcome: 'no_text',
+          description: 'No text detected in the image.',
+        }],
+        evidence_excluded: [{ evidence_id: 'prov-1', source: 'google_vision_web_detection', status: 'unavailable', reason: 'stage_unavailable' }],
+        missing_evidence: [{ stage_name: 'provenance', status: 'unavailable', reason: 'No usable evidence; absence is not negative evidence.' }],
+        stage_execution_summary: { provenance: { status: 'unavailable' } },
+        limitations: ['Third-party and contextual evidence is informational.'],
+      },
+      authenticity: { model_prediction: 'likely_ai_generated', ai_generated_score: 0.9, authentic_score: 0.1 },
+    })
+
+    render(<App />)
+    expect(await screen.findByText('Final evidence assessment')).toBeInTheDocument()
+    expect(screen.getByText('Inconclusive')).toBeInTheDocument()
+    expect(screen.getByText('Informational findings')).toBeInTheDocument()
+    expect(screen.getByText('Missing or unavailable evidence')).toBeInTheDocument()
+    expect(screen.getAllByText('Unavailable').length).toBeGreaterThan(0)
+    expect(screen.getByText('Uncertainty is unquantified. No displayed score is a calibrated probability.')).toBeInTheDocument()
+    expect(screen.getByText('Primary model output')).toBeInTheDocument()
+    expect(screen.queryByText('90%')).not.toBeInTheDocument()
   })
 })

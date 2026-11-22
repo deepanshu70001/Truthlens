@@ -832,7 +832,12 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
 
         assessment = await _run_stage(
             "fusion",
-            lambda: fuse_evidence(evidence),
+            lambda: fuse_evidence(
+                evidence,
+                stage_results={name: stage for name, stage in stage_results.items() if name != "fusion"},
+                analysis_id=analysis_id,
+                correlation_id=analysis_id,
+            ),
             analysis, db, stage_results,
             required=False,
         )
@@ -844,7 +849,9 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
         if assessment is not None:
             explanation_result = await _run_stage(
                 "explanation",
-                lambda: generate_explanation(evidence, assessment.label),
+                lambda: generate_explanation(
+                    evidence, assessment.label, assessment_conflicting=assessment.conflicting,
+                ),
                 analysis, db, stage_results,
                 required=False,
             )

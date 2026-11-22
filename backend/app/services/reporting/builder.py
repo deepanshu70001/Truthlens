@@ -207,9 +207,37 @@ def build_report(
 
     fusion_status = stages.get("fusion", {}).get("status", "unavailable") if isinstance(stages.get("fusion"), dict) else "unavailable"
     fusion = dict(assessment) if assessment is not None else {
+        "schema_version": "truthlens.fusion.v1",
+        "policy_version": "e11.conservative.v1",
+        "category": None,
         "label": None,
         "overall_score": None,
         "confidence": None,
+        "score_semantics": "No fusion score was produced.",
+        "assessment_confidence": None,
+        "uncertainty": {"status": "unquantified", "reason": "Fusion did not produce an assessment."},
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "correlation_id": analysis_id,
+        "evidence_considered": [],
+        "evidence_excluded": [],
+        "supporting_findings": [],
+        "contradictory_findings": [],
+        "conflicting_findings": [],
+        "informational_findings": [],
+        "stage_execution_summary": {
+            name: {"status": stage.get("status", "unavailable"), "outcome": stage.get("outcome")}
+            for name, stage in (stages or {}).items() if isinstance(stage, dict)
+        },
+        "missing_evidence": [
+            {"stage_name": name, "status": stage.get("status", "unavailable"),
+             "outcome": stage.get("outcome"), "evidence_available": False,
+             "reason": "Stage did not produce usable evidence; absence is not negative evidence."}
+            for name, stage in (stages or {}).items()
+            if isinstance(stage, dict)
+            and (stage.get("status") in {"partial", "failed", "unavailable", "skipped"}
+                 or stage.get("outcome") in {"no_results", "no_text", "not_applicable"})
+        ],
+        "warnings": ["Fusion execution did not produce an assessment."],
         "reasoning": ["Fusion did not produce an assessment."],
         "limitations": ["No usable evidence was available for fusion."],
     }

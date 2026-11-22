@@ -74,6 +74,7 @@ class EvidenceItem:
     analysis_id: Optional[str] = None
     stage_name: Optional[str] = None
     status: str = "completed"
+    outcome: Optional[str] = None
     provenance: Optional[str] = None
 
     def __post_init__(self) -> None:
@@ -94,6 +95,7 @@ class EvidenceItem:
             "analysis_id": self.analysis_id,
             "stage_name": self.stage_name,
             "status": self.status,
+            "outcome": self.outcome,
             "provenance": self.provenance,
         }
         if self.confidence is not None:
@@ -147,8 +149,20 @@ class EvidenceCollection:
 
     @property
     def has_conflicting_evidence(self) -> bool:
-        """Check if there is conflicting evidence (both authentic and synthetic/manipulated)."""
-        directions = {i.direction for i in self.items if i.strength in ("medium", "high")}
+        """Only validated classifier outputs can create directional conflict."""
+        directions = {
+            i.direction for i in self.items
+            if i.type == "model_evidence"
+            and i.source == "authenticity_detector"
+            and i.stage_name == "authenticity"
+            and isinstance(i.status, str) and i.status in {"completed", "partial"}
+            and i.calibrated
+            and isinstance(i.data, dict)
+            and i.data.get("calibration_status") == "validated_temperature_scaling"
+            and i.data.get("domain_validation_status") == "validated_for_input_domain"
+            and isinstance(i.direction, str)
+            and i.direction in {"authentic", "synthetic", "manipulated"}
+        }
         has_authentic = "authentic" in directions
         has_synthetic = "synthetic" in directions or "manipulated" in directions
         return has_authentic and has_synthetic
@@ -213,9 +227,13 @@ def build_evidence_from_authenticity(auth_result) -> List[EvidenceItem]:
             "domain_validation_status": getattr(auth_result, "domain_validation_status", "not_evaluated"),
             "empirical_accuracy": getattr(auth_result, "empirical_accuracy", None),
             "model": auth_result.model_name,
+            "model_version": getattr(auth_result, "model_version", None),
         },
         confidence=calibrated_probability if calibrated else None,
         calibrated=calibrated,
+        stage_name="authenticity",
+        status="completed",
+        outcome="success",
     ))
 
     return items
@@ -237,6 +255,8 @@ def build_evidence_from_forensics(forensics_result) -> List[EvidenceItem]:
             description=signal.interpretation,
             data={"status": signal.status, "indicator_score": signal.score, "score_type": "heuristic_not_probability", **signal.details},
             status=signal.status,
+            outcome=getattr(signal, "outcome", None),
+            stage_name="forensics",
         ))
 
     return items
@@ -249,13 +269,18 @@ def build_evidence_from_ocr(ocr_result, text_result=None) -> List[EvidenceItem]:
 
     items = []
 
-    if getattr(ocr_result, "status", "completed") in {"failed", "unavailable", "skipped"}:
+    status = getattr(ocr_result, "status", "completed")
+    if status not in {"pending", "running", "completed", "partial", "failed", "unavailable", "skipped"}:
+        status = "unavailable"
+    if status not in {"completed", "partial"}:
         items.append(EvidenceItem(
             type="ocr_evidence", source=ocr_result.engine or "ocr",
             strength="low", direction="informational",
-            description=f"OCR status: {ocr_result.status}.",
-            data={"status": ocr_result.status, "engine": ocr_result.engine, "warnings": ocr_result.warnings},
-            status=ocr_result.status,
+            description=f"OCR status: {status}.",
+            data={"status": status, "engine": ocr_result.engine, "warnings": ocr_result.warnings},
+            status=status,
+            outcome=getattr(ocr_result, "outcome", None),
+            stage_name="ocr",
         ))
         return items
 
@@ -279,6 +304,9 @@ def build_evidence_from_ocr(ocr_result, text_result=None) -> List[EvidenceItem]:
                 "engine": ocr_result.engine,
                 "text_preview": ocr_result.normalized_text[:200] if ocr_result.normalized_text else "",
             },
+            status=status,
+            outcome="success",
+            stage_name="ocr",
         ))
     else:
         items.append(EvidenceItem(
@@ -288,6 +316,9 @@ def build_evidence_from_ocr(ocr_result, text_result=None) -> List[EvidenceItem]:
             direction="informational",
             description="No text detected in the image.",
             data={"word_count": 0},
+            status=status,
+            outcome="no_text",
+            stage_name="ocr",
         ))
 
     return items
@@ -310,6 +341,7 @@ def build_evidence_from_metadata(metadata_result) -> List[EvidenceItem]:
                 "No EXIF metadata was found. Metadata can be removed by sharing or editing workflows; its absence does not establish authenticity or manipulation."
             ),
             data={"has_exif": False},
+            stage_name="metadata",
         ))
     else:
         for anomaly in metadata_result.anomalies:
@@ -324,6 +356,7 @@ def build_evidence_from_metadata(metadata_result) -> List[EvidenceItem]:
                     "camera": metadata_result.camera_model,
                     "software": metadata_result.software,
                 },
+                stage_name="metadata",
             ))
 
         if not metadata_result.anomalies:
@@ -343,6 +376,7 @@ def build_evidence_from_metadata(metadata_result) -> List[EvidenceItem]:
                     "software": metadata_result.software,
                     "gps_available": metadata_result.gps_available,
                 },
+                stage_name="metadata",
             ))
 
     return items
@@ -364,6 +398,8 @@ def build_evidence_from_factcheck(factcheck_result) -> List[EvidenceItem]:
             description="Fact-check API not configured. No fact-check data available.",
             data={"status": "unavailable"},
             status="unavailable",
+            outcome="credentials_missing",
+            stage_name="fact_check",
         ))
     elif factcheck_result.status == "failed":
         items.append(EvidenceItem(
@@ -372,8 +408,10 @@ def build_evidence_from_factcheck(factcheck_result) -> List[EvidenceItem]:
             strength="low",
             direction="informational",
             description="Fact-check API request failed. See module status for details.",
-            data={"status": "failed", "error": factcheck_result.error},
+            data={"status": "failed"},
             status="failed",
+            outcome="provider_error",
+            stage_name="fact_check",
         ))
     elif factcheck_result.status == "no_results":
         items.append(EvidenceItem(
@@ -384,8 +422,20 @@ def build_evidence_from_factcheck(factcheck_result) -> List[EvidenceItem]:
             description="No matching fact-checks found for extracted claims.",
             data={"status": "no_results", "queries": factcheck_result.queries_performed},
             status="completed",
+            outcome="no_results",
+            stage_name="fact_check",
         ))
     elif factcheck_result.status in {"success", "partial"}:
+        if not factcheck_result.claims:
+            items.append(EvidenceItem(
+                type="factcheck_evidence", source="google_factcheck_api", strength="low",
+                direction="informational",
+                description="Fact-check queries completed without matching reviews.",
+                data={"status": "no_results", "queries": factcheck_result.queries_performed},
+                status="partial" if factcheck_result.status == "partial" else "completed",
+                outcome="partial_results" if factcheck_result.status == "partial" else "no_results",
+                stage_name="fact_check",
+            ))
         for claim in factcheck_result.claims:
             rating_lower = claim.textual_rating.lower()
             if any(w in rating_lower for w in ["false", "fake", "incorrect", "misleading", "pants on fire"]):
@@ -409,6 +459,9 @@ def build_evidence_from_factcheck(factcheck_result) -> List[EvidenceItem]:
                 ),
                 data=claim.to_dict(),
                 evidence_id=claim.evidence_id,
+                status="partial" if factcheck_result.status == "partial" else "completed",
+                outcome="success",
+                stage_name="fact_check",
             ))
 
     return items
@@ -443,6 +496,7 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
             description=c2pa_description,
             data={key: value for key, value in credentials.items() if key not in {"warnings"}},
             status=c2pa_status if c2pa_status in {"completed", "partial", "failed", "unavailable", "skipped"} else "unavailable",
+            outcome=verification,
             stage_name="provenance",
         ))
 
@@ -458,9 +512,10 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
             description="Web detection API not configured. No provenance data available.",
             data={"status": "unavailable"},
             status="unavailable",
+            outcome="credentials_missing",
             stage_name="provenance",
         ))
-    elif web_status in {"failed", "partial"}:
+    elif web_status == "failed":
         items.append(EvidenceItem(
             type="provenance_evidence",
             source="google_vision_web_detection",
@@ -469,9 +524,12 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
             description="Web provenance request failed. See module status for details.",
             data={"status": web_status},
             status=web_status,
+            outcome="provider_error",
             stage_name="provenance",
         ))
-    elif web_status == "success":
+    elif web_status in {"success", "partial"}:
+        web_item_status = "partial" if web_status == "partial" else "completed"
+        emitted_web_finding = False
         if provenance_result.matching_images:
             exact_count = sum(1 for i in provenance_result.matching_images if i.match_type == "exact")
             partial_count = sum(1 for i in provenance_result.matching_images if i.match_type == "partial")
@@ -494,8 +552,11 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
                     "matching_images": [image.to_dict() for image in provenance_result.matching_images[:10]],
                     "outcome": getattr(provenance_result, "web_detection_outcome", "success"),
                 },
+                status=web_item_status,
+                outcome=getattr(provenance_result, "web_detection_outcome", "success"),
                 stage_name="provenance",
             ))
+            emitted_web_finding = True
 
         if provenance_result.best_guess_labels:
             items.append(EvidenceItem(
@@ -511,6 +572,22 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
                       "provider": provenance_result.provider,
                       "retrieved_at": provenance_result.retrieved_at,
                       "outcome": getattr(provenance_result, "web_detection_outcome", "success")},
+                status=web_item_status,
+                outcome=getattr(provenance_result, "web_detection_outcome", "success"),
+                stage_name="provenance",
+            ))
+            emitted_web_finding = True
+        if not emitted_web_finding:
+            items.append(EvidenceItem(
+                type="provenance_evidence", source="google_vision_web_detection",
+                strength="low", direction="informational",
+                description=("Web detection returned partial results without image matches or labels."
+                             if web_status == "partial"
+                             else "Web detection completed without image matches or labels."),
+                data={"status": web_item_status, "provider": provenance_result.provider},
+                status=web_item_status,
+                outcome=(getattr(provenance_result, "web_detection_outcome", None) or "partial_results")
+                if web_status == "partial" else "no_results",
                 stage_name="provenance",
             ))
     elif web_status == "no_results":
@@ -522,6 +599,7 @@ def build_evidence_from_provenance(provenance_result) -> List[EvidenceItem]:
             description="No web matches found for this image.",
             data={"status": "no_results", "outcome": "no_results"},
             status="completed",
+            outcome="no_results",
             stage_name="provenance",
         ))
 
@@ -535,7 +613,10 @@ def build_evidence_from_xai(xai_result) -> List[EvidenceItem]:
 
     items = []
 
-    if xai_result.heatmap_path and xai_result.status == "completed":
+    status = getattr(xai_result, "status", "unavailable")
+    if status not in {"pending", "running", "completed", "partial", "failed", "unavailable", "skipped"}:
+        status = "unavailable"
+    if xai_result.heatmap_path and status == "completed":
         items.append(EvidenceItem(
             type="xai_evidence",
             source="grad_cam",
@@ -550,12 +631,24 @@ def build_evidence_from_xai(xai_result) -> List[EvidenceItem]:
                 "target_class": xai_result.target_class,
                 "target_score": xai_result.target_score,
                 "suspicious_regions": xai_result.suspicious_regions,
-                "heatmap_path": xai_result.heatmap_path,
-                "overlay_path": xai_result.overlay_path,
                 "heatmap_url": xai_result.heatmap_url,
                 "overlay_url": xai_result.overlay_url,
                 "model_name": xai_result.model_name,
             },
+            status="completed",
+            outcome="heatmap_generated",
+            stage_name="xai",
+        ))
+    else:
+        items.append(EvidenceItem(
+            type="xai_evidence", source="grad_cam", strength="low",
+            direction="informational",
+            description=("XAI attribution is unavailable." if status != "completed"
+                         else "No XAI attribution map was produced."),
+            data={"status": status},
+            status=status,
+            outcome="no_results" if status == "completed" else getattr(xai_result, "outcome", status),
+            stage_name="xai",
         ))
 
     return items
@@ -568,7 +661,11 @@ def build_evidence_from_vision(vision_result) -> List[EvidenceItem]:
 
     items = []
 
-    if vision_result.objects:
+    status = getattr(vision_result, "status", "completed")
+    if status not in {"pending", "running", "completed", "partial", "failed", "unavailable", "skipped"}:
+        status = "unavailable"
+    outcome = getattr(vision_result, "outcome", None)
+    if status in {"completed", "partial"} and vision_result.objects:
         items.append(EvidenceItem(
             type="contextual_evidence",
             source="yolov8_object_detection",
@@ -585,6 +682,20 @@ def build_evidence_from_vision(vision_result) -> List[EvidenceItem]:
                 "objects": [obj.__dict__ for obj in vision_result.objects],
                 "model_name": vision_result.model_name,
             },
+            status=status,
+            outcome=outcome or "success",
+            stage_name="vision",
+        ))
+    else:
+        items.append(EvidenceItem(
+            type="contextual_evidence", source="yolov8_object_detection",
+            strength="low", direction="informational",
+            description=("No objects were detected; absence of detections is not evidence of authenticity or manipulation."
+                         if status == "completed" else f"Object detection status: {status}."),
+            data={"status": status, "object_count": 0},
+            status=status,
+            outcome=outcome or ("no_results" if status == "completed" else status),
+            stage_name="vision",
         ))
 
     return items

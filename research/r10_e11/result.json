@@ -1,0 +1,208 @@
+{
+  "acceptance_checks": {
+    "frontier_ci_excludes_zero": true,
+    "frontier_delta_positive": true,
+    "frontier_fpr_increase_at_most_0_02": true,
+    "tiny_balanced_accuracy_drop_at_most_0_01": true
+  },
+  "aggregate_partition_counts": {
+    "frontier_validation": 297,
+    "tiny_validation": 5958,
+    "training": 6995,
+    "wildaigc_validation_diagnostic_only": 181
+  },
+  "archive_path": "experiments/reports/phase9_feature_vectors.npz",
+  "archive_sha256": "a1b9d3530f9555ba4b67cc4a5d2b3793ebac7804bb150eb0a2856da4efb00ed9",
+  "backbone_revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+  "baseline_head_sha256": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+  "candidate_id": "truthlens/r10-siglip-frequency-residual-v1",
+  "evaluation": {
+    "frontier_benchmark_2026_10": {
+      "class_counts": {
+        "ai_generated": 104,
+        "authentic": 193
+      },
+      "delta": {
+        "balanced_accuracy": -0.080136508569151,
+        "fnr": 0.4711538461538462,
+        "fpr": -0.31088082901554404,
+        "roc_auc": 0.06312275807094458
+      },
+      "frequency_valid_rows": 297,
+      "frozen_baseline": {
+        "accuracy": 0.6868686868686869,
+        "ai_generated": 104,
+        "authentic": 193,
+        "balanced_accuracy": 0.7258120765245117,
+        "false_negative": 15,
+        "false_positive": 78,
+        "fnr": 0.14423076923076922,
+        "fpr": 0.40414507772020725,
+        "n": 297,
+        "precision": 0.5329341317365269,
+        "recall": 0.8557692307692307,
+        "roc_auc": 0.749651255480271,
+        "true_negative": 115,
+        "true_positive": 89
+      },
+      "group_count": 75,
+      "hybrid_candidate": {
+        "accuracy": 0.7239057239057239,
+        "ai_generated": 104,
+        "authentic": 193,
+        "balanced_accuracy": 0.6456755679553607,
+        "false_negative": 64,
+        "false_positive": 18,
+        "fnr": 0.6153846153846154,
+        "fpr": 0.09326424870466321,
+        "n": 297,
+        "precision": 0.6896551724137931,
+        "recall": 0.38461538461538464,
+        "roc_auc": 0.8127740135512156,
+        "true_negative": 175,
+        "true_positive": 40
+      },
+      "n": 297,
+      "paired_group_bootstrap_roc_auc_delta": {
+        "ci_95_lower": 0.017259225613695053,
+        "ci_95_upper": 0.11815989316756333,
+        "group_count": 75,
+        "mean_delta": 0.0625707868205113,
+        "replicates": 2000,
+        "seed": 2026
+      }
+    },
+    "tiny_genimage": {
+      "class_counts": {
+        "ai_generated": 2548,
+        "authentic": 3410
+      },
+      "delta": {
+        "balanced_accuracy": 0.06327198147474644,
+        "fnr": 0.2488226059654631,
+        "fpr": -0.375366568914956,
+        "roc_auc": 0.048612907829497565
+      },
+      "frequency_valid_rows": 5958,
+      "frozen_baseline": {
+        "accuracy": 0.5211480362537765,
+        "ai_generated": 2548,
+        "authentic": 3410,
+        "balanced_accuracy": 0.5540416956315574,
+        "false_negative": 557,
+        "false_positive": 2296,
+        "fnr": 0.21860282574568288,
+        "fpr": 0.6733137829912024,
+        "n": 5958,
+        "precision": 0.4644273384651271,
+        "recall": 0.7813971742543171,
+        "roc_auc": 0.6020371333735389,
+        "true_negative": 1114,
+        "true_positive": 1991
+      },
+      "group_count": 1338,
+      "hybrid_candidate": {
+        "accuracy": 0.6295736824437731,
+        "ai_generated": 2548,
+        "authentic": 3410,
+        "balanced_accuracy": 0.6173136771063038,
+        "false_negative": 1191,
+        "false_positive": 1016,
+        "fnr": 0.467425431711146,
+        "fpr": 0.29794721407624636,
+        "n": 5958,
+        "precision": 0.571849978929625,
+        "recall": 0.532574568288854,
+        "roc_auc": 0.6506500412030365,
+        "true_negative": 2394,
+        "true_positive": 1357
+      },
+      "n": 5958
+    },
+    "wildaigc_bench": {
+      "class_counts": {
+        "ai_generated": 118,
+        "authentic": 63
+      },
+      "delta": {
+        "balanced_accuracy": 0.06752757600215226,
+        "fnr": 0.3728813559322034,
+        "fpr": -0.5079365079365079,
+        "roc_auc": 0.03578154425612057
+      },
+      "frequency_valid_rows": 181,
+      "frozen_baseline": {
+        "accuracy": 0.4143646408839779,
+        "ai_generated": 118,
+        "authentic": 63,
+        "balanced_accuracy": 0.38808178638687113,
+        "false_negative": 62,
+        "false_positive": 44,
+        "fnr": 0.5254237288135594,
+        "fpr": 0.6984126984126984,
+        "n": 181,
+        "precision": 0.56,
+        "recall": 0.4745762711864407,
+        "roc_auc": 0.3488027979553403,
+        "true_negative": 19,
+        "true_positive": 56
+      },
+      "group_count": 119,
+      "hybrid_candidate": {
+        "accuracy": 0.34806629834254144,
+        "ai_generated": 118,
+        "authentic": 63,
+        "balanced_accuracy": 0.4556093623890234,
+        "false_negative": 106,
+        "false_positive": 12,
+        "fnr": 0.8983050847457628,
+        "fpr": 0.19047619047619047,
+        "n": 181,
+        "precision": 0.5,
+        "recall": 0.1016949152542373,
+        "roc_auc": 0.3845843422114609,
+        "true_negative": 51,
+        "true_positive": 12
+      },
+      "n": 181
+    }
+  },
+  "fit": {
+    "device": "CPU",
+    "iterations": 12,
+    "optimizer": "scipy.optimize.minimize/L-BFGS-B",
+    "runtime_seconds": 7.037462099999175,
+    "training_loss": 0.7215115585628544
+  },
+  "hypothesis_status": "SUPPORTED",
+  "limitations": [
+    "Validation results are development evidence, not locked held-out evaluation.",
+    "WildAIGC labels are contextual and diagnostic only.",
+    "Hybrid logits are uncalibrated and are not probabilities.",
+    "No raw images, row-level predictions, sample identifiers, or protected partitions were used or saved."
+  ],
+  "missing_frequency_fallback_equal_to_baseline": true,
+  "primary_metric": {
+    "group_bootstrap_95ci": {
+      "ci_95_lower": 0.017259225613695053,
+      "ci_95_upper": 0.11815989316756333,
+      "group_count": 75,
+      "mean_delta": 0.0625707868205113,
+      "replicates": 2000,
+      "seed": 2026
+    },
+    "name": "frontier_validation_paired_roc_auc_delta",
+    "value": 0.06312275807094458
+  },
+  "protocol_id": "truthlens-r10-siglip-frequency-residual-v1",
+  "reproducibility": {
+    "coefficient_file": "candidate_coefficients.json",
+    "coefficient_sha256": "d6c88fd365a4ca1c609ea135db69f7534c254512f1730a19be2a81b35d06c4ed",
+    "numpy": "2.2.6",
+    "python": "3.12.10",
+    "source_group_bootstrap_replicates": 2000,
+    "source_group_bootstrap_seed": 2026
+  },
+  "status": "EXECUTED",
+  "train_frequency_valid_rows": 6995
+}

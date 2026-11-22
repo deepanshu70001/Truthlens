@@ -1,0 +1,47 @@
+{
+  "protocol_id": "truthlens-r10-siglip-frequency-residual-v1",
+  "candidate_id": "truthlens/r10-siglip-frequency-residual-v1",
+  "status": "PREREGISTERED_NOT_RUN",
+  "baseline": {
+    "model_id": "truthlens/siglip-cifake-frozen-head",
+    "backbone": "google/siglip-base-patch16-224",
+    "revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+    "head_path": "models/baselines/siglip_frozen_head.pt",
+    "head_sha256": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538"
+  },
+  "data": {
+    "archive_path": "experiments/reports/phase9_feature_vectors.npz",
+    "archive_sha256": "a1b9d3530f9555ba4b67cc4a5d2b3793ebac7804bb150eb0a2856da4efb00ed9",
+    "allowed_partitions": {
+      "approved_training": { "n": 6995, "authentic": 3515, "ai_generated": 3480 },
+      "tiny_validation": { "n": 5958, "authentic": 3410, "ai_generated": 2548 },
+      "frontier_validation": { "n": 297, "authentic": 193, "ai_generated": 104 },
+      "wildaigc_validation": { "n": 181, "authentic": 63, "ai_generated": 118, "selection": false }
+    },
+    "protected_partitions_allowed": false,
+    "raw_images_allowed": false
+  },
+  "features": {
+    "siglip_dimension": 768,
+    "frequency_dimension": 34,
+    "scaler_fit_partition": "approved_training",
+    "other_sources": []
+  },
+  "candidate": {
+    "architecture": "fixed_production_siglip_logit_plus_linear_frequency_residual",
+    "residual_parameters": 35,
+    "training_loss": "binary_cross_entropy_with_logits_plus_l2",
+    "l2_coefficient": 1.0,
+    "baseline_coefficient": 1.0,
+    "decision_threshold_logit": 0.0,
+    "validation_tuning": false,
+    "missing_frequency_fallback": "baseline_logit"
+  },
+  "evaluation": {
+    "primary_partition": "frontier_validation",
+    "primary_metric": "paired_roc_auc_delta_vs_frozen_baseline",
+    "bootstrap": { "method": "paired_source_group", "replicates": 2000, "seed": 2026 },
+    "secondary_metrics": ["accuracy", "balanced_accuracy", "precision", "recall", "fpr", "fnr", "tiny_roc_auc", "wildaigc_diagnostic_roc_auc", "missing_feature_fallback", "runtime"],
+    "wild_aigc_used_for_selection": false
+  }
+}

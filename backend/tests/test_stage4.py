@@ -407,7 +407,7 @@ class TestEvidenceSchema:
         assert len(col.get_strong_evidence()) == 1
         assert not col.has_conflicting_evidence
 
-    def test_conflicting_evidence_detection(self):
+    def test_informational_module_directions_do_not_create_authenticity_conflict(self):
         from backend.app.services.evidence.schema import EvidenceCollection, EvidenceItem
 
         col = EvidenceCollection()
@@ -420,7 +420,7 @@ class TestEvidenceSchema:
             direction="synthetic", description="Forensics says synthetic",
         ))
 
-        assert col.has_conflicting_evidence
+        assert not col.has_conflicting_evidence
 
     def test_build_evidence_from_authenticity(self):
         from backend.app.services.evidence.schema import build_evidence_from_authenticity
@@ -459,6 +459,22 @@ class TestEvidenceSchema:
 
 # ── Fusion Engine ────────────────────────────────────────────────
 
+def _eligible_fusion_item(direction, description):
+    from backend.app.services.evidence.schema import EvidenceItem
+
+    labels = {"authentic": "likely_authentic", "synthetic": "likely_ai_generated", "manipulated": "likely_manipulated"}
+    probability = {"authentic": 0.1, "synthetic": 0.9, "manipulated": 0.7}[direction]
+    return EvidenceItem(
+        type="model_evidence", source="authenticity_detector", stage_name="authenticity",
+        strength="high", direction=direction, description=description,
+        data={"label": labels[direction], "calibrated_candidate_label": labels[direction], "model": "test-model",
+              "calibration_status": "validated_temperature_scaling",
+              "domain_validation_status": "validated_for_input_domain",
+              "calibrated_ai_generated_probability": probability},
+        calibrated=True, confidence=probability,
+    )
+
+
 class TestFusion:
     def test_no_evidence(self):
         from backend.app.services.fusion.engine import fuse_evidence
@@ -475,10 +491,7 @@ class TestFusion:
         from backend.app.services.evidence.schema import EvidenceCollection, EvidenceItem
 
         col = EvidenceCollection()
-        col.add(EvidenceItem(
-            type="model_evidence", source="m1", strength="high",
-            direction="authentic", description="Model says authentic", calibrated=True, confidence=0.9,
-        ))
+        col.add(_eligible_fusion_item("authentic", "Model says authentic"))
         col.add(EvidenceItem(
             type="metadata_evidence", source="exif", strength="low",
             direction="authentic", description="EXIF present",
@@ -493,10 +506,7 @@ class TestFusion:
         from backend.app.services.evidence.schema import EvidenceCollection, EvidenceItem
 
         col = EvidenceCollection()
-        col.add(EvidenceItem(
-            type="model_evidence", source="m1", strength="high",
-            direction="synthetic", description="Model says AI-generated", calibrated=True, confidence=0.9,
-        ))
+        col.add(_eligible_fusion_item("synthetic", "Model says AI-generated"))
 
         result = fuse_evidence(col)
         assert result.label == "likely_ai_generated"
@@ -506,14 +516,8 @@ class TestFusion:
         from backend.app.services.evidence.schema import EvidenceCollection, EvidenceItem
 
         col = EvidenceCollection()
-        col.add(EvidenceItem(
-            type="model_evidence", source="m1", strength="high",
-            direction="authentic", description="Model A says authentic", calibrated=True, confidence=0.9,
-        ))
-        col.add(EvidenceItem(
-            type="model_evidence", source="m2", strength="high",
-            direction="synthetic", description="Model B says synthetic", calibrated=True, confidence=0.9,
-        ))
+        col.add(_eligible_fusion_item("authentic", "Model says authentic"))
+        col.add(_eligible_fusion_item("synthetic", "Conflicting model says synthetic"))
 
         result = fuse_evidence(col)
         assert result.label == "inconclusive"

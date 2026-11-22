@@ -179,6 +179,8 @@ def _describe_context_evidence(items: List[EvidenceItem]) -> Optional[Dict[str, 
 def generate_explanation(
     evidence: EvidenceCollection,
     assessment_label: str,
+    *,
+    assessment_conflicting: Optional[bool] = None,
 ) -> Explanation:
     """
     Generate a structured explanation based ONLY on available evidence.
@@ -190,6 +192,13 @@ def generate_explanation(
     - Cites specific evidence items
     """
     t0 = time.time()
+
+    # Execution failure is reported in Pipeline status. Do not turn it into a
+    # textual finding or let it affect the explanation's conflict summary.
+    usable_evidence = EvidenceCollection(
+        items=[item for item in evidence.items if item.status in {"completed", "partial"}],
+        analysis_id=evidence.analysis_id,
+    )
 
     sections = []
     key_findings = []
@@ -208,13 +217,17 @@ def generate_explanation(
     ]
 
     for evidence_type, builder in section_builders:
-        items = evidence.get_by_type(evidence_type)
+        items = usable_evidence.get_by_type(evidence_type)
         section = builder(items)
         if section:
             sections.append(section)
 
     # Extract key findings (high-strength evidence)
-    for item in evidence.get_strong_evidence():
+    # Strong third-party/contextual findings can be useful when attributed,
+    # but raw classifier output is not promoted to a key finding here.
+    for item in usable_evidence.get_strong_evidence():
+        if item.type == "model_evidence":
+            continue
         key_findings.append(item.description)
 
     # Build summary
@@ -230,14 +243,15 @@ def generate_explanation(
     summary_parts.append(label_descriptions.get(assessment_label, label_descriptions["inconclusive"]))
 
     # Evidence overview
-    type_counts = evidence.to_dict().get("by_type", {})
+    type_counts = usable_evidence.to_dict().get("by_type", {})
     if type_counts:
         summary_parts.append(
-            f"This assessment is based on {evidence.count} evidence signals "
+            f"This assessment is based on {usable_evidence.count} evidence signals "
             f"across {len(type_counts)} analysis categories."
         )
 
-    if evidence.has_conflicting_evidence:
+    has_conflict = assessment_conflicting if assessment_conflicting is not None else usable_evidence.has_conflicting_evidence
+    if has_conflict:
         summary_parts.append(
             "Note: Some evidence signals conflict with each other, "
             "which reduces overall confidence."
@@ -252,17 +266,17 @@ def generate_explanation(
         "All confidence scores are uncalibrated unless explicitly stated otherwise.",
     ])
 
-    if not evidence.get_by_type("factcheck_evidence") or all(
+    if not usable_evidence.get_by_type("factcheck_evidence") or all(
         i.data.get("status") in ("unavailable", "failed")
-        for i in evidence.get_by_type("factcheck_evidence")
+        for i in usable_evidence.get_by_type("factcheck_evidence")
     ):
         limitations.append(
             "Fact-check verification was not available for this analysis."
         )
 
-    if not evidence.get_by_type("provenance_evidence") or all(
+    if not usable_evidence.get_by_type("provenance_evidence") or all(
         i.data.get("status") in ("unavailable", "failed")
-        for i in evidence.get_by_type("provenance_evidence")
+        for i in usable_evidence.get_by_type("provenance_evidence")
     ):
         limitations.append(
             "Web provenance search was not available for this analysis."
