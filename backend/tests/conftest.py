@@ -28,6 +28,7 @@ os.environ["RATE_LIMIT_RETRIEVAL_PER_MINUTE"] = "1000"
 os.environ["RATE_LIMIT_MODELS_PER_MINUTE"] = "500"
 os.environ["RATE_LIMIT_OCR_PER_MINUTE"] = "500"
 os.environ["RATE_LIMIT_CLAIMS_PER_MINUTE"] = "500"
+os.environ["RATE_LIMIT_LANGUAGE_PER_MINUTE"] = "500"
 
 from backend.app.main import app  # noqa: E402
 from backend.app.db.session import engine  # noqa: E402

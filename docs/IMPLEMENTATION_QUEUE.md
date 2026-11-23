@@ -189,22 +189,53 @@ This document details the exact file paths, existing functions/handlers, test su
 
 ---
 
-### Priority 5: Language Identification Service (`LanguageDetector` / Standalone API)
+### Priority 5: Language Identification Service (`LanguageDetector` / Standalone API) — COMPLETED AND VERIFIED
 
-- **Target Route:** `POST /api/v1/nlp/language` (Optional public route)
-- **Current File Path:** [backend/app/services/nlp/language_detector.py](file:///D:/Projects/Truthlens/backend/app/services/nlp/language_detector.py)
-- **Functions / Handlers:** `LanguageDetector`, `LanguageDetectionResult`, `get_language_detector()`
-- **Existing Test Coverage:**
-  - [backend/tests/test_language_detector.py](file:///D:/Projects/Truthlens/backend/tests/test_language_detector.py) (Validates offline cache loading, exact 20-class `id2label` mapping, input bounds 4,096 chars / 256 tokens, uncalibrated softmax confidence, and thread safety).
-  - [backend/tests/test_api.py](file:///D:/Projects/Truthlens/backend/tests/test_api.py) (Validates pipeline integration).
-- **Missing Implementation:**
-  1. The core service is **ALREADY COMPLETE AND VERIFIED**.
-  2. If exposed as an API endpoint:
-     - Request schema: `LanguageDetectionRequest(text: str = Field(..., min_length=1, max_length=10000))`
-     - Response schema: `LanguageDetectionResponse` serializing `LanguageDetectionResult.to_dict()`
-     - Authentication and rate limiting (`scope="nlp"`).
-- **Dependencies / Blockers:** Hugging Face model weights must be pre-cached in `settings.MODEL_CACHE_DIR` (`papluca/xlm-roberta-base-language-detection`, revision `9865598389ca9d95637462f743f683b51d75b87b`).
-- **Estimated Complexity:** Low (0.5 engineering day).
+- **Target Route:** `POST /api/v1/nlp/language`
+- **Implementation Path:** [backend/app/api/v1/endpoints/language.py](file:///D:/Projects/Truthlens/backend/app/api/v1/endpoints/language.py) (Service: [backend/app/services/nlp/language_detector.py](file:///D:/Projects/Truthlens/backend/app/services/nlp/language_detector.py), Schema: [backend/app/schemas/language.py](file:///D:/Projects/Truthlens/backend/app/schemas/language.py))
+- **Status:** **COMPLETED AND VERIFIED** (2026-11-23)
+- **Features Implemented:**
+  - Dedicated standalone endpoint `POST /api/v1/nlp/language` exposing the local XLM-RoBERTa 20-language classifier (`papluca/xlm-roberta-base-language-detection`, pinned revision `9865598389ca9d95637462f743f683b51d75b87b`).
+  - No new model, duplicate inference service, or external network downloads; strict offline cache loading.
+  - Robust request validation via `LanguageDetectionRequest`:
+    - `text`: 1 to 10,000 characters; whitespace-only or empty strings rejected with HTTP 422.
+    - `top_k`: Optional integer (1 to 20, default 3); invalid bounds rejected with HTTP 422.
+  - Dedicated response model `LanguageDetectionResponse`:
+    - `status`: `"completed"`, `"insufficient_text"`, `"unavailable"`, or `"failed"`.
+    - `outcome`: `"success"`, `"undetermined"`, `"insufficient_input"`, `"no_text"`, `"unavailable"`, `"failed"`.
+    - `detected_language`: 2-letter ISO 639-1 code or `"unknown"`.
+    - `language_code` and `language_name` (e.g. `"en"` / `"English"`, `"hi"` / `"Hindi"`).
+    - `confidence`: Uncalibrated softmax probability ($\ge 0.70$ threshold for confident assignment).
+    - `top_languages` / `top_k_candidates`: Ranked list of `LanguageCandidate` objects with code, name, and score.
+    - `model_id`, `model_revision`, `device`, `runtime_ms`, `processing_time_ms`, `input_characters`, `input_truncated`, `confidence_semantics`, `warnings`, `limitations`, and `unavailable_reason`.
+  - Non-blocking execution wrapped in `asyncio.to_thread`.
+  - Bearer authentication via `Principal = Depends(get_current_principal)`.
+  - Scoped rate limiting via database-backed fixed window (`RATE_LIMIT_LANGUAGE_PER_MINUTE = 60`, default 60 req/min).
+  - Strict privacy & security: absolute filesystem paths, internal stack traces, and environment secrets sanitized.
+  - Route registered in `backend/app/api/v1/router.py` under tag `["Language Identification"]`.
+- **Test Verification:**
+  - [backend/tests/test_language_endpoint.py](file:///D:/Projects/Truthlens/backend/tests/test_language_endpoint.py): 17 passed tests covering:
+    1. English detection (`test_language_detection_english`)
+    2. Hindi detection (`test_language_detection_hindi`)
+    3. Multilingual detection and top-k ranking (`test_language_detection_multilingual_candidates`)
+    4. Short or ambiguous text handling (`test_language_detection_short_ambiguous_text`)
+    5. Empty text rejection (`test_language_detection_empty_text_rejected`)
+    6. Whitespace-only rejection (`test_language_detection_whitespace_rejected`)
+    7. Maximum input length exceeded (`test_language_detection_max_length_exceeded`)
+    8. Invalid top_k bounds (`test_language_detection_invalid_top_k`)
+    9. Detector unavailable handling (`test_language_detection_detector_unavailable`)
+    10. Model initialization failure (`test_language_detection_initialization_failure`)
+    11. Prediction exception handling (`test_language_detection_prediction_exception`)
+    12. Language code and name mapping (`test_language_detection_code_and_name_mapping`)
+    13. Confidence bounds and schema validation (`test_language_detection_confidence_bounds_and_schema`)
+    14. Bearer authentication enforcement (`test_language_detection_authentication_enforced`)
+    15. Rate limiting enforcement (`test_language_detection_rate_limiting_enforced`)
+    16. Sensitive data and path sanitization (`test_language_detection_path_and_secret_sanitization`)
+    17. Non-eager loading verification (`test_language_detection_no_eager_loading_on_startup`)
+  - Integration suite verification:
+    - [backend/tests/test_language_detector.py](file:///D:/Projects/Truthlens/backend/tests/test_language_detector.py): 28 passed tests.
+    - [backend/tests/test_core_api_integration.py](file:///D:/Projects/Truthlens/backend/tests/test_core_api_integration.py): 4 passed tests (including 5-endpoint chaining: Models -> OCR -> Language Detection -> Claims -> Fact-Check).
+    - Zero modifications to production SigLIP weights (`models/baselines/siglip_frozen_head.pt`, SHA-256 `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`).
 
 ---
 

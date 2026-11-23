@@ -19,10 +19,12 @@ from PIL import Image
 
 from backend.app.schemas.claims import ClaimExtractionResponse
 from backend.app.schemas.factcheck import FactCheckResponse
+from backend.app.schemas.language import LanguageDetectionResponse
 from backend.app.schemas.models import ModelRegistryResponse
 from backend.app.schemas.ocr import OCRResponse
 from backend.app.services.factcheck.service import FactCheckClaim, FactCheckResult
 from backend.app.services.ocr.service import OCRBlock, OCRResult
+from backend.tests.test_language_detector import ready_detector
 
 
 def _create_test_image() -> bytes:
@@ -240,3 +242,110 @@ async def test_integrated_workflow_unconfigured_factcheck(client, monkeypatch):
     assert any("not configured" in w.lower() for w in fc_data.warnings)
     assert fc_data.claim_verifications[0].verification_status == "UNAVAILABLE"
 
+
+@pytest.mark.asyncio
+async def test_five_core_apis_integrated_workflow(client, mock_optional_analysis_modules, monkeypatch):
+    """Integrated pipeline chaining all 5 core endpoints:
+    Models -> OCR -> Language Detection -> Claims -> Fact-Check.
+    """
+    # 1. Models Registry
+    resp_models = await client.get("/api/v1/models")
+    assert resp_models.status_code == 200
+    models_data = ModelRegistryResponse.model_validate(resp_models.json())
+    registered_ids = {m.id for m in models_data.models}
+    assert "language_detection" in registered_ids
+    assert "ocr_easyocr" in registered_ids
+
+    # 2. OCR
+    image_bytes = _create_test_image()
+    mock_optional_analysis_modules["ocr"].extract = lambda _img: OCRResult(
+        status="completed",
+        text="The prime minister announced 50 new digital initiatives across the state in 2025.",
+        normalized_text="The prime minister announced 50 new digital initiatives across the state in 2025.",
+        engine="EasyOCR",
+        language="en",
+        has_text=True,
+        total_confidence=0.95,
+        word_count=13,
+        blocks=[
+            OCRBlock(
+                text="The prime minister announced 50 new digital initiatives across the state in 2025.",
+                confidence=0.95,
+                bbox=[[0, 0], [100, 0], [100, 50], [0, 50]],
+            )
+        ],
+        language_configuration=["en", "hi"],
+        warnings=[],
+    )
+    resp_ocr = await client.post(
+        "/api/v1/ocr",
+        files={"image": ("speech.png", image_bytes, "image/png")},
+    )
+    assert resp_ocr.status_code == 200
+    ocr_data = OCRResponse.model_validate(resp_ocr.json())
+
+    # 3. Language Identification
+    detector = ready_detector([[12.0, -5.0, -6.0]], labels={0: "en", 1: "hi", 2: "fr"})
+    monkeypatch.setattr("backend.app.api.v1.endpoints.language.get_language_detector", lambda: detector)
+
+    resp_lang = await client.post("/api/v1/nlp/language", json={"text": ocr_data.text})
+    assert resp_lang.status_code == 200
+    lang_data = LanguageDetectionResponse.model_validate(resp_lang.json())
+    assert lang_data.status == "completed"
+    assert lang_data.detected_language == "en"
+    assert lang_data.language_name == "English"
+
+    # 4. Claims Extraction using identified language
+    resp_claims = await client.post(
+        "/api/v1/claims",
+        json={"text": ocr_data.text, "language": lang_data.detected_language},
+    )
+    assert resp_claims.status_code == 200
+    claims_data = ClaimExtractionResponse.model_validate(resp_claims.json())
+    assert len(claims_data.claims) >= 1
+    eligible_claims = [c for c in claims_data.claims if c.verification_eligibility == "ELIGIBLE"]
+    assert len(eligible_claims) >= 1
+
+    # 5. Fact-Checking for eligible claims
+    mock_fc_review = FactCheckClaim(
+        evidence_id="fc_workflow_002",
+        query=eligible_claims[0].normalized_text,
+        url="https://factchecker.org/review/digital-initiatives-2025",
+        title="Fact-check: digital initiatives in 2025",
+        publisher_name="FactCheck Org",
+        publisher_site="factchecker.org",
+        textual_rating="Verified True",
+        claimed_text=eligible_claims[0].original_text,
+        claimant="Spokesperson",
+        claim_date="2025-06-01",
+        review_date="2025-06-02",
+        language_code="en",
+    )
+    mock_sub_result = FactCheckResult(
+        status="success",
+        claims=[mock_fc_review],
+        queries_performed=1,
+        claim_verifications=[{
+            "claim_id": eligible_claims[0].claim_id,
+            "original_claim": eligible_claims[0].original_text,
+            "verdict": "VERIFIED",
+            "verification_status": "COMPLETED",
+            "publisher_rating_summary": "VERIFIED",
+            "supporting_evidence_ids": ["fc_workflow_002"],
+            "contradicting_evidence_ids": [],
+            "conflicting_evidence_ids": [],
+            "reasoning_summary": "Official documents substantiate statement.",
+        }],
+    )
+    with patch("backend.app.services.factcheck.service.search_fact_checks", return_value=mock_sub_result):
+        resp_fc = await client.post(
+            "/api/v1/fact-check",
+            json={
+                "claims": [eligible_claims[0].claim],
+                "language_code": lang_data.detected_language,
+            },
+        )
+    assert resp_fc.status_code == 200
+    fc_data = FactCheckResponse.model_validate(resp_fc.json())
+    assert fc_data.status == "success"
+    assert fc_data.claim_verifications[0].verdict == "VERIFIED"

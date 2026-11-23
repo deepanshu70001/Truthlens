@@ -12,12 +12,12 @@
 ## 1. Executive Summary
 
 This report documents the completion, integration, and verification of the four core backend APIs of TruthLens:
-1. **Model Registry API** (`GET /api/v1/models`): Non-eager introspection of all 5 configured machine learning and optical character recognition models with strict lifecycle status reporting (`loaded`, `available_not_loaded`, `cached_not_loaded`, `checkpoint_missing`, `dependency_unavailable`, `failed`) and semantic counts (`total_models`, `loaded_count`, `available_count`, `ready_count`).
+1. **Model Registry API** (`GET /api/v1/models`): Non-eager introspection of all 5 configured machine learning and optical character recognition models with strict lifecycle status reporting (`loaded`, `available_not_loaded`, `cached_not_loaded`, `checkpoint_missing`, `dependency_unavailable`, `failed`) and semantic counts (`total_models`, `loaded_count`, `available_count`, `ready_count`). Explicitly distinguishes on-disk/cache availability from in-memory runtime readiness.
 2. **Standalone OCR API** (`POST /api/v1/ocr`): Standalone image-to-text extraction reusing the production `OCRService` singleton (EasyOCR primary engine with PyTesseract fallback, dimension/MIME bounds, and bounding box polygon extraction).
 3. **Standalone Claim Extraction API** (`POST /api/v1/claims`): Candidate factual assertion extraction from text using the deterministic `conservative_rules_v2` engine, with exact 0-based character offsets, classification (`FACTUAL`, `QUOTE`, `OPINION`, `QUESTION`, `SLOGAN`), and verification eligibility gating.
-4. **Standalone Fact-Checking API** (`POST /api/v1/fact-check`): Full promotion from `stubs.py` to a dedicated endpoint, preserving Google Fact Check Tools API integration, external publisher attribution, review URLs, deterministic eligibility gating, and a persistent SQLite query cache with TTL, bounded capacity, and in-flight request deduplication.
+4. **Standalone Fact-Checking API** (`POST /api/v1/fact-check`): Full promotion from `stubs.py` to a dedicated endpoint, preserving Google Fact Check Tools API integration, external publisher attribution, review URLs, deterministic eligibility gating, and a persistent SQLite query cache with TTL, bounded capacity, and in-process request deduplication (`asyncio.Lock`). Live third-party provider calls are explicitly documented as **NOT VERIFIED (mock-only)**.
 
-All four endpoints are registered in `backend/app/api/v1/router.py`, protected by Bearer token authentication, rate-limited per functional scope, and validated through 181 passing unit, contract, and integration tests (with 2 expected offline network skips). Zero production model weights or fusion parameters were modified.
+All four endpoints are registered in `backend/app/api/v1/router.py`, protected by Bearer token authentication, rate-limited per functional scope, and validated through 173 passing unit, contract, and integration tests (with 2 expected offline network skips, totaling 175 tests executed). Zero production model weights or fusion parameters were modified.
 
 ---
 
@@ -47,14 +47,12 @@ An audit of Git history clarified the progression between reported HEAD hashes:
   4. `ocr_tesseract`: Tesseract OCR Fallback
   5. `language_detection`: XLM-RoBERTa 20-Language Identification
 - **Non-Eager Guarantee:** Verified via mock spies that calling `GET /api/v1/models` never calls `.load()` on any service or detector.
-- **Readiness Semantics:**
-  - `loaded`: Strictly `true` only when weights are resident in RAM/VRAM.
-  - `available_not_loaded`: Weights and packages verified on disk, ready for on-demand initialization.
-  - `cached_not_loaded`: Model snapshot verified in Hugging Face cache directory.
-  - `checkpoint_missing`: Configured checkpoint file absent.
-  - `dependency_unavailable`: Required Python package or executable absent.
-- **Semantic Counts:** Returns `total_models` (5), `loaded_count` (resident in memory), `available_count` (verified on disk/cache for on-demand loading), and `ready_count` (`loaded_count + available_count`).
-- **Security & Privacy:** Redacts absolute Windows (`D:\...`) and Unix filesystem paths; redacts all credentials and secrets.
+- **Readiness vs Availability Semantics:**
+  - `loaded` (`readiness: "ready"`, `status: "loaded"`): Strictly `true` only when model weights are resident in RAM/VRAM and ready for immediate inference.
+  - `available` (`readiness: "available"`, `status: "available_not_loaded"` or `"cached_not_loaded"`): Checkpoints/weights and dependencies verified present on disk or local cache, ready for on-demand initialization.
+  - `unavailable` (`readiness: "unavailable"`): Model cannot be run due to `checkpoint_missing`, `download_required`, or `dependency_unavailable`.
+  - `failed` (`readiness: "failed"`, `status: "failed"`): Initialization was attempted and raised an exception.
+- **Semantic Counts:** Returns `total_models` (5), `loaded_count` (models currently in memory), `available_count` (models verified on disk/cache for on-demand loading), and `ready_count` (`loaded_count + available_count`). The system strictly distinguishes in-memory runtime readiness (`loaded_count`) from on-disk availability (`available_count`).
 
 ### B. Standalone OCR (`POST /api/v1/ocr`)
 - **Service Reuse:** Reuses the existing `OCRService` singleton (`get_ocr_service()`). Zero duplicate OCR engine instances created.
@@ -331,7 +329,7 @@ An audit of Git history clarified the progression between reported HEAD hashes:
 ## 7. Fact-Check Provider Verification Status
 
 - **API Credentials Status:** In the test environment, credentials (`FACTCHECK_API_KEY` or `GOOGLE_API_KEY`) are unconfigured. The endpoint cleanly returns `status="unavailable"` with an explanatory warning.
-- **Verification Boundary:** Verified through mocked HTTP streams (`_mock_stream_client`) and contract tests. Live external Google Fact Check API network calls were **NOT** executed during this test suite to avoid incurring external API quota or billing.
+- **Live Provider Verification Status:** **NOT VERIFIED (mock-only)**. All provider behavior was verified exclusively through mocked HTTP streams (`_mock_stream_client`) and mock contract fixtures. Live external Google Fact Check Tools API network calls were **NOT** executed during this test suite to avoid incurring external API quota, billing, or non-deterministic network dependencies.
 - **Error Categories Verified:**
   - HTTP 403: Mapped to `PROVIDER_AUTH_OR_QUOTA`
   - HTTP 429: Mapped to `PROVIDER_RATE_LIMIT`
@@ -348,7 +346,7 @@ An audit of Git history clarified the progression between reported HEAD hashes:
 - **Key Hashing:** SHA-256 digest over `f"google_fact_check_tools:{language_code}:{normalized_query_text}"` prefixed with `"fc_cache_"`.
 - **TTL Expiration:** Configured by `FACTCHECK_CACHE_TTL_SECONDS` (default: 86,400s / 24 hours). Expired rows are purged on read.
 - **Capacity Bounds:** Enforced by `FACTCHECK_CACHE_MAX_ENTRIES` (default: 5,000 entries). When full, the oldest entries by `created_at` are deleted (LRU policy).
-- **In-Flight Request Deduplication:** Maintained by per-key `asyncio.Lock` instances (`get_in_flight_lock`). Simultaneous concurrent queries await the in-flight lock and resolve from cache once the first request completes.
+- **In-Flight Request Deduplication:** Maintained by per-key `asyncio.Lock` instances (`get_in_flight_lock`). This deduplication is strictly in-process (within the single Python event loop) and does not coordinate across multiple separate worker processes or independent server instances. Simultaneous concurrent queries await the in-flight lock and resolve from cache once the first request completes.
 - **Cache Isolation:** Isolated across language codes. Error states, timeouts, and rate limits are never stored in cache.
 
 ---
@@ -378,12 +376,12 @@ All test suites were executed independently using `python -m pytest`:
 | 5 | Standalone Fact-Check Suite | `backend/tests/test_factcheck_endpoint.py` | 22 | 0 | 7.06s | **PASSED** |
 | 6 | Core API Integration Suite | `backend/tests/test_core_api_integration.py` | 3 | 0 | 3.86s | **PASSED** |
 | 7 | E4/E5 Contract Suite | `backend/tests/test_e4_e5_contract.py` | 25 | 0 | 5.87s | **PASSED** |
-| 8 | Stage 4 Integration Suite | `backend/tests/test_stage4.py` | 46 | 0 | 2.31s | **PASSED** |
+| 8 | Stage 4 Integration Suite | `backend/tests/test_stage4.py` | 38 | 0 | 2.31s | **PASSED** |
 | 9 | Phase 3 Contract Suite | `backend/tests/test_phase3.py` | 12 | 0 | 0.84s | **PASSED** |
 | 10 | Security Suite | `backend/tests/test_e9_security.py` | 8 | 0 | 5.15s | **PASSED** |
 | 11 | Health Models Route | `backend/tests/test_api.py -k test_health_models_endpoint` | 1 | 0 | 2.73s | **PASSED** |
 
-**Total Cumulative Tests Executed:** 181 passed, 2 skipped (offline EasyOCR network downloads). Zero failures.
+**Total Cumulative Tests Executed:** 173 passed, 2 skipped (offline EasyOCR network downloads), totaling 175 tests. Zero failures (arithmetic: 10 + 13 + 25 + 16 + 22 + 3 + 25 + 38 + 12 + 8 + 1 = 173 passed; 173 passed + 2 skipped = 175 total).
 
 ---
 

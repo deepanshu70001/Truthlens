@@ -110,6 +110,7 @@ class Settings(BaseSettings):
     RATE_LIMIT_MODELS_PER_MINUTE: int = 60
     RATE_LIMIT_OCR_PER_MINUTE: int = 20
     RATE_LIMIT_CLAIMS_PER_MINUTE: int = 30
+    RATE_LIMIT_LANGUAGE_PER_MINUTE: int = 60
     MAX_CLAIM_TEXT_LENGTH: int = 10000
 
     # Durable job lifecycle. A single global worker lease serializes model/GPU work.

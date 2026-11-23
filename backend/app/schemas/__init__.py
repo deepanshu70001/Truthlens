@@ -164,3 +164,11 @@ from backend.app.schemas.factcheck import (
     FactCheckRequest,
     FactCheckResponse,
 )
+
+# ── Standalone Language Identification ───────────────────────────
+
+from backend.app.schemas.language import (
+    LanguageCandidate,
+    LanguageDetectionRequest,
+    LanguageDetectionResponse,
+)

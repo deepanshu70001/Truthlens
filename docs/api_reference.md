@@ -16,6 +16,7 @@ Base prefix: `/api/v1`. FastAPI serves live OpenAPI at `/openapi.json`, Swagger 
 | `POST /ocr` | Multipart form field `image` (JPEG, PNG, WebP, etc.), optional query param `languages` (comma-separated ISO-639) | `200` `OCRResponse` with extracted text, bounding boxes, language, engine, runtime; `413` oversized upload, `422` invalid/empty/corrupt image, `500` OCR execution failure, `504` timeout |
 | `POST /claims` | JSON `ClaimExtractionRequest` (`text`, `sentences`, `language`, `source`, `max_claims`, `ocr_confidence`) | `200` `ClaimExtractionResponse` with extracted claims, offsets, eligibility, confidence, and method; `422` invalid input; `429` rate limit exceeded; `500` internal extraction failure |
 | `POST /fact-check` | JSON `FactCheckRequest` (`claims`, `language_code`, `max_results_per_claim`) | `200` `FactCheckResponse` with third-party reviews, publisher ratings, review URLs, claim verifications, and persistent caching; `401` unauthorized; `422` validation error; `429` rate limit exceeded |
+| `POST /nlp/language` | JSON `LanguageDetectionRequest` (`text`, `top_k`) | `200` `LanguageDetectionResponse` with document-level language identification across 20 languages, top-k candidates, softmax confidence, runtime, warnings, limitations; `401` unauthorized; `422` invalid input; `429` rate limit exceeded |
 | `POST /provenance` | No request schema implemented | `501 NOT_IMPLEMENTED` stub; not usable standalone endpoint |
 
 ## Report response
@@ -608,5 +609,128 @@ The Standalone Fact-Checking endpoint retrieves published third-party fact-check
     }
   ],
   "note": "Fact-check results come from the Google Fact Check Tools API. They reflect third-party reviews, not TruthLens assessments."
+}
+```
+
+---
+
+## Language identification endpoint (`POST /api/v1/nlp/language`)
+
+The Standalone Language Identification endpoint exposes the local XLM-RoBERTa 20-language sequence classifier (`papluca/xlm-roberta-base-language-detection`) for document-level text language identification and top-$k$ candidate ranking.
+
+### Endpoint signature
+- **Method:** `POST`
+- **Path:** `/api/v1/nlp/language`
+- **Authentication:** Bearer token (`Principal = Depends(get_current_principal)`). Development bypass is permitted only when `DEV_AUTH_BYPASS=true` and `APP_ENV` is `development` or `test`.
+- **Rate limiting:** Scoped to `"language"` via fixed-window rate limiter (`RATE_LIMIT_LANGUAGE_PER_MINUTE`, default 60 requests/min).
+- **Request model:** `LanguageDetectionRequest`
+- **Response model:** `LanguageDetectionResponse`
+
+### Request schema (`LanguageDetectionRequest`)
+
+| Field | Type | Bounds | Description |
+|---|---|---|---|
+| `text` | string | 1 to 10,000 characters | Text to analyze. Rejects empty and whitespace-only strings with HTTP 422. |
+| `top_k` | int (optional) | 1 to 20 (default: 3) | Number of top candidate languages to return ranked by softmax score. |
+
+### Response schema (`LanguageDetectionResponse`)
+
+| Field | Type | Description |
+|---|---|---|
+| `status` | string | Execution status: `"completed"`, `"insufficient_text"`, `"unavailable"`, or `"failed"`. |
+| `outcome` | string | Fine-grained operational outcome: `"success"`, `"undetermined"`, `"insufficient_input"`, `"no_text"`, `"unavailable"`, `"failed"`. |
+| `detected_language` | string | Two-letter ISO 639-1 code of identified primary language, or `"unknown"`. |
+| `language_code` | string or null | Primary language code if identified confidently; else `null`. |
+| `language_name` | string or null | Full English name of identified primary language (e.g. `"English"`, `"Hindi"`); else `null`. |
+| `confidence` | float or null | Softmax probability ($0.0 \dots 1.0$) of primary prediction if confident ($\ge 0.70$); else `null`. |
+| `top_languages` | array[`LanguageCandidate`] | Top-$k$ candidate languages ranked by softmax score. |
+| `top_k_candidates` | array[`LanguageCandidate`] | Alias for `top_languages`. |
+| `model_id` | string | Model identifier (`"papluca/xlm-roberta-base-language-detection"`). |
+| `model_revision` | string or null | Pinned Git commit hash (`"9865598389ca9d95637462f743f683b51d75b87b"`). |
+| `device` | string or null | Execution device (`"cpu"` or `"cuda"`). |
+| `runtime_ms` | int | Model forward pass runtime in milliseconds. |
+| `processing_time_ms` | int | Total end-to-end processing time in milliseconds. |
+| `input_characters` | int | Length of input text in characters. |
+| `input_truncated` | bool | `true` if input exceeded maximum characters (4,096) or tokens (256); else `false`. |
+| `confidence_semantics` | string | Notice: `"Maximum softmax probability from the model; not calibrated."` |
+| `warnings` | array[string] | Operational caveats, truncation notices, or noisy-text warnings. |
+| `limitations` | array[string] | Documented architectural boundaries. |
+| `unavailable_reason` | string or null | Human-readable explanation when `status` is `"unavailable"`. |
+
+#### Candidate item schema (`LanguageCandidate`)
+
+| Field | Type | Description |
+|---|---|---|
+| `language_code` | string | ISO 639-1 two-letter code (`"en"`, `"hi"`, `"fr"`, etc.). |
+| `language` | string or null | Alias for `language_code`. |
+| `language_name` | string | Full English name (`"English"`, `"Hindi"`, `"French"`, etc.). |
+| `confidence` | float | Softmax score ($0.0 \dots 1.0$). |
+
+### Supported languages catalog (20 languages)
+Arabic (`ar`), Bulgarian (`bg`), German (`de`), Greek (`el`), English (`en`), Spanish (`es`), French (`fr`), Hindi (`hi`), Italian (`it`), Japanese (`ja`), Dutch (`nl`), Polish (`pl`), Portuguese (`pt`), Russian (`ru`), Swahili (`sw`), Thai (`th`), Turkish (`tr`), Urdu (`ur`), Vietnamese (`vi`), Chinese (`zh`).
+
+### Example success response (`200 OK`)
+```json
+{
+  "status": "completed",
+  "outcome": "success",
+  "detected_language": "en",
+  "language_code": "en",
+  "language_name": "English",
+  "confidence": 0.999841,
+  "top_languages": [
+    {
+      "language_code": "en",
+      "language": "en",
+      "language_name": "English",
+      "confidence": 0.999841
+    },
+    {
+      "language_code": "de",
+      "language": "de",
+      "language_name": "German",
+      "confidence": 0.000085
+    },
+    {
+      "language_code": "fr",
+      "language": "fr",
+      "language_name": "French",
+      "confidence": 0.000032
+    }
+  ],
+  "top_k_candidates": [
+    {
+      "language_code": "en",
+      "language": "en",
+      "language_name": "English",
+      "confidence": 0.999841
+    },
+    {
+      "language_code": "de",
+      "language": "de",
+      "language_name": "German",
+      "confidence": 0.000085
+    },
+    {
+      "language_code": "fr",
+      "language": "fr",
+      "language_name": "French",
+      "confidence": 0.000032
+    }
+  ],
+  "model_id": "papluca/xlm-roberta-base-language-detection",
+  "model_revision": "9865598389ca9d95637462f743f683b51d75b87b",
+  "device": "cpu",
+  "runtime_ms": 14,
+  "processing_time_ms": 15,
+  "input_characters": 102,
+  "input_truncated": false,
+  "confidence_semantics": "Maximum softmax probability from the model; not calibrated.",
+  "warnings": [],
+  "limitations": [
+    "One document-level prediction is returned; mixed-language regions are not separately identified.",
+    "Softmax confidence is not calibrated and does not measure truthfulness or authenticity."
+  ],
+  "unavailable_reason": null
 }
 ```
