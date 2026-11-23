@@ -60,7 +60,7 @@ class Settings(BaseSettings):
     AUTHENTICITY_MODEL: str = "prithivMLmods/Deepfake-Real-Class-Siglip2"
     AUTHENTICITY_MODEL_REVISION: str = ""
     AUTHENTICITY_CALIBRATION_PATH: str = ""
-    VISION_MODEL: str = "yolov8n.pt"
+    VISION_MODEL: str = "models/baselines/yolov8n.pt"
     VISION_TIMEOUT_SECONDS: float = 30.0
     XAI_TIMEOUT_SECONDS: float = 30.0
     OCR_LANGUAGES: str = "en,hi"

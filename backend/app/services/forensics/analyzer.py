@@ -98,7 +98,12 @@ _SIGNAL_PARAMETERS = {
     "jpeg_artifacts": {"block_size_pixels": 8, "score": "clamp(max(block_boundary_ratio - 1, 0) / 0.5, 0, 1)"},
     "edge_consistency": {"operator": "Canny", "thresholds": [50, 150], "grid": [3, 3], "score": "min(edge_density_cv / 1.5, 1)"},
     "texture_consistency": {"operator": "Gabor", "kernel_size": [31, 31], "sigma": 4.0, "wavelength": 10.0, "gamma": 0.5, "orientations_degrees": [0, 45, 90, 135], "score": "clamp((1 - response_cv - 0.7) / 0.3, 0, 1)"},
-    "resampling_clues": {"method": "second-difference sign zero-crossing rates", "score": "clamp((0.5 - average_crossing_rate) / 0.5, 0, 1)"},
+    "resampling_clues": {
+        "method": "second-difference sign zero-crossing rates",
+        "score": "clamp((0.5 - average_crossing_rate) / 0.5, 0, 1)",
+        "minimum_second_difference_rms": 2.0,
+        "energy_units": "8-bit grayscale intensity levels",
+    },
 }
 
 
@@ -142,9 +147,9 @@ def analyze_forensics(
     h, w = gray.shape
     signals: List[ForensicSignal] = []
 
-    def not_applicable(name: str, reason: str) -> ForensicSignal:
+    def not_applicable(name: str, reason: str, details: Optional[Dict[str, Any]] = None) -> ForensicSignal:
         return ForensicSignal(
-            name, None, reason, limitations[name], status="completed",
+            name, None, reason, limitations[name], details=details or {}, status="completed",
             outcome="not_applicable", method=name,
             parameters=_SIGNAL_PARAMETERS.get(name, {}),
         )
@@ -233,20 +238,47 @@ def analyze_forensics(
 
     signals.append(_signal("texture_consistency", texture, limitations["texture_consistency"]))
 
-    def resampling():
-        dx2, dy2 = np.diff(gray.astype(np.float64), n=2, axis=1), np.diff(gray.astype(np.float64), n=2, axis=0)
-        if dx2.shape[1] < 2 or dy2.shape[0] < 2:
-            raise ValueError("image is too small for second-difference analysis")
+    def resampling(dx2: np.ndarray, dy2: np.ndarray, energy: float):
         zcx = float(np.mean(np.diff(np.sign(dx2), axis=1) != 0))
         zcy = float(np.mean(np.diff(np.sign(dy2), axis=0) != 0))
         avg = (zcx + zcy) / 2
         score = max(0.0, 0.5 - avg) / 0.5
-        return min(score, 1.0), f"Second-difference zero-crossing rate is {avg:.5f}.", {"zero_crossing_x": round(zcx, 6), "zero_crossing_y": round(zcy, 6), "average_zero_crossing": round(avg, 6)}
+        return min(score, 1.0), f"Second-difference zero-crossing rate is {avg:.5f}.", {
+            "zero_crossing_x": round(zcx, 6), "zero_crossing_y": round(zcy, 6),
+            "average_zero_crossing": round(avg, 6),
+            "second_difference_rms": round(energy, 6),
+        }
 
     if h < 4 or w < 4:
-        signals.append(not_applicable("resampling_clues", "Resampling analysis needs at least 4 pixels in each dimension."))
+        signals.append(not_applicable(
+            "resampling_clues",
+            "Resampling analysis needs at least 4 pixels in each dimension.",
+            details={"reason_code": "IMAGE_TOO_SMALL_FOR_RESAMPLING"},
+        ))
     else:
-        signals.append(_signal("resampling_clues", resampling, limitations["resampling_clues"]))
+        gray_float = gray.astype(np.float64)
+        dx2 = np.diff(gray_float, n=2, axis=1)
+        dy2 = np.diff(gray_float, n=2, axis=0)
+        second_difference_rms = float(np.sqrt(
+            (np.square(dx2).sum() + np.square(dy2).sum()) / (dx2.size + dy2.size)
+        ))
+        minimum_energy = _SIGNAL_PARAMETERS["resampling_clues"]["minimum_second_difference_rms"]
+        if second_difference_rms < minimum_energy:
+            signals.append(not_applicable(
+                "resampling_clues",
+                "Resampling analysis abstained because second-difference texture energy is below the sufficiency threshold.",
+                details={
+                    "reason_code": "INSUFFICIENT_TEXTURE_FOR_RESAMPLING",
+                    "second_difference_rms": round(second_difference_rms, 6),
+                    "minimum_second_difference_rms": minimum_energy,
+                },
+            ))
+        else:
+            signals.append(_signal(
+                "resampling_clues",
+                lambda: resampling(dx2, dy2, second_difference_rms),
+                limitations["resampling_clues"],
+            ))
 
     for signal in signals:
         if signal.output_reference is None:

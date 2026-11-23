@@ -67,8 +67,9 @@ class GradCAM:
             self._hooks.append(self.target_layer.register_full_backward_hook(self._save_gradient))
 
     def _find_target_layer(self):
-        vision = getattr(self.model, "vision_model", None)
-        encoder = getattr(vision, "encoder", None)
+        vision = getattr(self.model, "vision_model", getattr(self.model, "siglip", self.model))
+        inner = getattr(vision, "vision_model", vision)
+        encoder = getattr(inner, "encoder", getattr(vision, "encoder", None))
         layers = getattr(encoder, "layers", None)
         if layers:
             last = layers[-1]
@@ -138,6 +139,10 @@ class GradCAM:
         for hook in self._hooks:
             hook.remove()
         self._hooks.clear()
+        self.activations = None
+        self.gradients = None
+        if hasattr(self.model, "zero_grad"):
+            self.model.zero_grad(set_to_none=True)
 
 
 def generate_heatmap(model, processor, image: Image.Image, analysis_id: str, device: torch.device, target_class: Optional[int] = None, model_name: Optional[str] = None) -> XAIResult:

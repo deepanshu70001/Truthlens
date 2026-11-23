@@ -82,7 +82,7 @@ The provenance service hashes the original bytes with SHA-256 before any convers
 
 The existing provider is retained with credential-based `unavailable`, bounded timeout and total duration, limited retries, a four-request concurrency bound, a 2 MiB response cap, normalized HTTPS-only URLs, and safe provider errors. Sensitive query parameters are removed. Empty provider results are successful `no_results`; timeout and malformed responses are failures. Matching pages/images are external web-match context only.
 
-`POST /api/v1/provenance` now validates size, MIME, magic bytes and decoding through the shared upload validator, retains original bytes, runs the same provenance service with a bounded endpoint wait, and returns typed normalized fields. No authentication or rate-limit policy was added; the route follows the existing API behavior. Mock tests cover provider timeout/success/empty/malformed and upload rejection. No live Google request or credential was used.
+`POST /api/v1/provenance` validates size, MIME, magic bytes and decoding through the shared upload validator, retains original bytes, runs the same provenance service with a bounded endpoint wait, and returns typed normalized fields. The current route requires an authenticated principal and applies the configured rate limiter. Mock tests cover provider timeout/success/empty/malformed and upload rejection. No live Google request or credential was used.
 
 ## 5. Pipeline, evidence, and frontend
 
@@ -151,3 +151,42 @@ Mocked YOLO and C2PA results are test-double evidence only. The toy Grad-CAM run
 - Frontend browser/E2E coverage remains assigned to E10.
 
 E8 and later work, research milestones, calibration, locked evaluation, and fusion-policy changes were not started.
+
+## 9. Focused reliability remediation — 2026-11-23
+
+This amendment records the read-only baseline and the narrow fixes after the E6/E7 audit. Starting branch: `fix/truthlens-remediation`; starting HEAD: `7f97a72ccc48802ccc251df6a60389e65cd1df2b`; starting worktree was clean. No ignored assets, model caches, existing databases, research files, or protected partitions were changed. Model cache directory/file metadata and model configuration were inspected read-only. No existing database or protected research/evaluation partition was accessed; tests used their normal isolated test resources. E6 and E7 remain **PARTIALLY IMPLEMENTED**.
+
+### Resampling sufficiency and abstention
+
+The prior score mapped a zero average second-difference sign zero-crossing rate to 1.0: for a flat image, every second difference is zero, `sign(0)` is zero everywhere, and there are no sign changes. The zero-crossing statistic therefore had no interpretable signal, but was treated as its strongest indicator value.
+
+The resampling indicator now computes the root-mean-square of horizontal and vertical second differences in 8-bit grayscale intensity units before using zero-crossings. If that RMS is below **2.0 intensity levels**, the signal returns `status=completed`, `outcome=not_applicable`, `score=null`, and `details.reason_code=INSUFFICIENT_TEXTURE_FOR_RESAMPLING`, along with the measured and minimum RMS values. Existing under-4-pixel dimension handling remains `not_applicable` with `IMAGE_TOO_SMALL_FOR_RESAMPLING`. The two-level floor is derived from an 8-bit quantization-scale noise model: independent perturbations uniformly distributed over {-1, 0, +1} intensity levels have variance 2/3, and the second-difference stencil [1, -2, 1] yields RMS sqrt(6 × 2/3) = 2 levels. This is used as a conservative signal sufficiency floor, not as an empirically tuned manipulation boundary. It rejects flat fields and the tested ±1-code-value noise, while permitting the textured permitted photograph and repeated grid fixture. It may abstain on naturally smooth images and has not been evaluated against manipulation labels. It does not combine or change any other signal.
+
+Regression cases cover flat grayscale and RGB JPEGs, seeded near-uniform grayscale noise, the permitted `backend/tests/fixtures/test_photo.jpg` photograph, a generated repeated grid, a below-minimum-size image, corrupt bytes, and PNG input. No accuracy improvement is claimed.
+
+### URL secret sanitization
+
+Provider-returned URLs continue to require HTTPS, a hostname, and no user information; malformed authority/port syntax is rejected. Query names are parsed (including percent-decoding) and compared case-insensitively; hyphenated `api-key` is normalized to the existing `api_key` policy. Every occurrence of `key`, `api_key`, `access_key`, `secret`, `client_secret`, `token`, `access_token`, `refresh_token`, `signature`, `sig`, `authorization`, `credential`, `password`, and the previously filtered `auth` name is removed. Other query pairs are retained. Fragments are dropped. The provenance code does not fetch returned URLs. Tests cover mixed-case and encoded names, duplicate secret parameters, preserved safe parameters, no-query URLs, malformed/HTTP URLs, sensitive-looking fragments, and serialized parsed results.
+
+### Validation
+
+- `python -m pytest backend/tests/test_e6_e7_contract.py -q`: **49 passed**.
+- `python -m pytest backend/tests/test_e6_e7_contract.py backend/tests/test_phase2.py backend/tests/test_phase3.py backend/tests/test_stage4.py backend/tests/test_api.py backend/tests/test_stage_contract.py backend/tests/test_e11_fusion.py -q`: **172 passed**.
+- `python -m pytest backend/tests -q --ignore=backend/tests/test_phase2_dataset_splits.py --ignore=backend/tests/test_phase3_evaluation.py --ignore=backend/tests/test_phase4_and_phase3_5.py --ignore=backend/tests/test_phase5_training.py --ignore=backend/tests/test_phase6_evaluation.py --ignore=backend/tests/test_phase7.py`: **408 passed, 12 skipped, 6 existing SQLite datetime-adapter deprecation warnings**.
+- `python -m compileall -q backend/app/services/forensics/analyzer.py backend/app/services/provenance/service.py`: passed.
+- `git diff --check`: passed.
+
+The excluded test files above were not run; no calibration or protected evaluation tests were run. The `test_photo.jpg` result and generated pattern fixtures are runtime/test evidence only, not labeled accuracy evidence.
+
+### Local real-runtime resource audit (no downloads)
+
+| Resource | Observed state | Verification boundary |
+|---|---|---|
+| Ultralytics | Unavailable (`ultralytics` import and package metadata absent) | No real YOLO inference. |
+| Configured `yolov8n.pt` | Unavailable at `D:\Projects\Truthlens\yolov8n.pt` | No weights were downloaded. |
+| Production SigLIP assets | Active `finetuned_siglip` backend assets are present: Google SigLIP backbone snapshot `7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed` and frozen-head file `models/baselines/siglip_frozen_head.pt` (5,053 bytes). The separate configured HF model cache snapshot `e9fefd72786195241fff5968354b052cea7d3d12` is also present but is not the active backend. | Assets/config inspected read-only; not loaded. Grad-CAM target-layer compatibility and production inference were not runtime-tested. |
+| `c2pa-python` | Unavailable (`c2pa` import and distribution metadata absent); trust anchors are not configured | No real cryptographic verification. |
+| Permitted signed C2PA fixture | Unavailable in `backend/tests/fixtures` | Blocked by missing signed fixture. No protected partition was searched. |
+| Google Vision credentials | Blocked by missing credentials (API key and application credentials are unset) | No provider request was made. |
+
+Mocked YOLO, fake-SDK C2PA, and toy Grad-CAM tests remain mock evidence only. No commit or push was made.

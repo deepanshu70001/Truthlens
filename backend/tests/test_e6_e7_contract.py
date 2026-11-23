@@ -20,6 +20,12 @@ def image_bytes(fmt="JPEG", size=(96, 80), color=(83, 129, 177)):
     return buffer.getvalue()
 
 
+def grayscale_image_bytes(pixels, fmt="JPEG", *, quality=95):
+    buffer = io.BytesIO()
+    Image.fromarray(np.asarray(pixels, dtype=np.uint8)).save(buffer, format=fmt, quality=quality)
+    return buffer.getvalue()
+
+
 def test_forensics_jpeg_and_png_applicability_and_heuristic_contract():
     from backend.app.services.forensics.analyzer import analyze_forensics
 
@@ -58,6 +64,76 @@ def test_forensics_rejects_bad_bytes_pixel_limit_and_handles_small_images(monkey
     assert next(item for item in small.signals if item.name == "jpeg_artifacts").outcome == "not_applicable"
     monkeypatch.setattr(settings, "MAX_IMAGE_PIXELS", 4)
     assert analyze_forensics(image_bytes("PNG", size=(8, 8)), generate_artifacts=False).status == "failed"
+
+
+def test_resampling_abstains_on_flat_and_near_uniform_jpegs():
+    from backend.app.services.forensics.analyzer import analyze_forensics
+
+    flat_gray = grayscale_image_bytes(np.full((80, 96), 128, dtype=np.uint8))
+    flat_rgb = image_bytes("JPEG", size=(96, 80), color=(128, 128, 128))
+    rng = np.random.default_rng(20261123)
+    near_uniform = grayscale_image_bytes(
+        np.clip(128 + rng.integers(-1, 2, size=(80, 96)), 0, 255)
+    )
+
+    for payload in (flat_gray, flat_rgb, near_uniform):
+        result = analyze_forensics(payload, generate_artifacts=False)
+        signal = next(
+            item for item in result.signals
+            if item.name == "resampling_clues"
+        )
+        assert signal.status == "completed"
+        assert signal.outcome == "not_applicable"
+        assert signal.score is None
+        assert signal.details["reason_code"] == "INSUFFICIENT_TEXTURE_FOR_RESAMPLING"
+        assert signal.details["second_difference_rms"] < signal.details["minimum_second_difference_rms"]
+        serialized = next(
+            item for item in result.to_dict()["signals"]
+            if item["name"] == "resampling_clues"
+        )
+        assert serialized["outcome"] == "not_applicable"
+        assert serialized["score"] is None
+        assert serialized["details"]["reason_code"] == "INSUFFICIENT_TEXTURE_FOR_RESAMPLING"
+
+
+def test_resampling_handles_textured_grid_small_corrupt_and_non_jpeg_inputs():
+    from pathlib import Path
+    from backend.app.services.forensics.analyzer import analyze_forensics
+
+    photo = (Path(__file__).parent / "fixtures" / "test_photo.jpg").read_bytes()
+    photo_signal = next(
+        item for item in analyze_forensics(photo, generate_artifacts=False).signals
+        if item.name == "resampling_clues"
+    )
+    assert photo_signal.status == "completed" and photo_signal.outcome == "success"
+    assert photo_signal.score is not None
+
+    yy, xx = np.indices((96, 96))
+    grid = np.where(((xx // 8 + yy // 8) % 2) == 0, 40, 220).astype(np.uint8)
+    grid_signal = next(
+        item for item in analyze_forensics(grayscale_image_bytes(grid), generate_artifacts=False).signals
+        if item.name == "resampling_clues"
+    )
+    assert grid_signal.status == "completed" and grid_signal.outcome == "success"
+    assert grid_signal.details["second_difference_rms"] >= 2.0
+
+    small_signal = next(
+        item for item in analyze_forensics(
+            image_bytes("JPEG", size=(3, 16)), generate_artifacts=False
+        ).signals if item.name == "resampling_clues"
+    )
+    assert small_signal.outcome == "not_applicable" and small_signal.score is None
+    assert small_signal.details["reason_code"] == "IMAGE_TOO_SMALL_FOR_RESAMPLING"
+
+    corrupt = analyze_forensics(b"not an image", generate_artifacts=False)
+    assert corrupt.status == "failed" and corrupt.signals == []
+
+    png_signal = next(
+        item for item in analyze_forensics(
+            grayscale_image_bytes(grid, fmt="PNG"), generate_artifacts=False
+        ).signals if item.name == "resampling_clues"
+    )
+    assert png_signal.status == "completed" and png_signal.outcome == "success"
 
 
 def test_forensics_keeps_good_signals_when_one_engine_fails(monkeypatch):
@@ -131,6 +207,171 @@ def test_yolo_empty_unavailable_and_malformed_outputs(monkeypatch, tmp_path):
     assert detector.detect(Image.new("RGB", (20, 20))).status == "failed"
 
 
+def test_yolo_failure_modes_and_bounds_verification(monkeypatch, tmp_path):
+    import builtins
+    from backend.app.config import settings
+    from backend.app.services import vision
+    from backend.app.services.vision.detector import ObjectDetector
+
+    # 1. Missing Ultralytics dependency
+    real_import = builtins.__import__
+
+    def mock_import(name, *args, **kwargs):
+        if name == "ultralytics":
+            raise ImportError("No module named 'ultralytics'")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", mock_import)
+    detector = ObjectDetector()
+    detector.load()
+    assert not detector.is_loaded
+    unavail = detector.detect(Image.new("RGB", (20, 20)))
+    assert unavail.status == "unavailable" and unavail.outcome == "unavailable"
+    assert "Ultralytics is not installed" in detector._load_warning
+    monkeypatch.setattr(builtins, "__import__", real_import)
+
+    # 2. Missing local weights & no automatic model download
+    yolo_called = []
+
+    class SpyYOLO:
+        def __init__(self, path):
+            yolo_called.append(path)
+
+    monkeypatch.setitem(sys.modules, "ultralytics", types.SimpleNamespace(YOLO=SpyYOLO))
+    missing_weights = tmp_path / "nonexistent_weights.pt"
+    monkeypatch.setattr(vision.detector, "YOLO_MODEL_NAME", str(missing_weights))
+    detector = ObjectDetector()
+    detector.load()
+    assert not detector.is_loaded
+    assert len(yolo_called) == 0, "YOLO constructor must not be called when weights are absent (prevents auto-download)"
+    assert "Configured YOLO weights are not present locally; automatic model downloads are disabled." in detector._load_warning
+    assert detector.detect(Image.new("RGB", (20, 20))).status == "unavailable"
+
+    # 3. Invalid model initialization (corrupted weights raising exception)
+    class FailingYOLO:
+        def __init__(self, path):
+            raise RuntimeError("Corrupted checkpoint header")
+
+    monkeypatch.setitem(sys.modules, "ultralytics", types.SimpleNamespace(YOLO=FailingYOLO))
+    valid_file = tmp_path / "corrupt_weights.pt"
+    valid_file.write_bytes(b"invalid data")
+    monkeypatch.setattr(vision.detector, "YOLO_MODEL_NAME", str(valid_file))
+    detector = ObjectDetector()
+    detector.load()
+    assert not detector.is_loaded
+    assert "RuntimeError" in detector._load_warning
+    assert detector.detect(Image.new("RGB", (20, 20))).status == "unavailable"
+
+    # 4. Invalid or non-finite confidence values
+    detector._loaded = True
+    failed_conf = None
+    for bad_conf in [float("nan"), float("inf"), float("-inf"), -0.01, 1.05]:
+        detector._model = SimpleNamespace(predict=lambda **_: [SimpleNamespace(
+            boxes=[SimpleNamespace(cls=[0], conf=[bad_conf], xyxy=[[5.0, 5.0, 15.0, 15.0]])], names={0: "person"}
+        )])
+        failed_conf = detector.detect(Image.new("RGB", (20, 20)))
+        assert failed_conf.status == "failed" and failed_conf.outcome == "failed"
+
+    # 5. Out-of-bounds bounding boxes (on a 50x50 image)
+    for bad_box in [
+        [-1.0, 5.0, 20.0, 20.0],
+        [5.0, -1.0, 20.0, 20.0],
+        [5.0, 5.0, 55.0, 20.0],
+        [5.0, 5.0, 20.0, 55.0],
+        [20.0, 5.0, 10.0, 20.0],
+        [5.0, 20.0, 20.0, 10.0],
+        [float("nan"), 5.0, 20.0, 20.0],
+        [5.0, 5.0, 20.0],
+    ]:
+        detector._model = SimpleNamespace(predict=lambda **_: [SimpleNamespace(
+            boxes=[SimpleNamespace(cls=[0], conf=[0.9], xyxy=[bad_box])], names={0: "person"}
+        )])
+        failed_box = detector.detect(Image.new("RGB", (50, 50)))
+        assert failed_box.status == "failed" and failed_box.outcome == "failed"
+
+    # 6. Malformed model output
+    detector._model = SimpleNamespace(predict=lambda **_: [])
+    assert detector.detect(Image.new("RGB", (20, 20))).outcome == "no_results"
+
+    detector._model = SimpleNamespace(predict=lambda **_: [None])
+    assert detector.detect(Image.new("RGB", (20, 20))).status == "failed"
+
+    detector._model = SimpleNamespace(predict=lambda **_: [SimpleNamespace(boxes=[SimpleNamespace(cls=[], conf=[], xyxy=[])], names={})])
+    assert detector.detect(Image.new("RGB", (20, 20))).status == "failed"
+
+    # 7. Image-size limit enforcement
+    monkeypatch.setattr(settings, "MAX_IMAGE_PIXELS", 500)
+    oversized = Image.new("RGB", (30, 30))  # 900 > 500
+    failed_size = detector.detect(oversized)
+    assert failed_size.status == "failed" and failed_size.outcome == "failed"
+    monkeypatch.setattr(settings, "MAX_IMAGE_PIXELS", 40000000)
+
+    # 8. Safe error serialization (no path leakage, valid contract)
+    unavail_dict = unavail.to_dict()
+    assert "objects" in unavail_dict
+    assert unavail_dict["status"] == "unavailable"
+    assert unavail_dict["outcome"] == "unavailable"
+    assert "YOLO detection confidence; not an authenticity probability." in unavail_dict["confidence_semantics"]
+    assert "Object presence or absence is not proof of authenticity" in unavail_dict["limitations"][0]
+    assert "/" not in unavail_dict["model_name"] and "\\" not in unavail_dict["model_name"]
+    json.dumps(unavail_dict)
+    assert failed_conf is not None
+    json.dumps(failed_conf.to_dict())
+
+
+def test_yolo_real_runtime_integration_and_fusion_contract():
+    """Verify actual local YOLOv8n checkpoint discovery, loading, inference, and fusion exclusion."""
+    from pathlib import Path
+    from backend.app.config import settings
+    from backend.app.services.vision.detector import ObjectDetector, _resolve_model_path
+    from backend.app.services.evidence.schema import build_evidence_from_vision, EvidenceCollection
+    from backend.app.services.fusion.engine import fuse_evidence
+
+    resolved = _resolve_model_path(settings.VISION_MODEL)
+    if not resolved.is_file():
+        pytest.skip("Approved local YOLOv8n checkpoint is not present on disk")
+
+    try:
+        import ultralytics
+    except ImportError:
+        pytest.skip("Ultralytics package is not installed")
+
+    detector = ObjectDetector()
+    detector.load(device=settings.DEVICE)
+    assert detector.is_loaded
+    assert detector._model_sha256 == "31e20dde3def09e2cf938c7be6fe23d9150bbbe503982af13345706515f2ef95"
+
+    fixture_path = Path(__file__).parent / "fixtures" / "test_photo.jpg"
+    assert fixture_path.is_file()
+    img = Image.open(fixture_path)
+
+    result = detector.detect(img)
+    assert result.status == "completed"
+    assert result.outcome == "no_results"
+    assert result.object_count == 0
+    assert result.objects == []
+    assert result.model_sha256 == "31e20dde3def09e2cf938c7be6fe23d9150bbbe503982af13345706515f2ef95"
+    assert result.model_name == "yolov8n.pt"
+
+    serialized = result.to_dict()
+    assert serialized["status"] == "completed"
+    assert serialized["outcome"] == "no_results"
+    assert "YOLO detection confidence; not an authenticity probability." in serialized["confidence_semantics"]
+    assert "Object presence or absence is not proof of authenticity" in serialized["limitations"][0]
+
+    # Verify fusion contract: vision evidence must be informational only
+    evidence = build_evidence_from_vision(result)
+    assert len(evidence) == 1
+    assert evidence[0].type == "contextual_evidence"
+    assert evidence[0].direction == "informational"
+    assert evidence[0].source == "yolov8_object_detection"
+
+    fusion = fuse_evidence(EvidenceCollection(items=evidence))
+    assert fusion.evidence_summary["synthetic_signals"] == 0
+    assert fusion.evidence_summary["authentic_signals"] == 0
+    assert fusion.label == "inconclusive"
+
+
 class _ToySiglip(torch.nn.Module):
     def __init__(self):
         super().__init__()
@@ -180,6 +421,26 @@ def test_gradcam_missing_target_layer_is_unavailable():
 
     result = generate_heatmap(torch.nn.Linear(2, 2), _ToyProcessor(), Image.new("RGB", (8, 8)), "x", torch.device("cpu"))
     assert result.status == "unavailable" and result.outcome == "unavailable"
+
+
+def test_gradcam_finds_nested_siglip_vision_model_and_cleans_up():
+    from backend.app.services.xai.gradcam import GradCAM
+
+    target = torch.nn.LayerNorm(4)
+    nested = SimpleNamespace(
+        vision_model=SimpleNamespace(
+            vision_model=SimpleNamespace(
+                encoder=SimpleNamespace(
+                    layers=[SimpleNamespace(layer_norm2=target)]
+                )
+            )
+        )
+    )
+    gc = GradCAM(nested)
+    assert gc.target_layer is target
+    gc.cleanup()
+    assert len(gc._hooks) == 0
+    assert gc.activations is None and gc.gradients is None
 
 
 class _FakeC2PAContext:
@@ -346,6 +607,75 @@ def test_web_detection_parsing_empty_and_unsafe_urls():
     assert len(values["similar_images"]) == 1
     assert _parse_web_detection({"responses": [{"webDetection": {}}]})[0] == "no_results"
     assert _parse_web_detection({"responses": "malformed"})[0] == "failed"
+
+
+@pytest.mark.parametrize(
+    ("url", "expected_safe_query", "secret_values"),
+    [
+        ("https://source.example/p?key=key-secret&section=public", "section=public", ("key-secret",)),
+        ("https://source.example/p?signature=sig-secret", "", ("sig-secret",)),
+        ("https://source.example/p?API_KEY=api-secret", "", ("api-secret",)),
+        ("https://source.example/p?%61ccess_token=access-secret&%53IG=sig-secret", "", ("access-secret", "sig-secret")),
+        ("https://source.example/p?key=first-secret&KEY=second-secret&x=1", "x=1", ("first-secret", "second-secret")),
+        ("https://source.example/p?section=public&lang=en", "section=public&lang=en", ()),
+        ("https://source.example/p", "", ()),
+        ("https://source.example/p?credential=cred-secret#token=fragment-secret", "", ("cred-secret", "fragment-secret")),
+    ],
+)
+def test_external_url_removes_secret_parameters_and_fragment(url, expected_safe_query, secret_values):
+    from backend.app.services.provenance.service import _safe_external_url
+
+    safe = _safe_external_url(url)
+    assert safe.startswith("https://source.example/p")
+    assert safe.partition("?")[2] == expected_safe_query
+    assert "#" not in safe
+    assert all(secret not in safe for secret in secret_values)
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://source.example/p?key=http-secret",
+        "https://[malformed/p?key=bad-secret",
+        "https://source.example:invalid/p?key=bad-secret",
+    ],
+)
+def test_external_url_rejects_http_and_malformed_urls(url):
+    from backend.app.services.provenance.service import _safe_external_url
+
+    assert _safe_external_url(url) == ""
+
+
+@pytest.mark.parametrize(
+    "parameter",
+    [
+        "key", "api_key", "access_key", "secret", "client_secret", "token",
+        "access_token", "refresh_token", "signature", "sig", "authorization",
+        "credential", "password", "auth", "api-key",
+    ],
+)
+def test_external_url_removes_every_supported_secret_parameter(parameter):
+    from backend.app.services.provenance.service import _safe_external_url
+
+    secret_value = f"value-for-{parameter}"
+    safe = _safe_external_url(f"https://source.example/p?{parameter.upper()}={secret_value}&topic=public")
+    assert safe == "https://source.example/p?topic=public"
+    assert secret_value not in safe
+
+
+def test_sanitized_provider_urls_are_safe_in_serialized_parse_results():
+    from backend.app.services.provenance.service import _parse_web_detection
+
+    status, values, _, _ = _parse_web_detection({"responses": [{"webDetection": {
+        "pagesWithMatchingImages": [{
+            "url": "https://source.example/report?key=private-key&signature=private-signature&section=public",
+            "pageTitle": "Report",
+        }],
+    }}]})
+    serialized = json.dumps([item.to_dict() for item in values["matching_pages"]])
+    assert status == "success"
+    assert "private-key" not in serialized and "private-signature" not in serialized
+    assert "section=public" in serialized
 
 
 def test_web_detection_http_timeout_is_bounded_and_safe(monkeypatch):

@@ -153,11 +153,25 @@ def _is_configured() -> bool:
 def _safe_external_url(value: Any) -> str:
     if not isinstance(value, str) or len(value) > 2048:
         return ""
-    parsed = urlparse(value)
-    if parsed.scheme.lower() != "https" or not parsed.hostname or parsed.username or parsed.password:
+    try:
+        parsed = urlparse(value)
+        hostname = parsed.hostname
+        # Accessing .port also validates malformed/non-numeric port syntax.
+        parsed.port
+    except (TypeError, ValueError):
         return ""
-    safe_query = [(key, item) for key, item in parse_qsl(parsed.query, keep_blank_values=True)
-        if not re.search(r"(?i)(api[_-]?key|token|secret|password|authorization|auth)$", key)]
+    if (parsed.scheme.lower() != "https" or not hostname or any(ch.isspace() for ch in hostname)
+            or parsed.username or parsed.password):
+        return ""
+    secret_parameters = {
+        "key", "api_key", "access_key", "secret", "client_secret", "token",
+        "access_token", "refresh_token", "signature", "sig", "authorization",
+        "credential", "password", "auth",
+    }
+    safe_query = [
+        (key, item) for key, item in parse_qsl(parsed.query, keep_blank_values=True)
+        if key.casefold().replace("-", "_") not in secret_parameters
+    ]
     return urlunparse(("https", parsed.netloc, parsed.path, "", urlencode(safe_query), ""))
 
 

@@ -30,6 +30,21 @@ def _public_model_identity() -> str:
     return Path(str(YOLO_MODEL_NAME)).name[:160] or "configured-yolo"
 
 
+def _resolve_model_path(path_str: str) -> Path:
+    """Resolve model weights path locally, checking current directory and project root."""
+    p = Path(path_str).expanduser()
+    if p.is_file():
+        return p
+    from backend.app.config import _project_root
+    proj_p = _project_root() / p
+    if proj_p.is_file():
+        return proj_p
+    baselines_p = _project_root() / "models" / "baselines" / p.name
+    if baselines_p.is_file():
+        return baselines_p
+    return p
+
+
 @dataclass
 class DetectedObject:
     """A single detected object."""
@@ -119,7 +134,7 @@ class ObjectDetector:
             self._load_warning = "Ultralytics is not installed."
             return
 
-        model_path = Path(YOLO_MODEL_NAME).expanduser()
+        model_path = _resolve_model_path(YOLO_MODEL_NAME)
         if not model_path.is_file():
             self._load_warning = "Configured YOLO weights are not present locally; automatic model downloads are disabled."
             log.warning("YOLO weights are unavailable locally for configured model identity")
