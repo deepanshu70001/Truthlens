@@ -239,6 +239,101 @@ This document details the exact file paths, existing functions/handlers, test su
 
 ---
 
+### Priority 6: PostgreSQL Reliability, Database Lifecycle and Durable Worker Recovery — COMPLETED AND VERIFIED (SQLITE / POSTGRES BLOCKED)
+
+- **Target Work Package:** Database lifecycle, Alembic migration verification, worker crash/restart recovery, multi-worker concurrency, and backup/restore.
+- **Implementation Paths:**
+  - [backend/app/db/session.py](file:///D:/Projects/Truthlens/backend/app/db/session.py) (Connection pooling, auto-normalization of `postgresql://` to `postgresql+asyncpg://`)
+  - [backend/app/config.py](file:///D:/Projects/Truthlens/backend/app/config.py) (`DATABASE_POOL_SIZE`, `DATABASE_MAX_OVERFLOW`, `DATABASE_POOL_TIMEOUT`, `DATABASE_POOL_RECYCLE_SECONDS`)
+  - [backend/app/services/job_queue.py](file:///D:/Projects/Truthlens/backend/app/services/job_queue.py) (`_record_system_event`, `with_for_update(skip_locked=True)`, lease expiry, recovery)
+  - [backend/migrations/env.py](file:///D:/Projects/Truthlens/backend/migrations/env.py) (Alembic async URL normalization)
+- **Status:** **COMPLETED AND VERIFIED (TESTED WITH SQLITE / POSTGRESQL RUNTIME BLOCKED)** (2026-11-23)
+- **Features Implemented & Verified:**
+  - Forward-only Alembic migration chain (`20261122_01` to `20261122_02`) verified with zero broken dependencies.
+  - Downgrade refusal policy enforced when job history, ownership, or active queue capacity exists.
+  - 100% PostgreSQL DDL compilation verified for all tables, columns, indexes, enums, and foreign keys.
+  - Worker crash recovery: lease expiration, discovery by replacement worker, and report-adoption without duplicate pipeline re-execution.
+  - Lease integrity: stale worker cannot heartbeat, complete, or fail reclaimed jobs (`lost_lease` isolation).
+  - Multi-worker concurrency: atomic lease claim prevents duplicate simultaneous processing; sequential handoff works seamlessly.
+  - Bounded retry: transient failures (`DBAPIError`, `TimeoutError`, `ConnectionError`, `OSError`) retry with exponential backoff up to `max_attempts`.
+  - Structured `SystemEvent` audit logging: records `job_claimed`, `lease_acquired`, `job_recovered`, `retry_scheduled`, `job_completed`, `job_failed`.
+  - Database backup and restore verified on SQLite (online backup API); PostgreSQL backup/restore script documented; live PostgreSQL tool execution confirmed **BLOCKED** on host.
+- **Test Verification:**
+  - [backend/tests/test_postgres_migrations.py](file:///D:/Projects/Truthlens/backend/tests/test_postgres_migrations.py): 6 passed tests.
+  - [backend/tests/test_worker_recovery.py](file:///D:/Projects/Truthlens/backend/tests/test_worker_recovery.py): 5 passed tests.
+  - [backend/tests/test_worker_concurrency.py](file:///D:/Projects/Truthlens/backend/tests/test_worker_concurrency.py): 3 passed tests.
+  - [backend/tests/test_database_backup_restore.py](file:///D:/Projects/Truthlens/backend/tests/test_database_backup_restore.py): 2 passed tests.
+  - [backend/tests/test_e10_database.py](file:///D:/Projects/Truthlens/backend/tests/test_e10_database.py): 5 passed tests.
+  - [backend/tests/test_e8_durable_jobs.py](file:///D:/Projects/Truthlens/backend/tests/test_e8_durable_jobs.py): 10 passed tests.
+  - Bit-exact SigLIP baseline weight preservation: `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`.
+
+---
+
+### Priority 7: Security Hardening, Production Readiness & Security Audit Suite — COMPLETED AND VERIFIED
+
+- **Target Scope:** System-wide security hardening and verification covering authentication, authorization/ownership, upload pipeline, API protection, secrets management, CORS/hosts, logging/privacy, production config validation, and artifact containment.
+- **Implementation Paths:**
+  - Middleware: [backend/app/core/middleware.py](file:///D:/Projects/Truthlens/backend/app/core/middleware.py) (added `/api/v1/ocr` to upload path limit whitelist, added trailing slash normalization).
+  - Security utilities: [backend/app/core/security.py](file:///D:/Projects/Truthlens/backend/app/core/security.py) (configured `Image.MAX_IMAGE_PIXELS = settings.MAX_IMAGE_PIXELS`, caught `DecompressionBombError`, hardened `sanitize_filename` against null bytes, Windows reserved device names, and pure dot/underscore patterns).
+  - Privacy logging: [backend/app/core/logging.py](file:///D:/Projects/Truthlens/backend/app/core/logging.py) (added `SensitiveDataFilter` to mask bearer tokens, passwords, and sensitive keys from log output).
+  - OCR endpoint: [backend/app/api/v1/endpoints/ocr.py](file:///D:/Projects/Truthlens/backend/app/api/v1/endpoints/ocr.py) (handled `Image.DecompressionBombError` explicitly).
+- **Status:** **COMPLETED AND VERIFIED (AUDITED / SQLITE RUNTIME / POSTGRES DDL VERIFIED / POSTGRES RUNTIME BLOCKED)** (2026-11-23)
+- **Features Implemented & Verified:**
+  - 1. Missing authentication rejected with HTTP 401 across all protected routes.
+  - 2. Invalid authentication (malformed tokens, non-Bearer schemes, invalid signatures, unsupported algorithms like `none`) rejected with HTTP 401.
+  - 3. Expired token rejection verified via `decode_access_token` and timestamp validation.
+  - 4. Cross-user analysis access strictly isolated; unauthorized users receive safe HTTP 404 concealing existence.
+  - 5. Cross-user report access returns HTTP 404 without leaking data.
+  - 6. Cross-user artifact access (original image, heatmap, ELA) returns HTTP 404.
+  - 7. Path traversal attempts in filenames and artifact paths are neutralized (`..` stripped, `is_relative_to` verified).
+  - 8. Malicious filenames (null bytes, Windows reserved device names `CON`/`PRN`/`NUL`, pure dots `...`) sanitized to `"unnamed"`.
+  - 9. MIME and magic-byte mismatch rejected with HTTP 422.
+  - 10. Corrupt image upload rejected with HTTP 422.
+  - 11. Oversized uploads rejected with HTTP 413 / 422.
+  - 12. Decompression-bomb images exceeding `MAX_IMAGE_PIXELS` rejected with HTTP 422 safety limit error.
+  - 13. Rate-limit enforcement verified with database-backed buckets returning HTTP 429 and `Retry-After`.
+  - 14. Malformed requests handled safely without echoing sensitive input.
+  - 15. Secret redaction in public payloads and structured logs (`SensitiveDataFilter`).
+  - 16. Stack traces and internal filesystem paths scrubbed from API error responses.
+  - 17. CORS origin whitelist enforced; `allow_credentials=False` prevents credential leakage.
+  - 18. Trusted-host whitelist enforced; spoofed Host headers rejected with HTTP 400.
+  - 19. Production configuration validation enforces non-debug mode, strong secrets, non-wildcard hosts/origins, and PostgreSQL.
+  - 20. Provider URLs stripped of basic auth credentials, loopback IPs, and tracking/secret parameters.
+  - 21. Background job status inaccessible across user boundaries.
+  - 22. Artifact path containment guarantees file access remains strictly within designated storage roots.
+- **Test Verification:**
+  - [backend/tests/test_security_audit.py](file:///D:/Projects/Truthlens/backend/tests/test_security_audit.py): 22 passed tests (100% pass rate).
+  - [backend/tests/test_e9_security.py](file:///D:/Projects/Truthlens/backend/tests/test_e9_security.py): 8 passed tests.
+  - 197 total passed tests across all 11 regression suites.
+  - Bit-exact SigLIP baseline weight preservation: `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`.
+
+---
+
+### Priority 8: Live Browser E2E and Full Application Integration — COMPLETED AND VERIFIED
+
+- **Target Scope:** End-to-end integration and verification of the complete user workflow in a real browser session (Playwright Chromium via system Chrome), background worker processing, SQLite persistence, and UI report rendering.
+- **Implementation Paths:**
+  - Live E2E script: [scripts/live_e2e_workflow.js](file:///D:/Projects/Truthlens/scripts/live_e2e_workflow.js)
+  - Negative workflows suite: [scripts/test_negative_workflows.py](file:///D:/Projects/Truthlens/scripts/test_negative_workflows.py)
+  - E2E Report: [docs/LIVE_BROWSER_E2E_REPORT.md](file:///D:/Projects/Truthlens/docs/LIVE_BROWSER_E2E_REPORT.md)
+  - Screenshots & visual records: [docs/screenshots/](file:///D:/Projects/Truthlens/docs/screenshots/)
+- **Status:** **COMPLETED AND VERIFIED (PASS)** (2026-11-23)
+- **Features Verified:**
+  - 1. Authentic file selection and upload through real browser DOM to `POST /api/v1/analyze`.
+  - 2. Asynchronous job pickup by background worker daemon (`analysis_worker.py`).
+  - 3. Pipeline execution across 21 stages on GPU in 6.64s.
+  - 4. Client polling and live status progression in UI.
+  - 5. Full interactive report rendering (summary cards, forensic indicators, OCR text, Grad-CAM attribution, pipeline timeline).
+  - 6. Zero browser console errors and zero failed network requests.
+  - 7. Database integrity verified across `analyses`, `analysis_jobs`, `image_assets`, `model_runs`, and `system_events`.
+  - 8. All 12 negative workflows verified (unsupported file, corrupt image, empty upload, oversized upload, blank OCR, punctuation language detection, missing factcheck keys, 0-match claim, missing vision keys, 404 nonexistent analysis, partial analysis report, 404 unauthorized artifact retrieval).
+- **Test Verification:**
+  - Frontend: `npm run typecheck` (0 errors), `npm run test` (6 passed), `npm run lint` (0 errors), `npm run build` (built in 1.21s).
+  - Backend: 196 passed, 2 skipped across 15 test files.
+  - Bit-exact SigLIP baseline weight preservation: `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`.
+
+---
+
 ## 3. Recommended Implementation Order and Roadmap
 
 ```mermaid

@@ -40,6 +40,10 @@ class Settings(BaseSettings):
     # ── Database ─────────────────────────────────────────────────
     DATABASE_URL: str = "sqlite+aiosqlite:///./truthlens.db"
     DATABASE_ECHO: bool = False
+    DATABASE_POOL_SIZE: int = 10
+    DATABASE_MAX_OVERFLOW: int = 20
+    DATABASE_POOL_TIMEOUT: float = 30.0
+    DATABASE_POOL_RECYCLE_SECONDS: int = 1800
 
     # ── Storage ──────────────────────────────────────────────────
     STORAGE_PATH: str = str(_project_root() / "data")

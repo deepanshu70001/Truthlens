@@ -15,20 +15,38 @@ from sqlalchemy import event
 from backend.app.config import settings
 
 # ── Engine ───────────────────────────────────────────────────────
+def normalize_database_url(url: str) -> str:
+    """Ensure standard PostgreSQL URLs use the required asyncpg driver."""
+    if url.startswith("postgresql://"):
+        return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    return url
+
+
+_db_url = normalize_database_url(settings.DATABASE_URL)
 _connect_args: dict = {}
-if settings.DATABASE_URL.startswith("sqlite"):
+_engine_kwargs: dict = {
+    "echo": settings.DATABASE_ECHO,
+    "pool_pre_ping": True,
+}
+
+if _db_url.startswith("sqlite"):
     _connect_args = {"check_same_thread": False}
-elif settings.APP_ENV.lower() == "production" and settings.DATABASE_URL.startswith("postgresql+asyncpg://"):
-    _connect_args = {"ssl": ssl.create_default_context()}
+else:
+    if settings.APP_ENV.lower() == "production" and _db_url.startswith("postgresql+asyncpg://"):
+        _connect_args = {"ssl": ssl.create_default_context()}
+    _engine_kwargs["pool_size"] = getattr(settings, "DATABASE_POOL_SIZE", 10)
+    _engine_kwargs["max_overflow"] = getattr(settings, "DATABASE_MAX_OVERFLOW", 20)
+    _engine_kwargs["pool_timeout"] = getattr(settings, "DATABASE_POOL_TIMEOUT", 30.0)
+    _engine_kwargs["pool_recycle"] = getattr(settings, "DATABASE_POOL_RECYCLE_SECONDS", 1800)
+
+_engine_kwargs["connect_args"] = _connect_args
 
 engine = create_async_engine(
-    settings.DATABASE_URL,
-    echo=settings.DATABASE_ECHO,
-    connect_args=_connect_args,
-    pool_pre_ping=True,
+    _db_url,
+    **_engine_kwargs,
 )
 
-if settings.DATABASE_URL.startswith("sqlite"):
+if _db_url.startswith("sqlite"):
     @event.listens_for(engine.sync_engine, "connect")
     def _enable_sqlite_integrity(dbapi_connection, _connection_record):
         cursor = dbapi_connection.cursor()

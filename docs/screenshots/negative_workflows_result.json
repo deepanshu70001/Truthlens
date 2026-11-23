@@ -1,0 +1,56 @@
+{
+  "01_unsupported_file_type": {
+    "status": 422,
+    "passed": true
+  },
+  "02_corrupted_image": {
+    "status": 422,
+    "passed": true
+  },
+  "03_empty_image_upload": {
+    "status": 422,
+    "passed": true
+  },
+  "04_oversized_image": {
+    "status": 413,
+    "passed": true
+  },
+  "05_ocr_returns_no_text": {
+    "status": 200,
+    "passed": true,
+    "text": ""
+  },
+  "06_language_detector_graceful": {
+    "status": 200,
+    "outcome": "insufficient_input",
+    "passed": true
+  },
+  "07_factcheck_credentials_absent": {
+    "status": 200,
+    "fc_status": "unavailable",
+    "passed": true
+  },
+  "08_provider_returns_no_records": {
+    "status": 200,
+    "total_results": 0,
+    "passed": true
+  },
+  "09_provenance_unavailable": {
+    "status": 200,
+    "provenance_status": "partial",
+    "passed": true
+  },
+  "10_nonexistent_analysis_job": {
+    "status": 404,
+    "passed": true
+  },
+  "11_partial_analysis_report": {
+    "status": 200,
+    "report_status": "partial",
+    "passed": true
+  },
+  "12_unauthorized_artifact_retrieval": {
+    "status": 404,
+    "passed": true
+  }
+}

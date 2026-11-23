@@ -16,7 +16,8 @@ class RequestBodyLimitMiddleware:
         self.json_limit = json_limit
 
     def _limit(self, path: str) -> int:
-        if path in {"/api/v1/analyze", "/api/v1/provenance"}:
+        norm_path = path.rstrip("/")
+        if norm_path in {"/api/v1/analyze", "/api/v1/provenance", "/api/v1/ocr"}:
             return self.upload_limit + 128 * 1024
         return self.json_limit
 

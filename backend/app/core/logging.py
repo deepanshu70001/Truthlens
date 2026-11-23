@@ -7,9 +7,25 @@ No PII, no raw image data in logs.
 from __future__ import annotations
 
 import logging
+import re
 import sys
 
 from backend.app.config import settings
+
+
+class SensitiveDataFilter(logging.Filter):
+    """Redacts tokens, credentials, and secrets from formatted log records."""
+
+    _PATTERNS = [
+        re.compile(r"(?i)\b(bearer\s+)[a-zA-Z0-9_\-\.]{10,}"),
+        re.compile(r"(?i)\b(api[_-]?key|secret|password|access_token)\s*[:=]\s*[^\s,;]+"),
+    ]
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        if isinstance(record.msg, str):
+            for pattern in self._PATTERNS:
+                record.msg = pattern.sub(r"\1[redacted]", record.msg)
+        return True
 
 
 def setup_logging() -> None:
@@ -23,6 +39,7 @@ def setup_logging() -> None:
 
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(formatter)
+    handler.addFilter(SensitiveDataFilter())
 
     root = logging.getLogger("truthlens")
     root.setLevel(level)

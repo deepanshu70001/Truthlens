@@ -16,7 +16,7 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from backend.app.config import settings
-from backend.app.models import Analysis, AnalysisJob, AnalysisStatus, QueueCapacity, WorkerLease
+from backend.app.models import Analysis, AnalysisJob, AnalysisStatus, QueueCapacity, SystemEvent, WorkerLease
 
 log = logging.getLogger("truthlens.jobs")
 WORKER_LEASE_NAME = "analysis-pipeline"
@@ -28,6 +28,38 @@ def utcnow() -> datetime:
 
 def _analysis_status(value) -> str:
     return value.value if hasattr(value, "value") else str(value)
+
+
+async def _record_system_event(
+    db: AsyncSession,
+    event_type: str,
+    severity: str,
+    message: str,
+    *,
+    analysis_id: str | None = None,
+    source: str = "job_queue",
+    metadata: dict | None = None,
+) -> None:
+    """Best-effort audit logging into system_events table and structured application log."""
+    try:
+        event = SystemEvent(
+            analysis_id=analysis_id,
+            event_type=event_type,
+            severity=severity,
+            source=source,
+            message=message,
+            metadata_json=json.dumps(metadata) if metadata else None,
+            created_at=utcnow(),
+        )
+        db.add(event)
+    except Exception as exc:
+        log.warning("Could not record system event %s (%s)", event_type, type(exc).__name__)
+    if severity == "error":
+        log.error("%s: %s (analysis_id=%s)", event_type, message, analysis_id)
+    elif severity == "warning":
+        log.warning("%s: %s (analysis_id=%s)", event_type, message, analysis_id)
+    else:
+        log.info("%s: %s (analysis_id=%s)", event_type, message, analysis_id)
 
 
 async def reserve_job_capacity(db: AsyncSession) -> bool:
@@ -111,6 +143,12 @@ async def _finish_stale_terminal_job(db: AsyncSession, job: AnalysisJob, analysi
         job.lease_token = None
         job.lease_expires_at = None
         job.claimed_by = None
+        await _record_system_event(
+            db, "job_recovered", "info",
+            f"Stale job for analysis {job.analysis_id} resolved to terminal {job.state}.",
+            analysis_id=job.analysis_id,
+            metadata={"state": job.state},
+        )
         await release_job_capacity(db)
         return
     if job.attempt_count >= job.max_attempts:
@@ -121,6 +159,12 @@ async def _finish_stale_terminal_job(db: AsyncSession, job: AnalysisJob, analysi
         job.error_message = message
         job.completed_at = utcnow()
         _mark_analysis_failed(analysis, category, message)
+        await _record_system_event(
+            db, "job_failed", "error",
+            f"Job {job.analysis_id} failed after lease expiration and exhausting {job.max_attempts} attempts.",
+            analysis_id=job.analysis_id,
+            metadata={"attempts": job.attempt_count, "category": category},
+        )
         await release_job_capacity(db)
         return
     job.state = "queued"
@@ -133,6 +177,12 @@ async def _finish_stale_terminal_job(db: AsyncSession, job: AnalysisJob, analysi
     analysis.status = AnalysisStatus.QUEUED
     analysis.current_step = None
     analysis.completed_steps = _reset_interrupted_progress(analysis.completed_steps)
+    await _record_system_event(
+        db, "job_recovered", "warning",
+        f"Interrupted job for analysis {job.analysis_id} reset to queued for retry (attempt {job.attempt_count}/{job.max_attempts}).",
+        analysis_id=job.analysis_id,
+        metadata={"attempt_count": job.attempt_count, "max_attempts": job.max_attempts},
+    )
 
 
 async def claim_next_job(
@@ -161,10 +211,17 @@ async def claim_next_job(
             await db.rollback()
             return None
 
+        await _record_system_event(
+            db, "lease_acquired", "info",
+            f"Worker {worker_id} acquired global lease '{WORKER_LEASE_NAME}'.",
+            metadata={"worker_id": worker_id},
+        )
+
         stale = await db.scalar(
             select(AnalysisJob)
             .where(AnalysisJob.state == "running", AnalysisJob.lease_expires_at <= now)
             .order_by(AnalysisJob.created_at)
+            .with_for_update(skip_locked=True)
             .limit(1)
         )
         if stale is not None:
@@ -187,6 +244,7 @@ async def claim_next_job(
                 AnalysisJob.available_at <= utcnow(),
             )
             .order_by(AnalysisJob.created_at, AnalysisJob.analysis_id)
+            .with_for_update(skip_locked=True)
             .limit(1)
         )
         if job is None:
@@ -241,6 +299,12 @@ async def claim_next_job(
         job.error_message = None
         analysis.status = AnalysisStatus.PROCESSING
         analysis.current_step = None
+        await _record_system_event(
+            db, "job_claimed", "info",
+            f"Worker {worker_id} claimed analysis {job.analysis_id} (attempt {job.attempt_count}/{job.max_attempts}).",
+            analysis_id=job.analysis_id,
+            metadata={"worker_id": worker_id, "attempt": job.attempt_count},
+        )
         await db.commit()
         return JobClaim(job.analysis_id, lease_token, worker_id, job.attempt_count)
 
@@ -316,6 +380,12 @@ async def record_job_failure(
             analysis.status = AnalysisStatus.QUEUED
             analysis.current_step = None
             analysis.completed_steps = _reset_interrupted_progress(analysis.completed_steps)
+            await _record_system_event(
+                db, "retry_scheduled", "warning",
+                f"Retry scheduled for analysis {claim.analysis_id} after {delay}s backoff: {message}",
+                analysis_id=claim.analysis_id,
+                metadata={"delay_seconds": delay, "category": category, "attempt": job.attempt_count},
+            )
         else:
             final_category = category if retryable else category
             final_message = message if retryable else message
@@ -327,6 +397,12 @@ async def record_job_failure(
             job.lease_expires_at = None
             job.claimed_by = None
             _mark_analysis_failed(analysis, final_category, final_message)
+            await _record_system_event(
+                db, "job_failed", "error",
+                f"Analysis {claim.analysis_id} permanently failed: {final_message}",
+                analysis_id=claim.analysis_id,
+                metadata={"category": final_category, "attempt": job.attempt_count},
+            )
             await release_job_capacity(db)
         await db.execute(
             update(WorkerLease)
@@ -364,6 +440,14 @@ async def complete_job(
             job.lease_token = None
             job.lease_expires_at = None
             job.claimed_by = None
+            evt = "job_completed" if job.state == "completed" else "job_failed"
+            sev = "info" if job.state == "completed" else "error"
+            await _record_system_event(
+                db, evt, sev,
+                f"Analysis {claim.analysis_id} reached terminal state {job.state}.",
+                analysis_id=claim.analysis_id,
+                metadata={"state": job.state},
+            )
             await release_job_capacity(db)
         await db.execute(
             update(WorkerLease)

@@ -17,6 +17,9 @@ from PIL import Image
 
 from backend.app.config import settings
 
+# Enforce Pillow-level safety bounds matching application configuration
+Image.MAX_IMAGE_PIXELS = settings.MAX_IMAGE_PIXELS
+
 # ── Magic-byte signatures for allowed image types ────────────────
 _MAGIC_SIGNATURES: dict[str, list[bytes]] = {
     "image/jpeg": [b"\xff\xd8\xff"],
@@ -70,6 +73,10 @@ def sanitize_filename(filename: str) -> str:
     if len(name) > 200:
         ext = Path(name).suffix
         name = name[: 200 - len(ext)] + ext
+
+    # Reject empty, pure dot/underscore, or reserved device names
+    if not name.strip("._") or name.upper() in {"CON", "PRN", "AUX", "NUL"}:
+        return "unnamed"
 
     return name or "unnamed"
 
@@ -159,6 +166,8 @@ def validate_image_file(
 
     try:
         img = Image.open(BytesIO(data))
+    except (Image.DecompressionBombError, ValueError):
+        raise ValueError("Image dimensions exceed the configured safety limit.")
     except Exception:
         raise ValueError("File could not be decoded as a valid image.")
     width, height = img.size
@@ -166,6 +175,8 @@ def validate_image_file(
         raise ValueError("Image dimensions exceed the configured safety limit.")
     try:
         img.verify()
+    except (Image.DecompressionBombError, ValueError):
+        raise ValueError("Image dimensions exceed the configured safety limit.")
     except Exception:
         raise ValueError("File could not be decoded as a valid image.")
 

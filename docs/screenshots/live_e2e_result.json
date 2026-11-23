@@ -1,0 +1,151 @@
+{
+  "analysisId": "59c34cfe-01a3-4e5e-bf65-431f06d0f562",
+  "uiReportData": {
+    "statusBadge": "Completed",
+    "summaryCards": [
+      "AUTHENTICITY\n\nReal / Authentic\n\nDetector classification and evidence-fusion assessment are separate outputs; neither is proof.",
+      "FACTUAL CLAIMS\n\nunavailable · RETRIEVAL_UNAVAILABLE, UNVERIFIABLE, UNVERIFIABLE\n\nFact-check results are per-claim and source-dependent.",
+      "PROVENANCE\n\npartial\n\nOnline matches provide context and do not establish authenticity.",
+      "SPREAD\n\nCONTENT_BASED_HEURISTIC\n\nContent indicators are not estimates of actual reach; regional rankings are unavailable.",
+      "POTENTIAL SOCIAL IMPACT\n\nDATA_UNAVAILABLE\n\nTopic cues are not observed harm or severity findings.",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "0.310\n\nAI-generated raw score",
+      "0.690\n\nReal / authentic raw score",
+      "preprocessing\nCompleted\n\n32 ms\n\nInput 640 × 480px · EXIF orientation unchanged · resized variants: large, medium, small",
+      "metadata\nCompleted\n\n0 ms",
+      "quality\nCompleted\n\n18 ms",
+      "authenticity\nCompleted\n\n164 ms",
+      "forensics\nCompleted\n\n130 ms",
+      "ocr\nCompleted\n\n1039 ms",
+      "vision\nCompleted\n\n97 ms",
+      "xai\nCompleted\n\n125 ms",
+      "text normalization\nCompleted\n\n2 ms",
+      "language identification\nCompleted\n\n4536 ms",
+      "claim extraction\nCompleted\n\n5 ms",
+      "fact check\nUnavailable\n\n1 ms\n\nThe stage or service failed; technical details are in server logs.",
+      "provenance\nPartial\n\n40 ms",
+      "hashing\nCompleted\n\n34 ms",
+      "evidence collection\nCompleted\n\n1 ms",
+      "fusion\nCompleted\n\n1 ms",
+      "explanation\nCompleted\n\n0 ms",
+      "virality\nCompleted\n\n0 ms",
+      "regional spread\nCompleted\n\n0 ms",
+      "social impact\nCompleted\n\n0 ms",
+      "report assembly\nCompleted\n\n16 ms",
+      "IMAGE QUALITY\n\n{\n  \"width\": 640,\n  \"height\": 480,\n  \"megapixels\": 0.31,\n  \"aspect_ratio\": \"4:3\",\n  \"file_size_bytes\": 27571,\n  \"bits_per_pixel\": 0.72,\n  \"brightness\": 238.36,\n  \"contrast\": 21.68,\n  \"blur_score\": 2252.51,\n  \"noise_estimate\": 47.46,\n  \"sharpness\": 1.98,\n  \"saturation_mean\": 10.13,\n  \"dynamic_range\": 229,\n  \"estimated_quality\": 60,\n  \"format\": \"JPEG\"\n}",
+      "FORENSIC SIGNALS\n\nerror_level_analysis [completed] · indicator 0.964: JPEG quality-90 difference: mean 0.38, standard deviation 1.09, maximum 17.33.\n\nnoise_consistency [completed] · indicator 1.000: Laplacian residual standard deviation varies across quadrants (coefficient of variation 0.6030).\n\njpeg_artifacts [completed] · indicator 0.000: 8-pixel boundary mean difference 1.823; other-boundary mean difference 2.658.\n\nedge_consistency [completed] · indicator 0.468: Canny edge density varies across a 3x3 grid (coefficient of variation 0.7020).\n\ntexture_consistency [completed] · indicator 0.000: Gabor response regularity indicator is 0.3342.\n\nresampling_clues [completed] · indicator 0.862: Second-difference zero-crossing rate is 0.06927.\n\nIndicators are encoding and content dependent; they are not manipulation probabilities.",
+      "DETECTED OBJECTS\n\ncompleted",
+      "Content Spread Indicators (Heuristic)\nData Unavailable\n\n28.0%\n\nIndicator level: Low Risk\n\n0\n25\n50\n75\n100\nhas textoverlay\nhas claims\nhasnumbers\n\nThis is a content indicator score, not a prediction of sharing, reach, or probability. No validated image-level historical dissemination dataset is configured.",
+      "Potential Harm Content Categories\nData Unavailable\n\nUNKNOWN\n\nObserved harm\n\nUNASSESSED\n\nFalsity severity\n\nUNKNOWN\n\nAudience reach\n\nNO_INDICATORS_DETECTED\n\nUrgency\n\nMatched terms identify possible content categories only. They do not establish falsity, intent, severity, audience reach, or observed harm. Claim verification is reported separately.",
+      "UNKNOWN\n\nObserved harm",
+      "UNASSESSED\n\nFalsity severity",
+      "UNKNOWN\n\nAudience reach",
+      "NO_INDICATORS_DETECTED\n\nUrgency"
+    ],
+    "bodyText": "TruthLens\n\nAI-Assisted Image Verification & Social Impact Analysis\n\n6.6s\nAnalysis status: partial. Review unavailable or failed stages below; this assessment may be incomplete.\nAnalysis Summary\n\nAUTHENTICITY\n\nReal / Authentic\n\nDetector classification and evidence-fusion assessment are separate outputs; neither is proof.\n\nFACTUAL CLAIMS\n\nunavailable · RETRIEVAL_UNAVAILABLE, UNVERIFIABLE, UNVERIFIABLE\n\nFact-check results are per-claim and source-dependent.\n\nPROVENANCE\n\npartial\n\nOnline matches provide context and do not establish authenticity.\n\nSPREAD\n\nCONTENT_BASED_HEURISTIC\n\nContent indicators are not estimates of actual reach; regional rankings are unavailable.\n\nPOTENTIAL SOCIAL IMPACT\n\nDATA_UNAVAILABLE\n\nTopic cues are not observed harm or severity findings.\n\nNew Analysis\nFinal evidence assessment\nCompleted\n\nInconclusive\n\nUncertainty is unquantified. No displayed score is a calibrated probability.\n\nPolicy e11.conservative.v1\n\nOne or more stages were incomplete, unavailable, skipped, or returned no evidence.\n\nNo validated directional evidence was available; the result remains inconclusive.\n\nIgnored unavailable evidence from google_factcheck_api; excluded as stage_unavailable.\n\nIgnored unavailable evidence from google_vision_web_detection; excluded as stage_unavailable.\n\nInsufficient eligible directional evidence for a determination.\n\nINFORMATIONAL FINDINGS\nauthenticity_detector\nCompleted\nsuccess\n\nPrimary classifier raw argmax is 'likely_authentic'; application classification is 'inconclusive'. Raw softmax output is not a calibrated probability.\n\nmodel output has no direction\n\nforensics.error_level_analysis\nCompleted\nsuccess\n\nJPEG quality-90 difference: mean 0.38, standard deviation 1.09, maximum 17.33.\n\ninformational module\n\nforensics.noise_consistency\nCompleted\nsuccess\n\nLaplacian residual standard deviation varies across quadrants (coefficient of variation 0.6030).\n\ninformational module\n\nforensics.jpeg_artifacts\nCompleted\nsuccess\n\n8-pixel boundary mean difference 1.823; other-boundary mean difference 2.658.\n\ninformational module\n\nforensics.edge_consistency\nCompleted\nsuccess\n\nCanny edge density varies across a 3x3 grid (coefficient of variation 0.7020).\n\ninformational module\n\nforensics.texture_consistency\nCompleted\nsuccess\n\nGabor response regularity indicator is 0.3342.\n\ninformational module\n\nforensics.resampling_clues\nCompleted\nsuccess\n\nSecond-difference zero-crossing rate is 0.06927.\n\ninformational module\n\nEasyOCR\nCompleted\nsuccess\n\nOCR extracted 37 words (en script estimate) with 54.2% average engine confidence.\n\ninformational module\n\nexif_extractor\nCompleted\n\nNo EXIF metadata was found. Metadata can be removed by sharing or editing workflows; its absence does not establish authenticity or manipulation.\n\ninformational module\n\nc2pa_content_credentials\nCompleted\nno manifest\n\nNo C2PA manifest was found; absence of credentials does not establish manipulation.\n\ninformational module\n\ngrad_cam\nCompleted\nheatmap generated\n\nGrad-CAM attribution map gene",
+    "headings": [
+      "TruthLens",
+      "Analysis Summary",
+      "Final evidence assessment",
+      "INFORMATIONAL FINDINGS",
+      "EXCLUDED EVIDENCE",
+      "MISSING OR UNAVAILABLE EVIDENCE",
+      "Primary model output",
+      "Supporting Evidence",
+      "Pipeline status",
+      "Image Analysis",
+      "OCR — Extracted Text",
+      "Language Identification",
+      "Image Metadata",
+      "Forensics and visual analysis",
+      "OCR Claims",
+      "Fact-Check Results",
+      "Web Provenance",
+      "Image Hashes",
+      "Content Spread Indicators (Heuristic)",
+      "Potential Harm Content Categories",
+      "India — Regional Dissemination Data",
+      "Limitations & Disclaimer"
+    ],
+    "hasImage": false,
+    "tabs": []
+  },
+  "networkRequestsCount": 12,
+  "networkLog": [
+    {
+      "url": "http://127.0.0.1:5173/api/v1/auth/mode",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/auth/mode",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analyze",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/59c34cfe-01a3-4e5e-bf65-431f06d0f562",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/59c34cfe-01a3-4e5e-bf65-431f06d0f562",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/59c34cfe-01a3-4e5e-bf65-431f06d0f562",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/59c34cfe-01a3-4e5e-bf65-431f06d0f562",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/59c34cfe-01a3-4e5e-bf65-431f06d0f562/report",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/59c34cfe-01a3-4e5e-bf65-431f06d0f562/image",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/59c34cfe-01a3-4e5e-bf65-431f06d0f562/heatmap",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/59c34cfe-01a3-4e5e-bf65-431f06d0f562/image",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/59c34cfe-01a3-4e5e-bf65-431f06d0f562/heatmap",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "consoleErrors": []
+}

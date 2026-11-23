@@ -79,6 +79,8 @@ async def ocr_endpoint(
     try:
         pil_image = Image.open(io.BytesIO(image_data))
         pil_image.load()
+    except (Image.DecompressionBombError, ValueError):
+        raise HTTPException(status_code=422, detail="Image dimensions exceed the configured safety limit.") from None
     except Exception:
         raise HTTPException(status_code=422, detail="File could not be decoded as a valid image.") from None
 
