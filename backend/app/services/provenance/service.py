@@ -147,7 +147,7 @@ class ProvenanceResult:
 
 def _is_configured() -> bool:
     """Check if Google Cloud Vision API is configured."""
-    return bool(settings.GOOGLE_API_KEY)
+    return bool(settings.VISION_API_KEY or settings.GOOGLE_API_KEY)
 
 
 def _safe_external_url(value: Any) -> str:
@@ -196,6 +196,7 @@ def _request_web_detection(image_data: bytes) -> tuple[str, Dict[str, Any], Opti
     timeout = _bounded_setting("PROVENANCE_API_TIMEOUT_SECONDS", 30.0, 0.1, 60.0)
     if not _WEB_DETECTION_SEMAPHORE.acquire(timeout=timeout):
         return "failed", {}, "PROVIDER_CAPACITY", ["Web Detection could not start within the configured concurrency bound."]
+    api_key = settings.VISION_API_KEY or settings.GOOGLE_API_KEY
     body = {"requests": [{"image": {"content": base64.b64encode(image_data).decode("ascii")},
         "features": [{"type": "WEB_DETECTION", "maxResults": 20}]}]}
     try:
@@ -209,7 +210,7 @@ def _request_web_detection(image_data: bytes) -> tuple[str, Dict[str, Any], Opti
             try:
                 with httpx.Client(timeout=min(timeout, remaining)) as client:
                     if type(client).__module__.startswith("httpx") and callable(getattr(client, "stream", None)):
-                        with client.stream("POST", VISION_API_URL, params={"key": settings.GOOGLE_API_KEY}, json=body) as response:
+                        with client.stream("POST", VISION_API_URL, params={"key": api_key}, json=body) as response:
                             response.raise_for_status()
                             raw = bytearray()
                             for chunk in response.iter_bytes():
@@ -218,7 +219,7 @@ def _request_web_detection(image_data: bytes) -> tuple[str, Dict[str, Any], Opti
                                     return "failed", {}, "PROVIDER_RESPONSE_TOO_LARGE", ["Web Detection response exceeded the configured size limit."]
                             data = json.loads(raw.decode("utf-8"))
                     else:  # small provider mocks used by deterministic unit tests
-                        response = client.post(VISION_API_URL, params={"key": settings.GOOGLE_API_KEY}, json=body)
+                        response = client.post(VISION_API_URL, params={"key": api_key}, json=body)
                         response.raise_for_status()
                         content = getattr(response, "content", b"")
                         if isinstance(content, bytes) and len(content) > 2 * 1024 * 1024:

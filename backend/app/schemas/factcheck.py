@@ -37,6 +37,18 @@ class FactCheckRequest(BaseModel):
         le=10,
         description="Maximum number of review matches to return per claim (clamped between 1 and 10)",
     )
+    review_publisher_site_filter: Optional[str] = Field(
+        None,
+        min_length=3,
+        max_length=255,
+        description="Optional review publisher domain filter (e.g. 'snopes.com', 'boomlive.in')",
+    )
+    max_age_days: Optional[int] = Field(
+        None,
+        ge=1,
+        le=7300,
+        description="Optional maximum age in days of fact-check claims to search",
+    )
 
     @field_validator("language_code")
     @classmethod

@@ -582,3 +582,55 @@ def test_factcheck_cache_sqlite_lifecycle_and_schema(tmp_path):
     # Clear cache
     cache.clear()
     assert cache.get(key) is None
+
+
+@pytest.mark.asyncio
+async def test_factcheck_publisher_filter_and_max_age_days(client):
+    """23. Publisher domain filter and max_age_days parameters are forwarded to provider."""
+    captured_params = {}
+
+    class _Response:
+        def __init__(self):
+            self.headers = {"content-length": str(len(payload_bytes))}
+        def raise_for_status(self): pass
+        def iter_bytes(self): yield payload_bytes
+        def __enter__(self): return self
+        def __exit__(self, *args): return False
+
+    class _Client:
+        def __init__(self, *args, **kwargs): pass
+        def __enter__(self): return self
+        def __exit__(self, *args): return False
+        def stream(self, method, url, params=None, **kwargs):
+            if params:
+                captured_params.update(params)
+            return _Response()
+
+    mock_payload = {"claims": [_mock_google_claim_review()]}
+    payload_bytes = json.dumps(mock_payload).encode("utf-8")
+
+    with patch("backend.app.services.factcheck.service.httpx.Client", _Client):
+        req_data = {
+            "claims": ["The government announced 50 hospitals in 2025."],
+            "review_publisher_site_filter": "snopes.com",
+            "max_age_days": 365,
+        }
+        resp = await client.post("/api/v1/fact-check", json=req_data)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["status"] == "success"
+        assert len(data["claims"]) == 1
+        assert data["claims"][0]["publisher_name"] == "FactCheck Org"
+        assert captured_params.get("reviewPublisherSiteFilter") == "snopes.com"
+        assert captured_params.get("maxAgeDays") == "365"
+
+
+def test_google_fact_check_api_key_configuration(monkeypatch):
+    """24. GOOGLE_FACT_CHECK_API_KEY is respected when FACTCHECK_API_KEY is empty."""
+    from backend.app.services.factcheck.service import _is_configured, _get_api_key
+    monkeypatch.setattr(settings, "FACTCHECK_API_KEY", "")
+    monkeypatch.setattr(settings, "GOOGLE_API_KEY", "")
+    monkeypatch.setattr(settings, "GOOGLE_FACT_CHECK_API_KEY", "test-gfc-key-12345")
+    assert _is_configured() is True
+    assert _get_api_key() == "test-gfc-key-12345"
+

@@ -234,6 +234,8 @@ async def factcheck_endpoint(
                         language_code=request.language_code,
                         max_results_per_claim=request.max_results_per_claim,
                         claim_ids=ids_to_send,
+                        max_age_days=request.max_age_days,
+                        review_publisher_site_filter=request.review_publisher_site_filter,
                     )
 
                 try:

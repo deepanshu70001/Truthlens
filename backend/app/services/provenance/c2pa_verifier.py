@@ -30,6 +30,7 @@ class C2PAResult:
     status: str = "unavailable"
     outcome: Optional[str] = "unavailable"
     verification_outcome: str = "unavailable"
+    trust_outcome: str = "VALIDATION_ERROR"
     manifest_present: Optional[bool] = None
     manifest_readable: Optional[bool] = None
     signature_status: str = "unverified"
@@ -54,6 +55,7 @@ class C2PAResult:
         return {
             "status": self.status, "outcome": self.outcome,
             "verification_outcome": self.verification_outcome,
+            "trust_outcome": self.trust_outcome,
             "manifest_present": self.manifest_present,
             "manifest_readable": self.manifest_readable,
             "signature_status": self.signature_status,
@@ -78,6 +80,12 @@ class C2PAResult:
                 "It does not establish whether the depicted event is true."
             ),
         }
+
+
+SUPPORTED_C2PA_MIMES = {
+    "image/jpeg", "image/png", "image/webp", "image/avif", "image/tiff",
+    "image/heic", "image/heif", "image/svg+xml"
+}
 
 
 def _mime_type(image_data: bytes) -> str:
@@ -115,10 +123,18 @@ def verify_content_credentials(image_data: bytes, sdk_module=None) -> C2PAResult
     started = time.perf_counter()
     try:
         if not isinstance(image_data, bytes) or not image_data:
-            return C2PAResult(status="failed", outcome="failed", verification_outcome="failed", error_category="INVALID_IMAGE_BYTES",
+            return C2PAResult(status="failed", outcome="failed", verification_outcome="failed",
+                trust_outcome="VALIDATION_ERROR", error_category="INVALID_IMAGE_BYTES",
                 warnings=["Original image bytes were empty or invalid."])
         sdk = sdk_module or importlib.import_module("c2pa")
         version = importlib.metadata.version("c2pa-python") if sdk_module is None else getattr(sdk_module, "__version__", "mock")
+        mime = _mime_type(image_data)
+        if mime not in SUPPORTED_C2PA_MIMES and mime != "application/octet-stream":
+            return C2PAResult(status="failed", outcome="failed", verification_outcome="unsupported_format",
+                trust_outcome="UNSUPPORTED_FORMAT", manifest_present=False, manifest_readable=False,
+                error_category="C2PA_VERIFICATION_ERROR", implementation_version=version,
+                runtime_ms=int((time.perf_counter()-started)*1000),
+                warnings=[f"Asset MIME type '{mime}' is not supported for C2PA verification."])
         settings_data: Dict[str, Any] = {"verify": {
             "verify_after_reading": True,
             "remote_manifest_fetch": False,
@@ -133,7 +149,7 @@ def verify_content_credentials(image_data: bytes, sdk_module=None) -> C2PAResult
         sdk_settings = sdk.Settings.from_dict(settings_data)
         context = sdk.Context(sdk_settings)
         with context as ctx:
-            with sdk.Reader(_mime_type(image_data), io.BytesIO(image_data), context=ctx) as reader:
+            with sdk.Reader(mime, io.BytesIO(image_data), context=ctx) as reader:
                 raw_store = reader.json()
                 store = json.loads(raw_store) if isinstance(raw_store, str) else raw_store
                 if not isinstance(store, dict):
@@ -141,19 +157,22 @@ def verify_content_credentials(image_data: bytes, sdk_module=None) -> C2PAResult
                 active_label = store.get("active_manifest")
                 manifests = store.get("manifests", {})
                 if not active_label and not manifests:
-                    return C2PAResult(status="completed", outcome="no_results", verification_outcome="no_manifest", manifest_present=False,
+                    return C2PAResult(status="completed", outcome="no_results", verification_outcome="no_manifest",
+                        trust_outcome="NO_MANIFEST", manifest_present=False,
                         manifest_readable=None, implementation_version=version,
                         runtime_ms=int((time.perf_counter()-started)*1000),
                         warnings=["No embedded C2PA manifest was found; this is not evidence of manipulation."])
                 if not isinstance(manifests, dict) or not isinstance(active_label, str) or not isinstance(manifests.get(active_label), dict):
-                    return C2PAResult(status="completed", outcome="success", verification_outcome="verification_failed", manifest_present=True,
+                    return C2PAResult(status="completed", outcome="success", verification_outcome="verification_failed",
+                        trust_outcome="MANIFEST_INVALID", manifest_present=True,
                         manifest_readable=False, implementation_version=version,
                         runtime_ms=int((time.perf_counter()-started)*1000),
                         warnings=["The C2PA manifest store is present but structurally incomplete."])
                 manifest = manifests[active_label]
                 assertions = manifest.get("assertions", [])
                 if not isinstance(assertions, list):
-                    return C2PAResult(status="completed", outcome="success", verification_outcome="verification_failed", manifest_present=True,
+                    return C2PAResult(status="completed", outcome="success", verification_outcome="verification_failed",
+                        trust_outcome="MANIFEST_INVALID", manifest_present=True,
                         manifest_readable=False, implementation_version=version,
                         runtime_ms=int((time.perf_counter()-started)*1000),
                         warnings=["The active C2PA manifest has malformed assertion data."])
@@ -224,7 +243,22 @@ def verify_content_credentials(image_data: bytes, sdk_module=None) -> C2PAResult
                     else "verified" if signature_status == "valid" and binding_status == "valid"
                     else "unverified"
                 )
-                return C2PAResult(status="completed", outcome="success", verification_outcome=verification_outcome, manifest_present=True,
+                if signature_status == "invalid":
+                    trust_outcome = "SIGNATURE_INVALID"
+                elif binding_status == "mismatch":
+                    trust_outcome = "MANIFEST_INVALID"
+                elif signature_status == "valid" and binding_status == "valid":
+                    if not trust_configured:
+                        trust_outcome = "MANIFEST_PRESENT_VALID"
+                    elif signer_trust == "trusted":
+                        trust_outcome = "SIGNATURE_VALID_TRUSTED"
+                    else:
+                        trust_outcome = "SIGNATURE_VALID_UNTRUSTED"
+                else:
+                    trust_outcome = "VALIDATION_ERROR"
+
+                return C2PAResult(status="completed", outcome="success", verification_outcome=verification_outcome,
+                    trust_outcome=trust_outcome, manifest_present=True,
                     manifest_readable=True, signature_status=signature_status,
                     content_binding_status=binding_status, signer_identity=signer,
                     signer_trust_status=signer_trust, trust_check_configured=trust_configured, assertions=labels[:100],
@@ -236,18 +270,27 @@ def verify_content_credentials(image_data: bytes, sdk_module=None) -> C2PAResult
                         "Signature, content binding, and signer trust are reported separately; one or more properties remain invalid or unverified."
                     ]))
     except ModuleNotFoundError:
-        return C2PAResult(status="unavailable", outcome="unavailable", verification_outcome="unavailable", error_category="VERIFIER_DEPENDENCY_MISSING",
+        return C2PAResult(status="unavailable", outcome="unavailable", verification_outcome="unavailable",
+            trust_outcome="VALIDATION_ERROR", error_category="VERIFIER_DEPENDENCY_MISSING",
             runtime_ms=int((time.perf_counter()-started)*1000), warnings=["C2PA verification library is not installed."])
     except Exception as exc:
         err_name = type(exc).__name__.lower()
         err_msg = str(exc).lower()
         if "manifestnotfound" in err_name or "no jumbf" in err_msg or "manifest not found" in err_msg:
-            return C2PAResult(status="completed", outcome="no_results", verification_outcome="no_manifest", manifest_present=False,
+            return C2PAResult(status="completed", outcome="no_results", verification_outcome="no_manifest",
+                trust_outcome="NO_MANIFEST", manifest_present=False,
                 manifest_readable=None, implementation_version=locals().get("version", None),
                 runtime_ms=int((time.perf_counter()-started)*1000),
                 warnings=["No embedded C2PA manifest was found; this is not evidence of manipulation."])
+        if "notsupported" in err_name or "unsupported" in err_name or "unsupported" in err_msg:
+            return C2PAResult(status="failed", outcome="failed", verification_outcome="unsupported_format",
+                trust_outcome="UNSUPPORTED_FORMAT", manifest_present=False, manifest_readable=False,
+                error_category="C2PA_VERIFICATION_ERROR", implementation_version=locals().get("version", None),
+                runtime_ms=int((time.perf_counter()-started)*1000),
+                warnings=["Asset format is not supported for C2PA verification."])
         log.warning("C2PA verification could not complete (%s)", type(exc).__name__)
-        return C2PAResult(status="failed", outcome="failed", verification_outcome="failed", error_category="C2PA_VERIFICATION_ERROR",
+        return C2PAResult(status="failed", outcome="failed", verification_outcome="failed",
+            trust_outcome="VALIDATION_ERROR", error_category="C2PA_VERIFICATION_ERROR",
             runtime_ms=int((time.perf_counter()-started)*1000), warnings=["C2PA manifest could not be read or verified."])
 
 

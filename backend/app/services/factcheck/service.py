@@ -183,12 +183,12 @@ class FactCheckResult:
 
 def _is_configured() -> bool:
     """Check if the Fact Check API is configured."""
-    return bool(settings.GOOGLE_API_KEY or settings.FACTCHECK_API_KEY)
+    return bool(settings.GOOGLE_FACT_CHECK_API_KEY or settings.FACTCHECK_API_KEY or settings.GOOGLE_API_KEY)
 
 
 def _get_api_key() -> str:
     """Get the API key for the Fact Check API."""
-    return settings.FACTCHECK_API_KEY or settings.GOOGLE_API_KEY
+    return settings.GOOGLE_FACT_CHECK_API_KEY or settings.FACTCHECK_API_KEY or settings.GOOGLE_API_KEY
 
 
 def _bounded_setting(name: str, default: float, minimum: float, maximum: float) -> float:
@@ -206,6 +206,7 @@ def _search_single_claim(
     api_key: str,
     language_code: Optional[str] = None,
     max_age_days: Optional[int] = None,
+    review_publisher_site_filter: Optional[str] = None,
     claim_id: Optional[str] = None,
     timeout_seconds: Optional[float] = None,
 ) -> List[FactCheckClaim]:
@@ -220,8 +221,12 @@ def _search_single_claim(
     }
     if language_code and re.fullmatch(r"[a-z]{2,3}(?:-[A-Z]{2})?", language_code):
         params["languageCode"] = language_code
-    if max_age_days:
+    if max_age_days and isinstance(max_age_days, int) and max_age_days > 0:
         params["maxAgeDays"] = str(max_age_days)
+    if review_publisher_site_filter and isinstance(review_publisher_site_filter, str):
+        cleaned_filter = review_publisher_site_filter.strip().lower()
+        if re.fullmatch(r"[a-z0-9.-]+\.[a-z]{2,}", cleaned_filter):
+            params["reviewPublisherSiteFilter"] = cleaned_filter
 
     try:
         timeout = timeout_seconds or _bounded_setting("FACTCHECK_API_TIMEOUT_SECONDS", 10.0, 0.1, 60.0)
@@ -326,6 +331,8 @@ def search_fact_checks(
     language_code: Optional[str] = None,
     max_results_per_claim: int = 5,
     claim_ids: Optional[List[str]] = None,
+    max_age_days: Optional[int] = None,
+    review_publisher_site_filter: Optional[str] = None,
 ) -> FactCheckResult:
     """
     Search for fact-checks across multiple claims.
@@ -334,6 +341,9 @@ def search_fact_checks(
         claim_texts: List of claim strings to search
         language_code: Language code for the search
         max_results_per_claim: Max results to return per claim
+        claim_ids: Optional list of claim identifier UUIDs
+        max_age_days: Optional maximum age of claims in days
+        review_publisher_site_filter: Optional review publisher domain filter
 
     Returns:
         FactCheckResult with all found reviews
@@ -406,7 +416,10 @@ def search_fact_checks(
                 try:
                     results = _search_single_claim(
                         query=claim_text.strip(), api_key=api_key,
-                        language_code=language_code, claim_id=claim_id,
+                        language_code=language_code,
+                        max_age_days=max_age_days,
+                        review_publisher_site_filter=review_publisher_site_filter,
+                        claim_id=claim_id,
                         timeout_seconds=max(0.1, min(
                             _bounded_setting("FACTCHECK_API_TIMEOUT_SECONDS", 10.0, 0.1, 60.0),
                             deadline - time.monotonic(),

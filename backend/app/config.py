@@ -78,6 +78,8 @@ class Settings(BaseSettings):
 
     # ── External APIs ────────────────────────────────────────────
     GOOGLE_API_KEY: str = ""
+    GOOGLE_FACT_CHECK_API_KEY: str = ""
+    VISION_API_KEY: str = ""
     GOOGLE_CSE_ID: str = ""
     GOOGLE_APPLICATION_CREDENTIALS: str = ""
     FACTCHECK_API_KEY: str = ""

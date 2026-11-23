@@ -136,12 +136,35 @@ class OCRService:
             return
         self._tesseract_attempted = True
         try:
+            import os
+            import subprocess
             import pytesseract
             command = getattr(pytesseract.pytesseract, "tesseract_cmd", "tesseract") or "tesseract"
-            if not shutil.which(command) and not Path(command).is_file():
+            resolved_cmd = shutil.which(command) or (command if Path(command).is_file() else None)
+            if not resolved_cmd:
                 raise FileNotFoundError("Tesseract executable not found")
+            prefix = os.environ.get("TESSDATA_PREFIX", "")
+            if prefix and Path(prefix).name != "tessdata" and (Path(prefix) / "tessdata").is_dir():
+                os.environ["TESSDATA_PREFIX"] = str(Path(prefix) / "tessdata")
+            elif not prefix:
+                cmd_dir = Path(resolved_cmd).parent
+                candidate_tessdata = cmd_dir / "tessdata"
+                if candidate_tessdata.is_dir():
+                    os.environ["TESSDATA_PREFIX"] = str(candidate_tessdata)
             pytesseract.get_tesseract_version()
-            available_languages = set(pytesseract.get_languages(config=""))
+            raw_available = pytesseract.get_languages(config="")
+            available_languages = {
+                Path(lang.replace("\\", "/")).name for lang in raw_available
+            }
+            if not available_languages:
+                try:
+                    out = subprocess.check_output([resolved_cmd, "--list-langs"], text=True, stderr=subprocess.STDOUT)
+                    for line in out.splitlines()[1:]:
+                        clean = Path(line.strip().replace("\\", "/")).name
+                        if clean and clean != "osd":
+                            available_languages.add(clean)
+                except Exception:
+                    pass
             requested_languages = set(_tesseract_languages(self._languages).split("+"))
             missing_languages = sorted(requested_languages - available_languages)
             if missing_languages:
