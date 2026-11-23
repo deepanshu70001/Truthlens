@@ -183,12 +183,20 @@ class FactCheckResult:
 
 def _is_configured() -> bool:
     """Check if the Fact Check API is configured."""
-    return bool(settings.GOOGLE_FACT_CHECK_API_KEY or settings.FACTCHECK_API_KEY or settings.GOOGLE_API_KEY)
+    for attr in ("GOOGLE_FACT_CHECK_API_KEY", "FACTCHECK_API_KEY", "GOOGLE_API_KEY"):
+        val = getattr(settings, attr, "")
+        if isinstance(val, str) and val.strip():
+            return True
+    return False
 
 
 def _get_api_key() -> str:
     """Get the API key for the Fact Check API."""
-    return settings.GOOGLE_FACT_CHECK_API_KEY or settings.FACTCHECK_API_KEY or settings.GOOGLE_API_KEY
+    for attr in ("GOOGLE_FACT_CHECK_API_KEY", "FACTCHECK_API_KEY", "GOOGLE_API_KEY"):
+        val = getattr(settings, attr, "")
+        if isinstance(val, str) and val.strip():
+            return val.strip()
+    return ""
 
 
 def _bounded_setting(name: str, default: float, minimum: float, maximum: float) -> float:

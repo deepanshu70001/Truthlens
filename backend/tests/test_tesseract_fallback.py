@@ -116,12 +116,14 @@ def test_tesseract_missing_executable_fails_gracefully(monkeypatch, test_image_w
     assert result.has_text is False
 
 
-def test_tesseract_unsupported_language_fails_gracefully(monkeypatch, test_image_with_text):
-    """When requested language pack is not available, reports unavailable without crash."""
-    # 'xx' is an unmapped language
-    with pytest.raises(ValueError, match="No configured language has a Tesseract language mapping"):
-        service = OCRService(languages=["xx"], gpu=False)
-        service._load_tesseract()
+def test_tesseract_unsupported_language_fails_gracefully(test_image_with_text):
+    """When requested language pack is not mapped or available, reports unavailable without crash."""
+    service = OCRService(languages=["xx"], gpu=False)
+    service._load_tesseract()
+    assert service._tesseract is None
+    assert any("Tesseract fallback unavailable" in w for w in service._load_warnings)
+    result = service.extract(test_image_with_text)
+    assert result.status == "unavailable"
 
 
 def test_tesseract_bounding_boxes_are_valid_and_clipped():

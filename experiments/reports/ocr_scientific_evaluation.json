@@ -1,0 +1,3074 @@
+{
+  "metadata": {
+    "timestamp": "2026-11-24 01:11:59",
+    "easyocr_version": "1.7.2",
+    "pytesseract_version": "0.3.13",
+    "tesseract_version": "5.4.0",
+    "languages": [
+      "en",
+      "hi"
+    ],
+    "total_samples": 100
+  },
+  "summary": {
+    "total_benchmark_evaluations": 100,
+    "corpus_composition": {
+      "english_items": 8,
+      "hindi_items": 8,
+      "mixed_items": 4,
+      "conditions_per_item": 5
+    },
+    "overall_by_engine": {
+      "easyocr": {
+        "mean_cer": 0.1874,
+        "mean_wer": 0.3282,
+        "mean_latency_ms": 150.88,
+        "mean_confidence": 0.5404
+      },
+      "pytesseract": {
+        "mean_cer": 0.067,
+        "mean_wer": 0.0774,
+        "mean_latency_ms": 191.72,
+        "mean_confidence": 0.9234
+      },
+      "integrated": {
+        "mean_cer": 0.1874,
+        "mean_wer": 0.3282,
+        "mean_latency_ms": 136.85,
+        "mean_confidence": 0.5404
+      }
+    },
+    "by_language_slice": {
+      "en": {
+        "easyocr": {
+          "mean_cer": 0.1835,
+          "mean_wer": 0.3196,
+          "mean_latency_ms": 195.91
+        },
+        "pytesseract": {
+          "mean_cer": 0.0513,
+          "mean_wer": 0.0578,
+          "mean_latency_ms": 171.92
+        },
+        "integrated": {
+          "mean_cer": 0.1835,
+          "mean_wer": 0.3196,
+          "mean_latency_ms": 164.78
+        }
+      },
+      "hi": {
+        "easyocr": {
+          "mean_cer": 0.1874,
+          "mean_wer": 0.3262,
+          "mean_latency_ms": 122.09
+        },
+        "pytesseract": {
+          "mean_cer": 0.0972,
+          "mean_wer": 0.1046,
+          "mean_latency_ms": 204.52
+        },
+        "integrated": {
+          "mean_cer": 0.1874,
+          "mean_wer": 0.3262,
+          "mean_latency_ms": 118.91
+        }
+      },
+      "mix": {
+        "easyocr": {
+          "mean_cer": 0.1951,
+          "mean_wer": 0.3491,
+          "mean_latency_ms": 118.38
+        },
+        "pytesseract": {
+          "mean_cer": 0.0379,
+          "mean_wer": 0.0623,
+          "mean_latency_ms": 205.71
+        },
+        "integrated": {
+          "mean_cer": 0.1951,
+          "mean_wer": 0.3491,
+          "mean_latency_ms": 116.87
+        }
+      }
+    },
+    "by_condition_slice": {
+      "clean": {
+        "easyocr": {
+          "mean_cer": 0.0333,
+          "mean_wer": 0.0901
+        },
+        "pytesseract": {
+          "mean_cer": 0.0029,
+          "mean_wer": 0.0095
+        },
+        "integrated": {
+          "mean_cer": 0.0333,
+          "mean_wer": 0.0901
+        }
+      },
+      "blur": {
+        "easyocr": {
+          "mean_cer": 0.1155,
+          "mean_wer": 0.4486
+        },
+        "pytesseract": {
+          "mean_cer": 0.0009,
+          "mean_wer": 0.005
+        },
+        "integrated": {
+          "mean_cer": 0.1155,
+          "mean_wer": 0.4486
+        }
+      },
+      "jpeg": {
+        "easyocr": {
+          "mean_cer": 0.0301,
+          "mean_wer": 0.1185
+        },
+        "pytesseract": {
+          "mean_cer": 0.0048,
+          "mean_wer": 0.0106
+        },
+        "integrated": {
+          "mean_cer": 0.0301,
+          "mean_wer": 0.1185
+        }
+      },
+      "skew": {
+        "easyocr": {
+          "mean_cer": 0.7259,
+          "mean_wer": 0.8721
+        },
+        "pytesseract": {
+          "mean_cer": 0.3256,
+          "mean_wer": 0.357
+        },
+        "integrated": {
+          "mean_cer": 0.7259,
+          "mean_wer": 0.8721
+        }
+      },
+      "low_contrast": {
+        "easyocr": {
+          "mean_cer": 0.0322,
+          "mean_wer": 0.1115
+        },
+        "pytesseract": {
+          "mean_cer": 0.0009,
+          "mean_wer": 0.005
+        },
+        "integrated": {
+          "mean_cer": 0.0322,
+          "mean_wer": 0.1115
+        }
+      }
+    },
+    "confidence_accuracy_correlation": {
+      "easyocr": -0.6113,
+      "pytesseract": 0.7371,
+      "integrated": -0.6113
+    }
+  },
+  "detailed_results": [
+    {
+      "id": "en_01",
+      "language_slice": "en",
+      "condition": "clean",
+      "reference_length_chars": 64,
+      "reference_length_words": 7,
+      "easyocr": {
+        "text": "Breaking news: Official verification report confirmed authentic.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.5457,
+        "latency_ms": 665.74
+      },
+      "pytesseract": {
+        "text": "Breaking news: Official verification report confirmed authentic.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.96,
+        "latency_ms": 784.51
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Breaking news: Official verification report confirmed authentic.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.5457,
+        "latency_ms": 116.27
+      }
+    },
+    {
+      "id": "en_01",
+      "language_slice": "en",
+      "condition": "blur",
+      "reference_length_chars": 64,
+      "reference_length_words": 7,
+      "easyocr": {
+        "text": "Breawing news Oncial venncation report contrmed aumentic",
+        "cer": 0.2188,
+        "wer": 0.8571,
+        "confidence": 0.3029,
+        "latency_ms": 153.31
+      },
+      "pytesseract": {
+        "text": "Breaking news: Official verification report confirmed authentic.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.96,
+        "latency_ms": 144.76
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Breawing news Oncial venncation report contrmed aumentic",
+        "cer": 0.2188,
+        "wer": 0.8571,
+        "confidence": 0.3029,
+        "latency_ms": 119.05
+      }
+    },
+    {
+      "id": "en_01",
+      "language_slice": "en",
+      "condition": "jpeg",
+      "reference_length_chars": 64,
+      "reference_length_words": 7,
+      "easyocr": {
+        "text": "Breaking news: Official verification report confirmed authentic",
+        "cer": 0.0156,
+        "wer": 0.1429,
+        "confidence": 0.6075,
+        "latency_ms": 119.63
+      },
+      "pytesseract": {
+        "text": "Breaking news: Official verification report confirmed authentic.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.96,
+        "latency_ms": 143.58
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Breaking news: Official verification report confirmed authentic",
+        "cer": 0.0156,
+        "wer": 0.1429,
+        "confidence": 0.6075,
+        "latency_ms": 118.79
+      }
+    },
+    {
+      "id": "en_01",
+      "language_slice": "en",
+      "condition": "skew",
+      "reference_length_chars": 64,
+      "reference_length_words": 7,
+      "easyocr": {
+        "text": "authentic Official Breaking confirmed report verification news:",
+        "cer": 0.6875,
+        "wer": 0.8571,
+        "confidence": 0.8644,
+        "latency_ms": 304.64
+      },
+      "pytesseract": {
+        "text": "Breaking news: Official verification report confirmed authentic.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.95,
+        "latency_ms": 151.28
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "authentic Official Breaking confirmed report verification news:",
+        "cer": 0.6875,
+        "wer": 0.8571,
+        "confidence": 0.8644,
+        "latency_ms": 215.73
+      }
+    },
+    {
+      "id": "en_01",
+      "language_slice": "en",
+      "condition": "low_contrast",
+      "reference_length_chars": 64,
+      "reference_length_words": 7,
+      "easyocr": {
+        "text": "Breaking news: Official verification report confirmed authentic.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.6084,
+        "latency_ms": 110.59
+      },
+      "pytesseract": {
+        "text": "Breaking news: Official verification report confirmed authentic.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.96,
+        "latency_ms": 139.66
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Breaking news: Official verification report confirmed authentic.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.6084,
+        "latency_ms": 109.07
+      }
+    },
+    {
+      "id": "en_02",
+      "language_slice": "en",
+      "condition": "clean",
+      "reference_length_chars": 71,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "Multimodal forensic analysis detects generative artifacts in real time.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.6528,
+        "latency_ms": 159.49
+      },
+      "pytesseract": {
+        "text": "Multimodal forensic analysis detects generative artifacts in real time.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.96,
+        "latency_ms": 151.29
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Multimodal forensic analysis detects generative artifacts in real time.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.6528,
+        "latency_ms": 130.46
+      }
+    },
+    {
+      "id": "en_02",
+      "language_slice": "en",
+      "condition": "blur",
+      "reference_length_chars": 71,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "Multimodal torensic analysis detects generative arutacts In real ome",
+        "cer": 0.1127,
+        "wer": 0.4444,
+        "confidence": 0.2682,
+        "latency_ms": 143.16
+      },
+      "pytesseract": {
+        "text": "Multimodal forensic analysis detects generative artifacts in real time.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9456,
+        "latency_ms": 148.93
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Multimodal torensic analysis detects generative arutacts In real ome",
+        "cer": 0.1127,
+        "wer": 0.4444,
+        "confidence": 0.2682,
+        "latency_ms": 124.29
+      }
+    },
+    {
+      "id": "en_02",
+      "language_slice": "en",
+      "condition": "jpeg",
+      "reference_length_chars": 71,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "Multimodal forensic analysis detects generative artifacts in real time",
+        "cer": 0.0141,
+        "wer": 0.1111,
+        "confidence": 0.7109,
+        "latency_ms": 141.6
+      },
+      "pytesseract": {
+        "text": "Multimodal forensic analysis detects generative artifacts in real time.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.96,
+        "latency_ms": 146.59
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Multimodal forensic analysis detects generative artifacts in real time",
+        "cer": 0.0141,
+        "wer": 0.1111,
+        "confidence": 0.7109,
+        "latency_ms": 133.2
+      }
+    },
+    {
+      "id": "en_02",
+      "language_slice": "en",
+      "condition": "skew",
+      "reference_length_chars": 71,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "artifacts in time. detects forensic real generative analysis Multimodal",
+        "cer": 0.7042,
+        "wer": 0.8889,
+        "confidence": 0.9053,
+        "latency_ms": 276.91
+      },
+      "pytesseract": {
+        "text": "nerative artifacts in real time. Multimodal forensic analysis detects 9०",
+        "cer": 0.7887,
+        "wer": 1.1111,
+        "confidence": 0.858,
+        "latency_ms": 171.17
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "artifacts in time. detects forensic real generative analysis Multimodal",
+        "cer": 0.7042,
+        "wer": 0.8889,
+        "confidence": 0.9053,
+        "latency_ms": 246.3
+      }
+    },
+    {
+      "id": "en_02",
+      "language_slice": "en",
+      "condition": "low_contrast",
+      "reference_length_chars": 71,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "Multimodal forensic analysis detects generative artifacts in real time.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.6112,
+        "latency_ms": 134.22
+      },
+      "pytesseract": {
+        "text": "Multimodal forensic analysis detects generative artifacts in real time.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9578,
+        "latency_ms": 147.11
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Multimodal forensic analysis detects generative artifacts in real time.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.6112,
+        "latency_ms": 134.27
+      }
+    },
+    {
+      "id": "en_03",
+      "language_slice": "en",
+      "condition": "clean",
+      "reference_length_chars": 67,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "The election commission announced polling schedules for next month.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.8105,
+        "latency_ms": 153.54
+      },
+      "pytesseract": {
+        "text": "The election commission announced polling schedules for next month.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9578,
+        "latency_ms": 146.13
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "The election commission announced polling schedules for next month.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.8105,
+        "latency_ms": 141.22
+      }
+    },
+    {
+      "id": "en_03",
+      "language_slice": "en",
+      "condition": "blur",
+      "reference_length_chars": 67,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "Ine election commission announced polling schedules ior next monw",
+        "cer": 0.0896,
+        "wer": 0.3333,
+        "confidence": 0.5316,
+        "latency_ms": 140.79
+      },
+      "pytesseract": {
+        "text": "The election commission announced polling schedules for next month.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9556,
+        "latency_ms": 152.61
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Ine election commission announced polling schedules ior next monw",
+        "cer": 0.0896,
+        "wer": 0.3333,
+        "confidence": 0.5316,
+        "latency_ms": 137.15
+      }
+    },
+    {
+      "id": "en_03",
+      "language_slice": "en",
+      "condition": "jpeg",
+      "reference_length_chars": 67,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "The election commission announced polling schedules for next month",
+        "cer": 0.0149,
+        "wer": 0.1111,
+        "confidence": 0.5967,
+        "latency_ms": 137.56
+      },
+      "pytesseract": {
+        "text": "The election commission announced polling schedules for next month.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.96,
+        "latency_ms": 152.21
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "The election commission announced polling schedules for next month",
+        "cer": 0.0149,
+        "wer": 0.1111,
+        "confidence": 0.5967,
+        "latency_ms": 128.24
+      }
+    },
+    {
+      "id": "en_03",
+      "language_slice": "en",
+      "condition": "skew",
+      "reference_length_chars": 67,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "for polling The month. next schedules announced commission election",
+        "cer": 0.8209,
+        "wer": 0.8889,
+        "confidence": 0.8178,
+        "latency_ms": 316.21
+      },
+      "pytesseract": {
+        "text": "n announced polling schedules for next month. The election commissio",
+        "cer": 0.6716,
+        "wer": 0.6667,
+        "confidence": 0.917,
+        "latency_ms": 190.95
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "for polling The month. next schedules announced commission election",
+        "cer": 0.8209,
+        "wer": 0.8889,
+        "confidence": 0.8178,
+        "latency_ms": 275.58
+      }
+    },
+    {
+      "id": "en_03",
+      "language_slice": "en",
+      "condition": "low_contrast",
+      "reference_length_chars": 67,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "The election commission announced polling schedules for next month",
+        "cer": 0.0149,
+        "wer": 0.1111,
+        "confidence": 0.6748,
+        "latency_ms": 148.12
+      },
+      "pytesseract": {
+        "text": "The election commission announced polling schedules for next month.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9578,
+        "latency_ms": 166.91
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "The election commission announced polling schedules for next month",
+        "cer": 0.0149,
+        "wer": 0.1111,
+        "confidence": 0.6748,
+        "latency_ms": 144.12
+      }
+    },
+    {
+      "id": "en_04",
+      "language_slice": "en",
+      "condition": "clean",
+      "reference_length_chars": 76,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "High court orders comprehensive environmental audit of urban infrastructure.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.7992,
+        "latency_ms": 165.46
+      },
+      "pytesseract": {
+        "text": "High court orders comprehensive environmental audit of urban infrastructure.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9556,
+        "latency_ms": 163.91
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "High court orders comprehensive environmental audit of urban infrastructure.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.7992,
+        "latency_ms": 155.3
+      }
+    },
+    {
+      "id": "en_04",
+      "language_slice": "en",
+      "condition": "blur",
+      "reference_length_chars": 76,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "Hign court orders comprenensive environmental audit or Urban Intrastucture",
+        "cer": 0.1053,
+        "wer": 0.5556,
+        "confidence": 0.3578,
+        "latency_ms": 155.06
+      },
+      "pytesseract": {
+        "text": "High court orders comprehensive environmental audit of urban infrastructure.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9467,
+        "latency_ms": 156.96
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Hign court orders comprenensive environmental audit or Urban Intrastucture",
+        "cer": 0.1053,
+        "wer": 0.5556,
+        "confidence": 0.3578,
+        "latency_ms": 153.08
+      }
+    },
+    {
+      "id": "en_04",
+      "language_slice": "en",
+      "condition": "jpeg",
+      "reference_length_chars": 76,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "High court orders comprehensive environmental audit of urban infrastructure",
+        "cer": 0.0132,
+        "wer": 0.1111,
+        "confidence": 0.8283,
+        "latency_ms": 146.0
+      },
+      "pytesseract": {
+        "text": "High court orders comprehensive environmental audit of urban infrastructure.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9589,
+        "latency_ms": 155.18
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "High court orders comprehensive environmental audit of urban infrastructure",
+        "cer": 0.0132,
+        "wer": 0.1111,
+        "confidence": 0.8283,
+        "latency_ms": 142.78
+      }
+    },
+    {
+      "id": "en_04",
+      "language_slice": "en",
+      "condition": "skew",
+      "reference_length_chars": 76,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "of urban infrastructure High audit environmental comprehensive orders court",
+        "cer": 0.7237,
+        "wer": 1.0,
+        "confidence": 0.8286,
+        "latency_ms": 334.3
+      },
+      "pytesseract": {
+        "text": "urban infrastructure. High court orders comprehensive environmental audit of",
+        "cer": 0.5789,
+        "wer": 0.4444,
+        "confidence": 0.9211,
+        "latency_ms": 160.73
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "of urban infrastructure High audit environmental comprehensive orders court",
+        "cer": 0.7237,
+        "wer": 1.0,
+        "confidence": 0.8286,
+        "latency_ms": 237.83
+      }
+    },
+    {
+      "id": "en_04",
+      "language_slice": "en",
+      "condition": "low_contrast",
+      "reference_length_chars": 76,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "High court orders comprehensive environmental audit of urban infrastructure",
+        "cer": 0.0132,
+        "wer": 0.1111,
+        "confidence": 0.8212,
+        "latency_ms": 146.61
+      },
+      "pytesseract": {
+        "text": "High court orders comprehensive environmental audit of urban infrastructure.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9567,
+        "latency_ms": 147.18
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "High court orders comprehensive environmental audit of urban infrastructure",
+        "cer": 0.0132,
+        "wer": 0.1111,
+        "confidence": 0.8212,
+        "latency_ms": 142.97
+      }
+    },
+    {
+      "id": "en_05",
+      "language_slice": "en",
+      "condition": "clean",
+      "reference_length_chars": 71,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Renewable solar energy capacity reached record gigawatts in २०२६. fifty",
+        "cer": 0.2254,
+        "wer": 0.3,
+        "confidence": 0.7186,
+        "latency_ms": 176.94
+      },
+      "pytesseract": {
+        "text": "Renewable solar energy capacity reached record fifty gigawatts in 2026.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.952,
+        "latency_ms": 162.68
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Renewable solar energy capacity reached record gigawatts in २०२६. fifty",
+        "cer": 0.2254,
+        "wer": 0.3,
+        "confidence": 0.7186,
+        "latency_ms": 176.08
+      }
+    },
+    {
+      "id": "en_05",
+      "language_slice": "en",
+      "condition": "blur",
+      "reference_length_chars": 71,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Renewable solar energy capacity reached record ntty gigawats In २०२६.",
+        "cer": 0.1268,
+        "wer": 0.4,
+        "confidence": 0.3078,
+        "latency_ms": 142.19
+      },
+      "pytesseract": {
+        "text": "Renewable solar energy capacity reached record fifty gigawatts in 2026.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.938,
+        "latency_ms": 147.32
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Renewable solar energy capacity reached record ntty gigawats In २०२६.",
+        "cer": 0.1268,
+        "wer": 0.4,
+        "confidence": 0.3078,
+        "latency_ms": 149.3
+      }
+    },
+    {
+      "id": "en_05",
+      "language_slice": "en",
+      "condition": "jpeg",
+      "reference_length_chars": 71,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Renewable solar energy capacity reached record fifty gigawatts in २०२६.",
+        "cer": 0.0563,
+        "wer": 0.1,
+        "confidence": 0.4863,
+        "latency_ms": 142.36
+      },
+      "pytesseract": {
+        "text": "Renewable solar energy capacity reached record fifty gigawatts in 2026.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.951,
+        "latency_ms": 151.97
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Renewable solar energy capacity reached record fifty gigawatts in २०२६.",
+        "cer": 0.0563,
+        "wer": 0.1,
+        "confidence": 0.4863,
+        "latency_ms": 139.19
+      }
+    },
+    {
+      "id": "en_05",
+      "language_slice": "en",
+      "condition": "skew",
+      "reference_length_chars": 71,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "in fifty energy Renewable 2026. gigawatts record reached capacity solar",
+        "cer": 0.7887,
+        "wer": 0.9,
+        "confidence": 0.8562,
+        "latency_ms": 301.04
+      },
+      "pytesseract": {
+        "text": "Renewable solar energy capacity reached record fifty gigawatts in 2026.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.946,
+        "latency_ms": 154.45
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "in fifty energy Renewable 2026. gigawatts record reached capacity solar",
+        "cer": 0.7887,
+        "wer": 0.9,
+        "confidence": 0.8562,
+        "latency_ms": 273.34
+      }
+    },
+    {
+      "id": "en_05",
+      "language_slice": "en",
+      "condition": "low_contrast",
+      "reference_length_chars": 71,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Renewable solar energy capacity reached record fifty gigawatts in २०२६.",
+        "cer": 0.0563,
+        "wer": 0.1,
+        "confidence": 0.6953,
+        "latency_ms": 141.5
+      },
+      "pytesseract": {
+        "text": "Renewable solar energy capacity reached record fifty gigawatts in 2026.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.952,
+        "latency_ms": 163.8
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Renewable solar energy capacity reached record fifty gigawatts in २०२६.",
+        "cer": 0.0563,
+        "wer": 0.1,
+        "confidence": 0.6953,
+        "latency_ms": 127.46
+      }
+    },
+    {
+      "id": "en_06",
+      "language_slice": "en",
+      "condition": "clean",
+      "reference_length_chars": 73,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "Caution: Do not share unverified viral messages on social messaging apps.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.5958,
+        "latency_ms": 137.3
+      },
+      "pytesseract": {
+        "text": "Caution: Do not share unverified viral messages on social messaging apps.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9582,
+        "latency_ms": 153.66
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Caution: Do not share unverified viral messages on social messaging apps.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.5958,
+        "latency_ms": 138.46
+      }
+    },
+    {
+      "id": "en_06",
+      "language_slice": "en",
+      "condition": "blur",
+      "reference_length_chars": 73,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "Cauton Do not share Unvenned Mral messages on social messaging apps",
+        "cer": 0.137,
+        "wer": 0.3636,
+        "confidence": 0.4805,
+        "latency_ms": 160.06
+      },
+      "pytesseract": {
+        "text": "Caution: Do not share unverified viral messages on social messaging apps.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9555,
+        "latency_ms": 147.87
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Cauton Do not share Unvenned Mral messages on social messaging apps",
+        "cer": 0.137,
+        "wer": 0.3636,
+        "confidence": 0.4805,
+        "latency_ms": 150.65
+      }
+    },
+    {
+      "id": "en_06",
+      "language_slice": "en",
+      "condition": "jpeg",
+      "reference_length_chars": 73,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "Caution: Do not share unverified viral messages on social messaging apps.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.4928,
+        "latency_ms": 141.2
+      },
+      "pytesseract": {
+        "text": "Caution: Do not share unverified viral messages on social messaging apps.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.96,
+        "latency_ms": 162.0
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Caution: Do not share unverified viral messages on social messaging apps.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.4928,
+        "latency_ms": 138.68
+      }
+    },
+    {
+      "id": "en_06",
+      "language_slice": "en",
+      "condition": "skew",
+      "reference_length_chars": 73,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "on social messaging apps viral messages Caution: Do share unverified not",
+        "cer": 0.7123,
+        "wer": 0.9091,
+        "confidence": 0.8473,
+        "latency_ms": 223.82
+      },
+      "pytesseract": {
+        "text": "Caution: Do not share unverified viral messages On social messaging apps.",
+        "cer": 0.0137,
+        "wer": 0.0909,
+        "confidence": 0.9082,
+        "latency_ms": 168.47
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "on social messaging apps viral messages Caution: Do share unverified not",
+        "cer": 0.7123,
+        "wer": 0.9091,
+        "confidence": 0.8473,
+        "latency_ms": 214.17
+      }
+    },
+    {
+      "id": "en_06",
+      "language_slice": "en",
+      "condition": "low_contrast",
+      "reference_length_chars": 73,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "Caution: Do not share unverified viral messages on social messaging apps.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.6434,
+        "latency_ms": 140.04
+      },
+      "pytesseract": {
+        "text": "Caution: Do not share unverified viral messages on social messaging apps.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.96,
+        "latency_ms": 142.88
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Caution: Do not share unverified viral messages on social messaging apps.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.6434,
+        "latency_ms": 153.63
+      }
+    },
+    {
+      "id": "en_07",
+      "language_slice": "en",
+      "condition": "clean",
+      "reference_length_chars": 86,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Medical researchers discovered new therapeutic compounds with ninety percent efficacy.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.432,
+        "latency_ms": 182.74
+      },
+      "pytesseract": {
+        "text": "Medical researchers discovered new therapeutic compounds with ninety percent efficacy.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.96,
+        "latency_ms": 150.83
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Medical researchers discovered new therapeutic compounds with ninety percent efficacy.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.432,
+        "latency_ms": 157.82
+      }
+    },
+    {
+      "id": "en_07",
+      "language_slice": "en",
+      "condition": "blur",
+      "reference_length_chars": 86,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Medical researchers discovered new merapeutic compounds wo ninety percent enicacy",
+        "cer": 0.093,
+        "wer": 0.3,
+        "confidence": 0.3124,
+        "latency_ms": 166.64
+      },
+      "pytesseract": {
+        "text": "Medical researchers discovered new therapeutic compounds with ninety percent efficacy.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.958,
+        "latency_ms": 153.64
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Medical researchers discovered new merapeutic compounds wo ninety percent enicacy",
+        "cer": 0.093,
+        "wer": 0.3,
+        "confidence": 0.3124,
+        "latency_ms": 173.67
+      }
+    },
+    {
+      "id": "en_07",
+      "language_slice": "en",
+      "condition": "jpeg",
+      "reference_length_chars": 86,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Medical researchers discovered new therapeutic compounds with ninety percent efficacy",
+        "cer": 0.0116,
+        "wer": 0.1,
+        "confidence": 0.6567,
+        "latency_ms": 163.21
+      },
+      "pytesseract": {
+        "text": "Medical researchers discovered new therapeutic compounds with ninety percent efficacy.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.96,
+        "latency_ms": 165.89
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Medical researchers discovered new therapeutic compounds with ninety percent efficacy",
+        "cer": 0.0116,
+        "wer": 0.1,
+        "confidence": 0.6567,
+        "latency_ms": 162.83
+      }
+    },
+    {
+      "id": "en_07",
+      "language_slice": "en",
+      "condition": "skew",
+      "reference_length_chars": 86,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "efficacy ninety new therapeutic Medical percent with compounds discovered researchers",
+        "cer": 0.6977,
+        "wer": 0.8,
+        "confidence": 0.83,
+        "latency_ms": 505.42
+      },
+      "pytesseract": {
+        "text": "Medical researchers discovered new therapeutic compounds with ninety percent efficacy.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.942,
+        "latency_ms": 175.34
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "efficacy ninety new therapeutic Medical percent with compounds discovered researchers",
+        "cer": 0.6977,
+        "wer": 0.8,
+        "confidence": 0.83,
+        "latency_ms": 324.15
+      }
+    },
+    {
+      "id": "en_07",
+      "language_slice": "en",
+      "condition": "low_contrast",
+      "reference_length_chars": 86,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Medical researchers discovered new therapeutic compounds with ninety percent efficacy",
+        "cer": 0.0116,
+        "wer": 0.1,
+        "confidence": 0.5685,
+        "latency_ms": 179.02
+      },
+      "pytesseract": {
+        "text": "Medical researchers discovered new therapeutic compounds with ninety percent efficacy.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.959,
+        "latency_ms": 169.36
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Medical researchers discovered new therapeutic compounds with ninety percent efficacy",
+        "cer": 0.0116,
+        "wer": 0.1,
+        "confidence": 0.5685,
+        "latency_ms": 165.71
+      }
+    },
+    {
+      "id": "en_08",
+      "language_slice": "en",
+      "condition": "clean",
+      "reference_length_chars": 80,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "Digital signatures verified via cryptographic C२PA content credentials standard.",
+        "cer": 0.0125,
+        "wer": 0.1111,
+        "confidence": 0.3517,
+        "latency_ms": 170.98
+      },
+      "pytesseract": {
+        "text": "Digital signatures verified via cryptographic C2PA content credentials standard.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9522,
+        "latency_ms": 162.61
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Digital signatures verified via cryptographic C२PA content credentials standard.",
+        "cer": 0.0125,
+        "wer": 0.1111,
+        "confidence": 0.3517,
+        "latency_ms": 145.1
+      }
+    },
+    {
+      "id": "en_08",
+      "language_slice": "en",
+      "condition": "blur",
+      "reference_length_chars": 80,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "Digital signatures veriiied Mia cryptograpnic C२PA content credentials standard",
+        "cer": 0.0625,
+        "wer": 0.5556,
+        "confidence": 0.3552,
+        "latency_ms": 157.84
+      },
+      "pytesseract": {
+        "text": "Digital signatures verified via cryptographic C2PA content credentials standard.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9322,
+        "latency_ms": 146.51
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Digital signatures veriiied Mia cryptograpnic C२PA content credentials standard",
+        "cer": 0.0625,
+        "wer": 0.5556,
+        "confidence": 0.3552,
+        "latency_ms": 149.98
+      }
+    },
+    {
+      "id": "en_08",
+      "language_slice": "en",
+      "condition": "jpeg",
+      "reference_length_chars": 80,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "Digital signatures verified via cryptographic C२PA content credentials standard.",
+        "cer": 0.0125,
+        "wer": 0.1111,
+        "confidence": 0.4031,
+        "latency_ms": 131.1
+      },
+      "pytesseract": {
+        "text": "Digital signatures verified via cryptographic C2PA content credentials standard.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9511,
+        "latency_ms": 158.36
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Digital signatures verified via cryptographic C२PA content credentials standard.",
+        "cer": 0.0125,
+        "wer": 0.1111,
+        "confidence": 0.4031,
+        "latency_ms": 138.51
+      }
+    },
+    {
+      "id": "en_08",
+      "language_slice": "en",
+      "condition": "skew",
+      "reference_length_chars": 80,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "credentials standard. via Digital content C२PA cryptographic verified signatures",
+        "cer": 0.775,
+        "wer": 1.0,
+        "confidence": 0.8143,
+        "latency_ms": 261.0
+      },
+      "pytesseract": {
+        "text": "Digital signatures verified via cryptographic C2PA content credentials standard.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.8833,
+        "latency_ms": 156.91
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "credentials standard. via Digital content C२PA cryptographic verified signatures",
+        "cer": 0.775,
+        "wer": 1.0,
+        "confidence": 0.8143,
+        "latency_ms": 263.43
+      }
+    },
+    {
+      "id": "en_08",
+      "language_slice": "en",
+      "condition": "low_contrast",
+      "reference_length_chars": 80,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "Digital signatures verified via cryptographic C२PA content credentials standard.",
+        "cer": 0.0125,
+        "wer": 0.1111,
+        "confidence": 0.5034,
+        "latency_ms": 158.87
+      },
+      "pytesseract": {
+        "text": "Digital signatures verified via cryptographic C2PA content credentials standard.",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9522,
+        "latency_ms": 160.78
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Digital signatures verified via cryptographic C२PA content credentials standard.",
+        "cer": 0.0125,
+        "wer": 0.1111,
+        "confidence": 0.5034,
+        "latency_ms": 143.18
+      }
+    },
+    {
+      "id": "hi_01",
+      "language_slice": "hi",
+      "condition": "clean",
+      "reference_length_chars": 51,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "सत्यमेव जयते भारत सरकार का आधिकारिक आदर्श वाक्य हैl",
+        "cer": 0.0196,
+        "wer": 0.1111,
+        "confidence": 0.3516,
+        "latency_ms": 137.15
+      },
+      "pytesseract": {
+        "text": "सत्यमेव जयते भारत सरकार का आधिकारिक आदर्श वाक्य है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9322,
+        "latency_ms": 179.93
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "सत्यमेव जयते भारत सरकार का आधिकारिक आदर्श वाक्य हैl",
+        "cer": 0.0196,
+        "wer": 0.1111,
+        "confidence": 0.3516,
+        "latency_ms": 117.34
+      }
+    },
+    {
+      "id": "hi_01",
+      "language_slice": "hi",
+      "condition": "blur",
+      "reference_length_chars": 51,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "सत्यमेत जपते भारत सरकार का आधिकारिक आदर्श गाम्प हेे",
+        "cer": 0.1373,
+        "wer": 0.4444,
+        "confidence": 0.1362,
+        "latency_ms": 101.56
+      },
+      "pytesseract": {
+        "text": "सत्यमेव जयते भारत सरकार का आधिकारिक आदर्श वाक्य है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9278,
+        "latency_ms": 178.46
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "सत्यमेत जपते भारत सरकार का आधिकारिक आदर्श गाम्प हेे",
+        "cer": 0.1373,
+        "wer": 0.4444,
+        "confidence": 0.1362,
+        "latency_ms": 91.39
+      }
+    },
+    {
+      "id": "hi_01",
+      "language_slice": "hi",
+      "condition": "jpeg",
+      "reference_length_chars": 51,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "सत्यमेव जयते भारत सरकार का आधिकारिक आदर्श वाक्य है|",
+        "cer": 0.0196,
+        "wer": 0.1111,
+        "confidence": 0.4582,
+        "latency_ms": 108.87
+      },
+      "pytesseract": {
+        "text": "सत्यमेव Fad भारत सरकार का आधिकारिक आदर्श वाक्य है।",
+        "cer": 0.0784,
+        "wer": 0.1111,
+        "confidence": 0.8956,
+        "latency_ms": 184.61
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "सत्यमेव जयते भारत सरकार का आधिकारिक आदर्श वाक्य है|",
+        "cer": 0.0196,
+        "wer": 0.1111,
+        "confidence": 0.4582,
+        "latency_ms": 101.47
+      }
+    },
+    {
+      "id": "hi_01",
+      "language_slice": "hi",
+      "condition": "skew",
+      "reference_length_chars": 51,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "भारत सरकार का आधिकारिक वाक्य है| आदर्श जयते सत्यमेव",
+        "cer": 0.6667,
+        "wer": 0.6667,
+        "confidence": 0.7861,
+        "latency_ms": 189.41
+      },
+      "pytesseract": {
+        "text": "ect aed भारत सरकार का अविकारिक TET",
+        "cer": 0.549,
+        "wer": 0.6667,
+        "confidence": 0.5686,
+        "latency_ms": 269.51
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "भारत सरकार का आधिकारिक वाक्य है| आदर्श जयते सत्यमेव",
+        "cer": 0.6667,
+        "wer": 0.6667,
+        "confidence": 0.7861,
+        "latency_ms": 179.92
+      }
+    },
+    {
+      "id": "hi_01",
+      "language_slice": "hi",
+      "condition": "low_contrast",
+      "reference_length_chars": 51,
+      "reference_length_words": 9,
+      "easyocr": {
+        "text": "सत्यमेव जयते भारत सरकार का आधिकारिक वाक्य हैl आदर्श",
+        "cer": 0.2549,
+        "wer": 0.3333,
+        "confidence": 0.5331,
+        "latency_ms": 145.29
+      },
+      "pytesseract": {
+        "text": "सत्यमेव जयते भारत सरकार का आधिकारिक आदर्श वाक्य है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9322,
+        "latency_ms": 179.15
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "सत्यमेव जयते भारत सरकार का आधिकारिक वाक्य हैl आदर्श",
+        "cer": 0.2549,
+        "wer": 0.3333,
+        "confidence": 0.5331,
+        "latency_ms": 135.05
+      }
+    },
+    {
+      "id": "hi_02",
+      "language_slice": "hi",
+      "condition": "clean",
+      "reference_length_chars": 49,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "चुनाव आयोग ने मतदान की तारीखों की घोषणा कर दी हैl",
+        "cer": 0.0204,
+        "wer": 0.0909,
+        "confidence": 0.4652,
+        "latency_ms": 107.91
+      },
+      "pytesseract": {
+        "text": "चुनाव आयोग ने मतदान की तारीखों की घोषणा कर दी है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9491,
+        "latency_ms": 166.71
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "चुनाव आयोग ने मतदान की तारीखों की घोषणा कर दी हैl",
+        "cer": 0.0204,
+        "wer": 0.0909,
+        "confidence": 0.4652,
+        "latency_ms": 85.96
+      }
+    },
+    {
+      "id": "hi_02",
+      "language_slice": "hi",
+      "condition": "blur",
+      "reference_length_chars": 49,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "चुनाव आयोग ने मतदान की तारीखों की घोषणा कर दी हे|",
+        "cer": 0.0408,
+        "wer": 0.0909,
+        "confidence": 0.2461,
+        "latency_ms": 84.48
+      },
+      "pytesseract": {
+        "text": "चुनाव आयोग ने मतदान की तारीखों की घोषणा कर दी है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9482,
+        "latency_ms": 165.68
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "चुनाव आयोग ने मतदान की तारीखों की घोषणा कर दी हे|",
+        "cer": 0.0408,
+        "wer": 0.0909,
+        "confidence": 0.2461,
+        "latency_ms": 86.35
+      }
+    },
+    {
+      "id": "hi_02",
+      "language_slice": "hi",
+      "condition": "jpeg",
+      "reference_length_chars": 49,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "चुनाव आयोग ने मतदान की तारीखों की घोषणा कर दी है|",
+        "cer": 0.0204,
+        "wer": 0.0909,
+        "confidence": 0.5471,
+        "latency_ms": 102.2
+      },
+      "pytesseract": {
+        "text": "चुनाव आयोग ने मतदान की तारीखों की घोषणा कर दी है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9473,
+        "latency_ms": 173.01
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "चुनाव आयोग ने मतदान की तारीखों की घोषणा कर दी है|",
+        "cer": 0.0204,
+        "wer": 0.0909,
+        "confidence": 0.5471,
+        "latency_ms": 82.73
+      }
+    },
+    {
+      "id": "hi_02",
+      "language_slice": "hi",
+      "condition": "skew",
+      "reference_length_chars": 49,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "की घोषणा आयोग ने मतदान की कर दी है| तारीखों चुनाव",
+        "cer": 0.6327,
+        "wer": 0.7273,
+        "confidence": 0.7729,
+        "latency_ms": 153.16
+      },
+      "pytesseract": {
+        "text": "ao ने मतदान की HTH चोषणा कर",
+        "cer": 0.5714,
+        "wer": 0.6364,
+        "confidence": 0.5743,
+        "latency_ms": 163.4
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "की घोषणा आयोग ने मतदान की कर दी है| तारीखों चुनाव",
+        "cer": 0.6327,
+        "wer": 0.7273,
+        "confidence": 0.7729,
+        "latency_ms": 147.21
+      }
+    },
+    {
+      "id": "hi_02",
+      "language_slice": "hi",
+      "condition": "low_contrast",
+      "reference_length_chars": 49,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "चुनाव आयोग ने मतदान की तारीखों की घोषणा कर दी हैl",
+        "cer": 0.0204,
+        "wer": 0.0909,
+        "confidence": 0.3623,
+        "latency_ms": 82.49
+      },
+      "pytesseract": {
+        "text": "चुनाव आयोग ने मतदान की तारीखों की घोषणा कर दी है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9473,
+        "latency_ms": 178.81
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "चुनाव आयोग ने मतदान की तारीखों की घोषणा कर दी हैl",
+        "cer": 0.0204,
+        "wer": 0.0909,
+        "confidence": 0.3623,
+        "latency_ms": 80.71
+      }
+    },
+    {
+      "id": "hi_03",
+      "language_slice": "hi",
+      "condition": "clean",
+      "reference_length_chars": 60,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "सोशल मीडिया पर भ्रामक सूचनाओं से सावधान रहें और पुष्टि करें|",
+        "cer": 0.0167,
+        "wer": 0.0909,
+        "confidence": 0.6069,
+        "latency_ms": 117.73
+      },
+      "pytesseract": {
+        "text": "सोशल मीडिया पर भ्रामक सूचनाओं से सावधान रहें और पुष्टि करें।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9509,
+        "latency_ms": 175.27
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "सोशल मीडिया पर भ्रामक सूचनाओं से सावधान रहें और पुष्टि करें|",
+        "cer": 0.0167,
+        "wer": 0.0909,
+        "confidence": 0.6069,
+        "latency_ms": 99.71
+      }
+    },
+    {
+      "id": "hi_03",
+      "language_slice": "hi",
+      "condition": "blur",
+      "reference_length_chars": 60,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "सोशत मीडिया पर भामक सूचनाओं से सावधान रहे ओर पुर्टि करे|",
+        "cer": 0.1333,
+        "wer": 0.5455,
+        "confidence": 0.3088,
+        "latency_ms": 100.91
+      },
+      "pytesseract": {
+        "text": "सोशल मीडिया पर भ्रामक सूचनाओं से सावधान रहें और पुष्टि करें।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9509,
+        "latency_ms": 213.06
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "सोशत मीडिया पर भामक सूचनाओं से सावधान रहे ओर पुर्टि करे|",
+        "cer": 0.1333,
+        "wer": 0.5455,
+        "confidence": 0.3088,
+        "latency_ms": 97.49
+      }
+    },
+    {
+      "id": "hi_03",
+      "language_slice": "hi",
+      "condition": "jpeg",
+      "reference_length_chars": 60,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "सोशल मीडिया पर भ्रामक सूचनाओं से सावधान रहें और पुष्टि करें |",
+        "cer": 0.0333,
+        "wer": 0.1818,
+        "confidence": 0.4016,
+        "latency_ms": 93.98
+      },
+      "pytesseract": {
+        "text": "सोशल मीडिया पर भ्रामक सूचनाओं से सावधान रहें और पुष्टि करें।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9436,
+        "latency_ms": 184.96
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "सोशल मीडिया पर भ्रामक सूचनाओं से सावधान रहें और पुष्टि करें |",
+        "cer": 0.0333,
+        "wer": 0.1818,
+        "confidence": 0.4016,
+        "latency_ms": 94.57
+      }
+    },
+    {
+      "id": "hi_03",
+      "language_slice": "hi",
+      "condition": "skew",
+      "reference_length_chars": 60,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "से सावधान रहें और पुष्टि करें | सोशल मीडिया पर सूचनाओं = भ्रामक",
+        "cer": 0.8833,
+        "wer": 1.1818,
+        "confidence": 0.7141,
+        "latency_ms": 158.56
+      },
+      "pytesseract": {
+        "text": "ge मीडिया पर भ्रामक सूचनाओं से सावधान रे और पुष्टि करें।",
+        "cer": 0.1,
+        "wer": 0.1818,
+        "confidence": 0.8355,
+        "latency_ms": 183.13
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "से सावधान रहें और पुष्टि करें | सोशल मीडिया पर सूचनाओं = भ्रामक",
+        "cer": 0.8833,
+        "wer": 1.1818,
+        "confidence": 0.7141,
+        "latency_ms": 145.3
+      }
+    },
+    {
+      "id": "hi_03",
+      "language_slice": "hi",
+      "condition": "low_contrast",
+      "reference_length_chars": 60,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "सोशल मीडिया पर भ्रामक सूचनाओं से सावधान रहें और पुष्टि करें |",
+        "cer": 0.0333,
+        "wer": 0.1818,
+        "confidence": 0.6212,
+        "latency_ms": 94.1
+      },
+      "pytesseract": {
+        "text": "सोशल मीडिया पर भ्रामक सूचनाओं से सावधान रहें और पुष्टि करें।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9482,
+        "latency_ms": 190.16
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "सोशल मीडिया पर भ्रामक सूचनाओं से सावधान रहें और पुष्टि करें |",
+        "cer": 0.0333,
+        "wer": 0.1818,
+        "confidence": 0.6212,
+        "latency_ms": 100.71
+      }
+    },
+    {
+      "id": "hi_04",
+      "language_slice": "hi",
+      "condition": "clean",
+      "reference_length_chars": 60,
+      "reference_length_words": 12,
+      "easyocr": {
+        "text": "मौसम विभाग ने अगले चौबीस घंटों में भारी बारिश की चेतावनी दी|",
+        "cer": 0.0167,
+        "wer": 0.0833,
+        "confidence": 0.3215,
+        "latency_ms": 107.07
+      },
+      "pytesseract": {
+        "text": "मौसम विभाग ने अगले चौबीस घंटों में भारी बारिश की चेतावनी दी।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9533,
+        "latency_ms": 248.34
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "मौसम विभाग ने अगले चौबीस घंटों में भारी बारिश की चेतावनी दी|",
+        "cer": 0.0167,
+        "wer": 0.0833,
+        "confidence": 0.3215,
+        "latency_ms": 115.16
+      }
+    },
+    {
+      "id": "hi_04",
+      "language_slice": "hi",
+      "condition": "blur",
+      "reference_length_chars": 60,
+      "reference_length_words": 12,
+      "easyocr": {
+        "text": "मोसम विभाग ने अगते चोवीस घटो मे भारी बारिश की चेतावनी दी|",
+        "cer": 0.1333,
+        "wer": 0.5,
+        "confidence": 0.2205,
+        "latency_ms": 104.3
+      },
+      "pytesseract": {
+        "text": "मौसम विभाग ने अगले चौबीस घंटों में भारी बारिश की चेतावनी दी।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9533,
+        "latency_ms": 205.8
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "मोसम विभाग ने अगते चोवीस घटो मे भारी बारिश की चेतावनी दी|",
+        "cer": 0.1333,
+        "wer": 0.5,
+        "confidence": 0.2205,
+        "latency_ms": 108.94
+      }
+    },
+    {
+      "id": "hi_04",
+      "language_slice": "hi",
+      "condition": "jpeg",
+      "reference_length_chars": 60,
+      "reference_length_words": 12,
+      "easyocr": {
+        "text": "मौसम विभाग ने अगले चौबीस घंटों में भारी बारिश की चेतावनी दी|",
+        "cer": 0.0167,
+        "wer": 0.0833,
+        "confidence": 0.3157,
+        "latency_ms": 110.05
+      },
+      "pytesseract": {
+        "text": "मौसम विभाग ने अगले चौबीस घंटों में भारी बारिश की चेतावनी दी।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9533,
+        "latency_ms": 254.56
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "मौसम विभाग ने अगले चौबीस घंटों में भारी बारिश की चेतावनी दी|",
+        "cer": 0.0167,
+        "wer": 0.0833,
+        "confidence": 0.3157,
+        "latency_ms": 112.83
+      }
+    },
+    {
+      "id": "hi_04",
+      "language_slice": "hi",
+      "condition": "skew",
+      "reference_length_chars": 60,
+      "reference_length_words": 12,
+      "easyocr": {
+        "text": "घंटों में भारी बारिश की चेतावनी दी१ अगले चौबीस मौसम विभाग ने",
+        "cer": 0.85,
+        "wer": 0.9167,
+        "confidence": 0.8695,
+        "latency_ms": 135.05
+      },
+      "pytesseract": {
+        "text": "मौसम विभाग ने अगले चौबीस घंटों में भारी बारिश की चेतावनी दी।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9333,
+        "latency_ms": 183.69
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "घंटों में भारी बारिश की चेतावनी दी१ अगले चौबीस मौसम विभाग ने",
+        "cer": 0.85,
+        "wer": 0.9167,
+        "confidence": 0.8695,
+        "latency_ms": 140.51
+      }
+    },
+    {
+      "id": "hi_04",
+      "language_slice": "hi",
+      "condition": "low_contrast",
+      "reference_length_chars": 60,
+      "reference_length_words": 12,
+      "easyocr": {
+        "text": "मौसम विभाग ने अगले चौबीस घंटों में भारी बारिश की चेतावनी दी|",
+        "cer": 0.0167,
+        "wer": 0.0833,
+        "confidence": 0.3863,
+        "latency_ms": 104.93
+      },
+      "pytesseract": {
+        "text": "मौसम विभाग ने अगले चौबीस घंटों में भारी बारिश की चेतावनी दी।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9542,
+        "latency_ms": 237.12
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "मौसम विभाग ने अगले चौबीस घंटों में भारी बारिश की चेतावनी दी|",
+        "cer": 0.0167,
+        "wer": 0.0833,
+        "confidence": 0.3863,
+        "latency_ms": 102.81
+      }
+    },
+    {
+      "id": "hi_05",
+      "language_slice": "hi",
+      "condition": "clean",
+      "reference_length_chars": 65,
+      "reference_length_words": 12,
+      "easyocr": {
+        "text": "डिजिटल साक्षरता और तथ्य जांच आज के समय की महत्वपूर्ण आवश्यकता है|",
+        "cer": 0.0154,
+        "wer": 0.0833,
+        "confidence": 0.3852,
+        "latency_ms": 150.11
+      },
+      "pytesseract": {
+        "text": "डिजिटल साक्षरता और तथ्य जांच आज के समय की महत्वपूर्ण आवश्यकता है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9517,
+        "latency_ms": 212.69
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "डिजिटल साक्षरता और तथ्य जांच आज के समय की महत्वपूर्ण आवश्यकता है|",
+        "cer": 0.0154,
+        "wer": 0.0833,
+        "confidence": 0.3852,
+        "latency_ms": 124.82
+      }
+    },
+    {
+      "id": "hi_05",
+      "language_slice": "hi",
+      "condition": "blur",
+      "reference_length_chars": 65,
+      "reference_length_words": 12,
+      "easyocr": {
+        "text": "डिजिटत साक्षरता ओर तथ्प जाच आज के समप की महत्वपूर्ण आवश्पकता हे|",
+        "cer": 0.1231,
+        "wer": 0.5833,
+        "confidence": 0.586,
+        "latency_ms": 127.37
+      },
+      "pytesseract": {
+        "text": "डिजिटल साक्षरता और तथ्य जांच आज के समय की महत्वपूर्ण आवश्यकता है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9525,
+        "latency_ms": 224.12
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "डिजिटत साक्षरता ओर तथ्प जाच आज के समप की महत्वपूर्ण आवश्पकता हे|",
+        "cer": 0.1231,
+        "wer": 0.5833,
+        "confidence": 0.586,
+        "latency_ms": 138.83
+      }
+    },
+    {
+      "id": "hi_05",
+      "language_slice": "hi",
+      "condition": "jpeg",
+      "reference_length_chars": 65,
+      "reference_length_words": 12,
+      "easyocr": {
+        "text": "डिजिटल साक्षरता और तथ्य जांच आज के समय की महत्वपूर्ण आवश्यकता है|",
+        "cer": 0.0154,
+        "wer": 0.0833,
+        "confidence": 0.4871,
+        "latency_ms": 120.4
+      },
+      "pytesseract": {
+        "text": "डिजिटल साक्षरता और तथ्य जांच आज के समय की महत्वपूर्ण आवश्यकता है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9517,
+        "latency_ms": 221.48
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "डिजिटल साक्षरता और तथ्य जांच आज के समय की महत्वपूर्ण आवश्यकता है|",
+        "cer": 0.0154,
+        "wer": 0.0833,
+        "confidence": 0.4871,
+        "latency_ms": 112.89
+      }
+    },
+    {
+      "id": "hi_05",
+      "language_slice": "hi",
+      "condition": "skew",
+      "reference_length_chars": 65,
+      "reference_length_words": 12,
+      "easyocr": {
+        "text": "की महत्वपूर्ण आवश्यकता है| आज के समय और डिजिटल तथ्य जांच साक्षरता",
+        "cer": 0.7692,
+        "wer": 0.8333,
+        "confidence": 0.8188,
+        "latency_ms": 188.27
+      },
+      "pytesseract": {
+        "text": "डिजिटल साक्षरता और तथ्य जांच आज के समय की महत्वपूर्ण आवश्यकता है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.93,
+        "latency_ms": 211.44
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "की महत्वपूर्ण आवश्यकता है| आज के समय और डिजिटल तथ्य जांच साक्षरता",
+        "cer": 0.7692,
+        "wer": 0.8333,
+        "confidence": 0.8188,
+        "latency_ms": 200.62
+      }
+    },
+    {
+      "id": "hi_05",
+      "language_slice": "hi",
+      "condition": "low_contrast",
+      "reference_length_chars": 65,
+      "reference_length_words": 12,
+      "easyocr": {
+        "text": "डिजिटल साक्षरता और तथ्य जांच आज समय की महत्वपूर्ण आवश्यकता है|",
+        "cer": 0.0615,
+        "wer": 0.1667,
+        "confidence": 0.6423,
+        "latency_ms": 156.34
+      },
+      "pytesseract": {
+        "text": "डिजिटल साक्षरता और तथ्य जांच आज के समय की महत्वपूर्ण आवश्यकता है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9517,
+        "latency_ms": 179.11
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "डिजिटल साक्षरता और तथ्य जांच आज समय की महत्वपूर्ण आवश्यकता है|",
+        "cer": 0.0615,
+        "wer": 0.1667,
+        "confidence": 0.6423,
+        "latency_ms": 147.94
+      }
+    },
+    {
+      "id": "hi_06",
+      "language_slice": "hi",
+      "condition": "clean",
+      "reference_length_chars": 75,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "सर्वोच्च न्यायालय ने ऐतिहासिक निर्णय में पर्यावरण संरक्षण को प्राथमिकता दी|",
+        "cer": 0.0133,
+        "wer": 0.0909,
+        "confidence": 0.3252,
+        "latency_ms": 112.78
+      },
+      "pytesseract": {
+        "text": "सर्वोच्च न्यायालय ने ऐतिहासिक निर्णय में पर्यावरण संरक्षण को प्राथमिकता ch",
+        "cer": 0.04,
+        "wer": 0.0909,
+        "confidence": 0.9236,
+        "latency_ms": 204.97
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "सर्वोच्च न्यायालय ने ऐतिहासिक निर्णय में पर्यावरण संरक्षण को प्राथमिकता दी|",
+        "cer": 0.0133,
+        "wer": 0.0909,
+        "confidence": 0.3252,
+        "latency_ms": 120.39
+      }
+    },
+    {
+      "id": "hi_06",
+      "language_slice": "hi",
+      "condition": "blur",
+      "reference_length_chars": 75,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "सर्वोच्च न्यापातप ने ऐतिहासिक निर्णप मे पर्पावरण संरक्षण को प्राथमिकता दी|",
+        "cer": 0.0933,
+        "wer": 0.4545,
+        "confidence": 0.2169,
+        "latency_ms": 116.49
+      },
+      "pytesseract": {
+        "text": "सर्वोच्च न्यायालय ने ऐतिहासिक निर्णय में पर्यावरण संरक्षण को प्राथमिकता दी।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9491,
+        "latency_ms": 198.34
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "सर्वोच्च न्यापातप ने ऐतिहासिक निर्णप मे पर्पावरण संरक्षण को प्राथमिकता दी|",
+        "cer": 0.0933,
+        "wer": 0.4545,
+        "confidence": 0.2169,
+        "latency_ms": 120.55
+      }
+    },
+    {
+      "id": "hi_06",
+      "language_slice": "hi",
+      "condition": "jpeg",
+      "reference_length_chars": 75,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "सर्वोच्च न्यायालय ने ऐतिहासिक निर्णय में पर्यावरण संरक्षण को प्राथमिकता दी|",
+        "cer": 0.0133,
+        "wer": 0.0909,
+        "confidence": 0.3845,
+        "latency_ms": 110.04
+      },
+      "pytesseract": {
+        "text": "सर्वोच्च न्यायालय ने ऐतिहासिक निर्णय में पर्यावरण संरक्षण को प्राथमिकता दी।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9509,
+        "latency_ms": 215.33
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "सर्वोच्च न्यायालय ने ऐतिहासिक निर्णय में पर्यावरण संरक्षण को प्राथमिकता दी|",
+        "cer": 0.0133,
+        "wer": 0.0909,
+        "confidence": 0.3845,
+        "latency_ms": 116.09
+      }
+    },
+    {
+      "id": "hi_06",
+      "language_slice": "hi",
+      "condition": "skew",
+      "reference_length_chars": 75,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "संरक्षण को प्राथमिकता दी| १ ऐतिहासिक निर्णय में पर्यावरण सर्वोच्च न्यायालय ने",
+        "cer": 0.5067,
+        "wer": 0.8182,
+        "confidence": 0.5813,
+        "latency_ms": 132.61
+      },
+      "pytesseract": {
+        "text": "rece et aH TTT AT",
+        "cer": 0.9467,
+        "wer": 1.0,
+        "confidence": 0.282,
+        "latency_ms": 181.31
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "संरक्षण को प्राथमिकता दी| १ ऐतिहासिक निर्णय में पर्यावरण सर्वोच्च न्यायालय ने",
+        "cer": 0.5067,
+        "wer": 0.8182,
+        "confidence": 0.5813,
+        "latency_ms": 133.67
+      }
+    },
+    {
+      "id": "hi_06",
+      "language_slice": "hi",
+      "condition": "low_contrast",
+      "reference_length_chars": 75,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "सर्वोच्च न्यायालय ने ऐतिहासिक निर्णय में पर्यावरण संरक्षण को प्राथमिकता दी|",
+        "cer": 0.0133,
+        "wer": 0.0909,
+        "confidence": 0.3572,
+        "latency_ms": 109.85
+      },
+      "pytesseract": {
+        "text": "सर्वोच्च न्यायालय ने ऐतिहासिक निर्णय में पर्यावरण संरक्षण को प्राथमिकता दी।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.95,
+        "latency_ms": 204.76
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "सर्वोच्च न्यायालय ने ऐतिहासिक निर्णय में पर्यावरण संरक्षण को प्राथमिकता दी|",
+        "cer": 0.0133,
+        "wer": 0.0909,
+        "confidence": 0.3572,
+        "latency_ms": 111.95
+      }
+    },
+    {
+      "id": "hi_07",
+      "language_slice": "hi",
+      "condition": "clean",
+      "reference_length_chars": 64,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "वैज्ञानिक अनुसंधान संस्थान ने नई तकनीक का सफल परीक्षण पूरा किया|",
+        "cer": 0.0156,
+        "wer": 0.0909,
+        "confidence": 0.4367,
+        "latency_ms": 108.37
+      },
+      "pytesseract": {
+        "text": "वैज्ञानिक अनुसंधान संस्थान ने नई तकनीक का सफल परीक्षण पूरा किया।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9455,
+        "latency_ms": 191.25
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "वैज्ञानिक अनुसंधान संस्थान ने नई तकनीक का सफल परीक्षण पूरा किया|",
+        "cer": 0.0156,
+        "wer": 0.0909,
+        "confidence": 0.4367,
+        "latency_ms": 99.16
+      }
+    },
+    {
+      "id": "hi_07",
+      "language_slice": "hi",
+      "condition": "blur",
+      "reference_length_chars": 64,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "वेज्ञानिक अनुसंधान संस्थान ने नई तकनीक का सफत परीक्षण पूरा किपा|",
+        "cer": 0.0625,
+        "wer": 0.2727,
+        "confidence": 0.3666,
+        "latency_ms": 97.93
+      },
+      "pytesseract": {
+        "text": "वैज्ञानिक अनुसंधान संस्थान ने नई तकनीक का सफल परीक्षण पूरा किया।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9464,
+        "latency_ms": 230.79
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "वेज्ञानिक अनुसंधान संस्थान ने नई तकनीक का सफत परीक्षण पूरा किपा|",
+        "cer": 0.0625,
+        "wer": 0.2727,
+        "confidence": 0.3666,
+        "latency_ms": 110.08
+      }
+    },
+    {
+      "id": "hi_07",
+      "language_slice": "hi",
+      "condition": "jpeg",
+      "reference_length_chars": 64,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "वैज्ञानिक अनुसंधान संस्थान ने नई तकनीक का सफल परीक्षण पूरा किया|",
+        "cer": 0.0156,
+        "wer": 0.0909,
+        "confidence": 0.4807,
+        "latency_ms": 103.86
+      },
+      "pytesseract": {
+        "text": "वैज्ञानिक अनुसंधान संस्थान ने नई तकनीक का सफल परीक्षण पूरा किया।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9436,
+        "latency_ms": 189.36
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "वैज्ञानिक अनुसंधान संस्थान ने नई तकनीक का सफल परीक्षण पूरा किया|",
+        "cer": 0.0156,
+        "wer": 0.0909,
+        "confidence": 0.4807,
+        "latency_ms": 110.96
+      }
+    },
+    {
+      "id": "hi_07",
+      "language_slice": "hi",
+      "condition": "skew",
+      "reference_length_chars": 64,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "परीक्षण पूरा किया| का वैज्ञानिक संस्थान ने नई = सफल तकनीक अनुसंधान",
+        "cer": 0.75,
+        "wer": 0.9091,
+        "confidence": 0.8322,
+        "latency_ms": 207.86
+      },
+      "pytesseract": {
+        "text": "नई तकनीक का सफल परीक्षण पूरा किया। वैज्ञानिक अनुसंधान संस्थान ने",
+        "cer": 0.9062,
+        "wer": 0.7273,
+        "confidence": 0.8927,
+        "latency_ms": 251.96
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "परीक्षण पूरा किया| का वैज्ञानिक संस्थान ने नई = सफल तकनीक अनुसंधान",
+        "cer": 0.75,
+        "wer": 0.9091,
+        "confidence": 0.8322,
+        "latency_ms": 201.15
+      }
+    },
+    {
+      "id": "hi_07",
+      "language_slice": "hi",
+      "condition": "low_contrast",
+      "reference_length_chars": 64,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "वैज्ञानिक अनुसंधान संस्थान ने नई तकनीक का सफल परीक्षण पूरा किया|",
+        "cer": 0.0156,
+        "wer": 0.0909,
+        "confidence": 0.3896,
+        "latency_ms": 93.37
+      },
+      "pytesseract": {
+        "text": "वैज्ञानिक अनुसंधान संस्थान ने नई तकनीक का सफल परीक्षण पूरा किया।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9418,
+        "latency_ms": 182.24
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "वैज्ञानिक अनुसंधान संस्थान ने नई तकनीक का सफल परीक्षण पूरा किया|",
+        "cer": 0.0156,
+        "wer": 0.0909,
+        "confidence": 0.3896,
+        "latency_ms": 97.2
+      }
+    },
+    {
+      "id": "hi_08",
+      "language_slice": "hi",
+      "condition": "clean",
+      "reference_length_chars": 66,
+      "reference_length_words": 13,
+      "easyocr": {
+        "text": "भारतीय रेल ने यात्रियों की सुविधा के लिए विशेष ट्रेन सेवा शुरू की|",
+        "cer": 0.0152,
+        "wer": 0.0769,
+        "confidence": 0.3077,
+        "latency_ms": 94.94
+      },
+      "pytesseract": {
+        "text": "भारतीय रेल ने यात्रियों की सुविधा के लिए विशेष ट्रेन सेवा शुरू की।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9523,
+        "latency_ms": 191.0
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "भारतीय रेल ने यात्रियों की सुविधा के लिए विशेष ट्रेन सेवा शुरू की|",
+        "cer": 0.0152,
+        "wer": 0.0769,
+        "confidence": 0.3077,
+        "latency_ms": 95.09
+      }
+    },
+    {
+      "id": "hi_08",
+      "language_slice": "hi",
+      "condition": "blur",
+      "reference_length_chars": 66,
+      "reference_length_words": 13,
+      "easyocr": {
+        "text": "भारतीप रेत ने पात्रियों की सुविधा के विशेष ट्रेन सेवा शुरू की॰ तिए",
+        "cer": 0.1818,
+        "wer": 0.4615,
+        "confidence": 0.5063,
+        "latency_ms": 142.85
+      },
+      "pytesseract": {
+        "text": "भारतीय रेल ने यात्रियों की सुविधा के लिए विशेष ट्रेन सेवा शुरू की।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.93,
+        "latency_ms": 250.58
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "भारतीप रेत ने पात्रियों की सुविधा के विशेष ट्रेन सेवा शुरू की॰ तिए",
+        "cer": 0.1818,
+        "wer": 0.4615,
+        "confidence": 0.5063,
+        "latency_ms": 133.9
+      }
+    },
+    {
+      "id": "hi_08",
+      "language_slice": "hi",
+      "condition": "jpeg",
+      "reference_length_chars": 66,
+      "reference_length_words": 13,
+      "easyocr": {
+        "text": "भारतीय रेल ने यात्रियों की सुविधा के लिए विशेष ट्रेन सेवा शुरू की|",
+        "cer": 0.0152,
+        "wer": 0.0769,
+        "confidence": 0.3106,
+        "latency_ms": 97.79
+      },
+      "pytesseract": {
+        "text": "भारतीय रेल ने यात्रियों की सुविधा के लिए विशेष ट्रेन सेवा शुरू की।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9546,
+        "latency_ms": 257.87
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "भारतीय रेल ने यात्रियों की सुविधा के लिए विशेष ट्रेन सेवा शुरू की|",
+        "cer": 0.0152,
+        "wer": 0.0769,
+        "confidence": 0.3106,
+        "latency_ms": 100.81
+      }
+    },
+    {
+      "id": "hi_08",
+      "language_slice": "hi",
+      "condition": "skew",
+      "reference_length_chars": 66,
+      "reference_length_words": 13,
+      "easyocr": {
+        "text": "लिए विशेष ट्रेन सेवा शुरू कीI r रेल ने यात्रियों की सुविधा के भारतीय",
+        "cer": 0.8182,
+        "wer": 1.0,
+        "confidence": 0.6402,
+        "latency_ms": 164.64
+      },
+      "pytesseract": {
+        "text": "ene ने यो की सविध के CATT ATA ST",
+        "cer": 0.697,
+        "wer": 0.7692,
+        "confidence": 0.5611,
+        "latency_ms": 282.1
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "लिए विशेष ट्रेन सेवा शुरू कीI r रेल ने यात्रियों की सुविधा के भारतीय",
+        "cer": 0.8182,
+        "wer": 1.0,
+        "confidence": 0.6402,
+        "latency_ms": 155.36
+      }
+    },
+    {
+      "id": "hi_08",
+      "language_slice": "hi",
+      "condition": "low_contrast",
+      "reference_length_chars": 66,
+      "reference_length_words": 13,
+      "easyocr": {
+        "text": "भारतीय रेल ने यात्रियों की सुविधा के लिए विशेष ट्रेन सेवा शुरू की|",
+        "cer": 0.0152,
+        "wer": 0.0769,
+        "confidence": 0.357,
+        "latency_ms": 108.73
+      },
+      "pytesseract": {
+        "text": "भारतीय रेल ने यात्रियों की सुविधा के लिए विशेष ट्रेन सेवा शुरू की।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9538,
+        "latency_ms": 184.75
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "भारतीय रेल ने यात्रियों की सुविधा के लिए विशेष ट्रेन सेवा शुरू की|",
+        "cer": 0.0152,
+        "wer": 0.0769,
+        "confidence": 0.357,
+        "latency_ms": 98.82
+      }
+    },
+    {
+      "id": "mix_01",
+      "language_slice": "mix",
+      "condition": "clean",
+      "reference_length_chars": 58,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "Official Notice: दिल्ली मेट्रो की नई लाइन कल होगी| से शुरू",
+        "cer": 0.2069,
+        "wer": 0.1818,
+        "confidence": 0.782,
+        "latency_ms": 122.25
+      },
+      "pytesseract": {
+        "text": "Official Notice: दिल्ली मेट्रो की नई लाइन कल से शुरू होगी।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9309,
+        "latency_ms": 160.78
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Official Notice: दिल्ली मेट्रो की नई लाइन कल होगी| से शुरू",
+        "cer": 0.2069,
+        "wer": 0.1818,
+        "confidence": 0.782,
+        "latency_ms": 120.93
+      }
+    },
+    {
+      "id": "mix_01",
+      "language_slice": "mix",
+      "condition": "blur",
+      "reference_length_chars": 58,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "Otficial Notice दित्ली मेट्रो की नई ताइन कत से शुरू होगी|",
+        "cer": 0.1034,
+        "wer": 0.5455,
+        "confidence": 0.3687,
+        "latency_ms": 92.14
+      },
+      "pytesseract": {
+        "text": "Official Notice: दिल्ली मेट्रो की नई लाइन कल से शुरू होगी।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9318,
+        "latency_ms": 172.73
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Otficial Notice दित्ली मेट्रो की नई ताइन कत से शुरू होगी|",
+        "cer": 0.1034,
+        "wer": 0.5455,
+        "confidence": 0.3687,
+        "latency_ms": 102.2
+      }
+    },
+    {
+      "id": "mix_01",
+      "language_slice": "mix",
+      "condition": "jpeg",
+      "reference_length_chars": 58,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "Official Notice: दिल्ली मेट्रो की नई लाइन कल होगी| से शुरू",
+        "cer": 0.2069,
+        "wer": 0.1818,
+        "confidence": 0.7487,
+        "latency_ms": 120.1
+      },
+      "pytesseract": {
+        "text": "Official Notice: दिल्ली मेट्रो की नई लाइन कल से शुरू होगी।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9355,
+        "latency_ms": 180.7
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Official Notice: दिल्ली मेट्रो की नई लाइन कल होगी| से शुरू",
+        "cer": 0.2069,
+        "wer": 0.1818,
+        "confidence": 0.7487,
+        "latency_ms": 123.41
+      }
+    },
+    {
+      "id": "mix_01",
+      "language_slice": "mix",
+      "condition": "skew",
+      "reference_length_chars": 58,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "ः दिल्ली मेट्नो की नई लाइन कल से शुरू होगीा Official Noticeः",
+        "cer": 0.6034,
+        "wer": 0.5455,
+        "confidence": 0.4637,
+        "latency_ms": 92.69
+      },
+      "pytesseract": {
+        "text": "Official Notice: दिल्‍ली मेट्रो की नई लाइन कल से शुरू होगी।",
+        "cer": 0.0172,
+        "wer": 0.0909,
+        "confidence": 0.9,
+        "latency_ms": 167.73
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "ः दिल्ली मेट्नो की नई लाइन कल से शुरू होगीा Official Noticeः",
+        "cer": 0.6034,
+        "wer": 0.5455,
+        "confidence": 0.4637,
+        "latency_ms": 96.11
+      }
+    },
+    {
+      "id": "mix_01",
+      "language_slice": "mix",
+      "condition": "low_contrast",
+      "reference_length_chars": 58,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "Official Notice: दिल्ली मेट्रो की नई लाइन कल से शुरू होगी|",
+        "cer": 0.0172,
+        "wer": 0.0909,
+        "confidence": 0.5026,
+        "latency_ms": 94.9
+      },
+      "pytesseract": {
+        "text": "Official Notice: दिल्ली मेट्रो की नई लाइन कल से शुरू होगी।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9336,
+        "latency_ms": 169.58
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Official Notice: दिल्ली मेट्रो की नई लाइन कल से शुरू होगी|",
+        "cer": 0.0172,
+        "wer": 0.0909,
+        "confidence": 0.5026,
+        "latency_ms": 92.85
+      }
+    },
+    {
+      "id": "mix_02",
+      "language_slice": "mix",
+      "condition": "clean",
+      "reference_length_chars": 58,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Breakingः भारत सरकार ने नया Al Policy Framework जारी कियाl",
+        "cer": 0.0517,
+        "wer": 0.3,
+        "confidence": 0.2736,
+        "latency_ms": 134.79
+      },
+      "pytesseract": {
+        "text": "Breaking: भारत सरकार ने नया Al Policy Framework जारी किया।",
+        "cer": 0.0172,
+        "wer": 0.1,
+        "confidence": 0.945,
+        "latency_ms": 181.23
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Breakingः भारत सरकार ने नया Al Policy Framework जारी कियाl",
+        "cer": 0.0517,
+        "wer": 0.3,
+        "confidence": 0.2736,
+        "latency_ms": 110.61
+      }
+    },
+    {
+      "id": "mix_02",
+      "language_slice": "mix",
+      "condition": "blur",
+      "reference_length_chars": 58,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Breaking भारत सरकार नपा Al Policy Framework जारी किपा|",
+        "cer": 0.1379,
+        "wer": 0.5,
+        "confidence": 0.644,
+        "latency_ms": 132.88
+      },
+      "pytesseract": {
+        "text": "Breaking: भारत सरकार ने नया Al Policy Framework जारी किया।",
+        "cer": 0.0172,
+        "wer": 0.1,
+        "confidence": 0.942,
+        "latency_ms": 184.79
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Breaking भारत सरकार नपा Al Policy Framework जारी किपा|",
+        "cer": 0.1379,
+        "wer": 0.5,
+        "confidence": 0.644,
+        "latency_ms": 115.79
+      }
+    },
+    {
+      "id": "mix_02",
+      "language_slice": "mix",
+      "condition": "jpeg",
+      "reference_length_chars": 58,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Breakingः भारत सरकार ने नया Al Policy Framework जारी कियाl",
+        "cer": 0.0517,
+        "wer": 0.3,
+        "confidence": 0.4121,
+        "latency_ms": 115.03
+      },
+      "pytesseract": {
+        "text": "Breaking: भारत सरकार ने नया Al Policy Framework जारी किया।",
+        "cer": 0.0172,
+        "wer": 0.1,
+        "confidence": 0.935,
+        "latency_ms": 191.64
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Breakingः भारत सरकार ने नया Al Policy Framework जारी कियाl",
+        "cer": 0.0517,
+        "wer": 0.3,
+        "confidence": 0.4121,
+        "latency_ms": 106.69
+      }
+    },
+    {
+      "id": "mix_02",
+      "language_slice": "mix",
+      "condition": "skew",
+      "reference_length_chars": 58,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "जारी किया| ने नया Al Policy Framework Breakingः भारत सरकार",
+        "cer": 0.569,
+        "wer": 0.7,
+        "confidence": 0.7862,
+        "latency_ms": 170.12
+      },
+      "pytesseract": {
+        "text": "6: भारत सरकार ने नया Al Policy Framework जारी किया। Breakin",
+        "cer": 0.2931,
+        "wer": 0.3,
+        "confidence": 0.8964,
+        "latency_ms": 202.31
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "जारी किया| ने नया Al Policy Framework Breakingः भारत सरकार",
+        "cer": 0.569,
+        "wer": 0.7,
+        "confidence": 0.7862,
+        "latency_ms": 171.91
+      }
+    },
+    {
+      "id": "mix_02",
+      "language_slice": "mix",
+      "condition": "low_contrast",
+      "reference_length_chars": 58,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Breakingः भारत सरकार ने नया Al Policy Framework जारी किया|",
+        "cer": 0.0517,
+        "wer": 0.3,
+        "confidence": 0.4315,
+        "latency_ms": 115.25
+      },
+      "pytesseract": {
+        "text": "Breaking: भारत सरकार ने नया Al Policy Framework जारी किया।",
+        "cer": 0.0172,
+        "wer": 0.1,
+        "confidence": 0.947,
+        "latency_ms": 183.65
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Breakingः भारत सरकार ने नया Al Policy Framework जारी किया|",
+        "cer": 0.0517,
+        "wer": 0.3,
+        "confidence": 0.4315,
+        "latency_ms": 110.51
+      }
+    },
+    {
+      "id": "mix_03",
+      "language_slice": "mix",
+      "condition": "clean",
+      "reference_length_chars": 58,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "Fact Check: सोशल मीडिया पर वायरल यह दावा Totally False है|",
+        "cer": 0.0172,
+        "wer": 0.0909,
+        "confidence": 0.3872,
+        "latency_ms": 113.64
+      },
+      "pytesseract": {
+        "text": "Fact Check: सोशल मीडिया पर वायरल यह दावा Totally False है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9473,
+        "latency_ms": 213.74
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Fact Check: सोशल मीडिया पर वायरल यह दावा Totally False है|",
+        "cer": 0.0172,
+        "wer": 0.0909,
+        "confidence": 0.3872,
+        "latency_ms": 121.83
+      }
+    },
+    {
+      "id": "mix_03",
+      "language_slice": "mix",
+      "condition": "blur",
+      "reference_length_chars": 58,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "Fact Check: सोशत मीडिया पर वापरत पह दावा Totally False हेl",
+        "cer": 0.1034,
+        "wer": 0.3636,
+        "confidence": 0.3533,
+        "latency_ms": 105.77
+      },
+      "pytesseract": {
+        "text": "Fact Check: सोशल मीडिया पर वायरल यह दावा Totally False है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9518,
+        "latency_ms": 198.45
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Fact Check: सोशत मीडिया पर वापरत पह दावा Totally False हेl",
+        "cer": 0.1034,
+        "wer": 0.3636,
+        "confidence": 0.3533,
+        "latency_ms": 98.12
+      }
+    },
+    {
+      "id": "mix_03",
+      "language_slice": "mix",
+      "condition": "jpeg",
+      "reference_length_chars": 58,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "Fact Check: सोशल मीडिया पर वायरल यह दावा Totally False है|",
+        "cer": 0.0172,
+        "wer": 0.0909,
+        "confidence": 0.4486,
+        "latency_ms": 106.37
+      },
+      "pytesseract": {
+        "text": "Fact Check: सोशल मीडिया पर वायरल यह दावा Totally False है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9473,
+        "latency_ms": 253.62
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Fact Check: सोशल मीडिया पर वायरल यह दावा Totally False है|",
+        "cer": 0.0172,
+        "wer": 0.0909,
+        "confidence": 0.4486,
+        "latency_ms": 109.85
+      }
+    },
+    {
+      "id": "mix_03",
+      "language_slice": "mix",
+      "condition": "skew",
+      "reference_length_chars": 58,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "दावा Totally False है| यह Check: सोशल मीडिया पर Fact वायरल",
+        "cer": 0.8793,
+        "wer": 1.0,
+        "confidence": 0.8002,
+        "latency_ms": 155.49
+      },
+      "pytesseract": {
+        "text": "८ सोशल मीडिया पर वायरल यह दावा Totally False हैं। Fact (16९",
+        "cer": 0.3793,
+        "wer": 0.4545,
+        "confidence": 0.855,
+        "latency_ms": 197.1
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "दावा Totally False है| यह Check: सोशल मीडिया पर Fact वायरल",
+        "cer": 0.8793,
+        "wer": 1.0,
+        "confidence": 0.8002,
+        "latency_ms": 156.99
+      }
+    },
+    {
+      "id": "mix_03",
+      "language_slice": "mix",
+      "condition": "low_contrast",
+      "reference_length_chars": 58,
+      "reference_length_words": 11,
+      "easyocr": {
+        "text": "Fact Check: सोशल मीडिया पर वायरल यह दावा Totally False है|",
+        "cer": 0.0172,
+        "wer": 0.0909,
+        "confidence": 0.5044,
+        "latency_ms": 110.14
+      },
+      "pytesseract": {
+        "text": "Fact Check: सोशल मीडिया पर वायरल यह दावा Totally False है।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.9473,
+        "latency_ms": 509.45
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Fact Check: सोशल मीडिया पर वायरल यह दावा Totally False है|",
+        "cer": 0.0172,
+        "wer": 0.0909,
+        "confidence": 0.5044,
+        "latency_ms": 115.75
+      }
+    },
+    {
+      "id": "mix_04",
+      "language_slice": "mix",
+      "condition": "clean",
+      "reference_length_chars": 53,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Cyber Security Alert: अनजान लिंक पर कभी Click न करें|",
+        "cer": 0.0189,
+        "wer": 0.1,
+        "confidence": 0.6095,
+        "latency_ms": 93.84
+      },
+      "pytesseract": {
+        "text": "Cyber Security Alert: अनजान लिंक पर कभी Click न करें।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.944,
+        "latency_ms": 170.85
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Cyber Security Alert: अनजान लिंक पर कभी Click न करें|",
+        "cer": 0.0189,
+        "wer": 0.1,
+        "confidence": 0.6095,
+        "latency_ms": 96.47
+      }
+    },
+    {
+      "id": "mix_04",
+      "language_slice": "mix",
+      "condition": "blur",
+      "reference_length_chars": 53,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Cyber Secunty Alert अनजान लिक पर कभी Click न करे|",
+        "cer": 0.1132,
+        "wer": 0.4,
+        "confidence": 0.3662,
+        "latency_ms": 89.05
+      },
+      "pytesseract": {
+        "text": "Cyber Security Alert: अनजान लिंक पर कभी Click न करें।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.935,
+        "latency_ms": 180.25
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Cyber Secunty Alert अनजान लिक पर कभी Click न करे|",
+        "cer": 0.1132,
+        "wer": 0.4,
+        "confidence": 0.3662,
+        "latency_ms": 95.96
+      }
+    },
+    {
+      "id": "mix_04",
+      "language_slice": "mix",
+      "condition": "jpeg",
+      "reference_length_chars": 53,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Cyber Security Alertः अनजान लिंक पर कभी Click न करें|",
+        "cer": 0.0377,
+        "wer": 0.2,
+        "confidence": 0.5364,
+        "latency_ms": 95.47
+      },
+      "pytesseract": {
+        "text": "Cyber Security Alert: अनजान लिंक पर कभी Click न करें।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.944,
+        "latency_ms": 178.51
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Cyber Security Alertः अनजान लिंक पर कभी Click न करें|",
+        "cer": 0.0377,
+        "wer": 0.2,
+        "confidence": 0.5364,
+        "latency_ms": 97.98
+      }
+    },
+    {
+      "id": "mix_04",
+      "language_slice": "mix",
+      "condition": "skew",
+      "reference_length_chars": 53,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "लिंक पर Click Security Alert: Cyber न करें| कभी अनजान",
+        "cer": 0.6792,
+        "wer": 0.9,
+        "confidence": 0.8152,
+        "latency_ms": 196.43
+      },
+      "pytesseract": {
+        "text": "Cyber Security Alert: अनजान लिंक पर कभी Click न करें।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.924,
+        "latency_ms": 256.7
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "लिंक पर Click Security Alert: Cyber न करें| कभी अनजान",
+        "cer": 0.6792,
+        "wer": 0.9,
+        "confidence": 0.8152,
+        "latency_ms": 193.28
+      }
+    },
+    {
+      "id": "mix_04",
+      "language_slice": "mix",
+      "condition": "low_contrast",
+      "reference_length_chars": 53,
+      "reference_length_words": 10,
+      "easyocr": {
+        "text": "Cyber Security Alert: अनजान लिंक पर कभी Click न करें|",
+        "cer": 0.0189,
+        "wer": 0.1,
+        "confidence": 0.4766,
+        "latency_ms": 111.32
+      },
+      "pytesseract": {
+        "text": "Cyber Security Alert: अनजान लिंक पर कभी Click न करें।",
+        "cer": 0.0,
+        "wer": 0.0,
+        "confidence": 0.943,
+        "latency_ms": 160.41
+      },
+      "integrated": {
+        "engine_used": "EasyOCR",
+        "text": "Cyber Security Alert: अनजान लिंक पर कभी Click न करें|",
+        "cer": 0.0189,
+        "wer": 0.1,
+        "confidence": 0.4766,
+        "latency_ms": 100.21
+      }
+    }
+  ]
+}

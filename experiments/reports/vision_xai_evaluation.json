@@ -1,0 +1,97 @@
+{
+  "metadata": {
+    "timestamp": "2026-11-24 01:19:06",
+    "device": "cuda",
+    "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU"
+  },
+  "yolo_object_detection": {
+    "model_identity": "yolov8n.pt",
+    "checkpoint_sha256": "31e20dde3def09e2cf938c7be6fe23d9150bbbe503982af13345706515f2ef95",
+    "device": "cuda",
+    "mean_latency_ms": 1026.99,
+    "p95_latency_ms": 2658.43,
+    "all_bounding_boxes_valid": true,
+    "total_test_scenes": 3,
+    "scene_evaluations": [
+      {
+        "scene": "multi_object_canvas",
+        "dimensions": [
+          640,
+          480
+        ],
+        "object_count": 0,
+        "unique_classes": [],
+        "latency_ms": 2945.52,
+        "all_boxes_valid": true
+      },
+      {
+        "scene": "contrast_shapes",
+        "dimensions": [
+          800,
+          600
+        ],
+        "object_count": 1,
+        "unique_classes": [
+          "frisbee"
+        ],
+        "latency_ms": 60.82,
+        "all_boxes_valid": true
+      },
+      {
+        "scene": "blank_canvas",
+        "dimensions": [
+          512,
+          512
+        ],
+        "object_count": 0,
+        "unique_classes": [],
+        "latency_ms": 74.62,
+        "all_boxes_valid": true
+      }
+    ],
+    "limitations": [
+      "YOLOv8n detects COCO 80-class visual objects for scene context.",
+      "Object detection coordinates refer to EXIF-corrected source pixels.",
+      "Lacks dedicated pixel-level or bounding-box forensic manipulation ground truth; non-voting in authenticity fusion."
+    ]
+  },
+  "gradcam_explainability": {
+    "model_identity": "truthlens/siglip-cifake-frozen-head",
+    "target_layer": "model.vision_model.encoder.layers[-1].layer_norm2",
+    "patch_grid_dimensions": [
+      14,
+      14
+    ],
+    "interpolated_dimensions": [
+      224,
+      224
+    ],
+    "mean_latency_ms": 92.09,
+    "sanity_checks": {
+      "check1_parameter_invariance": {
+        "max_logit_drift": 0.0,
+        "passed": true
+      },
+      "check2_target_class_sensitivity": {
+        "target_class_0_vs_1_correlation": -0.4424,
+        "target_class_0_vs_1_ssim": -0.282,
+        "passed": true,
+        "description": "Grad-CAM generates distinct attribution maps when explaining Authentic vs AI predictions."
+      },
+      "check3_cascading_parameter_randomization": {
+        "head_randomized_correlation": 1.0,
+        "head_randomized_ssim": 1.0,
+        "top_layer_randomized_correlation": -0.0644,
+        "top_layer_randomized_ssim": -0.0484,
+        "passed": true,
+        "description": "Attribution degrades significantly when model parameters are randomized, proving sensitivity to learned weights (Adebayo et al., NeurIPS 2018)."
+      },
+      "check4_input_perturbation_stability": {
+        "gaussian_blur_correlation": 0.5155,
+        "gaussian_blur_ssim": 0.4718,
+        "passed": false,
+        "description": "Heatmap attribution preserves visual semantic structure under mild Gaussian blur."
+      }
+    }
+  }
+}

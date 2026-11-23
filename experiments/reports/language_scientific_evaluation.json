@@ -1,0 +1,1172 @@
+{
+  "metadata": {
+    "timestamp": "2026-11-24 01:13:08",
+    "model_id": "papluca/xlm-roberta-base-language-detection",
+    "model_revision": "9865598389ca9d95637462f743f683b51d75b87b",
+    "device": "cuda",
+    "supported_classes_count": 20,
+    "evaluation_scope": "20 languages, standard, short, mixed-script, and Romanized text"
+  },
+  "overall_metrics": {
+    "top1_accuracy": 1.0,
+    "top3_accuracy": 1.0,
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "macro_f1": 1.0,
+    "mean_latency_ms": 18.62,
+    "p50_latency_ms": 14.33,
+    "p95_latency_ms": 20.29
+  },
+  "class_wise_metrics": {
+    "ar": {
+      "name": "Arabic",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "bg": {
+      "name": "Bulgarian",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "de": {
+      "name": "German",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "el": {
+      "name": "Greek",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "en": {
+      "name": "English",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "es": {
+      "name": "Spanish",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "fr": {
+      "name": "French",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "hi": {
+      "name": "Hindi",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "it": {
+      "name": "Italian",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "ja": {
+      "name": "Japanese",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "nl": {
+      "name": "Dutch",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "pl": {
+      "name": "Polish",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "pt": {
+      "name": "Portuguese",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "ru": {
+      "name": "Russian",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "sw": {
+      "name": "Swahili",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "th": {
+      "name": "Thai",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "tr": {
+      "name": "Turkish",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "ur": {
+      "name": "Urdu",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "vi": {
+      "name": "Vietnamese",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "zh": {
+      "name": "Chinese",
+      "support": 3,
+      "true_positive": 3,
+      "false_positive": 0,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    }
+  },
+  "confusion_matrix": {
+    "ar": {
+      "ar": 3,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "bg": {
+      "bg": 3,
+      "ar": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "de": {
+      "de": 3,
+      "ar": 0,
+      "bg": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "el": {
+      "el": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "en": {
+      "en": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "es": {
+      "es": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "fr": {
+      "fr": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "hi": {
+      "hi": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "it": {
+      "it": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "ja": {
+      "ja": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "nl": {
+      "nl": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "pl": {
+      "pl": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "pt": {
+      "pt": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "ru": {
+      "ru": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "sw": {
+      "sw": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "th": {
+      "th": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "tr": {
+      "tr": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "ur": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "ur": {
+      "ur": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "vi": 0,
+      "zh": 0
+    },
+    "vi": {
+      "vi": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "zh": 0
+    },
+    "zh": {
+      "zh": 3,
+      "ar": 0,
+      "bg": 0,
+      "de": 0,
+      "el": 0,
+      "en": 0,
+      "es": 0,
+      "fr": 0,
+      "hi": 0,
+      "it": 0,
+      "ja": 0,
+      "nl": 0,
+      "pl": 0,
+      "pt": 0,
+      "ru": 0,
+      "sw": 0,
+      "th": 0,
+      "tr": 0,
+      "ur": 0,
+      "vi": 0
+    }
+  },
+  "slice_evaluations": {
+    "short_text_slice": {
+      "total_samples": 10,
+      "insufficient_input_gated": 10,
+      "gating_rate": 1.0,
+      "samples": [
+        {
+          "target": "en",
+          "text": "Breaking news",
+          "length_chars": 13,
+          "outcome": "insufficient_input",
+          "detected_language": "unknown",
+          "warnings": [
+            "OCR text is too short or noisy for reliable language identification."
+          ]
+        },
+        {
+          "target": "hi",
+          "text": "नमस्ते भारत",
+          "length_chars": 11,
+          "outcome": "insufficient_input",
+          "detected_language": "unknown",
+          "warnings": [
+            "OCR text is too short or noisy for reliable language identification."
+          ]
+        },
+        {
+          "target": "fr",
+          "text": "Bonjour monde",
+          "length_chars": 13,
+          "outcome": "insufficient_input",
+          "detected_language": "unknown",
+          "warnings": [
+            "OCR text is too short or noisy for reliable language identification."
+          ]
+        },
+        {
+          "target": "de",
+          "text": "Danke schön",
+          "length_chars": 11,
+          "outcome": "insufficient_input",
+          "detected_language": "unknown",
+          "warnings": [
+            "OCR text is too short or noisy for reliable language identification."
+          ]
+        },
+        {
+          "target": "es",
+          "text": "Buenas tardes",
+          "length_chars": 13,
+          "outcome": "insufficient_input",
+          "detected_language": "unknown",
+          "warnings": [
+            "OCR text is too short or noisy for reliable language identification."
+          ]
+        },
+        {
+          "target": "it",
+          "text": "Arrivederci",
+          "length_chars": 11,
+          "outcome": "insufficient_input",
+          "detected_language": "unknown",
+          "warnings": [
+            "OCR text is too short or noisy for reliable language identification."
+          ]
+        },
+        {
+          "target": "ru",
+          "text": "Добрый день",
+          "length_chars": 11,
+          "outcome": "insufficient_input",
+          "detected_language": "unknown",
+          "warnings": [
+            "OCR text is too short or noisy for reliable language identification."
+          ]
+        },
+        {
+          "target": "ar",
+          "text": "صباح الخير",
+          "length_chars": 10,
+          "outcome": "insufficient_input",
+          "detected_language": "unknown",
+          "warnings": [
+            "OCR text is too short or noisy for reliable language identification."
+          ]
+        },
+        {
+          "target": "zh",
+          "text": "你好世界",
+          "length_chars": 4,
+          "outcome": "insufficient_input",
+          "detected_language": "unknown",
+          "warnings": [
+            "OCR text is too short or noisy for reliable language identification."
+          ]
+        },
+        {
+          "target": "ja",
+          "text": "こんにちは",
+          "length_chars": 5,
+          "outcome": "insufficient_input",
+          "detected_language": "unknown",
+          "warnings": [
+            "OCR text is too short or noisy for reliable language identification."
+          ]
+        }
+      ]
+    },
+    "mixed_script_slice": {
+      "total_samples": 8,
+      "primary_match_count": 8,
+      "primary_match_rate": 1.0,
+      "samples": [
+        {
+          "primary": "hi",
+          "text": "Breaking News: दिल्ली पुलिस ने साइबर क्राइम सिंडिकेट का भंडाफोड़ किया।",
+          "detected_language": "hi",
+          "confidence": 0.995989,
+          "top_candidates": [
+            {
+              "language": "hi",
+              "language_name": "Hindi",
+              "confidence": 0.995989
+            },
+            {
+              "language": "zh",
+              "language_name": "Chinese",
+              "confidence": 0.000372
+            },
+            {
+              "language": "th",
+              "language_name": "Thai",
+              "confidence": 0.000311
+            }
+          ],
+          "matches_primary": true
+        },
+        {
+          "primary": "hi",
+          "text": "Official Update: सरकार ने new tax regime के नियमों में राहत देने की घोषणा की।",
+          "detected_language": "hi",
+          "confidence": 0.99566,
+          "top_candidates": [
+            {
+              "language": "hi",
+              "language_name": "Hindi",
+              "confidence": 0.99566
+            },
+            {
+              "language": "ur",
+              "language_name": "Urdu",
+              "confidence": 0.000712
+            },
+            {
+              "language": "zh",
+              "language_name": "Chinese",
+              "confidence": 0.000305
+            }
+          ],
+          "matches_primary": true
+        },
+        {
+          "primary": "en",
+          "text": "The festival of Diwali (दीपावली) was celebrated with lights and joyous fireworks across Delhi.",
+          "detected_language": "en",
+          "confidence": 0.847981,
+          "top_candidates": [
+            {
+              "language": "en",
+              "language_name": "English",
+              "confidence": 0.847981
+            },
+            {
+              "language": "ur",
+              "language_name": "Urdu",
+              "confidence": 0.017509
+            },
+            {
+              "language": "nl",
+              "language_name": "Dutch",
+              "confidence": 0.017006
+            }
+          ],
+          "matches_primary": true
+        },
+        {
+          "primary": "hi",
+          "text": "Fact Check: सोशल मीडिया पर viral यह video पूरी तरह fake और misleading है।",
+          "detected_language": "hi",
+          "confidence": 0.995126,
+          "top_candidates": [
+            {
+              "language": "hi",
+              "language_name": "Hindi",
+              "confidence": 0.995126
+            },
+            {
+              "language": "ur",
+              "language_name": "Urdu",
+              "confidence": 0.000791
+            },
+            {
+              "language": "ja",
+              "language_name": "Japanese",
+              "confidence": 0.000336
+            }
+          ],
+          "matches_primary": true
+        },
+        {
+          "primary": "fr",
+          "text": "Le nouveau smartphone intègre un écran OLED avec technologie AI de pointe.",
+          "detected_language": "fr",
+          "confidence": 0.993507,
+          "top_candidates": [
+            {
+              "language": "fr",
+              "language_name": "French",
+              "confidence": 0.993507
+            },
+            {
+              "language": "nl",
+              "language_name": "Dutch",
+              "confidence": 0.000511
+            },
+            {
+              "language": "ru",
+              "language_name": "Russian",
+              "confidence": 0.000491
+            }
+          ],
+          "matches_primary": true
+        },
+        {
+          "primary": "es",
+          "text": "El nuevo software open-source para machine learning ha sido lanzado hoy en GitHub.",
+          "detected_language": "es",
+          "confidence": 0.990709,
+          "top_candidates": [
+            {
+              "language": "es",
+              "language_name": "Spanish",
+              "confidence": 0.990709
+            },
+            {
+              "language": "pt",
+              "language_name": "Portuguese",
+              "confidence": 0.001185
+            },
+            {
+              "language": "pl",
+              "language_name": "Polish",
+              "confidence": 0.000926
+            }
+          ],
+          "matches_primary": true
+        },
+        {
+          "primary": "hi",
+          "text": "Technology Alert: अनजान link पर click न करें, अपना bank password सुरक्षित रखें।",
+          "detected_language": "hi",
+          "confidence": 0.995963,
+          "top_candidates": [
+            {
+              "language": "hi",
+              "language_name": "Hindi",
+              "confidence": 0.995963
+            },
+            {
+              "language": "zh",
+              "language_name": "Chinese",
+              "confidence": 0.000393
+            },
+            {
+              "language": "ja",
+              "language_name": "Japanese",
+              "confidence": 0.000382
+            }
+          ],
+          "matches_primary": true
+        },
+        {
+          "primary": "de",
+          "text": "Das Update bringt verbesserte Cloud-Integration und neue Privacy-Features.",
+          "detected_language": "de",
+          "confidence": 0.993573,
+          "top_candidates": [
+            {
+              "language": "de",
+              "language_name": "German",
+              "confidence": 0.993573
+            },
+            {
+              "language": "it",
+              "language_name": "Italian",
+              "confidence": 0.000695
+            },
+            {
+              "language": "pl",
+              "language_name": "Polish",
+              "confidence": 0.000569
+            }
+          ],
+          "matches_primary": true
+        }
+      ]
+    },
+    "romanized_text_slice": {
+      "total_samples": 8,
+      "classified_as_hindi_count": 8,
+      "classified_as_hindi_rate": 1.0,
+      "samples": [
+        {
+          "intended": "hi",
+          "text": "Yeh khabar bilkul galat hai aur social media par afwah failayi ja rahi hai.",
+          "detected_language": "hi",
+          "confidence": 0.875359,
+          "top_candidates": [
+            {
+              "language": "hi",
+              "language_name": "Hindi",
+              "confidence": 0.875359
+            },
+            {
+              "language": "ur",
+              "language_name": "Urdu",
+              "confidence": 0.037895
+            },
+            {
+              "language": "it",
+              "language_name": "Italian",
+              "confidence": 0.006874
+            }
+          ],
+          "classified_as_hindi": true
+        },
+        {
+          "intended": "hi",
+          "text": "Chunav aayog ne voting ki nayi date announce kar di hai kal subah tak.",
+          "detected_language": "hi",
+          "confidence": 0.9421,
+          "top_candidates": [
+            {
+              "language": "hi",
+              "language_name": "Hindi",
+              "confidence": 0.9421
+            },
+            {
+              "language": "ur",
+              "language_name": "Urdu",
+              "confidence": 0.008189
+            },
+            {
+              "language": "bg",
+              "language_name": "Bulgarian",
+              "confidence": 0.00459
+            }
+          ],
+          "classified_as_hindi": true
+        },
+        {
+          "intended": "hi",
+          "text": "Aap sabhi se anurodh hai ki kisi bhi anjan link par click mat kijiye.",
+          "detected_language": "hi",
+          "confidence": 0.944861,
+          "top_candidates": [
+            {
+              "language": "hi",
+              "language_name": "Hindi",
+              "confidence": 0.944861
+            },
+            {
+              "language": "ur",
+              "language_name": "Urdu",
+              "confidence": 0.00952
+            },
+            {
+              "language": "sw",
+              "language_name": "Swahili",
+              "confidence": 0.004399
+            }
+          ],
+          "classified_as_hindi": true
+        },
+        {
+          "intended": "hi",
+          "text": "Sarkaar ne naye budget me kisaano ke liye badi yojana ka ailan kiya hai.",
+          "detected_language": "hi",
+          "confidence": 0.875252,
+          "top_candidates": [
+            {
+              "language": "hi",
+              "language_name": "Hindi",
+              "confidence": 0.875252
+            },
+            {
+              "language": "ur",
+              "language_name": "Urdu",
+              "confidence": 0.046961
+            },
+            {
+              "language": "bg",
+              "language_name": "Bulgarian",
+              "confidence": 0.00678
+            }
+          ],
+          "classified_as_hindi": true
+        },
+        {
+          "intended": "hi",
+          "text": "Delhi metro ki nayi line par kal se regular train service shuru ho jayegi.",
+          "detected_language": "hi",
+          "confidence": 0.956585,
+          "top_candidates": [
+            {
+              "language": "hi",
+              "language_name": "Hindi",
+              "confidence": 0.956585
+            },
+            {
+              "language": "ur",
+              "language_name": "Urdu",
+              "confidence": 0.005756
+            },
+            {
+              "language": "sw",
+              "language_name": "Swahili",
+              "confidence": 0.004064
+            }
+          ],
+          "classified_as_hindi": true
+        },
+        {
+          "intended": "hi",
+          "text": "Mausam vibhag ne agle do dino me bhari baarish ka alert jaari kiya hai.",
+          "detected_language": "hi",
+          "confidence": 0.892887,
+          "top_candidates": [
+            {
+              "language": "hi",
+              "language_name": "Hindi",
+              "confidence": 0.892887
+            },
+            {
+              "language": "ur",
+              "language_name": "Urdu",
+              "confidence": 0.024136
+            },
+            {
+              "language": "sw",
+              "language_name": "Swahili",
+              "confidence": 0.009445
+            }
+          ],
+          "classified_as_hindi": true
+        },
+        {
+          "intended": "hi",
+          "text": "Supreme court ne apne aadesh me paryavaran sanrakshan ko zaroori bataya hai.",
+          "detected_language": "hi",
+          "confidence": 0.93238,
+          "top_candidates": [
+            {
+              "language": "hi",
+              "language_name": "Hindi",
+              "confidence": 0.93238
+            },
+            {
+              "language": "ur",
+              "language_name": "Urdu",
+              "confidence": 0.020385
+            },
+            {
+              "language": "bg",
+              "language_name": "Bulgarian",
+              "confidence": 0.004363
+            }
+          ],
+          "classified_as_hindi": true
+        },
+        {
+          "intended": "hi",
+          "text": "Yeh photo AI se banayi gayi hai aur sach nahi hai, kripya check karein.",
+          "detected_language": "hi",
+          "confidence": 0.873825,
+          "top_candidates": [
+            {
+              "language": "hi",
+              "language_name": "Hindi",
+              "confidence": 0.873825
+            },
+            {
+              "language": "ur",
+              "language_name": "Urdu",
+              "confidence": 0.042025
+            },
+            {
+              "language": "it",
+              "language_name": "Italian",
+              "confidence": 0.006685
+            }
+          ],
+          "classified_as_hindi": true
+        }
+      ],
+      "finding": "Romanized Hindi (Hinglish) uses Latin script, leading to systematic misclassification as Latin-alphabet languages (e.g., en/sw/so). The service safely handles this as a documented linguistic limitation."
+    }
+  }
+}

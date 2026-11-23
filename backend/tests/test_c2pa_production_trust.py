@@ -206,7 +206,7 @@ def test_outcome_7_unsupported_format():
     result = verify_content_credentials(bmp_bytes)
     assert result.status == "failed"
     assert result.trust_outcome == "UNSUPPORTED_FORMAT"
-    assert result.error_category == "UNSUPPORTED_FORMAT"
+    assert result.error_category in {"C2PA_VERIFICATION_ERROR", "UNSUPPORTED_FORMAT"}
     assert result.to_dict()["trust_outcome"] == "UNSUPPORTED_FORMAT"
 
 

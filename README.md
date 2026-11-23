@@ -257,7 +257,22 @@ npm run build
 
 ---
 
-## 13. Current Limitations
+## 13. Package B: External Integrations & Infrastructure Hardening
+
+Package B completed six engineering workstreams:
+
+1. **Google Fact Check Tools API:** Live verified Claim Search API (`https://factchecktools.googleapis.com/v1alpha1/claims:search`) with SQLite query caching and publisher filtering. See [docs/GOOGLE_FACT_CHECK_INTEGRATION.md](file:///D:/Projects/Truthlens/docs/GOOGLE_FACT_CHECK_INTEGRATION.md).
+2. **Google Cloud Vision Web Detection:** Complete reverse-image entity extraction with URL sanitization, classified as `IMPLEMENTED_BUT_CREDENTIAL_BLOCKED` due to GCP project permissions. See [docs/GOOGLE_VISION_WEB_DETECTION.md](file:///D:/Projects/Truthlens/docs/GOOGLE_VISION_WEB_DETECTION.md).
+3. **C2PA Production Trust Validation:** 8-outcome lifecycle state machine distinguishing cryptographic validity from signer trust. See [docs/C2PA_PRODUCTION_TRUST_POLICY.md](file:///D:/Projects/Truthlens/docs/C2PA_PRODUCTION_TRUST_POLICY.md).
+4. **Tesseract OCR Fallback:** EasyOCR primary with automatic fallback to system Tesseract 5.4.0 (`eng`, `hin`, `osd`); resolved Windows `tessdata` prefix anomaly. See [docs/TESSERACT_FALLBACK_VERIFICATION.md](file:///D:/Projects/Truthlens/docs/TESSERACT_FALLBACK_VERIFICATION.md).
+5. **PostgreSQL Reliability & Disaster Recovery:** 100% DDL compilation across all 8 tables and indexes, migration downgrade safety, and disaster recovery procedures. See [docs/POSTGRESQL_MIGRATION_BACKUP_RECOVERY.md](file:///D:/Projects/Truthlens/docs/POSTGRESQL_MIGRATION_BACKUP_RECOVERY.md).
+6. **Production Auth & Deployment Security:** Fail-closed production bypass prevention, uniform 404 tenant isolation, and 30 passed security tests. See [docs/PRODUCTION_AUTHENTICATION_SECURITY_AUDIT.md](file:///D:/Projects/Truthlens/docs/PRODUCTION_AUTHENTICATION_SECURITY_AUDIT.md).
+
+Executive overview: [docs/PACKAGE_B_EXECUTIVE_REPORT.md](file:///D:/Projects/Truthlens/docs/PACKAGE_B_EXECUTIVE_REPORT.md).
+
+---
+
+## 14. Current Limitations
 
 1. **PostgreSQL Server Tools:** Production PostgreSQL connection pooling and migration DDL are 100% verified via automated tests; live multi-worker PostgreSQL runtime execution remains unverified on the local host due to uninstalled server tools.
 2. **Third-Party API Keys:** Live Google Fact Check Tools and Google Cloud Vision Web Detection keys are optional; when omitted, the pipeline gracefully records the stages as `unavailable` or `partial`.
@@ -266,7 +281,7 @@ npm run build
 
 ---
 
-## 14. Research Status & Governance
+## 15. Research Status & Governance
 
 TruthLens maintains rigorous separation between production software and research experiments:
 - **Baseline Model Identity:** `truthlens/siglip-cifake-frozen-head` stored at `models/baselines/siglip_frozen_head.pt` (SHA-256 `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`). Zero weights have been altered.
@@ -278,7 +293,7 @@ See [docs/DEVELOPMENT_DOCUMENTATION_INDEX.md](docs/DEVELOPMENT_DOCUMENTATION_IND
 
 ---
 
-## 15. Responsible-Use Disclaimer
+## 16. Responsible-Use Disclaimer
 
 > [!WARNING]
 > **Decision-Support Only — Not a Ground-Truth Oracle:**

@@ -1,0 +1,434 @@
+{
+  "metadata": {
+    "timestamp": "2026-11-24 01:21:32",
+    "dataset": "authorized_training_split (Tiny-GenImage training)",
+    "source_path": "research\\experiment2_forensic_screening\\siglip_logits.csv",
+    "total_samples": 6995,
+    "authentic_samples": 3515,
+    "ai_samples": 3480,
+    "policy_invariant_note": "Exploratory research only. Production thresholds, weights, and e11.conservative.v1 remain invariant."
+  },
+  "uncalibrated_baseline": {
+    "accuracy": 0.5648,
+    "negative_log_likelihood": 0.9767,
+    "brier_score": 0.3092,
+    "expected_calibration_error_10_bins": 0.2472,
+    "expected_calibration_error_15_bins": 0.2472,
+    "maximum_calibration_error": 0.3474,
+    "mean_predictive_entropy": 0.5821,
+    "median_predictive_entropy": 0.6133,
+    "mean_confidence_msp": 0.8121,
+    "reliability_diagram_10_bins": [
+      {
+        "bin_index": 1,
+        "bin_range": [
+          0.5,
+          0.55
+        ],
+        "sample_count": 447,
+        "mean_confidence": 0.525,
+        "empirical_accuracy": 0.4855,
+        "calibration_gap": 0.0395
+      },
+      {
+        "bin_index": 2,
+        "bin_range": [
+          0.55,
+          0.6
+        ],
+        "sample_count": 489,
+        "mean_confidence": 0.574,
+        "empirical_accuracy": 0.4908,
+        "calibration_gap": 0.0832
+      },
+      {
+        "bin_index": 3,
+        "bin_range": [
+          0.6,
+          0.65
+        ],
+        "sample_count": 445,
+        "mean_confidence": 0.6256,
+        "empirical_accuracy": 0.4831,
+        "calibration_gap": 0.1424
+      },
+      {
+        "bin_index": 4,
+        "bin_range": [
+          0.65,
+          0.7
+        ],
+        "sample_count": 495,
+        "mean_confidence": 0.6753,
+        "empirical_accuracy": 0.4667,
+        "calibration_gap": 0.2086
+      },
+      {
+        "bin_index": 5,
+        "bin_range": [
+          0.7,
+          0.75
+        ],
+        "sample_count": 489,
+        "mean_confidence": 0.7255,
+        "empirical_accuracy": 0.5194,
+        "calibration_gap": 0.2061
+      },
+      {
+        "bin_index": 6,
+        "bin_range": [
+          0.75,
+          0.8
+        ],
+        "sample_count": 533,
+        "mean_confidence": 0.7761,
+        "empirical_accuracy": 0.5441,
+        "calibration_gap": 0.232
+      },
+      {
+        "bin_index": 7,
+        "bin_range": [
+          0.8,
+          0.85
+        ],
+        "sample_count": 619,
+        "mean_confidence": 0.8258,
+        "empirical_accuracy": 0.5283,
+        "calibration_gap": 0.2975
+      },
+      {
+        "bin_index": 8,
+        "bin_range": [
+          0.85,
+          0.9
+        ],
+        "sample_count": 754,
+        "mean_confidence": 0.8768,
+        "empirical_accuracy": 0.5597,
+        "calibration_gap": 0.3172
+      },
+      {
+        "bin_index": 9,
+        "bin_range": [
+          0.9,
+          0.95
+        ],
+        "sample_count": 1021,
+        "mean_confidence": 0.9262,
+        "empirical_accuracy": 0.5788,
+        "calibration_gap": 0.3474
+      },
+      {
+        "bin_index": 10,
+        "bin_range": [
+          0.95,
+          1.0
+        ],
+        "sample_count": 1703,
+        "mean_confidence": 0.9782,
+        "empirical_accuracy": 0.6835,
+        "calibration_gap": 0.2947
+      }
+    ]
+  },
+  "temperature_scaling_exploration": {
+    "fitted_optimal_temperature": 5.9432,
+    "optimized_negative_log_likelihood": 0.6725,
+    "calibrated_brier_score": 0.24,
+    "calibrated_ece_10_bins": 0.0313,
+    "calibrated_ece_15_bins": 0.031,
+    "calibrated_mce": 0.1985,
+    "ece_reduction_percentage": 87.34,
+    "reliability_diagram_10_bins": [
+      {
+        "bin_index": 1,
+        "bin_range": [
+          0.5,
+          0.55
+        ],
+        "sample_count": 2543,
+        "mean_confidence": 0.5241,
+        "empirical_accuracy": 0.4912,
+        "calibration_gap": 0.033
+      },
+      {
+        "bin_index": 2,
+        "bin_range": [
+          0.55,
+          0.6
+        ],
+        "sample_count": 2060,
+        "mean_confidence": 0.5744,
+        "empirical_accuracy": 0.55,
+        "calibration_gap": 0.0244
+      },
+      {
+        "bin_index": 3,
+        "bin_range": [
+          0.6,
+          0.65
+        ],
+        "sample_count": 1385,
+        "mean_confidence": 0.623,
+        "empirical_accuracy": 0.5978,
+        "calibration_gap": 0.0252
+      },
+      {
+        "bin_index": 4,
+        "bin_range": [
+          0.65,
+          0.7
+        ],
+        "sample_count": 722,
+        "mean_confidence": 0.6715,
+        "empirical_accuracy": 0.7036,
+        "calibration_gap": 0.0321
+      },
+      {
+        "bin_index": 5,
+        "bin_range": [
+          0.7,
+          0.75
+        ],
+        "sample_count": 254,
+        "mean_confidence": 0.7193,
+        "empirical_accuracy": 0.811,
+        "calibration_gap": 0.0917
+      },
+      {
+        "bin_index": 6,
+        "bin_range": [
+          0.75,
+          0.8
+        ],
+        "sample_count": 30,
+        "mean_confidence": 0.7631,
+        "empirical_accuracy": 0.8667,
+        "calibration_gap": 0.1035
+      },
+      {
+        "bin_index": 7,
+        "bin_range": [
+          0.8,
+          0.85
+        ],
+        "sample_count": 1,
+        "mean_confidence": 0.8015,
+        "empirical_accuracy": 1.0,
+        "calibration_gap": 0.1985
+      },
+      {
+        "bin_index": 8,
+        "bin_range": [
+          0.85,
+          0.9
+        ],
+        "sample_count": 0,
+        "mean_confidence": null,
+        "empirical_accuracy": null,
+        "calibration_gap": null
+      },
+      {
+        "bin_index": 9,
+        "bin_range": [
+          0.9,
+          0.95
+        ],
+        "sample_count": 0,
+        "mean_confidence": null,
+        "empirical_accuracy": null,
+        "calibration_gap": null
+      },
+      {
+        "bin_index": 10,
+        "bin_range": [
+          0.95,
+          1.0
+        ],
+        "sample_count": 0,
+        "mean_confidence": null,
+        "empirical_accuracy": null,
+        "calibration_gap": null
+      }
+    ]
+  },
+  "confidence_decile_error_analysis": [
+    {
+      "confidence_decile": "[0.50, 0.55]",
+      "sample_count": 447,
+      "error_count": 230,
+      "error_rate": 0.5145,
+      "accuracy": 0.4855,
+      "mean_confidence": 0.525,
+      "mean_entropy": 0.9976
+    },
+    {
+      "confidence_decile": "[0.55, 0.60]",
+      "sample_count": 489,
+      "error_count": 249,
+      "error_rate": 0.5092,
+      "accuracy": 0.4908,
+      "mean_confidence": 0.574,
+      "mean_entropy": 0.9836
+    },
+    {
+      "confidence_decile": "[0.60, 0.65]",
+      "sample_count": 445,
+      "error_count": 230,
+      "error_rate": 0.5169,
+      "accuracy": 0.4831,
+      "mean_confidence": 0.6256,
+      "mean_entropy": 0.9534
+    },
+    {
+      "confidence_decile": "[0.65, 0.70]",
+      "sample_count": 495,
+      "error_count": 264,
+      "error_rate": 0.5333,
+      "accuracy": 0.4667,
+      "mean_confidence": 0.6753,
+      "mean_entropy": 0.9088
+    },
+    {
+      "confidence_decile": "[0.70, 0.75]",
+      "sample_count": 489,
+      "error_count": 235,
+      "error_rate": 0.4806,
+      "accuracy": 0.5194,
+      "mean_confidence": 0.7255,
+      "mean_entropy": 0.8471
+    },
+    {
+      "confidence_decile": "[0.75, 0.80]",
+      "sample_count": 533,
+      "error_count": 243,
+      "error_rate": 0.4559,
+      "accuracy": 0.5441,
+      "mean_confidence": 0.7761,
+      "mean_entropy": 0.7663
+    },
+    {
+      "confidence_decile": "[0.80, 0.85]",
+      "sample_count": 619,
+      "error_count": 292,
+      "error_rate": 0.4717,
+      "accuracy": 0.5283,
+      "mean_confidence": 0.8258,
+      "mean_entropy": 0.6662
+    },
+    {
+      "confidence_decile": "[0.85, 0.90]",
+      "sample_count": 754,
+      "error_count": 332,
+      "error_rate": 0.4403,
+      "accuracy": 0.5597,
+      "mean_confidence": 0.8768,
+      "mean_entropy": 0.537
+    },
+    {
+      "confidence_decile": "[0.90, 0.95]",
+      "sample_count": 1021,
+      "error_count": 430,
+      "error_rate": 0.4212,
+      "accuracy": 0.5788,
+      "mean_confidence": 0.9262,
+      "mean_entropy": 0.3775
+    },
+    {
+      "confidence_decile": "[0.95, 1.00]",
+      "sample_count": 1703,
+      "error_count": 539,
+      "error_rate": 0.3165,
+      "accuracy": 0.6835,
+      "mean_confidence": 0.9782,
+      "mean_entropy": 0.1441
+    }
+  ],
+  "selective_prediction_risk_coverage": {
+    "baseline_full_coverage_risk": 0.4352,
+    "risk_coverage_curve": [
+      {
+        "target_coverage": 1.0,
+        "decided_samples": 6995,
+        "abstained_samples": 0,
+        "effective_risk_error_rate": 0.4352,
+        "accuracy_on_decided": 0.5648,
+        "confidence_threshold": 0.5001,
+        "entropy_threshold": 1.0
+      },
+      {
+        "target_coverage": 0.9,
+        "decided_samples": 6295,
+        "abstained_samples": 700,
+        "effective_risk_error_rate": 0.4256,
+        "accuracy_on_decided": 0.5744,
+        "confidence_threshold": 0.5746,
+        "entropy_threshold": 0.9839
+      },
+      {
+        "target_coverage": 0.8,
+        "decided_samples": 5596,
+        "abstained_samples": 1399,
+        "effective_risk_error_rate": 0.4149,
+        "accuracy_on_decided": 0.5851,
+        "confidence_threshold": 0.6515,
+        "entropy_threshold": 0.9327
+      },
+      {
+        "target_coverage": 0.7,
+        "decided_samples": 4896,
+        "abstained_samples": 2099,
+        "effective_risk_error_rate": 0.4011,
+        "accuracy_on_decided": 0.5989,
+        "confidence_threshold": 0.7236,
+        "entropy_threshold": 0.8505
+      },
+      {
+        "target_coverage": 0.6,
+        "decided_samples": 4197,
+        "abstained_samples": 2798,
+        "effective_risk_error_rate": 0.39,
+        "accuracy_on_decided": 0.61,
+        "confidence_threshold": 0.7912,
+        "entropy_threshold": 0.7393
+      },
+      {
+        "target_coverage": 0.5,
+        "decided_samples": 3497,
+        "abstained_samples": 3498,
+        "effective_risk_error_rate": 0.3749,
+        "accuracy_on_decided": 0.6251,
+        "confidence_threshold": 0.8487,
+        "entropy_threshold": 0.613
+      },
+      {
+        "target_coverage": 0.4,
+        "decided_samples": 2798,
+        "abstained_samples": 4197,
+        "effective_risk_error_rate": 0.3581,
+        "accuracy_on_decided": 0.6419,
+        "confidence_threshold": 0.8965,
+        "entropy_threshold": 0.4801
+      },
+      {
+        "target_coverage": 0.3,
+        "decided_samples": 2098,
+        "abstained_samples": 4897,
+        "effective_risk_error_rate": 0.3317,
+        "accuracy_on_decided": 0.6683,
+        "confidence_threshold": 0.9323,
+        "entropy_threshold": 0.3574
+      },
+      {
+        "target_coverage": 0.2,
+        "decided_samples": 1399,
+        "abstained_samples": 5596,
+        "effective_risk_error_rate": 0.2902,
+        "accuracy_on_decided": 0.7098,
+        "confidence_threshold": 0.9629,
+        "entropy_threshold": 0.229
+      }
+    ],
+    "error_reduction_at_50_coverage_percent": 13.85
+  }
+}

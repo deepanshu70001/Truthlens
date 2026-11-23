@@ -1,0 +1,868 @@
+{
+  "metadata": {
+    "timestamp": "2026-11-24 01:15:23",
+    "extraction_method": "conservative_rules_v2",
+    "total_documents": 5,
+    "total_gold_propositions": 19,
+    "total_extracted_claims": 14
+  },
+  "eligibility_detection_metrics": {
+    "accuracy": 0.8947,
+    "precision": 1.0,
+    "recall": 0.7778,
+    "f1_score": 0.875,
+    "true_positives": 7,
+    "false_positives": 0,
+    "false_negatives": 2,
+    "true_negatives": 10
+  },
+  "span_boundary_alignment": {
+    "exact_match_rate": 0.5263,
+    "mean_token_jaccard": 0.6817,
+    "offset_alignment_integrity": 1.0,
+    "total_spans_checked": 14,
+    "offset_alignment_valid": 14
+  },
+  "information_preservation": {
+    "number_recall": 0.8,
+    "numbers_gold_count": 10,
+    "numbers_recovered_count": 8,
+    "date_recall": 0.5,
+    "dates_gold_count": 2,
+    "dates_recovered_count": 1,
+    "location_recall": 0.75,
+    "locations_gold_count": 8,
+    "locations_recovered_count": 6
+  },
+  "latency_metrics": {
+    "mean_latency_ms": 1.25,
+    "p95_latency_ms": 4.41
+  },
+  "confusion_matrix": {
+    "FACTUAL": {
+      "FACTUAL": 6,
+      "AMBIGUOUS": 1,
+      "OPINION": 1
+    },
+    "OPINION": {
+      "OPINION": 3,
+      "AMBIGUOUS": 1
+    },
+    "QUESTION": {
+      "QUESTION": 2,
+      "AMBIGUOUS": 1
+    },
+    "QUOTE": {
+      "QUOTE": 1
+    },
+    "SLOGAN": {
+      "AMBIGUOUS": 1,
+      "SLOGAN": 1
+    },
+    "AMBIGUOUS": {
+      "AMBIGUOUS": 1
+    }
+  },
+  "document_evaluations": [
+    {
+      "doc_id": "doc_en_01",
+      "lang": "en",
+      "raw_text_length": 255,
+      "claims_extracted_count": 4,
+      "gold_propositions_count": 4,
+      "extracted_claims": [
+        {
+          "claim_id": "claim_2b2a568592e3ce67",
+          "claim": "The Ministry of Health confirmed 1,450 new cases in Delhi on October 15, 2026.",
+          "original_text": "The Ministry of Health confirmed 1,450 new cases in Delhi on October 15, 2026.",
+          "normalized_text": "The Ministry of Health confirmed 1,450 new cases in Delhi on October 15, 2026.",
+          "language": "unknown",
+          "translated_text": null,
+          "language_code": null,
+          "language_name": null,
+          "language_source": null,
+          "language_model_id": null,
+          "language_model_revision": null,
+          "language_confidence": null,
+          "language_detection_outcome": "unavailable",
+          "entities": [
+            "The Ministry",
+            "Health",
+            "Delhi",
+            "October"
+          ],
+          "dates": [
+            "October 15, 2026",
+            "2026"
+          ],
+          "locations": [
+            "Delhi"
+          ],
+          "numbers": [
+            "1,450",
+            "15,",
+            "2026"
+          ],
+          "claim_type": "statistical",
+          "confidence": 0.93,
+          "classification": "FACTUAL",
+          "language_detection_status": "unavailable",
+          "source_start": 0,
+          "source_end": 78,
+          "source_region_refs": [],
+          "source_regions": [],
+          "extraction_method": "conservative_rules_v2",
+          "confidence_semantics": "heuristic extraction score; not truth probability",
+          "source": "ocr",
+          "source_text_reference": "ocr_sentence_0",
+          "ocr_confidence": null,
+          "verification_eligibility": "ELIGIBLE",
+          "eligibility_reason": "Text contains a factual assertion candidate.",
+          "warnings": [
+            "Original language could not be identified confidently."
+          ]
+        },
+        {
+          "claim_id": "claim_b386525615ee9129",
+          "claim": "In my opinion, this is the worst healthcare crisis ever.",
+          "original_text": "In my opinion, this is the worst healthcare crisis ever.",
+          "normalized_text": "In my opinion, this is the worst healthcare crisis ever.",
+          "language": "unknown",
+          "translated_text": null,
+          "language_code": null,
+          "language_name": null,
+          "language_source": null,
+          "language_model_id": null,
+          "language_model_revision": null,
+          "language_confidence": null,
+          "language_detection_outcome": "unavailable",
+          "entities": [],
+          "dates": [],
+          "locations": [],
+          "numbers": [],
+          "claim_type": "opinion",
+          "confidence": 0.75,
+          "classification": "OPINION",
+          "language_detection_status": "unavailable",
+          "source_start": 79,
+          "source_end": 135,
+          "source_region_refs": [],
+          "source_regions": [],
+          "extraction_method": "conservative_rules_v2",
+          "confidence_semantics": "heuristic extraction score; not truth probability",
+          "source": "ocr",
+          "source_text_reference": "ocr_sentence_1",
+          "ocr_confidence": null,
+          "verification_eligibility": "INELIGIBLE",
+          "eligibility_reason": "Subjective language is not eligible for factual verification.",
+          "warnings": [
+            "Original language could not be identified confidently."
+          ]
+        },
+        {
+          "claim_id": "claim_4b0a7f3c34cb9f98",
+          "claim": "Did the authorities provide adequate medical supplies?",
+          "original_text": "Did the authorities provide adequate medical supplies?",
+          "normalized_text": "Did the authorities provide adequate medical supplies?",
+          "language": "unknown",
+          "translated_text": null,
+          "language_code": null,
+          "language_name": null,
+          "language_source": null,
+          "language_model_id": null,
+          "language_model_revision": null,
+          "language_confidence": null,
+          "language_detection_outcome": "unavailable",
+          "entities": [
+            "Did"
+          ],
+          "dates": [],
+          "locations": [],
+          "numbers": [],
+          "claim_type": "unclassified",
+          "confidence": 0.29,
+          "classification": "QUESTION",
+          "language_detection_status": "unavailable",
+          "source_start": 136,
+          "source_end": 190,
+          "source_region_refs": [],
+          "source_regions": [],
+          "extraction_method": "conservative_rules_v2",
+          "confidence_semantics": "heuristic extraction score; not truth probability",
+          "source": "ocr",
+          "source_text_reference": "ocr_sentence_2",
+          "ocr_confidence": null,
+          "verification_eligibility": "INELIGIBLE",
+          "eligibility_reason": "Questions are not treated as factual assertions.",
+          "warnings": [
+            "Original language could not be identified confidently."
+          ]
+        },
+        {
+          "claim_id": "claim_33180a090a01bd49",
+          "claim": "Officials said that twenty hospitals received emergency funding.",
+          "original_text": "Officials said that twenty hospitals received emergency funding.",
+          "normalized_text": "Officials said that twenty hospitals received emergency funding.",
+          "language": "unknown",
+          "translated_text": null,
+          "language_code": null,
+          "language_name": null,
+          "language_source": null,
+          "language_model_id": null,
+          "language_model_revision": null,
+          "language_confidence": null,
+          "language_detection_outcome": "unavailable",
+          "entities": [],
+          "dates": [],
+          "locations": [],
+          "numbers": [],
+          "claim_type": "factual",
+          "confidence": 0.71,
+          "classification": "FACTUAL",
+          "language_detection_status": "unavailable",
+          "source_start": 191,
+          "source_end": 255,
+          "source_region_refs": [],
+          "source_regions": [],
+          "extraction_method": "conservative_rules_v2",
+          "confidence_semantics": "heuristic extraction score; not truth probability",
+          "source": "ocr",
+          "source_text_reference": "ocr_sentence_3",
+          "ocr_confidence": null,
+          "verification_eligibility": "ELIGIBLE",
+          "eligibility_reason": "Text contains a factual assertion candidate.",
+          "warnings": [
+            "Original language could not be identified confidently."
+          ]
+        }
+      ],
+      "pairings": [
+        {
+          "gold_span": "The Ministry of Health confirmed 1,450 new cases in Delhi on October 15, 2026.",
+          "extracted_span": "The Ministry of Health confirmed 1,450 new cases in Delhi on October 15, 2026.",
+          "jaccard_similarity": 1.0,
+          "gold_eligibility": "ELIGIBLE",
+          "pred_eligibility": "ELIGIBLE",
+          "gold_classification": "FACTUAL",
+          "pred_classification": "FACTUAL"
+        },
+        {
+          "gold_span": "In my opinion, this is the worst healthcare crisis ever.",
+          "extracted_span": "In my opinion, this is the worst healthcare crisis ever.",
+          "jaccard_similarity": 1.0,
+          "gold_eligibility": "INELIGIBLE",
+          "pred_eligibility": "INELIGIBLE",
+          "gold_classification": "OPINION",
+          "pred_classification": "OPINION"
+        },
+        {
+          "gold_span": "Did the authorities provide adequate medical supplies?",
+          "extracted_span": "Did the authorities provide adequate medical supplies?",
+          "jaccard_similarity": 1.0,
+          "gold_eligibility": "INELIGIBLE",
+          "pred_eligibility": "INELIGIBLE",
+          "gold_classification": "QUESTION",
+          "pred_classification": "QUESTION"
+        },
+        {
+          "gold_span": "Officials said that twenty hospitals received emergency funding.",
+          "extracted_span": "Officials said that twenty hospitals received emergency funding.",
+          "jaccard_similarity": 1.0,
+          "gold_eligibility": "ELIGIBLE",
+          "pred_eligibility": "ELIGIBLE",
+          "gold_classification": "FACTUAL",
+          "pred_classification": "FACTUAL"
+        }
+      ]
+    },
+    {
+      "doc_id": "doc_en_02",
+      "lang": "en",
+      "raw_text_length": 156,
+      "claims_extracted_count": 2,
+      "gold_propositions_count": 3,
+      "extracted_claims": [
+        {
+          "claim_id": "claim_37b8bb6f96633a8f",
+          "claim": "\"The inflation rate dropped by 2.5% in September 2026,\" announced the Reserve Bank of India in Mumbai. #BoycottForeignGoods!",
+          "original_text": "\"The inflation rate dropped by 2.5% in September 2026,\" announced the Reserve Bank of India in Mumbai. #BoycottForeignGoods!",
+          "normalized_text": "\"The inflation rate dropped by 2.5% in September 2026,\" announced the Reserve Bank of India in Mumbai. #BoycottForeignGoods!",
+          "language": "unknown",
+          "translated_text": null,
+          "language_code": null,
+          "language_name": null,
+          "language_source": null,
+          "language_model_id": null,
+          "language_model_revision": null,
+          "language_confidence": null,
+          "language_detection_outcome": "unavailable",
+          "entities": [
+            "September",
+            "Reserve Bank",
+            "India",
+            "Mumbai",
+            "BoycottForeignGoods"
+          ],
+          "dates": [
+            "2026"
+          ],
+          "locations": [
+            "India",
+            "Mumbai"
+          ],
+          "numbers": [
+            "2.5%",
+            "2026,"
+          ],
+          "claim_type": "attribution",
+          "confidence": 0.95,
+          "classification": "QUOTE",
+          "language_detection_status": "unavailable",
+          "source_start": 0,
+          "source_end": 124,
+          "source_region_refs": [],
+          "source_regions": [],
+          "extraction_method": "conservative_rules_v2",
+          "confidence_semantics": "heuristic extraction score; not truth probability",
+          "source": "ocr",
+          "source_text_reference": "ocr_sentence_0",
+          "ocr_confidence": null,
+          "verification_eligibility": "ELIGIBLE",
+          "eligibility_reason": "Attributed quotation candidate; verify wording and attribution against retrieved reviews.",
+          "warnings": [
+            "Original language could not be identified confidently."
+          ]
+        },
+        {
+          "claim_id": "claim_6f4e8f0f828ac879",
+          "claim": "Support local businesses today.",
+          "original_text": "Support local businesses today.",
+          "normalized_text": "Support local businesses today.",
+          "language": "unknown",
+          "translated_text": null,
+          "language_code": null,
+          "language_name": null,
+          "language_source": null,
+          "language_model_id": null,
+          "language_model_revision": null,
+          "language_confidence": null,
+          "language_detection_outcome": "unavailable",
+          "entities": [
+            "Support"
+          ],
+          "dates": [],
+          "locations": [],
+          "numbers": [],
+          "claim_type": "unclassified",
+          "confidence": 0.43,
+          "classification": "SLOGAN",
+          "language_detection_status": "unavailable",
+          "source_start": 125,
+          "source_end": 156,
+          "source_region_refs": [],
+          "source_regions": [],
+          "extraction_method": "conservative_rules_v2",
+          "confidence_semantics": "heuristic extraction score; not truth probability",
+          "source": "ocr",
+          "source_text_reference": "ocr_sentence_1",
+          "ocr_confidence": null,
+          "verification_eligibility": "INELIGIBLE",
+          "eligibility_reason": "Slogan-like text does not state a verifiable proposition.",
+          "warnings": [
+            "Original language could not be identified confidently."
+          ]
+        }
+      ],
+      "pairings": [
+        {
+          "gold_span": "\"The inflation rate dropped by 2.5% in September 2026,\" announced the Reserve Bank of India in Mumbai.",
+          "extracted_span": "\"The inflation rate dropped by 2.5% in September 2026,\" announced the Reserve Bank of India in Mumbai. #BoycottForeignGoods!",
+          "jaccard_similarity": 0.9412,
+          "gold_eligibility": "ELIGIBLE",
+          "pred_eligibility": "ELIGIBLE",
+          "gold_classification": "QUOTE",
+          "pred_classification": "QUOTE"
+        },
+        {
+          "gold_span": "#BoycottForeignGoods!",
+          "extracted_span": null,
+          "jaccard_similarity": 0.0,
+          "gold_eligibility": "INELIGIBLE",
+          "pred_eligibility": "INELIGIBLE",
+          "gold_classification": "SLOGAN",
+          "pred_classification": "AMBIGUOUS"
+        },
+        {
+          "gold_span": "Support local businesses today.",
+          "extracted_span": "Support local businesses today.",
+          "jaccard_similarity": 1.0,
+          "gold_eligibility": "INELIGIBLE",
+          "pred_eligibility": "INELIGIBLE",
+          "gold_classification": "SLOGAN",
+          "pred_classification": "SLOGAN"
+        }
+      ]
+    },
+    {
+      "doc_id": "doc_en_03",
+      "lang": "en",
+      "raw_text_length": 220,
+      "claims_extracted_count": 4,
+      "gold_propositions_count": 4,
+      "extracted_claims": [
+        {
+          "claim_id": "claim_265295cf3c16e92f",
+          "claim": "Solar power generation reached 50 gigawatts across Gujarat and Rajasthan.",
+          "original_text": "Solar power generation reached 50 gigawatts across Gujarat and Rajasthan.",
+          "normalized_text": "Solar power generation reached 50 gigawatts across Gujarat and Rajasthan.",
+          "language": "unknown",
+          "translated_text": null,
+          "language_code": null,
+          "language_name": null,
+          "language_source": null,
+          "language_model_id": null,
+          "language_model_revision": null,
+          "language_confidence": null,
+          "language_detection_outcome": "unavailable",
+          "entities": [
+            "Solar",
+            "Gujarat",
+            "Rajasthan"
+          ],
+          "dates": [],
+          "locations": [
+            "Gujarat",
+            "Rajasthan"
+          ],
+          "numbers": [
+            "50"
+          ],
+          "claim_type": "statistical",
+          "confidence": 0.65,
+          "classification": "FACTUAL",
+          "language_detection_status": "unavailable",
+          "source_start": 0,
+          "source_end": 73,
+          "source_region_refs": [],
+          "source_regions": [],
+          "extraction_method": "conservative_rules_v2",
+          "confidence_semantics": "heuristic extraction score; not truth probability",
+          "source": "ocr",
+          "source_text_reference": "ocr_sentence_0",
+          "ocr_confidence": null,
+          "verification_eligibility": "ELIGIBLE",
+          "eligibility_reason": "Text contains a factual assertion candidate.",
+          "warnings": [
+            "Original language could not be identified confidently."
+          ]
+        },
+        {
+          "claim_id": "claim_2b8f03c34db8666b",
+          "claim": "I think solar energy is the most beautiful source of power.",
+          "original_text": "I think solar energy is the most beautiful source of power.",
+          "normalized_text": "I think solar energy is the most beautiful source of power.",
+          "language": "unknown",
+          "translated_text": null,
+          "language_code": null,
+          "language_name": null,
+          "language_source": null,
+          "language_model_id": null,
+          "language_model_revision": null,
+          "language_confidence": null,
+          "language_detection_outcome": "unavailable",
+          "entities": [],
+          "dates": [],
+          "locations": [],
+          "numbers": [],
+          "claim_type": "opinion",
+          "confidence": 0.77,
+          "classification": "OPINION",
+          "language_detection_status": "unavailable",
+          "source_start": 74,
+          "source_end": 133,
+          "source_region_refs": [],
+          "source_regions": [],
+          "extraction_method": "conservative_rules_v2",
+          "confidence_semantics": "heuristic extraction score; not truth probability",
+          "source": "ocr",
+          "source_text_reference": "ocr_sentence_1",
+          "ocr_confidence": null,
+          "verification_eligibility": "INELIGIBLE",
+          "eligibility_reason": "Subjective language is not eligible for factual verification.",
+          "warnings": [
+            "Original language could not be identified confidently."
+          ]
+        },
+        {
+          "claim_id": "claim_5ff71ffc57dadfcf",
+          "claim": "A severe earthquake occurred near Pune yesterday.",
+          "original_text": "A severe earthquake occurred near Pune yesterday.",
+          "normalized_text": "A severe earthquake occurred near Pune yesterday.",
+          "language": "unknown",
+          "translated_text": null,
+          "language_code": null,
+          "language_name": null,
+          "language_source": null,
+          "language_model_id": null,
+          "language_model_revision": null,
+          "language_confidence": null,
+          "language_detection_outcome": "unavailable",
+          "entities": [
+            "Pune"
+          ],
+          "dates": [],
+          "locations": [
+            "Pune"
+          ],
+          "numbers": [],
+          "claim_type": "factual",
+          "confidence": 0.69,
+          "classification": "FACTUAL",
+          "language_detection_status": "unavailable",
+          "source_start": 134,
+          "source_end": 183,
+          "source_region_refs": [],
+          "source_regions": [],
+          "extraction_method": "conservative_rules_v2",
+          "confidence_semantics": "heuristic extraction score; not truth probability",
+          "source": "ocr",
+          "source_text_reference": "ocr_sentence_2",
+          "ocr_confidence": null,
+          "verification_eligibility": "ELIGIBLE",
+          "eligibility_reason": "Text contains a factual assertion candidate.",
+          "warnings": [
+            "Original language could not be identified confidently."
+          ]
+        },
+        {
+          "claim_id": "claim_d2317d3cea49bda6",
+          "claim": "Are citizens prepared for disasters?",
+          "original_text": "Are citizens prepared for disasters?",
+          "normalized_text": "Are citizens prepared for disasters?",
+          "language": "unknown",
+          "translated_text": null,
+          "language_code": null,
+          "language_name": null,
+          "language_source": null,
+          "language_model_id": null,
+          "language_model_revision": null,
+          "language_confidence": null,
+          "language_detection_outcome": "unavailable",
+          "entities": [
+            "Are"
+          ],
+          "dates": [],
+          "locations": [],
+          "numbers": [],
+          "claim_type": "unclassified",
+          "confidence": 0.25,
+          "classification": "QUESTION",
+          "language_detection_status": "unavailable",
+          "source_start": 184,
+          "source_end": 220,
+          "source_region_refs": [],
+          "source_regions": [],
+          "extraction_method": "conservative_rules_v2",
+          "confidence_semantics": "heuristic extraction score; not truth probability",
+          "source": "ocr",
+          "source_text_reference": "ocr_sentence_3",
+          "ocr_confidence": null,
+          "verification_eligibility": "INELIGIBLE",
+          "eligibility_reason": "Questions are not treated as factual assertions.",
+          "warnings": [
+            "Original language could not be identified confidently."
+          ]
+        }
+      ],
+      "pairings": [
+        {
+          "gold_span": "Solar power generation reached 50 gigawatts across Gujarat and Rajasthan.",
+          "extracted_span": "Solar power generation reached 50 gigawatts across Gujarat and Rajasthan.",
+          "jaccard_similarity": 1.0,
+          "gold_eligibility": "ELIGIBLE",
+          "pred_eligibility": "ELIGIBLE",
+          "gold_classification": "FACTUAL",
+          "pred_classification": "FACTUAL"
+        },
+        {
+          "gold_span": "I think solar energy is the most beautiful source of power.",
+          "extracted_span": "I think solar energy is the most beautiful source of power.",
+          "jaccard_similarity": 1.0,
+          "gold_eligibility": "INELIGIBLE",
+          "pred_eligibility": "INELIGIBLE",
+          "gold_classification": "OPINION",
+          "pred_classification": "OPINION"
+        },
+        {
+          "gold_span": "A severe earthquake occurred near Pune yesterday.",
+          "extracted_span": "A severe earthquake occurred near Pune yesterday.",
+          "jaccard_similarity": 1.0,
+          "gold_eligibility": "ELIGIBLE",
+          "pred_eligibility": "ELIGIBLE",
+          "gold_classification": "FACTUAL",
+          "pred_classification": "FACTUAL"
+        },
+        {
+          "gold_span": "Are citizens prepared for disasters?",
+          "extracted_span": "Are citizens prepared for disasters?",
+          "jaccard_similarity": 1.0,
+          "gold_eligibility": "INELIGIBLE",
+          "pred_eligibility": "INELIGIBLE",
+          "gold_classification": "QUESTION",
+          "pred_classification": "QUESTION"
+        }
+      ]
+    },
+    {
+      "doc_id": "doc_hi_01",
+      "lang": "hi",
+      "raw_text_length": 177,
+      "claims_extracted_count": 2,
+      "gold_propositions_count": 4,
+      "extracted_claims": [
+        {
+          "claim_id": "claim_276a38c47e13a89c",
+          "claim": "चुनाव आयोग ने 12 नवंबर 2026 को मतदान की घोषणा की। मेरे विचार में यह सबसे अच्छा निर्णय है। क्या सभी दलों ने इसका स्वागत किया?",
+          "original_text": "चुनाव आयोग ने 12 नवंबर 2026 को मतदान की घोषणा की। मेरे विचार में यह सबसे अच्छा निर्णय है। क्या सभी दलों ने इसका स्वागत किया?",
+          "normalized_text": "चुनाव आयोग ने 12 नवंबर 2026 को मतदान की घोषणा की। मेरे विचार में यह सबसे अच्छा निर्णय है। क्या सभी दलों ने इसका स्वागत किया?",
+          "language": "unknown",
+          "translated_text": null,
+          "language_code": null,
+          "language_name": null,
+          "language_source": null,
+          "language_model_id": null,
+          "language_model_revision": null,
+          "language_confidence": null,
+          "language_detection_outcome": "unavailable",
+          "entities": [],
+          "dates": [
+            "2026"
+          ],
+          "locations": [],
+          "numbers": [
+            "12",
+            "2026"
+          ],
+          "claim_type": "unclassified",
+          "confidence": 0.35,
+          "classification": "QUESTION",
+          "language_detection_status": "unavailable",
+          "source_start": 0,
+          "source_end": 124,
+          "source_region_refs": [],
+          "source_regions": [],
+          "extraction_method": "conservative_rules_v2",
+          "confidence_semantics": "heuristic extraction score; not truth probability",
+          "source": "ocr",
+          "source_text_reference": "ocr_sentence_0",
+          "ocr_confidence": null,
+          "verification_eligibility": "INELIGIBLE",
+          "eligibility_reason": "Questions are not treated as factual assertions.",
+          "warnings": [
+            "Original language could not be identified confidently."
+          ]
+        },
+        {
+          "claim_id": "claim_013ce8f02a2ebcc8",
+          "claim": "भारतीय रेल ने 500 विशेष ट्रेनों का संचालन शुरू किया।",
+          "original_text": "भारतीय रेल ने 500 विशेष ट्रेनों का संचालन शुरू किया।",
+          "normalized_text": "भारतीय रेल ने 500 विशेष ट्रेनों का संचालन शुरू किया।",
+          "language": "unknown",
+          "translated_text": null,
+          "language_code": null,
+          "language_name": null,
+          "language_source": null,
+          "language_model_id": null,
+          "language_model_revision": null,
+          "language_confidence": null,
+          "language_detection_outcome": "unavailable",
+          "entities": [],
+          "dates": [],
+          "locations": [],
+          "numbers": [
+            "500"
+          ],
+          "claim_type": "statistical",
+          "confidence": 0.65,
+          "classification": "FACTUAL",
+          "language_detection_status": "unavailable",
+          "source_start": 125,
+          "source_end": 177,
+          "source_region_refs": [],
+          "source_regions": [],
+          "extraction_method": "conservative_rules_v2",
+          "confidence_semantics": "heuristic extraction score; not truth probability",
+          "source": "ocr",
+          "source_text_reference": "ocr_sentence_1",
+          "ocr_confidence": null,
+          "verification_eligibility": "ELIGIBLE",
+          "eligibility_reason": "Text contains a factual assertion candidate.",
+          "warnings": [
+            "Original language could not be identified confidently."
+          ]
+        }
+      ],
+      "pairings": [
+        {
+          "gold_span": "चुनाव आयोग ने 12 नवंबर 2026 को मतदान की घोषणा की।",
+          "extracted_span": null,
+          "jaccard_similarity": 0.0,
+          "gold_eligibility": "ELIGIBLE",
+          "pred_eligibility": "INELIGIBLE",
+          "gold_classification": "FACTUAL",
+          "pred_classification": "AMBIGUOUS"
+        },
+        {
+          "gold_span": "मेरे विचार में यह सबसे अच्छा निर्णय है।",
+          "extracted_span": null,
+          "jaccard_similarity": 0.0,
+          "gold_eligibility": "INELIGIBLE",
+          "pred_eligibility": "INELIGIBLE",
+          "gold_classification": "OPINION",
+          "pred_classification": "AMBIGUOUS"
+        },
+        {
+          "gold_span": "क्या सभी दलों ने इसका स्वागत किया?",
+          "extracted_span": null,
+          "jaccard_similarity": 0.0,
+          "gold_eligibility": "INELIGIBLE",
+          "pred_eligibility": "INELIGIBLE",
+          "gold_classification": "QUESTION",
+          "pred_classification": "AMBIGUOUS"
+        },
+        {
+          "gold_span": "भारतीय रेल ने 500 विशेष ट्रेनों का संचालन शुरू किया।",
+          "extracted_span": "भारतीय रेल ने 500 विशेष ट्रेनों का संचालन शुरू किया।",
+          "jaccard_similarity": 1.0,
+          "gold_eligibility": "ELIGIBLE",
+          "pred_eligibility": "ELIGIBLE",
+          "gold_classification": "FACTUAL",
+          "pred_classification": "FACTUAL"
+        }
+      ]
+    },
+    {
+      "doc_id": "doc_hi_02",
+      "lang": "hi",
+      "raw_text_length": 137,
+      "claims_extracted_count": 2,
+      "gold_propositions_count": 4,
+      "extracted_claims": [
+        {
+          "claim_id": "claim_2c9f48c4da523802",
+          "claim": "मौसम विभाग ने चेतावनी दी कि बिहार और असम में भारी बारिश हुई। ब्रेकिंग!",
+          "original_text": "मौसम विभाग ने चेतावनी दी कि बिहार और असम में भारी बारिश हुई। ब्रेकिंग!",
+          "normalized_text": "मौसम विभाग ने चेतावनी दी कि बिहार और असम में भारी बारिश हुई। ब्रेकिंग!",
+          "language": "unknown",
+          "translated_text": null,
+          "language_code": null,
+          "language_name": null,
+          "language_source": null,
+          "language_model_id": null,
+          "language_model_revision": null,
+          "language_confidence": null,
+          "language_detection_outcome": "unavailable",
+          "entities": [],
+          "dates": [],
+          "locations": [],
+          "numbers": [],
+          "claim_type": "factual",
+          "confidence": 0.83,
+          "classification": "FACTUAL",
+          "language_detection_status": "unavailable",
+          "source_start": 0,
+          "source_end": 70,
+          "source_region_refs": [],
+          "source_regions": [],
+          "extraction_method": "conservative_rules_v2",
+          "confidence_semantics": "heuristic extraction score; not truth probability",
+          "source": "ocr",
+          "source_text_reference": "ocr_sentence_0",
+          "ocr_confidence": null,
+          "verification_eligibility": "ELIGIBLE",
+          "eligibility_reason": "Text contains a factual assertion candidate.",
+          "warnings": [
+            "Original language could not be identified confidently."
+          ]
+        },
+        {
+          "claim_id": "claim_c44f31de0eae8504",
+          "claim": "लोगों को घर में रहना चाहिए। पुलिस ने 5 संदिग्धों को गिरफ्तार किया।",
+          "original_text": "लोगों को घर में रहना चाहिए। पुलिस ने 5 संदिग्धों को गिरफ्तार किया।",
+          "normalized_text": "लोगों को घर में रहना चाहिए। पुलिस ने 5 संदिग्धों को गिरफ्तार किया।",
+          "language": "unknown",
+          "translated_text": null,
+          "language_code": null,
+          "language_name": null,
+          "language_source": null,
+          "language_model_id": null,
+          "language_model_revision": null,
+          "language_confidence": null,
+          "language_detection_outcome": "unavailable",
+          "entities": [],
+          "dates": [],
+          "locations": [],
+          "numbers": [
+            "5"
+          ],
+          "claim_type": "opinion",
+          "confidence": 0.71,
+          "classification": "OPINION",
+          "language_detection_status": "unavailable",
+          "source_start": 71,
+          "source_end": 137,
+          "source_region_refs": [],
+          "source_regions": [],
+          "extraction_method": "conservative_rules_v2",
+          "confidence_semantics": "heuristic extraction score; not truth probability",
+          "source": "ocr",
+          "source_text_reference": "ocr_sentence_1",
+          "ocr_confidence": null,
+          "verification_eligibility": "INELIGIBLE",
+          "eligibility_reason": "Subjective language is not eligible for factual verification.",
+          "warnings": [
+            "Original language could not be identified confidently."
+          ]
+        }
+      ],
+      "pairings": [
+        {
+          "gold_span": "मौसम विभाग ने चेतावनी दी कि बिहार और असम में भारी बारिश हुई।",
+          "extracted_span": "मौसम विभाग ने चेतावनी दी कि बिहार और असम में भारी बारिश हुई। ब्रेकिंग!",
+          "jaccard_similarity": 0.9286,
+          "gold_eligibility": "ELIGIBLE",
+          "pred_eligibility": "ELIGIBLE",
+          "gold_classification": "FACTUAL",
+          "pred_classification": "FACTUAL"
+        },
+        {
+          "gold_span": "ब्रेकिंग!",
+          "extracted_span": null,
+          "jaccard_similarity": 0.0,
+          "gold_eligibility": "INELIGIBLE",
+          "pred_eligibility": "INELIGIBLE",
+          "gold_classification": "AMBIGUOUS",
+          "pred_classification": "AMBIGUOUS"
+        },
+        {
+          "gold_span": "लोगों को घर में रहना चाहिए।",
+          "extracted_span": "लोगों को घर में रहना चाहिए। पुलिस ने 5 संदिग्धों को गिरफ्तार किया।",
+          "jaccard_similarity": 0.5,
+          "gold_eligibility": "INELIGIBLE",
+          "pred_eligibility": "INELIGIBLE",
+          "gold_classification": "OPINION",
+          "pred_classification": "OPINION"
+        },
+        {
+          "gold_span": "पुलिस ने 5 संदिग्धों को गिरफ्तार किया।",
+          "extracted_span": "लोगों को घर में रहना चाहिए। पुलिस ने 5 संदिग्धों को गिरफ्तार किया।",
+          "jaccard_similarity": 0.5833,
+          "gold_eligibility": "ELIGIBLE",
+          "pred_eligibility": "INELIGIBLE",
+          "gold_classification": "FACTUAL",
+          "pred_classification": "OPINION"
+        }
+      ]
+    }
+  ]
+}

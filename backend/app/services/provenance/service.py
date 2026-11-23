@@ -147,7 +147,19 @@ class ProvenanceResult:
 
 def _is_configured() -> bool:
     """Check if Google Cloud Vision API is configured."""
-    return bool(settings.VISION_API_KEY or settings.GOOGLE_API_KEY)
+    for attr in ("VISION_API_KEY", "GOOGLE_API_KEY"):
+        val = getattr(settings, attr, "")
+        if isinstance(val, str) and val.strip():
+            return True
+    return False
+
+
+def _get_vision_api_key() -> str:
+    for attr in ("VISION_API_KEY", "GOOGLE_API_KEY"):
+        val = getattr(settings, attr, "")
+        if isinstance(val, str) and val.strip():
+            return val.strip()
+    return ""
 
 
 def _safe_external_url(value: Any) -> str:
@@ -196,7 +208,7 @@ def _request_web_detection(image_data: bytes) -> tuple[str, Dict[str, Any], Opti
     timeout = _bounded_setting("PROVENANCE_API_TIMEOUT_SECONDS", 30.0, 0.1, 60.0)
     if not _WEB_DETECTION_SEMAPHORE.acquire(timeout=timeout):
         return "failed", {}, "PROVIDER_CAPACITY", ["Web Detection could not start within the configured concurrency bound."]
-    api_key = settings.VISION_API_KEY or settings.GOOGLE_API_KEY
+    api_key = _get_vision_api_key()
     body = {"requests": [{"image": {"content": base64.b64encode(image_data).decode("ascii")},
         "features": [{"type": "WEB_DETECTION", "maxResults": 20}]}]}
     try:
