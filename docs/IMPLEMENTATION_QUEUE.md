@@ -23,52 +23,67 @@ This document details the exact file paths, existing functions/handlers, test su
 
 ## 2. Component Audits & Detailed Readiness
 
-### Priority 1: `GET /api/v1/models` (Model Registry Endpoint)
+### Priority 1: `GET /api/v1/models` (Model Registry Endpoint) — COMPLETED AND VERIFIED
 
 - **Target Route:** `GET /api/v1/models`
-- **Current File Path:** [backend/app/api/v1/endpoints/stubs.py](file:///D:/Projects/Truthlens/backend/app/api/v1/endpoints/stubs.py) (Lines 219–228)
-- **Current Handler:** `async def list_models()` returning stub `{"models": [], "message": "ML models will be available in Stage 3."}`
-- **Related Implementation:** [backend/app/api/v1/endpoints/health.py](file:///D:/Projects/Truthlens/backend/app/api/v1/endpoints/health.py) (Lines 88–147) provides `GET /api/v1/health/models`, which queries readiness for authenticity (SigLIP), object detection (YOLOv8n), and OCR (EasyOCR / Tesseract).
-- **Existing Test Coverage:**
-  - [backend/tests/test_api.py](file:///D:/Projects/Truthlens/backend/tests/test_api.py) line 39 (`test_health_models_endpoint` verifies `/api/v1/health/models`).
-  - No dedicated test currently exercises `/api/v1/models`.
-- **Missing Implementation:**
-  1. Unify model inventory into a structured schema reporting:
-     - `name`: Human-readable identifier (`authenticity`, `object_detection`, `ocr`, `language_identification`).
-     - `model_id`: Canonical Hugging Face or checkpoint identifier (e.g. `truthlens/siglip-cifake-frozen-head`, `yolov8n.pt`, `papluca/xlm-roberta-base-language-detection`).
-     - `task`: Model classification (`authenticity_classification`, `bounding_box_detection`, `optical_character_recognition`, `language_identification`).
-     - `status`: Runtime state (`loaded`, `cached_not_loaded`, `available_not_loaded`, `checkpoint_missing`, `download_required`, `dependency_unavailable`).
-     - `device`: Device allocation (`cuda:0`, `cpu`).
-     - `loaded`: Boolean flag.
-     - `capabilities`: Feature flags (e.g., Grad-CAM compatibility, language support list).
-  2. Protect endpoint with bearer token authentication (`Principal = Depends(get_current_principal)`).
-  3. Ensure zero sensitive internal filesystem paths are exposed in public responses.
-- **Dependencies / Blockers:** None. All backing services and model inspection utilities already exist in the codebase.
-- **Estimated Complexity:** Low (0.5 engineering day).
+- **Implementation Path:** [backend/app/api/v1/endpoints/models.py](file:///D:/Projects/Truthlens/backend/app/api/v1/endpoints/models.py) (Service: [backend/app/services/ml/registry.py](file:///D:/Projects/Truthlens/backend/app/services/ml/registry.py), Schema: [backend/app/schemas/models.py](file:///D:/Projects/Truthlens/backend/app/schemas/models.py))
+- **Status:** **COMPLETED AND VERIFIED** (2026-11-23)
+- **Features Implemented:**
+  - Replaced placeholder stub with a unified, non-eager model registry reporting all 5 configured models:
+    1. SigLIP Authenticity Detector (`authenticity`)
+    2. YOLOv8 Object Detector (`object_detection`)
+    3. EasyOCR Text Recognition (`ocr_easyocr`)
+    4. Tesseract OCR Fallback (`ocr_tesseract`)
+    5. XLM-RoBERTa Language Identification (`language_detection`)
+  - Strict non-eager guarantee: singleton state and disk checks only; `.load()` is never called.
+  - Strict privacy guarantee: absolute local filesystem paths, environment secrets, and stack traces are sanitized; only public filenames or model IDs are exposed.
+  - Distinct status semantics (`loaded`, `available_not_loaded`, `cached_not_loaded`, `checkpoint_missing`, `dependency_unavailable`, `failed`).
+  - Protected with Bearer authentication (`get_current_principal`) and rate-limited with scope `"models"` (`RATE_LIMIT_MODELS_PER_MINUTE`).
+- **Test Verification:**
+  - [backend/tests/test_models_endpoint.py](file:///D:/Projects/Truthlens/backend/tests/test_models_endpoint.py): 10 passed tests covering inventory, schema, non-eager loading, privacy/path redaction, missing checkpoints, missing dependencies, load failures, memory/device reporting, authentication enforcement, and rate limiting.
+  - Backward compatibility confirmed: `backend/tests/test_api.py::test_health_models_endpoint` passes without changes.
 
 ---
 
-### Priority 2: `POST /api/v1/ocr` (Standalone OCR Endpoint)
+### Priority 2: `POST /api/v1/ocr` (Standalone OCR Endpoint) — COMPLETED AND VERIFIED
 
 - **Target Route:** `POST /api/v1/ocr`
-- **Current File Path:** [backend/app/api/v1/endpoints/stubs.py](file:///D:/Projects/Truthlens/backend/app/api/v1/endpoints/stubs.py) (Lines 74–82)
-- **Current Handler:** `async def ocr_endpoint()` returning HTTP 501 `{"detail": "OCR endpoint will be implemented in Stage 4.", "error_code": "NOT_IMPLEMENTED"}`
-- **Backing Service:** [backend/app/services/ocr/service.py](file:///D:/Projects/Truthlens/backend/app/services/ocr/service.py) (`OCRService`, `get_ocr_service()`, `OCRResult`, `OCRBlock`)
-- **Existing Test Coverage:**
-  - [backend/tests/test_ocr_runtime.py](file:///D:/Projects/Truthlens/backend/tests/test_ocr_runtime.py) (10 unit tests covering `OCRService`, EasyOCR loader, Tesseract fallback, coordinate clipping, safety pixel caps, and non-finite bounding boxes).
-  - [backend/tests/test_stage3.py](file:///D:/Projects/Truthlens/backend/tests/test_stage3.py) (Stage contract tests for OCR output).
-  - [backend/tests/test_api.py](file:///D:/Projects/Truthlens/backend/tests/test_api.py) (Integrated OCR execution through `POST /api/v1/analyze`).
-- **Missing Implementation:**
-  1. Accept image upload via `image: UploadFile = File(...)`.
-  2. Implement stream bounding: Read up to `settings.max_upload_bytes + 1` and raise HTTP 413 if exceeded.
-  3. Image file validation using `backend.app.core.security.validate_image_file` (validates magic bytes, MIME types, decompression bombs).
-  4. Query parameter support: `languages: Optional[str] = Query(None, description="Comma-separated ISO 639 codes")`.
-  5. Asynchronous dispatch: Run CPU/GPU-bound `ocr_service.extract(pil_image)` in worker thread via `asyncio.to_thread`.
-  6. Timeout handling: Apply `asyncio.wait_for(..., timeout=settings.OCR_TIMEOUT_SECONDS)`.
-  7. Rate limiting: Enforce `check_rate_limit(..., scope="ocr", limit=settings.RATE_LIMIT_OCR_PER_MINUTE)`.
-  8. Return structured `OCRResult.to_dict()` with appropriate HTTP status codes (200 on success, 413 on oversize, 422 on unreadable/unsupported formats, 504 on timeout).
-- **Dependencies / Blockers:** None. `OCRService` is verified in production with EasyOCR and local Tesseract 5.4.
-- **Estimated Complexity:** Low-Medium (1 engineering day).
+- **Implementation Path:** [backend/app/api/v1/endpoints/ocr.py](file:///D:/Projects/Truthlens/backend/app/api/v1/endpoints/ocr.py) (Service: [backend/app/services/ocr/service.py](file:///D:/Projects/Truthlens/backend/app/services/ocr/service.py), Schema: [backend/app/schemas/ocr.py](file:///D:/Projects/Truthlens/backend/app/schemas/ocr.py))
+- **Status:** **COMPLETED AND VERIFIED** (2026-11-23)
+- **Features Implemented:**
+  - Implemented standalone `POST /api/v1/ocr` using the existing production `OCRService` singleton (`get_ocr_service()`).
+  - No second OCR implementation; no eager loading of OCR models on startup.
+  - Image upload handling via `image: UploadFile = File(...)` with streaming byte bounds (`max_upload_bytes + 1`) raising HTTP 413 when oversized.
+  - Comprehensive image validation using `backend.app.core.security.validate_image_file` (validating magic bytes, allowed MIME types, decompression bombs, zero bytes, unreadable bytes, and dimension limits, raising HTTP 422).
+  - Query parameter support: `languages: Optional[str] = Query(None)` parsed into clean lowercase ISO-639 codes with per-request override.
+  - Non-blocking execution via `asyncio.to_thread(_run_extract)` with 60-second timeout (`asyncio.wait_for`, raising HTTP 504 on timeout).
+  - Rate limiting via database-backed fixed-window rate limiter scoped to `"ocr"` (`RATE_LIMIT_OCR_PER_MINUTE`, default 20 requests/min).
+  - Authentication via Bearer token (`Principal = Depends(get_current_principal)`).
+  - Preserved EasyOCR primary and Tesseract fallback behavior.
+  - Dedicated Pydantic response schema (`OCRResponse`, `OCRBlockResponse`).
+  - Sanitized error handling: unhandled internal exceptions return HTTP 500 without leaking stack traces or local filesystem paths.
+  - Route registered in `backend/app/api/v1/router.py` under tag `["OCR"]`.
+  - Replaced 501 stub in `stubs.py` with backward-compatible re-export.
+- **Test Verification:**
+  - [backend/tests/test_ocr_endpoint.py](file:///D:/Projects/Truthlens/backend/tests/test_ocr_endpoint.py): 13 passed tests covering:
+    1. Successful extraction with EasyOCR (`test_ocr_endpoint_success_easyocr`)
+    2. Fallback to Tesseract on EasyOCR failure (`test_ocr_endpoint_tesseract_fallback`)
+    3. Custom query `languages` parameter parsing (`test_ocr_endpoint_custom_languages_query`)
+    4. Clean `no_results` when image contains no text (`test_ocr_endpoint_no_text_found`)
+    5. Rate limiting enforcement for `"ocr"` scope (`test_ocr_endpoint_rate_limiting`)
+    6. Authentication enforcement (`test_ocr_endpoint_auth_required`)
+    7. HTTP 413 on oversized upload (`test_ocr_endpoint_oversized_upload`)
+    8. HTTP 422 on corrupted image bytes (`test_ocr_endpoint_corrupt_image`)
+    9. HTTP 422 on empty upload (`test_ocr_endpoint_empty_file`)
+    10. HTTP 422 on dimension limit violations (`test_ocr_endpoint_invalid_dimensions`)
+    11. HTTP 504 on processing timeout (`test_ocr_endpoint_timeout`)
+    12. HTTP 500 safe error sanitization without path leakage (`test_ocr_endpoint_internal_error_sanitization`)
+    13. Backward compatibility of `stubs.ocr_endpoint` re-export (`test_ocr_endpoint_backward_compatibility_reexport`)
+  - Integration suite verification:
+    - `backend/tests/test_ocr_runtime.py`: 25 passed, 2 skipped
+    - `backend/tests/test_models_endpoint.py`: 10 passed
+    - `backend/tests/test_api.py::test_health_models_endpoint`: 1 passed
+    - Model baseline SHA-256 bit-exact preservation: `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`.
 
 ---
 

@@ -1,7 +1,6 @@
 """
 TruthLens — API endpoint stubs for future stages.
 
-POST /api/v1/ocr
 POST /api/v1/fact-check
 POST /api/v1/provenance
 """
@@ -70,14 +69,8 @@ class ProvenanceResponse(BaseModel):
     note: Optional[str] = None
 
 
-@router.post(
-    "/ocr",
-    summary="Standalone OCR extraction",
-    description="Extract text from an image. (Will be implemented in Stage 4.)",
-    status_code=501,
-)
-async def ocr_endpoint(principal: Principal = Depends(get_current_principal)):
-    return {"detail": "OCR endpoint will be implemented in Stage 4.", "error_code": "NOT_IMPLEMENTED"}
+# Re-exported from dedicated ocr endpoint module for backward compatibility
+from backend.app.api.v1.endpoints.ocr import ocr_endpoint
 
 
 @router.post(

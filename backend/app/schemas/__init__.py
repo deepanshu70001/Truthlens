@@ -143,3 +143,7 @@ class ErrorResponse(BaseModel):
 # ── Models Registry ──────────────────────────────────────────────
 
 from backend.app.schemas.models import ModelInfo, ModelRegistryResponse
+
+# ── Standalone OCR ───────────────────────────────────────────────
+
+from backend.app.schemas.ocr import OCRBlockResponse, OCRResponse

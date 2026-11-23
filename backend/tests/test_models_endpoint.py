@@ -168,21 +168,23 @@ async def test_models_dependency_unavailable_status(client, monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_models_failed_initialization_status(client, monkeypatch):
+async def test_models_failed_initialization_status(client):
     """When a model has recorded a load failure, status is failed."""
     from backend.app.services.nlp.language_detector import get_language_detector
 
     lang = get_language_detector()
-    monkeypatch.setattr(lang, "_load_failure", "OSError: corrupt index")
+    setattr(lang, "_load_failure", "OSError: corrupt index")
+    try:
+        resp = await client.get("/api/v1/models")
+        assert resp.status_code == 200
+        data = resp.json()
 
-    resp = await client.get("/api/v1/models")
-    assert resp.status_code == 200
-    data = resp.json()
-
-    lang_entry = next(m for m in data["models"] if m["id"] == "language_detection")
-    assert lang_entry["status"] == "failed"
-    assert lang_entry["readiness"] == "failed"
-    assert "Language detector initialization failed" in lang_entry["reason"]
+        lang_entry = next(m for m in data["models"] if m["id"] == "language_detection")
+        assert lang_entry["status"] == "failed"
+        assert lang_entry["readiness"] == "failed"
+        assert "Language detector initialization failed" in lang_entry["reason"]
+    finally:
+        setattr(lang, "_load_failure", None)
 
 
 @pytest.mark.asyncio
@@ -205,49 +207,56 @@ async def test_models_loaded_state_reporting(client, monkeypatch):
     monkeypatch.setattr(vision_det, "is_loaded", True)
     dummy_yolo_model = MagicMock()
     dummy_yolo_model.device = "cuda:0"
-    monkeypatch.setattr(vision_det, "_model", dummy_yolo_model)
+    setattr(vision_det, "_model", dummy_yolo_model)
 
-    monkeypatch.setattr(ocr_srv, "_reader", object())
-    monkeypatch.setattr(ocr_srv, "_gpu", True)
+    setattr(ocr_srv, "_reader", object())
+    setattr(ocr_srv, "_gpu", True)
 
-    monkeypatch.setattr(lang_det, "is_loaded", True)
-    monkeypatch.setattr(lang_det, "_device", "cuda:0")
+    setattr(lang_det, "is_loaded", True)
+    setattr(lang_det, "_device", "cuda:0")
 
-    resp = await client.get("/api/v1/models")
-    assert resp.status_code == 200
-    data = resp.json()
+    try:
+        resp = await client.get("/api/v1/models")
+        assert resp.status_code == 200
+        data = resp.json()
 
-    auth = next(m for m in data["models"] if m["id"] == "authenticity")
-    assert auth["loaded"] is True
-    assert auth["status"] == "loaded"
-    assert auth["readiness"] == "ready"
-    assert auth["device"] == "cuda:0"
+        auth = next(m for m in data["models"] if m["id"] == "authenticity")
+        assert auth["loaded"] is True
+        assert auth["status"] == "loaded"
+        assert auth["readiness"] == "ready"
+        assert auth["device"] == "cuda:0"
 
-    vision = next(m for m in data["models"] if m["id"] == "object_detection")
-    assert vision["loaded"] is True
-    assert vision["status"] == "loaded"
-    assert vision["readiness"] == "ready"
-    assert vision["device"] == "cuda:0"
+        vision = next(m for m in data["models"] if m["id"] == "object_detection")
+        assert vision["loaded"] is True
+        assert vision["status"] == "loaded"
+        assert vision["readiness"] == "ready"
+        assert vision["device"] == "cuda:0"
 
-    ocr = next(m for m in data["models"] if m["id"] == "ocr_easyocr")
-    assert ocr["loaded"] is True
-    assert ocr["status"] == "loaded"
-    assert ocr["readiness"] == "ready"
-    assert ocr["device"] == "cuda"
+        ocr = next(m for m in data["models"] if m["id"] == "ocr_easyocr")
+        assert ocr["loaded"] is True
+        assert ocr["status"] == "loaded"
+        assert ocr["readiness"] == "ready"
+        assert ocr["device"] == "cuda"
 
-    lang = next(m for m in data["models"] if m["id"] == "language_detection")
-    assert lang["loaded"] is True
-    assert lang["status"] == "loaded"
-    assert lang["readiness"] == "ready"
-    assert lang["device"] == "cuda:0"
+        lang = next(m for m in data["models"] if m["id"] == "language_detection")
+        assert lang["loaded"] is True
+        assert lang["status"] == "loaded"
+        assert lang["readiness"] == "ready"
+        assert lang["device"] == "cuda:0"
 
-    assert data["loaded_count"] >= 4
+        assert data["loaded_count"] >= 4
+    finally:
+        setattr(vision_det, "_model", None)
+        setattr(ocr_srv, "_reader", None)
+        setattr(ocr_srv, "_gpu", False)
+        setattr(lang_det, "_device", None)
 
 
 @pytest.mark.asyncio
 async def test_models_authentication_enforced(monkeypatch):
     """GET /api/v1/models requires valid Bearer authentication in production mode."""
-    # Temporarily disable development bypass to test auth enforcement
+    # Ensure signing key is valid
+    monkeypatch.setattr(settings, "SECRET_KEY", "test-secret-key-that-is-at-least-32-bytes-long!")
     monkeypatch.setattr(settings, "DEV_AUTH_BYPASS", False)
     monkeypatch.setattr(settings, "APP_ENV", "production")
 
@@ -278,11 +287,26 @@ async def test_models_authentication_enforced(monkeypatch):
 @pytest.mark.asyncio
 async def test_models_rate_limiting_enforced(monkeypatch):
     """GET /api/v1/models enforces configured rate limit."""
+    monkeypatch.setattr(settings, "SECRET_KEY", "test-secret-key-that-is-at-least-32-bytes-long!")
     monkeypatch.setattr(settings, "RATE_LIMIT_MODELS_PER_MINUTE", 2)
+    # Use distinct authenticated user to ensure a fresh isolated rate limit bucket
+    user_token, _ = issue_access_token("isolated-rate-limit-user-unique")
+    headers = {"Authorization": f"Bearer {user_token}"}
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as test_client:
         # 1st request succeeds
+        r1 = await test_client.get("/api/v1/models", headers=headers)
+        assert r1.status_code == 200
+
+        # 2nd request succeeds
+        r2 = await test_client.get("/api/v1/models", headers=headers)
+        assert r2.status_code == 200
+
+        # 3rd request exceeds limit
+        r3 = await test_client.get("/api/v1/models", headers=headers)
+        assert r3.status_code == 429
+        assert "Rate limit exceeded" in r3.json()["detail"]
         r1 = await test_client.get("/api/v1/models")
         assert r1.status_code == 200
 
