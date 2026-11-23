@@ -10,15 +10,12 @@ It does NOT determine the final fake/real result.
 
 from __future__ import annotations
 
-import io
-import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 from PIL import Image
 
 from backend.app.core.logging import get_logger
-from backend.app.config import settings
 
 log = get_logger("vlm")
 

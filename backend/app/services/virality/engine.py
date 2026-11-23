@@ -112,12 +112,15 @@ class ViralityResult:
     methodology: str = ""
     runtime_ms: int = 0
     warnings: List[str] = field(default_factory=list)
+    synthetic_demo_score: Optional[float] = None
+    synthetic_demo_band: Optional[str] = None
+    synthetic_record: Optional[Dict[str, Any]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         result = {
             "data_status": self.data_status,
             "virality_score": round(self.virality_score, 4) if self.virality_score is not None else None,
-            "assessment_mode": "CONTENT_BASED_HEURISTIC",
+            "assessment_mode": "CONTENT_BASED_HEURISTIC" if self.data_status != "DEMO" else "SYNTHETIC_DEMO",
             "historical_prediction_status": "DATA_UNAVAILABLE",
             "risk_level": self.risk_level,
             "features": [f.to_dict() for f in self.features],
@@ -127,6 +130,13 @@ class ViralityResult:
             "warnings": self.warnings,
         }
 
+        if self.synthetic_demo_score is not None:
+            result["synthetic_demo_score"] = self.synthetic_demo_score
+        if self.synthetic_demo_band is not None:
+            result["synthetic_demo_band"] = self.synthetic_demo_band
+        if self.synthetic_record is not None:
+            result["synthetic_record"] = self.synthetic_record
+
         if self.data_status == "DATA_UNAVAILABLE":
             result["disclaimer"] = (
                 "This is a content indicator score, not a prediction of sharing, reach, or probability. "
@@ -134,9 +144,9 @@ class ViralityResult:
             )
         elif self.data_status == "DEMO":
             result["disclaimer"] = (
-                "DEMO DATA — NOT A REAL-WORLD PREDICTION. "
-                "This output is generated for UI demonstration purposes only. "
-                "It does not reflect actual virality risk."
+                "⚠️ SYNTHETIC DEMONSTRATION DATA: Generated for college project demonstration only. "
+                "Not observed social metrics, does not evaluate detector accuracy, "
+                "and does not influence authenticity classification."
             )
 
         return result
@@ -269,16 +279,31 @@ def estimate_virality(
     claims: Optional[List[Dict]] = None,
     text_normalized: Optional[Dict] = None,
     vision_result: Optional[Dict] = None,
+    analysis_id: Optional[str] = None,
 ) -> ViralityResult:
     """
     Estimate virality risk based on observable content features.
 
     This is a HEURISTIC system, NOT a trained model.
-    Results carry DATA_UNAVAILABLE because no historical model/data is configured.
+    Results carry DATA_UNAVAILABLE by default unless synthetic report demo data
+    is explicitly enabled via configuration.
     """
     t0 = time.time()
+    from backend.app.config import settings
 
     data_status = "DATA_UNAVAILABLE"
+    synthetic_demo_score: Optional[float] = None
+    synthetic_demo_band: Optional[str] = None
+    synthetic_rec: Optional[Dict[str, Any]] = None
+
+    if analysis_id and getattr(settings, "TRUTHLENS_SYNTHETIC_REPORT_DATA_ENABLED", False):
+        from backend.app.services.synthetic.data_access import get_synthetic_data_access
+
+        synthetic_rec = get_synthetic_data_access().get_virality_record(analysis_id)
+        if synthetic_rec:
+            data_status = "DEMO"
+            synthetic_demo_score = synthetic_rec.get("synthetic_content_indicator_score")
+            synthetic_demo_band = synthetic_rec.get("synthetic_demo_band")
 
     # Compute features
     text_features = _compute_text_features(ocr_text, claims, text_normalized)
@@ -298,27 +323,49 @@ def estimate_virality(
                 contributing_factors.append(feat.description)
 
     # Normalize to 0-1
-    virality_score = max(0.0, min(1.0, weighted_sum / total_weight)) if total_weight else None
+    heuristic_score = max(0.0, min(1.0, weighted_sum / total_weight)) if total_weight else None
 
-    # Risk level
-    if virality_score is None:
-        risk_level = "unknown"
-    elif virality_score >= 0.6:
-        risk_level = "high"
-    elif virality_score >= 0.3:
-        risk_level = "moderate"
+    # If synthetic demo is enabled, use synthetic indicator score for demo display
+    if data_status == "DEMO" and synthetic_demo_score is not None:
+        virality_score = synthetic_demo_score
+        band_str = str(synthetic_demo_band).lower()
+        if "critical" in band_str or "high" in band_str:
+            risk_level = "high"
+        elif "moderate" in band_str:
+            risk_level = "moderate"
+        else:
+            risk_level = "low"
+        contributing_factors.append(
+            f"Synthetic demo indicator band: {synthetic_demo_band} (score {synthetic_demo_score})"
+        )
     else:
-        risk_level = "low"
+        virality_score = heuristic_score
+        # Risk level
+        if virality_score is None:
+            risk_level = "unknown"
+        elif virality_score >= 0.6:
+            risk_level = "high"
+        elif virality_score >= 0.3:
+            risk_level = "moderate"
+        else:
+            risk_level = "low"
 
     warnings = []
-    methodology = (
-        "Heuristic feature-based estimation using known correlates of "
-        "content virality from academic literature (Vosoughi et al., 2018). "
-        "Features include text presence, urgency/emotional language, topic "
-        "sensitivity, and visual characteristics. This is NOT a trained "
-        "prediction model — no suitable training dataset exists for "
-        "image-level virality prediction in the Indian context."
-    )
+    if data_status == "DEMO":
+        methodology = (
+            "Synthetic demonstration content indicators from validated demo dataset. "
+            "Simulated indicators for academic demonstration only. Fictional metrics."
+        )
+        warnings.append("Synthetic demonstration data enabled: Not real-world social engagement.")
+    else:
+        methodology = (
+            "Heuristic feature-based estimation using known correlates of "
+            "content virality from academic literature (Vosoughi et al., 2018). "
+            "Features include text presence, urgency/emotional language, topic "
+            "sensitivity, and visual characteristics. This is NOT a trained "
+            "prediction model — no suitable training dataset exists for "
+            "image-level virality prediction in the Indian context."
+        )
 
     runtime_ms = int((time.time() - t0) * 1000)
 
@@ -331,6 +378,9 @@ def estimate_virality(
         methodology=methodology,
         runtime_ms=runtime_ms,
         warnings=warnings,
+        synthetic_demo_score=synthetic_demo_score,
+        synthetic_demo_band=synthetic_demo_band,
+        synthetic_record=synthetic_rec,
     )
 
     log.info("Virality content indicators computed: score=%s level=%s status=%s [%d ms]", virality_score, risk_level, data_status, runtime_ms)

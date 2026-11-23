@@ -9,6 +9,25 @@ from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
+from backend.app.schemas.claims import (
+    ClaimExtractionRequest,
+    ClaimExtractionResponse,
+    ClaimResponse,
+)
+from backend.app.schemas.factcheck import (
+    ClaimVerificationItem,
+    FactCheckClaimItem,
+    FactCheckRequest,
+    FactCheckResponse,
+)
+from backend.app.schemas.language import (
+    LanguageCandidate,
+    LanguageDetectionRequest,
+    LanguageDetectionResponse,
+)
+from backend.app.schemas.models import ModelInfo, ModelRegistryResponse
+from backend.app.schemas.ocr import OCRBlockResponse, OCRResponse
+
 
 # ── Analysis ─────────────────────────────────────────────────────
 
@@ -140,35 +159,28 @@ class ErrorResponse(BaseModel):
     error_code: Optional[str] = None
 
 
-# ── Models Registry ──────────────────────────────────────────────
-
-from backend.app.schemas.models import ModelInfo, ModelRegistryResponse
-
-# ── Standalone OCR ───────────────────────────────────────────────
-
-from backend.app.schemas.ocr import OCRBlockResponse, OCRResponse
-
-# ── Standalone Claims Extraction ─────────────────────────────────
-
-from backend.app.schemas.claims import (
-    ClaimExtractionRequest,
-    ClaimExtractionResponse,
-    ClaimResponse,
-)
-
-# ── Standalone Fact-Checking ─────────────────────────────────────
-
-from backend.app.schemas.factcheck import (
-    ClaimVerificationItem,
-    FactCheckClaimItem,
-    FactCheckRequest,
-    FactCheckResponse,
-)
-
-# ── Standalone Language Identification ───────────────────────────
-
-from backend.app.schemas.language import (
-    LanguageCandidate,
-    LanguageDetectionRequest,
-    LanguageDetectionResponse,
-)
+__all__ = [
+    "AnalysisCreate",
+    "JobProgress",
+    "ImageAssetOut",
+    "ModelRunOut",
+    "AnalysisProgress",
+    "AnalysisOut",
+    "HealthResponse",
+    "GPUInfo",
+    "ErrorResponse",
+    "ModelInfo",
+    "ModelRegistryResponse",
+    "OCRBlockResponse",
+    "OCRResponse",
+    "ClaimExtractionRequest",
+    "ClaimExtractionResponse",
+    "ClaimResponse",
+    "ClaimVerificationItem",
+    "FactCheckClaimItem",
+    "FactCheckRequest",
+    "FactCheckResponse",
+    "LanguageCandidate",
+    "LanguageDetectionRequest",
+    "LanguageDetectionResponse",
+]

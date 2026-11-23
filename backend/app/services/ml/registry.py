@@ -402,7 +402,7 @@ def _inspect_language_detector() -> ModelInfo:
 
 def get_model_registry() -> ModelRegistryResponse:
     """Build and return the complete model registry.
-    
+
     Inspects all configured models without triggering any eager loading or inference.
     """
     models: List[ModelInfo] = [

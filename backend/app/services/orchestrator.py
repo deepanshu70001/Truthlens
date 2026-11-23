@@ -26,7 +26,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.config import settings
 from backend.app.core.logging import get_logger
-from backend.app.models import Analysis, AnalysisStatus, ImageAsset, ModelRun, SystemEvent
+from backend.app.models import Analysis, AnalysisStatus, ModelRun, SystemEvent
 from backend.app.services.stage_contract import (
     normalize_service_status,
 )
@@ -870,6 +870,7 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
                 claims=_claims_list,
                 text_normalized=_text_norm_dict,
                 vision_result=_vision_dict,
+                analysis_id=analysis_id,
             ),
             analysis, db, stage_results,
             required=False,
@@ -888,6 +889,7 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
             lambda: estimate_regional_spread(
                 content_language=_content_lang,
                 ocr_text=_ocr_text,
+                analysis_id=analysis_id,
             ),
             analysis, db, stage_results,
             required=False,
@@ -935,6 +937,16 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
                 "format": ia.format,
             }
 
+        # Synthetic demo data context (if enabled)
+        content_spread = None
+        illustrative_context = None
+        if getattr(settings, "TRUTHLENS_SYNTHETIC_REPORT_DATA_ENABLED", False):
+            from backend.app.services.synthetic.data_access import get_synthetic_data_access
+
+            sda = get_synthetic_data_access()
+            content_spread = sda.get_content_spread_trajectory(analysis_id)
+            illustrative_context = sda.get_illustrative_context(analysis_id, language_code=_content_lang)
+
         report = build_report(
             analysis_id=analysis_id,
             status="completed",
@@ -957,8 +969,10 @@ async def run_analysis_pipeline(analysis_id: str, db: AsyncSession) -> None:
             assessment=assessment.to_dict() if assessment else None,
             explanation=explanation_result.to_dict() if explanation_result else None,
             virality=virality_result.to_dict() if virality_result else None,
+            content_spread=content_spread,
             regional_spread=regional_result.to_dict() if regional_result else None,
             social_impact=social_impact_result.to_dict() if social_impact_result else None,
+            illustrative_context=illustrative_context,
             processing_time_ms=int((time.time() - pipeline_start) * 1000),
             stages={name: stage.to_dict() for name, stage in stage_results.items()},
             submitted_at=analysis.created_at.isoformat() if analysis.created_at else None,

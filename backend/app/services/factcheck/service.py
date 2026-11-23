@@ -549,7 +549,9 @@ def _normalized_words(text: str) -> set[str]:
 
 
 def _claim_match(query: str, reviewed_claim: str) -> bool:
-    canonical = lambda value: " ".join(re.findall(r"[\w]+", value.casefold()))
+    def canonical(value: str) -> str:
+        return " ".join(re.findall(r"[\w]+", value.casefold()))
+
     if canonical(query) and canonical(query) == canonical(reviewed_claim):
         return True
     query_words = _normalized_words(query)

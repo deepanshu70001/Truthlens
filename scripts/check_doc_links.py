@@ -38,6 +38,19 @@ def check_links() -> int:
             if target.startswith(("http://", "https://", "mailto:", "#")):
                 continue
 
+            # Handle file:// scheme links
+            if target.startswith("file://"):
+                path_part = target[7:]
+                if path_part.startswith("/") and len(path_part) > 2 and path_part[2] == ":":
+                    path_part = path_part[1:]
+                path_part = path_part.split("#")[0]
+                path_part = urllib.parse.unquote(path_part)
+                resolved = Path(path_part)
+                if not resolved.exists():
+                    print(f"[BROKEN LINK] In {md_file.relative_to(REPO_ROOT)}: [{text}]({target}) -> Target not found")
+                    broken_count += 1
+                continue
+
             # Strip anchor fragment and unquote URL encoding (e.g. %20 -> space)
             path_part = target.split("#")[0]
             if not path_part:

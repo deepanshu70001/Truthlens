@@ -12,7 +12,6 @@ import os
 import re
 import time
 import uuid
-from pathlib import Path
 
 import imagehash
 from fastapi import APIRouter, Depends, File, Header, HTTPException, Request, UploadFile

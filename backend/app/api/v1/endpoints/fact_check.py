@@ -11,7 +11,7 @@ import time
 from contextlib import AsyncExitStack
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Request
 
 from backend.app.config import settings
 from backend.app.core.auth import Principal, get_current_principal

@@ -237,7 +237,7 @@ async def get_analysis_report(
 @router.get(
     "/analysis/{analysis_id}/heatmap",
     summary="Get heatmap overlay",
-    description="Returns the suspicious-region heatmap. (Stub — will be implemented in Stage 3.)",
+    description="Returns the Grad-CAM suspicious-region heatmap or raw mask overlay for an authenticated analysis.",
 )
 async def get_analysis_heatmap(
     analysis_id: str,
@@ -247,7 +247,7 @@ async def get_analysis_heatmap(
     principal: Principal = Depends(get_current_principal),
 ):
     await check_rate_limit(request, scope="analysis-retrieval", limit=settings.RATE_LIMIT_RETRIEVAL_PER_MINUTE, principal=principal)
-    analysis = await require_analysis_owner(analysis_id, principal, db)
+    await require_analysis_owner(analysis_id, principal, db)
 
     if variant not in {"overlay", "raw"}:
         raise HTTPException(status_code=422, detail="variant must be 'overlay' or 'raw'")

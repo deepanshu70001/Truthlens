@@ -1,0 +1,178 @@
+{
+  "workflow": "Workflow B (Synthetic Report Enrichment DISABLED - Baseline)",
+  "analysisId": "543517fb-7642-473f-b61a-6f3251a5b44f",
+  "baselineCheck": {
+    "hasIllustrativeHeader": false,
+    "hasSyntheticDisclaimer": false,
+    "hasViralityDemo": false,
+    "hasViralityHeuristic": true,
+    "hasTrajectorySection": false,
+    "hasRegionalUnavailable": true,
+    "hasRegionalSimulation": false,
+    "hasDownloadButton": true
+  },
+  "networkRequestsCount": 32,
+  "networkLog": [
+    {
+      "url": "http://127.0.0.1:5173/api/v1/auth/mode",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/auth/mode",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analyze",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f/report",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f/image",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f/heatmap",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f/heatmap",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/543517fb-7642-473f-b61a-6f3251a5b44f/image",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "consoleErrors": []
+}

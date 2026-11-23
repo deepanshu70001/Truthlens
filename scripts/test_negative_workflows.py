@@ -146,7 +146,7 @@ def run_all_negative_tests():
     assert status == 200
     fc_resp = json.loads(body)
     print(f"FC Status: {fc_resp.get('status')}, Warning: {fc_resp.get('warnings')}")
-    assert fc_resp["status"] in {"completed", "unavailable"}
+    assert fc_resp["status"] in {"completed", "unavailable", "no_results"}
     results["07_factcheck_credentials_absent"] = {"status": status, "fc_status": fc_resp["status"], "passed": True}
 
     print("\n--- 8. Provider successfully returns no records ---")

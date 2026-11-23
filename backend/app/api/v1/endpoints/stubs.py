@@ -16,6 +16,9 @@ from pydantic import BaseModel, Field, StringConstraints, field_validator
 from backend.app.config import settings
 from backend.app.core.auth import Principal, get_current_principal
 from backend.app.core.rate_limit import check_rate_limit
+from backend.app.api.v1.endpoints.fact_check import factcheck_endpoint
+from backend.app.api.v1.endpoints.models import list_models
+from backend.app.api.v1.endpoints.ocr import ocr_endpoint
 
 router = APIRouter()
 
@@ -69,13 +72,6 @@ class ProvenanceResponse(BaseModel):
     note: Optional[str] = None
 
 
-# Re-exported from dedicated ocr endpoint module for backward compatibility
-from backend.app.api.v1.endpoints.ocr import ocr_endpoint
-
-# Re-exported from dedicated fact_check endpoint module for backward compatibility
-from backend.app.api.v1.endpoints.fact_check import factcheck_endpoint
-
-
 @router.post(
     "/provenance",
     summary="Image provenance and content credentials",
@@ -109,5 +105,12 @@ async def provenance_endpoint(
     return result.to_dict()
 
 
-# Re-exported from dedicated models endpoint module for backward compatibility
-from backend.app.api.v1.endpoints.models import list_models
+__all__ = [
+    "FactCheckRequest",
+    "FactCheckResponse",
+    "ProvenanceResponse",
+    "ocr_endpoint",
+    "factcheck_endpoint",
+    "provenance_endpoint",
+    "list_models",
+]

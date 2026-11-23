@@ -2,11 +2,12 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   Shield, Upload, AlertTriangle, CheckCircle, XCircle, Clock, Loader2,
   Eye, FileText, Globe, Search, TrendingUp, MapPin, Users, Info,
-  Zap, AlertOctagon, HelpCircle
+  Zap, AlertOctagon, HelpCircle, Download, Activity
 } from 'lucide-react';
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
+  AreaChart, Area
 } from 'recharts';
 import { MapContainer, TileLayer, Tooltip as MapTooltip, CircleMarker } from 'react-leaflet';
 import {
@@ -19,25 +20,45 @@ import './index.css';
 const pct = (v?: number) => v != null ? `${(v * 100).toFixed(1)}%` : '—';
 const clsx = (...cls: (string | false | undefined)[]) => cls.filter(Boolean).join(' ');
 
+function downloadReportJson(report: any) {
+  if (!report) return;
+  const jsonStr = JSON.stringify(report, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `truthlens-report-${report.analysis_id || 'export'}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 function useProtectedAssetUrl(url?: string) {
-  const [assetUrl, setAssetUrl] = useState('');
+  const isDirect = !url || url.startsWith('data:') || url.startsWith('blob:');
+  const [blobUrl, setBlobUrl] = useState('');
+
   useEffect(() => {
-    if (!url) { setAssetUrl(''); return; }
-    if (url.startsWith('data:') || url.startsWith('blob:')) { setAssetUrl(url); return; }
+    if (isDirect) {
+      return;
+    }
     let active = true;
     let objectUrl = '';
-    setAssetUrl('');
     getProtectedAsset(url).then(blob => {
       if (!active) return;
       objectUrl = URL.createObjectURL(blob);
-      setAssetUrl(objectUrl);
-    }).catch(() => { if (active) setAssetUrl(''); });
+      setBlobUrl(objectUrl);
+    }).catch(() => {
+      if (active) setBlobUrl('');
+    });
     return () => {
       active = false;
       if (objectUrl) URL.revokeObjectURL(objectUrl);
+      setBlobUrl('');
     };
-  }, [url]);
-  return assetUrl;
+  }, [url, isDirect]);
+
+  return isDirect ? (url || '') : blobUrl;
 }
 
 function ProtectedAssetLink({ url, children }: { url: string; children: React.ReactNode }) {
@@ -549,6 +570,7 @@ function HashSection({ hashes, imageInfo }: { hashes: any; imageInfo: any }) {
 /* ────── VIRALITY SECTION ────── */
 function ViralitySection({ data }: { data: any }) {
   if (!data) return null;
+  const isDemo = data.data_status === 'DEMO';
   const riskCfg: Record<string, { color: string; label: string }> = {
     low: { color: 'text-green-400', label: 'Low Risk' },
     moderate: { color: 'text-yellow-400', label: 'Moderate Risk' },
@@ -560,16 +582,21 @@ function ViralitySection({ data }: { data: any }) {
   const chartData = features.map((f: any) => ({ name: f.name.replace(/_/g, ' '), value: Math.round(f.value * 100) }));
 
   return (
-    <Card title="Content Spread Indicators (Heuristic)" icon={TrendingUp} badge={<StatusBadge status={data.data_status} />}>
-      {data.data_status === 'DEMO' && (
+    <Card title={isDemo ? "Content Virality Indicators (Synthetic Demo)" : "Content Spread Indicators (Heuristic)"} icon={TrendingUp} badge={<StatusBadge status={data.data_status} />}>
+      {isDemo && (
         <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3 mb-4">
-          <p className="text-sm text-purple-400 font-medium">⚠️ DEMO DATA — NOT A REAL-WORLD PREDICTION</p>
+          <p className="text-sm text-purple-400 font-medium">⚠️ SYNTHETIC DEMONSTRATION DATA — NOT OBSERVED</p>
+          <p className="text-xs text-text-muted mt-1">
+            Simulated engagement indicators and cue scores for college presentation. Not actual spread prediction.
+          </p>
         </div>
       )}
       <div className="flex items-center gap-4 mb-4">
         <div className="text-center">
           <p className={`text-3xl font-bold ${risk.color}`}>{data.virality_score == null ? 'Unavailable' : pct(data.virality_score)}</p>
-          <p className={`text-sm font-medium ${risk.color}`}>{data.virality_score == null ? 'No assessed features' : 'Indicator level: ' + risk.label}</p>
+          <p className={`text-sm font-medium ${risk.color}`}>
+            {isDemo && data.synthetic_demo_band ? `Demo Band: ${data.synthetic_demo_band.replace(/_/g, ' ').toUpperCase()}` : (data.virality_score == null ? 'No assessed features' : 'Indicator level: ' + risk.label)}
+          </p>
         </div>
         {chartData.length > 0 && (
           <div className="flex-1 h-32">
@@ -587,6 +614,80 @@ function ViralitySection({ data }: { data: any }) {
         )}
       </div>
       {data.disclaimer && <p className="text-xs text-yellow-400/70 italic">{data.disclaimer}</p>}
+    </Card>
+  );
+}
+
+/* ────── CONTENT SPREAD SECTION (SYNTHETIC TRAJECTORY) ────── */
+function ContentSpreadSection({ data }: { data: any }) {
+  if (!data) return null;
+  const snapshots = data.snapshots || [];
+  const chartData = snapshots.map((s: any) => ({
+    hour: `${s.elapsed_hours}h`,
+    elapsed_hours: s.elapsed_hours,
+    reach: s.simulated_cumulative_reach,
+    shares: s.simulated_cumulative_shares,
+    reposts: s.simulated_cumulative_reposts,
+    replies: s.simulated_cumulative_replies,
+    engagement_rate: Math.round((s.simulated_engagement_rate || 0) * 100),
+  }));
+
+  const latest = snapshots[snapshots.length - 1];
+
+  return (
+    <Card title="Content Spread Trajectory (Simulated Demonstration)" icon={Activity} badge={<StatusBadge status={data.data_status || 'DEMO'} />}>
+      <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3 mb-4">
+        <p className="text-sm text-purple-400 font-medium">⚠️ SIMULATED TRAJECTORY (SYNTHETIC) — NOT OBSERVED SPREAD</p>
+        <p className="text-xs text-text-muted mt-1">
+          Fictional time-series trajectory across 1h, 6h, and 24h generated for college presentation and UI visualization.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+        <div className="bg-surface/50 rounded-xl p-3 text-center border border-border/50">
+          <p className="text-lg font-bold text-primary-light">{(data.total_simulated_reach_24h || latest?.simulated_cumulative_reach || 0).toLocaleString()}</p>
+          <p className="text-xs text-text-muted">Simulated Reach (24h)</p>
+        </div>
+        <div className="bg-surface/50 rounded-xl p-3 text-center border border-border/50">
+          <p className="text-lg font-bold text-text">{(data.total_simulated_shares_24h || latest?.simulated_cumulative_shares || 0).toLocaleString()}</p>
+          <p className="text-xs text-text-muted">Simulated Shares (24h)</p>
+        </div>
+        <div className="bg-surface/50 rounded-xl p-3 text-center border border-border/50">
+          <p className="text-lg font-bold text-text">{(data.total_simulated_reposts_24h || latest?.simulated_cumulative_reposts || 0).toLocaleString()}</p>
+          <p className="text-xs text-text-muted">Simulated Reposts (24h)</p>
+        </div>
+        <div className="bg-surface/50 rounded-xl p-3 text-center border border-border/50">
+          <p className="text-lg font-bold text-secondary">{pct(data.simulated_engagement_rate_24h || latest?.simulated_engagement_rate)}</p>
+          <p className="text-xs text-text-muted">Engagement Rate</p>
+        </div>
+      </div>
+
+      {chartData.length > 0 && (
+        <div className="h-44 mb-2">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="reachGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#818cf8" stopOpacity={0.6} />
+                  <stop offset="95%" stopColor="#818cf8" stopOpacity={0.05} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="hour" tick={{ fontSize: 11, fill: '#94a3b8' }} />
+              <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} tickFormatter={(val: number) => val >= 1000 ? `${(val / 1000).toFixed(1)}k` : String(val)} />
+              <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', fontSize: '12px' }} formatter={(val: any, name?: any) => [typeof val === 'number' ? val.toLocaleString() : val, name === 'reach' ? 'Simulated Reach' : (name || '')]} />
+              <Area type="monotone" dataKey="reach" stroke="#818cf8" strokeWidth={2} fillOpacity={1} fill="url(#reachGradient)" name="reach" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {data.trajectory_curve && (
+        <p className="text-xs text-text-muted mt-2">
+          Curve profile: <span className="font-mono text-text">{data.trajectory_curve}</span>
+          {data.platform_context && <span> · Platform context: <span className="text-text">{data.platform_context}</span></span>}
+        </p>
+      )}
+      {data.disclaimer && <p className="mt-3 text-xs text-yellow-400/70 italic">{data.disclaimer}</p>}
     </Card>
   );
 }
@@ -623,13 +724,22 @@ const STATE_COORDS: Record<string, [number, number]> = {
   "Uttarakhand": [30.0668, 79.0193],
   "West Bengal": [22.9868, 87.8550],
   "Delhi": [28.7041, 77.1025],
-  "Jammu and Kashmir": [33.7782, 76.5762]
+  "Jammu and Kashmir": [33.7782, 76.5762],
+  "Andaman and Nicobar Islands": [11.7401, 92.6586],
+  "Chandigarh": [30.7333, 76.7794],
+  "Dadra and Nagar Haveli and Daman and Diu": [20.4283, 72.8397],
+  "Ladakh": [34.1526, 77.5771],
+  "Lakshadweep": [10.5667, 72.6417],
+  "Puducherry": [11.9416, 79.8083],
 };
 
 function RegionalSection({ data }: { data: any }) {
   if (!data) return null;
-  const topRegions = (data.regions || []).filter((r: any) => r.risk_score != null).slice(0, 10);
-  const chartData = topRegions.map((r: any) => ({ name: r.region, score: Math.round(r.risk_score * 100) }));
+  const isDemo = data.data_status === 'DEMO';
+  const topRegions = isDemo ? [] : (data.regions || []).filter((r: any) => r.risk_score != null).slice(0, 10);
+  const chartData = isDemo
+    ? []
+    : topRegions.map((r: any) => ({ name: r.region, value: Math.round(r.risk_score * 100) }));
 
   const getColor = (score: number) => {
     if (score > 60) return '#ef4444';
@@ -638,10 +748,13 @@ function RegionalSection({ data }: { data: any }) {
   };
 
   return (
-    <Card title="India — Regional Dissemination Data" icon={MapPin} badge={<StatusBadge status={data.data_status} />}>
-      {data.data_status === 'DEMO' && (
+    <Card title={isDemo ? "India — Regional Exposure Simulation (Synthetic Demo)" : "India — Regional Dissemination Data"} icon={MapPin} badge={<StatusBadge status={data.data_status} />}>
+      {isDemo && (
         <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3 mb-4">
-          <p className="text-sm text-purple-400 font-medium">⚠️ DEMO DATA — NOT A REAL-WORLD PREDICTION</p>
+          <p className="text-sm text-purple-400 font-medium">⚠️ SYNTHETIC DEMONSTRATION DATA — NOT OBSERVED EXPOSURES</p>
+          <p className="text-xs text-text-muted mt-1">
+            Simulated state-level distribution counts for college presentation only. Regional differences in this synthetic demonstration dataset are unvalidated, fictional, and not representative of actual Indian states or populations. All regional generator effects are zero; no regional risk, susceptibility, prevalence, or threat ranking is calculated or displayed.
+          </p>
         </div>
       )}
       {data.data_status === 'DATA_UNAVAILABLE' && (
@@ -650,27 +763,12 @@ function RegionalSection({ data }: { data: any }) {
         </div>
       )}
       {data.content_language && <p className="text-sm text-text-muted mb-3">Content language: <span className="font-medium text-text">{data.content_language}</span></p>}
-      {data.top_risk_regions?.length > 0 && (
+      {!isDemo && data.top_risk_regions?.length > 0 && (
         <p className="text-sm text-text-muted mb-4">Top regions: <span className="font-medium text-text">{data.top_risk_regions.join(', ')}</span></p>
       )}
-      
-      {chartData.length > 0 && <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[400px]">
-        {chartData.length > 0 && (
-          <div className="h-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} layout="vertical" margin={{ left: 10 }}>
-                <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 10, fill: '#94a3b8' }} />
-                <YAxis type="category" dataKey="name" width={130} tick={{ fontSize: 11, fill: '#94a3b8' }} />
-                <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', fontSize: '12px' }} formatter={(v: any) => [`${v}%`, 'Risk Score']} />
-                <Bar dataKey="score" radius={[0, 6, 6, 0]}>
-                  {chartData.map((d: any, i: number) => <Cell key={i} fill={getColor(d.score)} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-        
-        <div className="h-full rounded-xl overflow-hidden border border-border bg-surface relative z-0">
+
+      {isDemo && data.regions?.length > 0 && (
+        <div className="h-[420px] rounded-xl overflow-hidden border border-border bg-surface relative z-0">
           <MapContainer center={INDIA_CENTER} zoom={4} className="h-full w-full bg-[#0f172a]" zoomControl={false}>
             <TileLayer
               url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
@@ -678,23 +776,23 @@ function RegionalSection({ data }: { data: any }) {
             />
             {data.regions?.map((r: any) => {
               const coords = STATE_COORDS[r.region];
-              if (!coords) return null;
-              if (r.risk_score == null || r.confidence == null) return null;
-              const radius = Math.max(5, r.risk_score * 20);
-              const color = getColor(r.risk_score * 100);
+              if (!coords || r.simulated_exposure_count == null) return null;
+              const neutralRadius = 7;
+              const neutralColor = '#38bdf8';
               return (
-                <CircleMarker 
-                  key={r.region} 
-                  center={coords} 
-                  radius={radius}
-                  pathOptions={{ color, fillColor: color, fillOpacity: 0.6, weight: 1 }}
+                <CircleMarker
+                  key={r.region}
+                  center={coords}
+                  radius={neutralRadius}
+                  pathOptions={{ color: neutralColor, fillColor: neutralColor, fillOpacity: 0.6, weight: 1.5 }}
                 >
                   <MapTooltip className="bg-surface-2 border-border text-text">
                     <div className="text-sm">
                       <p className="font-bold mb-1">{r.region}</p>
-                      <p>Risk Score: {(r.risk_score * 100).toFixed(1)}%</p>
-                      <p>Confidence: {(r.confidence * 100).toFixed(1)}%</p>
-                      {r.evidence?.map((e: string, i: number) => <p key={i} className="text-xs text-text-muted mt-1">{e}</p>)}
+                      <p className="text-primary-light font-semibold">Simulated Exposures: {r.simulated_exposure_count.toLocaleString()}</p>
+                      {r.simulated_share_count != null && <p className="text-xs text-text-muted">Simulated Shares: {r.simulated_share_count.toLocaleString()}</p>}
+                      {r.simulated_repost_count != null && <p className="text-xs text-text-muted">Simulated Reposts: {r.simulated_repost_count.toLocaleString()}</p>}
+                      <p className="text-xs text-yellow-400/80 mt-1">Simulated demonstration value (Generator effect: 0.0, zero risk ranking)</p>
                     </div>
                   </MapTooltip>
                 </CircleMarker>
@@ -702,8 +800,57 @@ function RegionalSection({ data }: { data: any }) {
             })}
           </MapContainer>
         </div>
-      </div>}
-      
+      )}
+
+      {!isDemo && chartData.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[400px]">
+          <div className="h-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} layout="vertical" margin={{ left: 10 }}>
+                <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8' }} tickFormatter={(val: number) => `${val}%`} />
+                <YAxis type="category" dataKey="name" width={130} tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', fontSize: '12px' }} formatter={(v: any) => [`${v}%`, 'Risk Score']} />
+                <Bar dataKey="value" radius={[0, 6, 6, 0]}>
+                  {chartData.map((d: any, i: number) => <Cell key={i} fill={getColor(d.value)} />)}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="h-full rounded-xl overflow-hidden border border-border bg-surface relative z-0">
+            <MapContainer center={INDIA_CENTER} zoom={4} className="h-full w-full bg-[#0f172a]" zoomControl={false}>
+              <TileLayer
+                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                attribution='&copy; CartoDB'
+              />
+              {data.regions?.map((r: any) => {
+                const coords = STATE_COORDS[r.region];
+                if (!coords || r.risk_score == null || r.confidence == null) return null;
+                const radius = Math.max(5, r.risk_score * 20);
+                const color = getColor(r.risk_score * 100);
+                return (
+                  <CircleMarker
+                    key={r.region}
+                    center={coords}
+                    radius={radius}
+                    pathOptions={{ color, fillColor: color, fillOpacity: 0.6, weight: 1 }}
+                  >
+                    <MapTooltip className="bg-surface-2 border-border text-text">
+                      <div className="text-sm">
+                        <p className="font-bold mb-1">{r.region}</p>
+                        <p>Risk Score: {(r.risk_score * 100).toFixed(1)}%</p>
+                        <p>Confidence: {(r.confidence * 100).toFixed(1)}%</p>
+                        {r.evidence?.map((e: string, i: number) => <p key={i} className="text-xs text-text-muted mt-1">{e}</p>)}
+                      </div>
+                    </MapTooltip>
+                  </CircleMarker>
+                );
+              })}
+            </MapContainer>
+          </div>
+        </div>
+      )}
+
       {data.disclaimer && <p className="mt-4 text-xs text-yellow-400/70 italic">{data.disclaimer}</p>}
     </Card>
   );
@@ -955,9 +1102,26 @@ function AnalysisApp({ onLogout, showLogout }: { onLogout: () => void; showLogou
           <>
             {report.status !== 'completed' && <div className="rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning">Analysis status: {report.status}. Review unavailable or failed stages below; this assessment may be incomplete.</div>}
             <ReportSummary data={report} />
-            {/* New analysis button */}
-            <div className="flex justify-end">
-              <button onClick={() => { setFile(null); setPreview(''); setAnalysisId(''); sessionStorage.removeItem('truthlens.analysisId'); window.history.replaceState({}, '', window.location.pathname); setStatus(null); setReport(null); }} className="px-4 py-2 rounded-lg bg-surface-2 border border-border text-sm text-text-muted hover:text-text transition-colors flex items-center gap-2">
+            {/* Action buttons */}
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => downloadReportJson(report)}
+                className="px-4 py-2 rounded-lg bg-surface-2 border border-border text-sm text-text-muted hover:text-text transition-colors flex items-center gap-2"
+              >
+                <Download className="w-4 h-4" /> Download Report
+              </button>
+              <button
+                onClick={() => {
+                  setFile(null);
+                  setPreview('');
+                  setAnalysisId('');
+                  sessionStorage.removeItem('truthlens.analysisId');
+                  window.history.replaceState({}, '', window.location.pathname);
+                  setStatus(null);
+                  setReport(null);
+                }}
+                className="px-4 py-2 rounded-lg bg-surface-2 border border-border text-sm text-text-muted hover:text-text transition-colors flex items-center gap-2"
+              >
                 <Upload className="w-4 h-4" /> New Analysis
               </button>
             </div>
@@ -989,16 +1153,47 @@ function AnalysisApp({ onLogout, showLogout }: { onLogout: () => void; showLogou
             <ProvenanceSection data={report.provenance} />
             <HashSection hashes={report.hashes} imageInfo={report.image} />
 
-            {/* Two-column layout for virality & social impact */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* 8. Virality */}
-              <ViralitySection data={report.virality} />
-              {/* 9. Social Impact */}
-              <SocialImpactSection data={report.social_impact} />
-            </div>
+            {/* Spread and Social Context */}
+            {report.content_spread || report.illustrative_context || report.virality?.data_status === 'DEMO' ? (
+              <div className="space-y-6 pt-2">
+                <div className="rounded-2xl border border-purple-500/30 bg-purple-500/5 p-4 sm:p-6">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Activity className="w-5 h-5 text-purple-400" />
+                    <h3 className="text-base font-semibold text-text">Illustrative Content Context (Synthetic Demonstration)</h3>
+                  </div>
+                  <p className="text-xs text-text-muted leading-relaxed">
+                    ⚠️ ACADEMIC & DEMO NOTICE: The sections below display synthetic demonstration data for college presentation. These simulated metrics (indicators, spread trajectory, regional exposures) are fictional, do NOT represent observed social media data, do NOT evaluate detector accuracy, and have ZERO effect on the authenticity classification or evidence fusion verdict.
+                  </p>
+                </div>
 
-            {/* 10. Regional Spread */}
-            <RegionalSection data={report.regional_spread} />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* 8. Virality */}
+                  <ViralitySection data={report.virality} />
+                  {/* 8b. Content Spread Trajectory */}
+                  <ContentSpreadSection data={report.content_spread || report.illustrative_context?.content_spread_trajectory} />
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* 9. Social Impact */}
+                  <SocialImpactSection data={report.social_impact} />
+                  {/* 10. Regional Spread */}
+                  <RegionalSection data={report.regional_spread} />
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Two-column layout for virality & social impact */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* 8. Virality */}
+                  <ViralitySection data={report.virality} />
+                  {/* 9. Social Impact */}
+                  <SocialImpactSection data={report.social_impact} />
+                </div>
+
+                {/* 10. Regional Spread */}
+                <RegionalSection data={report.regional_spread} />
+              </>
+            )}
 
             {/* 11. Limitations */}
             <LimitationsSection limitations={report.limitations} disclaimer={report.disclaimer} />
@@ -1056,8 +1251,8 @@ export default function App() {
   const [authUnavailable, setAuthUnavailable] = useState(false);
 
   const loadAuthMode = useCallback(() => {
-    setAuthUnavailable(false);
     getAuthMode().then(mode => {
+      setAuthUnavailable(false);
       setAuthRequired(mode.auth_required);
       setAuthenticated(!mode.auth_required || Boolean(getAccessToken()));
     }).catch(() => {

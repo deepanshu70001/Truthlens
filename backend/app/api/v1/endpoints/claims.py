@@ -7,7 +7,7 @@ POST /api/v1/claims
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Dict, List, Optional
+from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 

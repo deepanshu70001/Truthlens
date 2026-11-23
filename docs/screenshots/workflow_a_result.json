@@ -1,0 +1,150 @@
+{
+  "workflow": "Workflow A (Synthetic Report Enrichment ENABLED)",
+  "analysisId": "31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+  "syntheticCheck": {
+    "hasIllustrativeHeader": true,
+    "hasSyntheticDisclaimer": true,
+    "hasViralityDemo": true,
+    "hasTrajectorySection": true,
+    "hasRegionalSimulation": true,
+    "hasRegionalRankingText": false,
+    "hasNoRegionalRankingDisclaimer": true,
+    "hasDownloadButton": true,
+    "hasLeafletMap": true,
+    "circleMarkerCount": 36
+  },
+  "networkRequestsCount": 26,
+  "networkLog": [
+    {
+      "url": "http://127.0.0.1:5173/api/v1/auth/mode",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/auth/mode",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analyze",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966/report",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966/image",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966/heatmap",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966/heatmap",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/v1/analysis/31ed3a2d-4272-4afd-b4db-165cbc8bc966/image",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "consoleErrors": []
+}

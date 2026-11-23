@@ -88,7 +88,7 @@ async def health_check(db: AsyncSession = Depends(get_db)):
 @router.get(
     "/health/models",
     summary="Model health status",
-    description="Returns loaded/available model status. (Stub — models loaded in Stage 3.)",
+    description="Returns loaded and available status across all configured machine learning models.",
 )
 async def model_health(principal: Principal = Depends(get_current_principal)):
     model_root = Path(settings.MODEL_CACHE_DIR)

@@ -7,7 +7,6 @@ Never hard-code secrets.
 
 from __future__ import annotations
 
-import os
 import json
 from pathlib import Path
 from typing import List
@@ -116,6 +115,10 @@ class Settings(BaseSettings):
     RATE_LIMIT_CLAIMS_PER_MINUTE: int = 30
     RATE_LIMIT_LANGUAGE_PER_MINUTE: int = 60
     MAX_CLAIM_TEXT_LENGTH: int = 10000
+
+    # ── Synthetic Demonstration Data ─────────────────────────────
+    TRUTHLENS_SYNTHETIC_REPORT_DATA_ENABLED: bool = False
+    SYNTHETIC_DATA_DIR: str = str(_project_root() / "datasets" / "synthetic_demo")
 
     # Durable job lifecycle. A single global worker lease serializes model/GPU work.
     ANALYSIS_QUEUE_MAX_OUTSTANDING: int = 25

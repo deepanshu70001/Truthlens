@@ -6,8 +6,7 @@ POST /api/v1/fact-check
 
 from __future__ import annotations
 
-import re
-from typing import Annotated, Any, Dict, List, Literal, Optional
+from typing import Annotated, Any, List, Optional
 from pydantic import BaseModel, Field, StringConstraints, field_validator, model_validator
 
 

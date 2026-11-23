@@ -31,10 +31,8 @@ Report structure:
 
 from __future__ import annotations
 
-import time
 import re
 from datetime import datetime, timezone
-from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 from backend.app.core.logging import get_logger
@@ -105,6 +103,8 @@ def build_report(
     virality: Optional[Dict[str, Any]] = None,
     regional_spread: Optional[Dict[str, Any]] = None,
     social_impact: Optional[Dict[str, Any]] = None,
+    content_spread: Optional[Dict[str, Any]] = None,
+    illustrative_context: Optional[Dict[str, Any]] = None,
     quality: Optional[Dict[str, Any]] = None,
     preprocessing: Optional[Dict[str, Any]] = None,
     processing_time_ms: Optional[int] = None,
@@ -261,11 +261,21 @@ def build_report(
         "provenance": {"status": (provenance or {}).get("status", "unavailable"),
                        "note": "Online matches provide context and do not establish authenticity."},
         "spread": {"assessment_mode": virality_mode, "regional_data_status": regional_status,
-                   "note": "Content indicators are not estimates of actual reach; regional rankings are unavailable."},
+                   "content_spread_status": (content_spread or {}).get("data_status", "DATA_UNAVAILABLE"),
+                   "note": "Content indicators are not estimates of actual reach; regional rankings are unavailable; synthetic curves are illustrative only."},
         "potential_social_impact": {"status": (social_impact or {}).get("data_status", "unavailable"),
                                     "categories": social_categories,
                                     "note": "Topic cues are not observed harm or severity findings."},
     }
+
+    if illustrative_context or (virality and virality.get("data_status") == "DEMO") or (regional_spread and regional_spread.get("data_status") == "DEMO") or (content_spread and content_spread.get("data_status") == "DEMO"):
+        synthetic_lim = (
+            "This report includes synthetic demonstration content context (virality indicators, "
+            "spread trajectory, regional exposure) generated strictly for academic demonstration. "
+            "Fictional metrics only; no real-world reach or regional risk is evaluated."
+        )
+        if synthetic_lim not in limitations:
+            limitations.append(synthetic_lim)
 
     report = {
         "analysis_id": analysis_id,
@@ -298,8 +308,10 @@ def build_report(
         "summary": summary,
         "explanation": explanation,
         "virality": virality,
+        "content_spread": content_spread,
         "regional_spread": regional_spread,
         "social_impact": social_impact,
+        "illustrative_context": illustrative_context,
         "processing_time_ms": processing_time_ms,
         "stages": stages or {},
         "warnings": stage_warnings,

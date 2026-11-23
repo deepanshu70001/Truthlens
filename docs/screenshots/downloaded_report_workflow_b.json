@@ -1,0 +1,3606 @@
+{
+  "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+  "status": "partial",
+  "submitted_at": "2026-11-23T17:17:48.324650",
+  "generated_at": "2026-11-23T17:18:35.963131+00:00",
+  "input": {
+    "validation_status": "completed",
+    "filename": "e2e_live_test.jpg",
+    "sha256": "fee19c755d23f076517de3436eea2e886abf6c47b0b22525f42d119afba4983a"
+  },
+  "image": {
+    "original_filename": "e2e_live_test.jpg",
+    "sha256_hash": "fee19c755d23f076517de3436eea2e886abf6c47b0b22525f42d119afba4983a",
+    "perceptual_hash": "953f6ac849b5e6c0",
+    "mime_type": "image/jpeg",
+    "file_size_bytes": 27571,
+    "width": 640,
+    "height": 480,
+    "format": "JPEG"
+  },
+  "authenticity": {
+    "label": "inconclusive",
+    "model_prediction": "likely_authentic",
+    "ai_generated_score": 0.3102,
+    "raw_logits": {
+      "fake": -0.399518,
+      "real": 0.399518
+    },
+    "calibrated_ai_generated_probability": null,
+    "calibrated_candidate_label": "inconclusive",
+    "calibration_status": "not_calibrated",
+    "calibration_method": null,
+    "domain_validation_status": "not_evaluated",
+    "empirical_accuracy": null,
+    "manipulation_score": null,
+    "authentic_score": 0.6898,
+    "confidence": null,
+    "raw_max_softmax_score": 0.6898,
+    "model_name": "truthlens/siglip-cifake-frozen-head",
+    "model_version": "backbone:google/siglip-base-patch16-224@7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed;head_sha256:e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+    "runtime_ms": 634,
+    "warnings": [
+      "The tag is selected by comparing raw scores; these are not calibrated probabilities or accuracy estimates."
+    ],
+    "raw_scores": {
+      "real": 0.6898,
+      "ai_generated": 0.3102
+    },
+    "score_semantics": "ai_generated_score and authentic_score are raw softmax scores, not calibrated probabilities or estimates of real-world accuracy.",
+    "classification_rule": "AI-generated when ai_generated_score is greater than authentic_score; otherwise Real/authentic. This is a raw-score argmax, not a calibrated decision.",
+    "probability_semantics": "calibrated_ai_generated_probability is populated only when an independently reviewed, validation-split calibration artifact is configured.",
+    "manipulation_score_status": "UNAVAILABLE: this detector does not independently classify editing/manipulation.",
+    "caveat": "This is an AI-assisted probabilistic assessment. Model predictions can be wrong and should not be treated as proof.",
+    "status": "completed",
+    "decision_band": null
+  },
+  "metadata": {
+    "has_exif": false,
+    "camera_make": null,
+    "camera_model": null,
+    "software": null,
+    "datetime_original": null,
+    "datetime_digitized": null,
+    "datetime_modified": null,
+    "gps_available": false,
+    "image_width": 640,
+    "image_height": 480,
+    "color_space": null,
+    "bits_per_sample": null,
+    "compression": null,
+    "orientation": null,
+    "x_resolution": null,
+    "y_resolution": null,
+    "anomalies": [
+      "No EXIF metadata is present; this is common after many image-sharing or editing workflows and is not evidence of authenticity or manipulation."
+    ]
+  },
+  "quality": {
+    "width": 640,
+    "height": 480,
+    "megapixels": 0.31,
+    "aspect_ratio": "4:3",
+    "file_size_bytes": 27571,
+    "bits_per_pixel": 0.72,
+    "brightness": 238.36,
+    "contrast": 21.68,
+    "blur_score": 2252.51,
+    "noise_estimate": 47.46,
+    "sharpness": 1.98,
+    "saturation_mean": 10.13,
+    "dynamic_range": 229,
+    "estimated_quality": 60,
+    "format": "JPEG"
+  },
+  "preprocessing": {
+    "status": "completed",
+    "runtime_ms": 29,
+    "original_width": 640,
+    "original_height": 480,
+    "format": "JPEG",
+    "has_exif": false,
+    "orientation_corrected": false,
+    "quality_stats": {
+      "brightness": 238.36,
+      "contrast": 21.68,
+      "blur_score": 2252.51,
+      "noise_estimate": 47.46
+    },
+    "thumbnail_available": true,
+    "resized_variants": [
+      "large",
+      "medium",
+      "small"
+    ],
+    "warnings": []
+  },
+  "forensics": {
+    "status": "completed",
+    "outcome": "success",
+    "signals": [
+      {
+        "name": "error_level_analysis",
+        "status": "completed",
+        "outcome": "success",
+        "score": 0.9642,
+        "score_type": "uncalibrated_heuristic_indicator_0_to_1_not_probability",
+        "interpretation": "JPEG quality-90 difference: mean 0.38, standard deviation 1.09, maximum 17.33.",
+        "limitations": "Compares decoded pixels with a JPEG quality-90 re-encode; highly encoding-dependent. For non-JPEG sources it is not directly comparable to native JPEG ELA. Recompression and ordinary editing affect it.",
+        "details": {
+          "mean_difference": 0.376,
+          "std_difference": 1.087,
+          "max_difference": 17.333,
+          "reencode_quality": 90,
+          "source_format": "JPEG",
+          "artifact_url": "[redacted path]"
+        },
+        "method": "error_level_analysis",
+        "method_version": "1",
+        "parameters": {
+          "reencode_quality": 90,
+          "score": "min(std_difference / mean_difference / 3, 1)"
+        },
+        "runtime_ms": 22,
+        "error_category": null,
+        "output_reference": "report.forensics.signals.error_level_analysis.artifact_url"
+      },
+      {
+        "name": "noise_consistency",
+        "status": "completed",
+        "outcome": "success",
+        "score": 1,
+        "score_type": "uncalibrated_heuristic_indicator_0_to_1_not_probability",
+        "interpretation": "Laplacian residual standard deviation varies across quadrants (coefficient of variation 0.6030).",
+        "limitations": "Laplacian residual variation depends on scene texture, sharpening, denoising and camera processing; it is not a sensor-noise provenance test.",
+        "details": {
+          "global_residual_std": 47.461,
+          "quadrant_residual_stds": [
+            81.247,
+            38.777,
+            21.297,
+            21.253
+          ],
+          "quadrant_cv": 0.60298
+        },
+        "method": "noise_consistency",
+        "method_version": "1",
+        "parameters": {
+          "method": "Laplacian residual standard deviation across four quadrants",
+          "score": "min(quadrant_cv / 0.5, 1)"
+        },
+        "runtime_ms": 8,
+        "error_category": null,
+        "output_reference": "report.forensics.signals.noise_consistency"
+      },
+      {
+        "name": "jpeg_artifacts",
+        "status": "completed",
+        "outcome": "success",
+        "score": 0,
+        "score_type": "uncalibrated_heuristic_indicator_0_to_1_not_probability",
+        "interpretation": "8-pixel boundary mean difference 1.823; other-boundary mean difference 2.658.",
+        "limitations": "Boundary discontinuities are affected by JPEG quality, crop alignment and later processing; they do not identify editing.",
+        "details": {
+          "block_boundary_difference": 1.8229,
+          "non_block_boundary_difference": 2.6577,
+          "ratio": 0.68588
+        },
+        "method": "jpeg_artifacts",
+        "method_version": "1",
+        "parameters": {
+          "block_size_pixels": 8,
+          "score": "clamp(max(block_boundary_ratio - 1, 0) / 0.5, 0, 1)"
+        },
+        "runtime_ms": 16,
+        "error_category": null,
+        "output_reference": "report.forensics.signals.jpeg_artifacts"
+      },
+      {
+        "name": "edge_consistency",
+        "status": "completed",
+        "outcome": "success",
+        "score": 0.468,
+        "score_type": "uncalibrated_heuristic_indicator_0_to_1_not_probability",
+        "interpretation": "Canny edge density varies across a 3x3 grid (coefficient of variation 0.7020).",
+        "limitations": "Edge density varies naturally with scene content and composition.",
+        "details": {
+          "mean_density": 0.019856,
+          "std_density": 0.013939,
+          "grid_densities": [
+            0.043691,
+            0.027025,
+            0.009959,
+            0.037911,
+            0.029401,
+            0.004673,
+            0.009947,
+            0.00625,
+            0.009842
+          ]
+        },
+        "method": "edge_consistency",
+        "method_version": "1",
+        "parameters": {
+          "operator": "Canny",
+          "thresholds": [
+            50,
+            150
+          ],
+          "grid": [
+            3,
+            3
+          ],
+          "score": "min(edge_density_cv / 1.5, 1)"
+        },
+        "runtime_ms": 1,
+        "error_category": null,
+        "output_reference": "report.forensics.signals.edge_consistency"
+      },
+      {
+        "name": "texture_consistency",
+        "status": "completed",
+        "outcome": "success",
+        "score": 0,
+        "score_type": "uncalibrated_heuristic_indicator_0_to_1_not_probability",
+        "interpretation": "Gabor response regularity indicator is 0.3342.",
+        "limitations": "Gabor response variation depends strongly on subject matter, focus and image processing.",
+        "details": {
+          "gabor_responses": [
+            480.1303,
+            126.6011,
+            681.9741,
+            133.0424
+          ],
+          "regularity": 0.33422
+        },
+        "method": "texture_consistency",
+        "method_version": "1",
+        "parameters": {
+          "operator": "Gabor",
+          "kernel_size": [
+            31,
+            31
+          ],
+          "sigma": 4,
+          "wavelength": 10,
+          "gamma": 0.5,
+          "orientations_degrees": [
+            0,
+            45,
+            90,
+            135
+          ],
+          "score": "clamp((1 - response_cv - 0.7) / 0.3, 0, 1)"
+        },
+        "runtime_ms": 139,
+        "error_category": null,
+        "output_reference": "report.forensics.signals.texture_consistency"
+      },
+      {
+        "name": "resampling_clues",
+        "status": "completed",
+        "outcome": "success",
+        "score": 0.8615,
+        "score_type": "uncalibrated_heuristic_indicator_0_to_1_not_probability",
+        "interpretation": "Second-difference zero-crossing rate is 0.06927.",
+        "limitations": "Second-difference zero crossings are a weak clue and can be changed by normal resizing, camera processing or social-media recompression.",
+        "details": {
+          "zero_crossing_x": 0.059743,
+          "zero_crossing_y": 0.078806,
+          "average_zero_crossing": 0.069275,
+          "second_difference_rms": 30.301322
+        },
+        "method": "resampling_clues",
+        "method_version": "1",
+        "parameters": {
+          "method": "second-difference sign zero-crossing rates",
+          "score": "clamp((0.5 - average_crossing_rate) / 0.5, 0, 1)",
+          "minimum_second_difference_rms": 2,
+          "energy_units": "8-bit grayscale intensity levels"
+        },
+        "runtime_ms": 11,
+        "error_category": null,
+        "output_reference": "report.forensics.signals.resampling_clues"
+      }
+    ],
+    "overall_anomaly_score": null,
+    "runtime_ms": 237,
+    "warnings": [],
+    "caveat": "Classical forensic indicators are content- and encoding-dependent heuristics. They are not calibrated probabilities and are not proof of manipulation."
+  },
+  "objects": {
+    "objects": [],
+    "object_count": 0,
+    "status": "completed",
+    "outcome": "no_results",
+    "image_width": 640,
+    "image_height": 480,
+    "unique_classes": [],
+    "has_people": false,
+    "has_text_objects": false,
+    "runtime_ms": 316,
+    "model_name": "yolov8n.pt",
+    "model_sha256": "31e20dde3def09e2cf938c7be6fe23d9150bbbe503982af13345706515f2ef95",
+    "coordinate_space": "exif_corrected_input_pixels",
+    "confidence_semantics": "YOLO detection confidence; not an authenticity probability.",
+    "limitations": [
+      "Object presence or absence is not proof of authenticity, generation, or manipulation."
+    ],
+    "note": "Object detection provides scene context, not manipulation evidence.",
+    "warnings": []
+  },
+  "ocr": {
+    "status": "completed",
+    "engine": "EasyOCR",
+    "language_configuration": [
+      "en",
+      "hi"
+    ],
+    "text": "TruthLens Live EZE Verirication २०२६\nThe city councilallocated १५ million dollars lor ५० public parks in २० २६.\nAccording to the ollicial report public transit ridership increased by २५ percent\nIs this policyetlective lor urban\nspaces?\nDIean",
+    "raw_text": "TruthLens Live EZE Verirication २०२६\nThe city councilallocated १५ million dollars lor ५० public parks in २० २६.\nAccording to the ollicial report public transit ridership increased by २५ percent\nIs this policyetlective lor urban\nspaces?\nDIean",
+    "no_text_reason": null,
+    "normalized_text": "TruthLens Live EZE Verirication २०२६ The city councilallocated १५ million dollars lor ५० public parks in २० २६. According to the ollicial report public transit ridership increased by २५ percent Is this policyetlective lor urban spaces? DIean",
+    "language": "en",
+    "blocks": [
+      {
+        "text": "TruthLens Live EZE Verirication २०२६",
+        "confidence": 0.5808,
+        "bbox": [
+          [
+            59,
+            59
+          ],
+          [
+            235,
+            59
+          ],
+          [
+            235,
+            73
+          ],
+          [
+            59,
+            73
+          ]
+        ]
+      },
+      {
+        "text": "The city councilallocated १५ million dollars lor ५० public parks in २० २६.",
+        "confidence": 0.5162,
+        "bbox": [
+          [
+            59,
+            131
+          ],
+          [
+            385,
+            131
+          ],
+          [
+            385,
+            145
+          ],
+          [
+            59,
+            145
+          ]
+        ]
+      },
+      {
+        "text": "According to the ollicial report public transit ridership increased by २५ percent",
+        "confidence": 0.5568,
+        "bbox": [
+          [
+            59,
+            171
+          ],
+          [
+            425,
+            171
+          ],
+          [
+            425,
+            185
+          ],
+          [
+            59,
+            185
+          ]
+        ]
+      },
+      {
+        "text": "Is this policyetlective lor urban",
+        "confidence": 0.8073,
+        "bbox": [
+          [
+            59,
+            211
+          ],
+          [
+            203,
+            211
+          ],
+          [
+            203,
+            225
+          ],
+          [
+            59,
+            225
+          ]
+        ]
+      },
+      {
+        "text": "spaces?",
+        "confidence": 0.6264,
+        "bbox": [
+          [
+            233,
+            211
+          ],
+          [
+            273,
+            211
+          ],
+          [
+            273,
+            225
+          ],
+          [
+            233,
+            225
+          ]
+        ]
+      },
+      {
+        "text": "DIean",
+        "confidence": 0.1665,
+        "bbox": [
+          [
+            200,
+            212
+          ],
+          [
+            232,
+            210
+          ],
+          [
+            233,
+            220
+          ],
+          [
+            201,
+            222
+          ]
+        ]
+      }
+    ],
+    "total_confidence": 0.5424,
+    "word_count": 37,
+    "runtime_ms": 2704,
+    "has_text": true,
+    "detected": true,
+    "warnings": []
+  },
+  "language_identification": {
+    "status": "completed",
+    "outcome": "success",
+    "detected_language": "en",
+    "language_code": "en",
+    "language_name": "English",
+    "confidence": 0.701172,
+    "top_languages": [
+      {
+        "language": "en",
+        "language_name": "English",
+        "confidence": 0.701172
+      },
+      {
+        "language": "sw",
+        "language_name": "Swahili",
+        "confidence": 0.05735
+      },
+      {
+        "language": "ur",
+        "language_name": "Urdu",
+        "confidence": 0.030367
+      }
+    ],
+    "model_name": "papluca/xlm-roberta-base-language-detection",
+    "model_version": "9865598389ca9d95637462f743f683b51d75b87b",
+    "model_revision": "9865598389ca9d95637462f743f683b51d75b87b",
+    "runtime_ms": 5421,
+    "input_characters": 241,
+    "input_truncated": false,
+    "confidence_semantics": "Maximum softmax probability from the model; not calibrated.",
+    "warnings": [],
+    "limitations": [
+      "One document-level prediction is returned; mixed-language regions are not separately identified.",
+      "Softmax confidence is not calibrated and does not measure truthfulness or authenticity."
+    ]
+  },
+  "text_normalized": {
+    "raw_text": "TruthLens Live EZE Verirication २०२६\nThe city councilallocated १५ million dollars lor ५० public parks in २० २६.\nAccording to the ollicial report public transit ridership increased by २५ percent\nIs this policyetlective lor urban\nspaces?\nDIean",
+    "normalized_text": "TruthLens Live EZE Verirication २०२६ The city councilallocated १५ million dollars lor ५० public parks in २० २६. According to the ollicial report public transit ridership increased by २५ percent Is this policyetlective lor urban spaces? DIean",
+    "sentences": [
+      "TruthLens Live EZE Verirication २०२६ The city councilallocated १५ million dollars lor ५० public parks in २० २६.",
+      "According to the ollicial report public transit ridership increased by २५ percent Is this policyetlective lor urban spaces?",
+      "DIean"
+    ],
+    "sentence_spans": [
+      {
+        "text": "TruthLens Live EZE Verirication २०२६ The city councilallocated १५ million dollars lor ५० public parks in २० २६.",
+        "start": 0,
+        "end": 111
+      },
+      {
+        "text": "According to the ollicial report public transit ridership increased by २५ percent Is this policyetlective lor urban spaces?",
+        "start": 112,
+        "end": 235
+      },
+      {
+        "text": "DIean",
+        "start": 236,
+        "end": 241
+      }
+    ],
+    "word_count": 37,
+    "char_count": 241,
+    "has_urls": false,
+    "extracted_urls": [],
+    "has_hashtags": false,
+    "extracted_hashtags": [],
+    "has_mentions": false,
+    "extracted_mentions": [],
+    "detected_numbers": [
+      "२०२६",
+      "१५",
+      "५०",
+      "२०",
+      "२६",
+      "२५"
+    ],
+    "warnings": []
+  },
+  "claims": {
+    "status": "completed",
+    "claims": [
+      {
+        "claim_id": "claim_c9aa54d2335c866e",
+        "claim": "TruthLens Live EZE Verirication २०२६ The city councilallocated १५ million dollars lor ५० public parks in २० २६.",
+        "original_text": "TruthLens Live EZE Verirication २०२६ The city councilallocated १५ million dollars lor ५० public parks in २० २६.",
+        "normalized_text": "TruthLens Live EZE Verirication २०२६ The city councilallocated १५ million dollars lor ५० public parks in २० २६.",
+        "language": "en",
+        "translated_text": null,
+        "language_code": "en",
+        "language_name": "English",
+        "language_source": "e3_language_identification",
+        "language_model_id": "papluca/xlm-roberta-base-language-detection",
+        "language_model_revision": "9865598389ca9d95637462f743f683b51d75b87b",
+        "language_confidence": 0.701172,
+        "language_detection_outcome": "success",
+        "entities": [
+          "TruthLens Live EZE Verirication"
+        ],
+        "dates": [],
+        "locations": [],
+        "numbers": [
+          "२०२६",
+          "१५",
+          "५०",
+          "२०",
+          "२६"
+        ],
+        "claim_type": "statistical",
+        "confidence": 0.6981,
+        "classification": "FACTUAL",
+        "language_detection_status": "success",
+        "source_start": 0,
+        "source_end": 111,
+        "source_region_refs": [
+          "ocr_region_0",
+          "ocr_region_1"
+        ],
+        "source_regions": [
+          {
+            "region_id": "ocr_region_0",
+            "bbox": [
+              [
+                59,
+                59
+              ],
+              [
+                235,
+                59
+              ],
+              [
+                235,
+                73
+              ],
+              [
+                59,
+                73
+              ]
+            ]
+          },
+          {
+            "region_id": "ocr_region_1",
+            "bbox": [
+              [
+                59,
+                131
+              ],
+              [
+                385,
+                131
+              ],
+              [
+                385,
+                145
+              ],
+              [
+                59,
+                145
+              ]
+            ]
+          }
+        ],
+        "extraction_method": "conservative_rules_v2",
+        "confidence_semantics": "heuristic extraction score; not truth probability",
+        "source": "ocr",
+        "source_text_reference": "ocr_sentence_0",
+        "ocr_confidence": 0.5424,
+        "verification_eligibility": "ELIGIBLE",
+        "eligibility_reason": "Text contains a factual assertion candidate.",
+        "warnings": []
+      },
+      {
+        "claim_id": "claim_3a5a13110d90b6e4",
+        "claim": "According to the ollicial report public transit ridership increased by २५ percent Is this policyetlective lor urban spaces?",
+        "original_text": "According to the ollicial report public transit ridership increased by २५ percent Is this policyetlective lor urban spaces?",
+        "normalized_text": "According to the ollicial report public transit ridership increased by २५ percent Is this policyetlective lor urban spaces?",
+        "language": "en",
+        "translated_text": null,
+        "language_code": "en",
+        "language_name": "English",
+        "language_source": "e3_language_identification",
+        "language_model_id": "papluca/xlm-roberta-base-language-detection",
+        "language_model_revision": "9865598389ca9d95637462f743f683b51d75b87b",
+        "language_confidence": 0.701172,
+        "language_detection_outcome": "success",
+        "entities": [],
+        "dates": [],
+        "locations": [],
+        "numbers": [
+          "२५"
+        ],
+        "claim_type": "unclassified",
+        "confidence": 0.5481,
+        "classification": "QUESTION",
+        "language_detection_status": "success",
+        "source_start": 112,
+        "source_end": 235,
+        "source_region_refs": [
+          "ocr_region_2",
+          "ocr_region_3",
+          "ocr_region_4"
+        ],
+        "source_regions": [
+          {
+            "region_id": "ocr_region_2",
+            "bbox": [
+              [
+                59,
+                171
+              ],
+              [
+                425,
+                171
+              ],
+              [
+                425,
+                185
+              ],
+              [
+                59,
+                185
+              ]
+            ]
+          },
+          {
+            "region_id": "ocr_region_3",
+            "bbox": [
+              [
+                59,
+                211
+              ],
+              [
+                203,
+                211
+              ],
+              [
+                203,
+                225
+              ],
+              [
+                59,
+                225
+              ]
+            ]
+          },
+          {
+            "region_id": "ocr_region_4",
+            "bbox": [
+              [
+                233,
+                211
+              ],
+              [
+                273,
+                211
+              ],
+              [
+                273,
+                225
+              ],
+              [
+                233,
+                225
+              ]
+            ]
+          }
+        ],
+        "extraction_method": "conservative_rules_v2",
+        "confidence_semantics": "heuristic extraction score; not truth probability",
+        "source": "ocr",
+        "source_text_reference": "ocr_sentence_1",
+        "ocr_confidence": 0.5424,
+        "verification_eligibility": "INELIGIBLE",
+        "eligibility_reason": "Questions are not treated as factual assertions.",
+        "warnings": []
+      },
+      {
+        "claim_id": "claim_2503e68edb865f14",
+        "claim": "DIean",
+        "original_text": "DIean",
+        "normalized_text": "DIean",
+        "language": "en",
+        "translated_text": null,
+        "language_code": "en",
+        "language_name": "English",
+        "language_source": "e3_language_identification",
+        "language_model_id": "papluca/xlm-roberta-base-language-detection",
+        "language_model_revision": "9865598389ca9d95637462f743f683b51d75b87b",
+        "language_confidence": 0.701172,
+        "language_detection_outcome": "success",
+        "entities": [
+          "DIean"
+        ],
+        "dates": [],
+        "locations": [],
+        "numbers": [],
+        "claim_type": "unclassified",
+        "confidence": 0.4131,
+        "classification": "AMBIGUOUS",
+        "language_detection_status": "success",
+        "source_start": 236,
+        "source_end": 241,
+        "source_region_refs": [
+          "ocr_region_5"
+        ],
+        "source_regions": [
+          {
+            "region_id": "ocr_region_5",
+            "bbox": [
+              [
+                200,
+                212
+              ],
+              [
+                232,
+                210
+              ],
+              [
+                233,
+                220
+              ],
+              [
+                201,
+                222
+              ]
+            ]
+          }
+        ],
+        "extraction_method": "conservative_rules_v2",
+        "confidence_semantics": "heuristic extraction score; not truth probability",
+        "source": "ocr",
+        "source_text_reference": "ocr_sentence_2",
+        "ocr_confidence": 0.5424,
+        "verification_eligibility": "INELIGIBLE",
+        "eligibility_reason": "No clear factual assertion could be identified from the OCR text.",
+        "warnings": []
+      }
+    ],
+    "total_claims": 3,
+    "runtime_ms": 8,
+    "method": "conservative_rules_v2",
+    "warnings": []
+  },
+  "fact_checks": {
+    "status": "no_results",
+    "provider": "google_fact_check_tools",
+    "claims": [],
+    "total_results": 0,
+    "queries_performed": 1,
+    "runtime_ms": 1382,
+    "error": null,
+    "warnings": [],
+    "claim_verifications": [
+      {
+        "claim_id": "claim_c9aa54d2335c866e",
+        "original_claim": "TruthLens Live EZE Verirication २०२६ The city councilallocated १५ million dollars lor ५० public parks in २० २६.",
+        "verdict": "INSUFFICIENT_EVIDENCE",
+        "publisher_rating_summary": "INSUFFICIENT_EVIDENCE",
+        "verdict_semantics": "summary_of_third_party_publisher_ratings_not_truthlens_finding",
+        "reasoning_summary": "No sufficiently claim-matched fact-check review with an interpretable rating was returned.",
+        "supporting_evidence_ids": [],
+        "contradicting_evidence_ids": [],
+        "conflicting_evidence_ids": [],
+        "verification_status": "COMPLETED",
+        "retrieval_error_category": null,
+        "confidence": null,
+        "limitations": [
+          "Verdict summarizes third-party fact-check ratings; it is not an independent TruthLens investigation."
+        ]
+      },
+      {
+        "claim_id": "claim_3a5a13110d90b6e4",
+        "original_claim": "According to the ollicial report public transit ridership increased by २५ percent Is this policyetlective lor urban spaces?",
+        "verdict": "UNVERIFIABLE",
+        "reasoning_summary": "Questions are not treated as factual assertions.",
+        "supporting_evidence_ids": [],
+        "contradicting_evidence_ids": [],
+        "conflicting_evidence_ids": [],
+        "verification_status": "COMPLETED",
+        "confidence": null,
+        "limitations": [
+          "This text was not sent for factual retrieval because it was not classified as an eligible factual claim."
+        ]
+      },
+      {
+        "claim_id": "claim_2503e68edb865f14",
+        "original_claim": "DIean",
+        "verdict": "UNVERIFIABLE",
+        "reasoning_summary": "No clear factual assertion could be identified from the OCR text.",
+        "supporting_evidence_ids": [],
+        "contradicting_evidence_ids": [],
+        "conflicting_evidence_ids": [],
+        "verification_status": "COMPLETED",
+        "confidence": null,
+        "limitations": [
+          "This text was not sent for factual retrieval because it was not classified as an eligible factual claim."
+        ]
+      }
+    ],
+    "note": "Fact-check results come from the Google Fact Check Tools API. They reflect third-party reviews, not TruthLens assessments."
+  },
+  "provenance": {
+    "status": "partial",
+    "outcome": "partial",
+    "web_entities": [],
+    "matching_pages": [],
+    "matching_images": [],
+    "similar_images": [],
+    "best_guess_labels": [],
+    "total_matches": 0,
+    "runtime_ms": 1000,
+    "error": "The stage or service failed; technical details are in server logs.",
+    "warnings": [
+      "Web Detection request failed with HTTP 403.",
+      "No embedded C2PA manifest was found; this is not evidence of manipulation."
+    ],
+    "provider": "google_vision_web_detection",
+    "retrieved_at": null,
+    "content_credentials": {
+      "status": "completed",
+      "outcome": "no_results",
+      "verification_outcome": "no_manifest",
+      "manifest_present": false,
+      "manifest_readable": null,
+      "signature_status": "unverified",
+      "content_binding_status": "unverified",
+      "signer_identity": null,
+      "signer_trust_status": "unverified",
+      "trust_check_configured": false,
+      "assertions": [],
+      "ingredient_count": null,
+      "referenced_resources_status": "not_checked",
+      "referenced_resources_available": null,
+      "referenced_resources_checked": 0,
+      "referenced_resource_scope": "active_manifest_thumbnail_only",
+      "validation_codes": [],
+      "implementation": "c2pa-python",
+      "implementation_version": "0.39.0",
+      "runtime_ms": 45,
+      "error_category": null,
+      "warnings": [
+        "No embedded C2PA manifest was found; this is not evidence of manipulation."
+      ],
+      "interpretation": "Cryptographic credential verification describes the signed asset and signer only. It does not establish whether the depicted event is true."
+    },
+    "image_integrity": {
+      "algorithm": "SHA-256",
+      "value": "fee19c755d23f076517de3436eea2e886abf6c47b0b22525f42d119afba4983a"
+    },
+    "metadata_status": "no_results",
+    "metadata": {
+      "has_exif": false,
+      "camera_make": null,
+      "camera_model": null,
+      "software": null,
+      "datetime_original": null,
+      "datetime_digitized": null,
+      "datetime_modified": null,
+      "image_width": 640,
+      "image_height": 480,
+      "gps_available": false,
+      "source": "EXIF metadata; not cryptographically verified"
+    },
+    "web_detection": {
+      "status": "failed",
+      "outcome": "failed"
+    },
+    "note": "Provenance results show where this image (or similar images) appear online. A match does NOT prove manipulation — it provides context about the image's web presence."
+  },
+  "xai": {
+    "status": "completed",
+    "outcome": "success",
+    "model": "truthlens/siglip-cifake-frozen-head",
+    "method": "grad_cam",
+    "target_class": "real",
+    "target_score": 0.6898,
+    "heatmap_url": "[redacted path]",
+    "overlay_url": "[redacted path]",
+    "suspicious_regions": [
+      {
+        "bbox": [
+          0,
+          0,
+          74,
+          70
+        ],
+        "area_fraction": 0.01686,
+        "max_activation": 0.82633
+      }
+    ],
+    "runtime_ms": 511,
+    "warnings": [
+      "Attribution highlights regions that influenced this model prediction; it does not prove manipulation or model correctness."
+    ],
+    "note": "Attribution highlights regions that influenced this model prediction; it does not prove manipulation or model correctness.",
+    "limitations": [
+      "Attribution highlights regions that influenced this model prediction; it does not prove manipulation or model correctness."
+    ],
+    "score_semantics": "Uncalibrated softmax score for the explained class; not a manipulation probability."
+  },
+  "hashes": {
+    "sha256": "fee19c755d23f076517de3436eea2e886abf6c47b0b22525f42d119afba4983a",
+    "phash": "953f6ac849b5e6c0",
+    "ahash": "0000070fffffff3c",
+    "dhash": "31380c34908080c0",
+    "whash": "0000071fffffff00",
+    "runtime_ms": 119
+  },
+  "evidence": {
+    "items": [
+      {
+        "type": "model_evidence",
+        "source": "authenticity_detector",
+        "strength": "low",
+        "direction": "neutral",
+        "description": "Primary classifier raw argmax is 'likely_authentic'; application classification is 'inconclusive'. Raw softmax output is not a calibrated probability.",
+        "data": {
+          "label": "inconclusive",
+          "model_prediction": "likely_authentic",
+          "ai_generated_score": 0.3102318048477173,
+          "authentic_score": 0.6897682547569275,
+          "raw_logits": {
+            "fake": -0.3995179235935211,
+            "real": 0.3995179235935211
+          },
+          "calibration_status": "not_calibrated",
+          "calibrated_ai_generated_probability": null,
+          "calibrated_candidate_label": "inconclusive",
+          "domain_validation_status": "not_evaluated",
+          "empirical_accuracy": null,
+          "model": "truthlens/siglip-cifake-frozen-head",
+          "model_version": "backbone:google/siglip-base-patch16-224@7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed;head_sha256:e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538"
+        },
+        "evidence_id": "044964d8-39be-4fe4-b5e8-7ad2a298a476",
+        "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+        "stage_name": "authenticity",
+        "status": "completed",
+        "outcome": "success",
+        "provenance": "authenticity_detector"
+      },
+      {
+        "type": "forensic_evidence",
+        "source": "forensics.error_level_analysis",
+        "strength": "low",
+        "direction": "informational",
+        "description": "JPEG quality-90 difference: mean 0.38, standard deviation 1.09, maximum 17.33.",
+        "data": {
+          "status": "completed",
+          "indicator_score": 0.9642228694361411,
+          "score_type": "heuristic_not_probability",
+          "mean_difference": 0.376,
+          "std_difference": 1.087,
+          "max_difference": 17.333,
+          "reencode_quality": 90,
+          "source_format": "JPEG",
+          "artifact_url": "[redacted path]"
+        },
+        "evidence_id": "0cf42da5-929e-4ea3-8539-dcc4e731e02b",
+        "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "provenance": "forensics.error_level_analysis"
+      },
+      {
+        "type": "forensic_evidence",
+        "source": "forensics.noise_consistency",
+        "strength": "low",
+        "direction": "informational",
+        "description": "Laplacian residual standard deviation varies across quadrants (coefficient of variation 0.6030).",
+        "data": {
+          "status": "completed",
+          "indicator_score": 1,
+          "score_type": "heuristic_not_probability",
+          "global_residual_std": 47.461,
+          "quadrant_residual_stds": [
+            81.247,
+            38.777,
+            21.297,
+            21.253
+          ],
+          "quadrant_cv": 0.60298
+        },
+        "evidence_id": "308d111d-bd80-49f1-b04e-654d275859f3",
+        "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "provenance": "forensics.noise_consistency"
+      },
+      {
+        "type": "forensic_evidence",
+        "source": "forensics.jpeg_artifacts",
+        "strength": "low",
+        "direction": "informational",
+        "description": "8-pixel boundary mean difference 1.823; other-boundary mean difference 2.658.",
+        "data": {
+          "status": "completed",
+          "indicator_score": 0,
+          "score_type": "heuristic_not_probability",
+          "block_boundary_difference": 1.8229,
+          "non_block_boundary_difference": 2.6577,
+          "ratio": 0.68588
+        },
+        "evidence_id": "1f8b8657-4a60-4da4-a530-b156773ed7c7",
+        "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "provenance": "forensics.jpeg_artifacts"
+      },
+      {
+        "type": "forensic_evidence",
+        "source": "forensics.edge_consistency",
+        "strength": "low",
+        "direction": "informational",
+        "description": "Canny edge density varies across a 3x3 grid (coefficient of variation 0.7020).",
+        "data": {
+          "status": "completed",
+          "indicator_score": 0.4680140870742781,
+          "score_type": "heuristic_not_probability",
+          "mean_density": 0.019856,
+          "std_density": 0.013939,
+          "grid_densities": [
+            0.043691,
+            0.027025,
+            0.009959,
+            0.037911,
+            0.029401,
+            0.004673,
+            0.009947,
+            0.00625,
+            0.009842
+          ]
+        },
+        "evidence_id": "050025c9-a3cc-4de1-8e2f-fd8a393c106c",
+        "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "provenance": "forensics.edge_consistency"
+      },
+      {
+        "type": "forensic_evidence",
+        "source": "forensics.texture_consistency",
+        "strength": "low",
+        "direction": "informational",
+        "description": "Gabor response regularity indicator is 0.3342.",
+        "data": {
+          "status": "completed",
+          "indicator_score": 0,
+          "score_type": "heuristic_not_probability",
+          "gabor_responses": [
+            480.1303,
+            126.6011,
+            681.9741,
+            133.0424
+          ],
+          "regularity": 0.33422
+        },
+        "evidence_id": "445d7631-0033-48bf-9b11-cf2fbd8698a8",
+        "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "provenance": "forensics.texture_consistency"
+      },
+      {
+        "type": "forensic_evidence",
+        "source": "forensics.resampling_clues",
+        "strength": "low",
+        "direction": "informational",
+        "description": "Second-difference zero-crossing rate is 0.06927.",
+        "data": {
+          "status": "completed",
+          "indicator_score": 0.8614507226451297,
+          "score_type": "heuristic_not_probability",
+          "zero_crossing_x": 0.059743,
+          "zero_crossing_y": 0.078806,
+          "average_zero_crossing": 0.069275,
+          "second_difference_rms": 30.301322
+        },
+        "evidence_id": "fab835f9-4faa-4a02-9652-1a799117fd19",
+        "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "provenance": "forensics.resampling_clues"
+      },
+      {
+        "type": "ocr_evidence",
+        "source": "EasyOCR",
+        "strength": "medium",
+        "direction": "informational",
+        "description": "OCR extracted 37 words (en script estimate) with 54.2% average engine confidence.",
+        "data": {
+          "word_count": 37,
+          "language": "en",
+          "confidence": 0.5423531780579965,
+          "engine": "EasyOCR",
+          "text_preview": "TruthLens Live EZE Verirication २०२६ The city councilallocated १५ million dollars lor ५० public parks in २० २६. According to the ollicial report public transit ridership increased by २५ percent Is thi"
+        },
+        "evidence_id": "bf3950ba-f03b-4eb0-bd11-860c503d7a52",
+        "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+        "stage_name": "ocr",
+        "status": "completed",
+        "outcome": "success",
+        "provenance": "EasyOCR"
+      },
+      {
+        "type": "metadata_evidence",
+        "source": "exif_extractor",
+        "strength": "low",
+        "direction": "neutral",
+        "description": "No EXIF metadata was found. Metadata can be removed by sharing or editing workflows; its absence does not establish authenticity or manipulation.",
+        "data": {
+          "has_exif": false
+        },
+        "evidence_id": "f95e207c-522f-4f4f-a5f4-ca01459fd938",
+        "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+        "stage_name": "metadata",
+        "status": "completed",
+        "outcome": null,
+        "provenance": "exif_extractor"
+      },
+      {
+        "type": "factcheck_evidence",
+        "source": "google_factcheck_api",
+        "strength": "low",
+        "direction": "informational",
+        "description": "No matching fact-checks found for extracted claims.",
+        "data": {
+          "status": "no_results",
+          "queries": 1
+        },
+        "evidence_id": "ae50b79f-136c-47ec-96f5-f641794a92b5",
+        "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+        "stage_name": "fact_check",
+        "status": "completed",
+        "outcome": "no_results",
+        "provenance": "google_factcheck_api"
+      },
+      {
+        "type": "provenance_evidence",
+        "source": "c2pa_content_credentials",
+        "strength": "low",
+        "direction": "informational",
+        "description": "No C2PA manifest was found; absence of credentials does not establish manipulation.",
+        "data": {
+          "status": "completed",
+          "outcome": "no_results",
+          "verification_outcome": "no_manifest",
+          "manifest_present": false,
+          "manifest_readable": null,
+          "signature_status": "unverified",
+          "content_binding_status": "unverified",
+          "signer_identity": null,
+          "signer_trust_status": "unverified",
+          "trust_check_configured": false,
+          "assertions": [],
+          "ingredient_count": null,
+          "referenced_resources_status": "not_checked",
+          "referenced_resources_available": null,
+          "referenced_resources_checked": 0,
+          "referenced_resource_scope": "active_manifest_thumbnail_only",
+          "validation_codes": [],
+          "implementation": "c2pa-python",
+          "implementation_version": "0.39.0",
+          "runtime_ms": 45,
+          "error_category": null,
+          "interpretation": "Cryptographic credential verification describes the signed asset and signer only. It does not establish whether the depicted event is true."
+        },
+        "evidence_id": "4177f735-b286-4c75-aa9b-06f91f92e83e",
+        "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+        "stage_name": "provenance",
+        "status": "completed",
+        "outcome": "no_manifest",
+        "provenance": "c2pa_content_credentials"
+      },
+      {
+        "type": "provenance_evidence",
+        "source": "google_vision_web_detection",
+        "strength": "low",
+        "direction": "informational",
+        "description": "Web provenance request failed. See module status for details.",
+        "data": {
+          "status": "failed"
+        },
+        "evidence_id": "6a3d1f9a-478f-405c-a4e9-351135e22627",
+        "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+        "stage_name": "provenance",
+        "status": "failed",
+        "outcome": "provider_error",
+        "provenance": "google_vision_web_detection"
+      },
+      {
+        "type": "xai_evidence",
+        "source": "grad_cam",
+        "strength": "medium",
+        "direction": "informational",
+        "description": "Grad-CAM attribution map generated for class 'real'. 1 high-activation regions identified.",
+        "data": {
+          "method": "grad_cam",
+          "target_class": "real",
+          "target_score": 0.6897682547569275,
+          "suspicious_regions": [
+            {
+              "bbox": [
+                0,
+                0,
+                74,
+                70
+              ],
+              "area_fraction": 0.01686,
+              "max_activation": 0.82633
+            }
+          ],
+          "heatmap_url": "[redacted path]",
+          "overlay_url": "[redacted path]",
+          "model_name": "truthlens/siglip-cifake-frozen-head"
+        },
+        "evidence_id": "aa3f6dfc-c9f2-43df-8bfa-8748e69dd40e",
+        "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+        "stage_name": "xai",
+        "status": "completed",
+        "outcome": "heatmap_generated",
+        "provenance": "grad_cam"
+      },
+      {
+        "type": "contextual_evidence",
+        "source": "yolov8_object_detection",
+        "strength": "low",
+        "direction": "informational",
+        "description": "No objects were detected; absence of detections is not evidence of authenticity or manipulation.",
+        "data": {
+          "status": "completed",
+          "object_count": 0
+        },
+        "evidence_id": "0b469bbe-90fe-4674-b04b-6a4b3c24cc21",
+        "analysis_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+        "stage_name": "vision",
+        "status": "completed",
+        "outcome": "no_results",
+        "provenance": "yolov8_object_detection"
+      }
+    ],
+    "total_count": 14,
+    "by_type": {
+      "ocr_evidence": 1,
+      "forensic_evidence": 6,
+      "factcheck_evidence": 1,
+      "contextual_evidence": 1,
+      "metadata_evidence": 1,
+      "model_evidence": 1,
+      "provenance_evidence": 2,
+      "xai_evidence": 1
+    },
+    "has_conflicting_evidence": false
+  },
+  "assessment": {
+    "schema_version": "truthlens.fusion.v1",
+    "policy_version": "e11.conservative.v1",
+    "category": "inconclusive",
+    "label": "inconclusive",
+    "assessment_confidence": null,
+    "uncertainty": {
+      "status": "unquantified",
+      "reason": "The fused assessment has not been empirically calibrated as a probability."
+    },
+    "overall_score": null,
+    "confidence": null,
+    "score_semantics": "Legacy uncalibrated fusion margin; not a probability or validated confidence.",
+    "calibrated": false,
+    "reasoning": [
+      "Ignored failed evidence from google_vision_web_detection; excluded as stage_failed.",
+      "Insufficient eligible directional evidence for a determination."
+    ],
+    "evidence_summary": {
+      "total": 14,
+      "authentic_signals": 0,
+      "synthetic_signals": 0,
+      "manipulated_signals": 0,
+      "neutral_signals": 0,
+      "informational_signals": 13
+    },
+    "evidence_considered": [
+      {
+        "evidence_id": "044964d8-39be-4fe4-b5e8-7ad2a298a476",
+        "type": "model_evidence",
+        "source": "authenticity_detector",
+        "stage_name": "authenticity",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Primary classifier raw argmax is 'likely_authentic'; application classification is 'inconclusive'. Raw softmax output is not a calibrated probability.",
+        "reason": "model_output_has_no_direction",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "0cf42da5-929e-4ea3-8539-dcc4e731e02b",
+        "type": "forensic_evidence",
+        "source": "forensics.error_level_analysis",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "JPEG quality-90 difference: mean 0.38, standard deviation 1.09, maximum 17.33.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "308d111d-bd80-49f1-b04e-654d275859f3",
+        "type": "forensic_evidence",
+        "source": "forensics.noise_consistency",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Laplacian residual standard deviation varies across quadrants (coefficient of variation 0.6030).",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "1f8b8657-4a60-4da4-a530-b156773ed7c7",
+        "type": "forensic_evidence",
+        "source": "forensics.jpeg_artifacts",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "8-pixel boundary mean difference 1.823; other-boundary mean difference 2.658.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "050025c9-a3cc-4de1-8e2f-fd8a393c106c",
+        "type": "forensic_evidence",
+        "source": "forensics.edge_consistency",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Canny edge density varies across a 3x3 grid (coefficient of variation 0.7020).",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "445d7631-0033-48bf-9b11-cf2fbd8698a8",
+        "type": "forensic_evidence",
+        "source": "forensics.texture_consistency",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Gabor response regularity indicator is 0.3342.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "fab835f9-4faa-4a02-9652-1a799117fd19",
+        "type": "forensic_evidence",
+        "source": "forensics.resampling_clues",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Second-difference zero-crossing rate is 0.06927.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "bf3950ba-f03b-4eb0-bd11-860c503d7a52",
+        "type": "ocr_evidence",
+        "source": "EasyOCR",
+        "stage_name": "ocr",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "OCR extracted 37 words (en script estimate) with 54.2% average engine confidence.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "f95e207c-522f-4f4f-a5f4-ca01459fd938",
+        "type": "metadata_evidence",
+        "source": "exif_extractor",
+        "stage_name": "metadata",
+        "status": "completed",
+        "outcome": null,
+        "direction": "informational",
+        "description": "No EXIF metadata was found. Metadata can be removed by sharing or editing workflows; its absence does not establish authenticity or manipulation.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "ae50b79f-136c-47ec-96f5-f641794a92b5",
+        "type": "factcheck_evidence",
+        "source": "google_factcheck_api",
+        "stage_name": "fact_check",
+        "status": "completed",
+        "outcome": "no_results",
+        "direction": "informational",
+        "description": "No matching fact-checks found for extracted claims.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "4177f735-b286-4c75-aa9b-06f91f92e83e",
+        "type": "provenance_evidence",
+        "source": "c2pa_content_credentials",
+        "stage_name": "provenance",
+        "status": "completed",
+        "outcome": "no_manifest",
+        "direction": "informational",
+        "description": "No C2PA manifest was found; absence of credentials does not establish manipulation.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "aa3f6dfc-c9f2-43df-8bfa-8748e69dd40e",
+        "type": "xai_evidence",
+        "source": "grad_cam",
+        "stage_name": "xai",
+        "status": "completed",
+        "outcome": "heatmap_generated",
+        "direction": "informational",
+        "description": "Grad-CAM attribution map generated for class 'real'. 1 high-activation regions identified.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "0b469bbe-90fe-4674-b04b-6a4b3c24cc21",
+        "type": "contextual_evidence",
+        "source": "yolov8_object_detection",
+        "stage_name": "vision",
+        "status": "completed",
+        "outcome": "no_results",
+        "direction": "informational",
+        "description": "No objects were detected; absence of detections is not evidence of authenticity or manipulation.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      }
+    ],
+    "evidence_excluded": [
+      {
+        "evidence_id": "6a3d1f9a-478f-405c-a4e9-351135e22627",
+        "type": "provenance_evidence",
+        "source": "google_vision_web_detection",
+        "stage_name": "provenance",
+        "status": "failed",
+        "outcome": "provider_error",
+        "direction": "informational",
+        "description": "Web provenance request failed. See module status for details.",
+        "reason": "stage_failed"
+      }
+    ],
+    "supporting_findings": [],
+    "contradictory_findings": [],
+    "conflicting_findings": [],
+    "informational_findings": [
+      {
+        "evidence_id": "044964d8-39be-4fe4-b5e8-7ad2a298a476",
+        "type": "model_evidence",
+        "source": "authenticity_detector",
+        "stage_name": "authenticity",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Primary classifier raw argmax is 'likely_authentic'; application classification is 'inconclusive'. Raw softmax output is not a calibrated probability.",
+        "reason": "model_output_has_no_direction"
+      },
+      {
+        "evidence_id": "0cf42da5-929e-4ea3-8539-dcc4e731e02b",
+        "type": "forensic_evidence",
+        "source": "forensics.error_level_analysis",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "JPEG quality-90 difference: mean 0.38, standard deviation 1.09, maximum 17.33.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "308d111d-bd80-49f1-b04e-654d275859f3",
+        "type": "forensic_evidence",
+        "source": "forensics.noise_consistency",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Laplacian residual standard deviation varies across quadrants (coefficient of variation 0.6030).",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "1f8b8657-4a60-4da4-a530-b156773ed7c7",
+        "type": "forensic_evidence",
+        "source": "forensics.jpeg_artifacts",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "8-pixel boundary mean difference 1.823; other-boundary mean difference 2.658.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "050025c9-a3cc-4de1-8e2f-fd8a393c106c",
+        "type": "forensic_evidence",
+        "source": "forensics.edge_consistency",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Canny edge density varies across a 3x3 grid (coefficient of variation 0.7020).",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "445d7631-0033-48bf-9b11-cf2fbd8698a8",
+        "type": "forensic_evidence",
+        "source": "forensics.texture_consistency",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Gabor response regularity indicator is 0.3342.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "fab835f9-4faa-4a02-9652-1a799117fd19",
+        "type": "forensic_evidence",
+        "source": "forensics.resampling_clues",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Second-difference zero-crossing rate is 0.06927.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "bf3950ba-f03b-4eb0-bd11-860c503d7a52",
+        "type": "ocr_evidence",
+        "source": "EasyOCR",
+        "stage_name": "ocr",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "OCR extracted 37 words (en script estimate) with 54.2% average engine confidence.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "f95e207c-522f-4f4f-a5f4-ca01459fd938",
+        "type": "metadata_evidence",
+        "source": "exif_extractor",
+        "stage_name": "metadata",
+        "status": "completed",
+        "outcome": null,
+        "direction": "informational",
+        "description": "No EXIF metadata was found. Metadata can be removed by sharing or editing workflows; its absence does not establish authenticity or manipulation.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "ae50b79f-136c-47ec-96f5-f641794a92b5",
+        "type": "factcheck_evidence",
+        "source": "google_factcheck_api",
+        "stage_name": "fact_check",
+        "status": "completed",
+        "outcome": "no_results",
+        "direction": "informational",
+        "description": "No matching fact-checks found for extracted claims.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "4177f735-b286-4c75-aa9b-06f91f92e83e",
+        "type": "provenance_evidence",
+        "source": "c2pa_content_credentials",
+        "stage_name": "provenance",
+        "status": "completed",
+        "outcome": "no_manifest",
+        "direction": "informational",
+        "description": "No C2PA manifest was found; absence of credentials does not establish manipulation.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "aa3f6dfc-c9f2-43df-8bfa-8748e69dd40e",
+        "type": "xai_evidence",
+        "source": "grad_cam",
+        "stage_name": "xai",
+        "status": "completed",
+        "outcome": "heatmap_generated",
+        "direction": "informational",
+        "description": "Grad-CAM attribution map generated for class 'real'. 1 high-activation regions identified.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "0b469bbe-90fe-4674-b04b-6a4b3c24cc21",
+        "type": "contextual_evidence",
+        "source": "yolov8_object_detection",
+        "stage_name": "vision",
+        "status": "completed",
+        "outcome": "no_results",
+        "direction": "informational",
+        "description": "No objects were detected; absence of detections is not evidence of authenticity or manipulation.",
+        "reason": "informational_module"
+      }
+    ],
+    "missing_evidence": [
+      {
+        "stage_name": "vision",
+        "status": "completed",
+        "outcome": "no_results",
+        "evidence_available": false,
+        "reason": "Stage did not provide usable evidence; this absence is not negative evidence."
+      },
+      {
+        "stage_name": "fact_check",
+        "status": "completed",
+        "outcome": "no_results",
+        "evidence_available": false,
+        "reason": "Stage did not provide usable evidence; this absence is not negative evidence."
+      },
+      {
+        "stage_name": "provenance",
+        "status": "partial",
+        "outcome": "partial",
+        "evidence_available": null,
+        "reason": "Stage did not provide usable evidence; this absence is not negative evidence."
+      }
+    ],
+    "stage_execution_summary": {
+      "preprocessing": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "25619898-d43c-52ca-af6d-5045c03757db",
+        "runtime_ms": 29,
+        "error_category": null
+      },
+      "metadata": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "ee66ca8b-4c63-50aa-af02-d739e8220c2a",
+        "runtime_ms": 1,
+        "error_category": null
+      },
+      "quality": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "9c9b7799-f38d-5a6f-ad6a-4e23ca9dde7b",
+        "runtime_ms": 13,
+        "error_category": null
+      },
+      "authenticity": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "6ec2b07c-c41e-5d44-8402-10ff28171a31",
+        "runtime_ms": 21918,
+        "error_category": null,
+        "module_identity": {
+          "model_version": "backbone:google/siglip-base-patch16-224@7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed;head_sha256:e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+          "model_name": "truthlens/siglip-cifake-frozen-head"
+        }
+      },
+      "forensics": {
+        "status": "completed",
+        "outcome": "success",
+        "stage_id": "13bbc3a6-c432-5c2b-be24-c4a89750d1f1",
+        "runtime_ms": 239,
+        "error_category": null
+      },
+      "ocr": {
+        "status": "completed",
+        "outcome": "success",
+        "stage_id": "e0b2a1ff-190a-5ac4-af31-46230133063d",
+        "runtime_ms": 12270,
+        "error_category": null,
+        "module_identity": {
+          "engine": "EasyOCR"
+        }
+      },
+      "vision": {
+        "status": "completed",
+        "outcome": "no_results",
+        "stage_id": "cf3bb367-58b4-55e8-b783-cc60f1888266",
+        "runtime_ms": 710,
+        "error_category": null,
+        "module_identity": {
+          "model_name": "yolov8n.pt",
+          "model_sha256": "31e20dde3def09e2cf938c7be6fe23d9150bbbe503982af13345706515f2ef95"
+        }
+      },
+      "xai": {
+        "status": "completed",
+        "outcome": "success",
+        "stage_id": "dd0a8a2c-57e1-56c4-aa5e-fdca984d777f",
+        "runtime_ms": 526,
+        "error_category": null,
+        "module_identity": {
+          "model_name": "truthlens/siglip-cifake-frozen-head",
+          "method": "grad_cam"
+        }
+      },
+      "text_normalization": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "0f95adc3-85fd-51de-bf85-35b1e5530460",
+        "runtime_ms": 3,
+        "error_category": null
+      },
+      "language_identification": {
+        "status": "completed",
+        "outcome": "success",
+        "stage_id": "77a44b05-73ed-5d2e-b323-0ef3cc3c1ea0",
+        "runtime_ms": 5423,
+        "error_category": null,
+        "module_identity": {
+          "model_version": "9865598389ca9d95637462f743f683b51d75b87b",
+          "model_name": "papluca/xlm-roberta-base-language-detection",
+          "model_revision": "9865598389ca9d95637462f743f683b51d75b87b"
+        }
+      },
+      "claim_extraction": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "91568195-d7d9-5c9a-8fb3-5485e33b2da9",
+        "runtime_ms": 9,
+        "error_category": null,
+        "module_identity": {
+          "method": "conservative_rules_v2"
+        }
+      },
+      "fact_check": {
+        "status": "completed",
+        "outcome": "no_results",
+        "stage_id": "e16f5c14-bddd-59a9-be8b-92bdc91c31a9",
+        "runtime_ms": 1383,
+        "error_category": null,
+        "module_identity": {
+          "provider": "google_fact_check_tools"
+        }
+      },
+      "provenance": {
+        "status": "partial",
+        "outcome": "partial",
+        "stage_id": "4a8beb87-9695-5a29-8109-3f109d751e7a",
+        "runtime_ms": 1003,
+        "error_category": null,
+        "module_identity": {
+          "provider": "google_vision_web_detection"
+        }
+      },
+      "hashing": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "57ad12a0-f275-5ed2-b296-5cd0e0cdf59c",
+        "runtime_ms": 129,
+        "error_category": null
+      },
+      "evidence_collection": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "2c125c91-2633-5cab-ba6e-e3c0b8c85b17",
+        "runtime_ms": 0,
+        "error_category": null
+      }
+    },
+    "conflicting": false,
+    "limitations": [
+      "The production fusion weights and thresholds predate E11 and have not been independently validated.",
+      "The fused assessment is not calibrated as a probability.",
+      "OCR, language, metadata, forensics, object detection, fact-check, provenance, and XAI findings are informational in E11.",
+      "Third-party ratings and provenance metadata are not TruthLens truth labels or proof of authenticity.",
+      "Most available findings are informational rather than directional."
+    ],
+    "warnings": [
+      "One or more stages were incomplete, unavailable, skipped, or returned no evidence.",
+      "No validated directional evidence was available; the result remains inconclusive."
+    ],
+    "generated_at": "2026-11-23T17:18:35.838533+00:00",
+    "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+    "runtime_ms": 1,
+    "confidence_note": "Fusion confidence is uncalibrated and must not be interpreted as a probability.",
+    "caveat": "This is an AI-assisted assessment based on available evidence. Model predictions can be wrong. This result should not be cited as proof that the image is authentic or fabricated."
+  },
+  "fusion": {
+    "schema_version": "truthlens.fusion.v1",
+    "policy_version": "e11.conservative.v1",
+    "category": "inconclusive",
+    "label": "inconclusive",
+    "assessment_confidence": null,
+    "uncertainty": {
+      "status": "unquantified",
+      "reason": "The fused assessment has not been empirically calibrated as a probability."
+    },
+    "overall_score": null,
+    "confidence": null,
+    "score_semantics": "Legacy uncalibrated fusion margin; not a probability or validated confidence.",
+    "calibrated": false,
+    "reasoning": [
+      "Ignored failed evidence from google_vision_web_detection; excluded as stage_failed.",
+      "Insufficient eligible directional evidence for a determination."
+    ],
+    "evidence_summary": {
+      "total": 14,
+      "authentic_signals": 0,
+      "synthetic_signals": 0,
+      "manipulated_signals": 0,
+      "neutral_signals": 0,
+      "informational_signals": 13
+    },
+    "evidence_considered": [
+      {
+        "evidence_id": "044964d8-39be-4fe4-b5e8-7ad2a298a476",
+        "type": "model_evidence",
+        "source": "authenticity_detector",
+        "stage_name": "authenticity",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Primary classifier raw argmax is 'likely_authentic'; application classification is 'inconclusive'. Raw softmax output is not a calibrated probability.",
+        "reason": "model_output_has_no_direction",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "0cf42da5-929e-4ea3-8539-dcc4e731e02b",
+        "type": "forensic_evidence",
+        "source": "forensics.error_level_analysis",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "JPEG quality-90 difference: mean 0.38, standard deviation 1.09, maximum 17.33.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "308d111d-bd80-49f1-b04e-654d275859f3",
+        "type": "forensic_evidence",
+        "source": "forensics.noise_consistency",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Laplacian residual standard deviation varies across quadrants (coefficient of variation 0.6030).",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "1f8b8657-4a60-4da4-a530-b156773ed7c7",
+        "type": "forensic_evidence",
+        "source": "forensics.jpeg_artifacts",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "8-pixel boundary mean difference 1.823; other-boundary mean difference 2.658.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "050025c9-a3cc-4de1-8e2f-fd8a393c106c",
+        "type": "forensic_evidence",
+        "source": "forensics.edge_consistency",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Canny edge density varies across a 3x3 grid (coefficient of variation 0.7020).",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "445d7631-0033-48bf-9b11-cf2fbd8698a8",
+        "type": "forensic_evidence",
+        "source": "forensics.texture_consistency",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Gabor response regularity indicator is 0.3342.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "fab835f9-4faa-4a02-9652-1a799117fd19",
+        "type": "forensic_evidence",
+        "source": "forensics.resampling_clues",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Second-difference zero-crossing rate is 0.06927.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "bf3950ba-f03b-4eb0-bd11-860c503d7a52",
+        "type": "ocr_evidence",
+        "source": "EasyOCR",
+        "stage_name": "ocr",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "OCR extracted 37 words (en script estimate) with 54.2% average engine confidence.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "f95e207c-522f-4f4f-a5f4-ca01459fd938",
+        "type": "metadata_evidence",
+        "source": "exif_extractor",
+        "stage_name": "metadata",
+        "status": "completed",
+        "outcome": null,
+        "direction": "informational",
+        "description": "No EXIF metadata was found. Metadata can be removed by sharing or editing workflows; its absence does not establish authenticity or manipulation.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "ae50b79f-136c-47ec-96f5-f641794a92b5",
+        "type": "factcheck_evidence",
+        "source": "google_factcheck_api",
+        "stage_name": "fact_check",
+        "status": "completed",
+        "outcome": "no_results",
+        "direction": "informational",
+        "description": "No matching fact-checks found for extracted claims.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "4177f735-b286-4c75-aa9b-06f91f92e83e",
+        "type": "provenance_evidence",
+        "source": "c2pa_content_credentials",
+        "stage_name": "provenance",
+        "status": "completed",
+        "outcome": "no_manifest",
+        "direction": "informational",
+        "description": "No C2PA manifest was found; absence of credentials does not establish manipulation.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "aa3f6dfc-c9f2-43df-8bfa-8748e69dd40e",
+        "type": "xai_evidence",
+        "source": "grad_cam",
+        "stage_name": "xai",
+        "status": "completed",
+        "outcome": "heatmap_generated",
+        "direction": "informational",
+        "description": "Grad-CAM attribution map generated for class 'real'. 1 high-activation regions identified.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      },
+      {
+        "evidence_id": "0b469bbe-90fe-4674-b04b-6a4b3c24cc21",
+        "type": "contextual_evidence",
+        "source": "yolov8_object_detection",
+        "stage_name": "vision",
+        "status": "completed",
+        "outcome": "no_results",
+        "direction": "informational",
+        "description": "No objects were detected; absence of detections is not evidence of authenticity or manipulation.",
+        "reason": "informational_module",
+        "disposition": "informational"
+      }
+    ],
+    "evidence_excluded": [
+      {
+        "evidence_id": "6a3d1f9a-478f-405c-a4e9-351135e22627",
+        "type": "provenance_evidence",
+        "source": "google_vision_web_detection",
+        "stage_name": "provenance",
+        "status": "failed",
+        "outcome": "provider_error",
+        "direction": "informational",
+        "description": "Web provenance request failed. See module status for details.",
+        "reason": "stage_failed"
+      }
+    ],
+    "supporting_findings": [],
+    "contradictory_findings": [],
+    "conflicting_findings": [],
+    "informational_findings": [
+      {
+        "evidence_id": "044964d8-39be-4fe4-b5e8-7ad2a298a476",
+        "type": "model_evidence",
+        "source": "authenticity_detector",
+        "stage_name": "authenticity",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Primary classifier raw argmax is 'likely_authentic'; application classification is 'inconclusive'. Raw softmax output is not a calibrated probability.",
+        "reason": "model_output_has_no_direction"
+      },
+      {
+        "evidence_id": "0cf42da5-929e-4ea3-8539-dcc4e731e02b",
+        "type": "forensic_evidence",
+        "source": "forensics.error_level_analysis",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "JPEG quality-90 difference: mean 0.38, standard deviation 1.09, maximum 17.33.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "308d111d-bd80-49f1-b04e-654d275859f3",
+        "type": "forensic_evidence",
+        "source": "forensics.noise_consistency",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Laplacian residual standard deviation varies across quadrants (coefficient of variation 0.6030).",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "1f8b8657-4a60-4da4-a530-b156773ed7c7",
+        "type": "forensic_evidence",
+        "source": "forensics.jpeg_artifacts",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "8-pixel boundary mean difference 1.823; other-boundary mean difference 2.658.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "050025c9-a3cc-4de1-8e2f-fd8a393c106c",
+        "type": "forensic_evidence",
+        "source": "forensics.edge_consistency",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Canny edge density varies across a 3x3 grid (coefficient of variation 0.7020).",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "445d7631-0033-48bf-9b11-cf2fbd8698a8",
+        "type": "forensic_evidence",
+        "source": "forensics.texture_consistency",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Gabor response regularity indicator is 0.3342.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "fab835f9-4faa-4a02-9652-1a799117fd19",
+        "type": "forensic_evidence",
+        "source": "forensics.resampling_clues",
+        "stage_name": "forensics",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "Second-difference zero-crossing rate is 0.06927.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "bf3950ba-f03b-4eb0-bd11-860c503d7a52",
+        "type": "ocr_evidence",
+        "source": "EasyOCR",
+        "stage_name": "ocr",
+        "status": "completed",
+        "outcome": "success",
+        "direction": "informational",
+        "description": "OCR extracted 37 words (en script estimate) with 54.2% average engine confidence.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "f95e207c-522f-4f4f-a5f4-ca01459fd938",
+        "type": "metadata_evidence",
+        "source": "exif_extractor",
+        "stage_name": "metadata",
+        "status": "completed",
+        "outcome": null,
+        "direction": "informational",
+        "description": "No EXIF metadata was found. Metadata can be removed by sharing or editing workflows; its absence does not establish authenticity or manipulation.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "ae50b79f-136c-47ec-96f5-f641794a92b5",
+        "type": "factcheck_evidence",
+        "source": "google_factcheck_api",
+        "stage_name": "fact_check",
+        "status": "completed",
+        "outcome": "no_results",
+        "direction": "informational",
+        "description": "No matching fact-checks found for extracted claims.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "4177f735-b286-4c75-aa9b-06f91f92e83e",
+        "type": "provenance_evidence",
+        "source": "c2pa_content_credentials",
+        "stage_name": "provenance",
+        "status": "completed",
+        "outcome": "no_manifest",
+        "direction": "informational",
+        "description": "No C2PA manifest was found; absence of credentials does not establish manipulation.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "aa3f6dfc-c9f2-43df-8bfa-8748e69dd40e",
+        "type": "xai_evidence",
+        "source": "grad_cam",
+        "stage_name": "xai",
+        "status": "completed",
+        "outcome": "heatmap_generated",
+        "direction": "informational",
+        "description": "Grad-CAM attribution map generated for class 'real'. 1 high-activation regions identified.",
+        "reason": "informational_module"
+      },
+      {
+        "evidence_id": "0b469bbe-90fe-4674-b04b-6a4b3c24cc21",
+        "type": "contextual_evidence",
+        "source": "yolov8_object_detection",
+        "stage_name": "vision",
+        "status": "completed",
+        "outcome": "no_results",
+        "direction": "informational",
+        "description": "No objects were detected; absence of detections is not evidence of authenticity or manipulation.",
+        "reason": "informational_module"
+      }
+    ],
+    "missing_evidence": [
+      {
+        "stage_name": "vision",
+        "status": "completed",
+        "outcome": "no_results",
+        "evidence_available": false,
+        "reason": "Stage did not provide usable evidence; this absence is not negative evidence."
+      },
+      {
+        "stage_name": "fact_check",
+        "status": "completed",
+        "outcome": "no_results",
+        "evidence_available": false,
+        "reason": "Stage did not provide usable evidence; this absence is not negative evidence."
+      },
+      {
+        "stage_name": "provenance",
+        "status": "partial",
+        "outcome": "partial",
+        "evidence_available": null,
+        "reason": "Stage did not provide usable evidence; this absence is not negative evidence."
+      }
+    ],
+    "stage_execution_summary": {
+      "preprocessing": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "25619898-d43c-52ca-af6d-5045c03757db",
+        "runtime_ms": 29,
+        "error_category": null
+      },
+      "metadata": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "ee66ca8b-4c63-50aa-af02-d739e8220c2a",
+        "runtime_ms": 1,
+        "error_category": null
+      },
+      "quality": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "9c9b7799-f38d-5a6f-ad6a-4e23ca9dde7b",
+        "runtime_ms": 13,
+        "error_category": null
+      },
+      "authenticity": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "6ec2b07c-c41e-5d44-8402-10ff28171a31",
+        "runtime_ms": 21918,
+        "error_category": null,
+        "module_identity": {
+          "model_version": "backbone:google/siglip-base-patch16-224@7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed;head_sha256:e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+          "model_name": "truthlens/siglip-cifake-frozen-head"
+        }
+      },
+      "forensics": {
+        "status": "completed",
+        "outcome": "success",
+        "stage_id": "13bbc3a6-c432-5c2b-be24-c4a89750d1f1",
+        "runtime_ms": 239,
+        "error_category": null
+      },
+      "ocr": {
+        "status": "completed",
+        "outcome": "success",
+        "stage_id": "e0b2a1ff-190a-5ac4-af31-46230133063d",
+        "runtime_ms": 12270,
+        "error_category": null,
+        "module_identity": {
+          "engine": "EasyOCR"
+        }
+      },
+      "vision": {
+        "status": "completed",
+        "outcome": "no_results",
+        "stage_id": "cf3bb367-58b4-55e8-b783-cc60f1888266",
+        "runtime_ms": 710,
+        "error_category": null,
+        "module_identity": {
+          "model_name": "yolov8n.pt",
+          "model_sha256": "31e20dde3def09e2cf938c7be6fe23d9150bbbe503982af13345706515f2ef95"
+        }
+      },
+      "xai": {
+        "status": "completed",
+        "outcome": "success",
+        "stage_id": "dd0a8a2c-57e1-56c4-aa5e-fdca984d777f",
+        "runtime_ms": 526,
+        "error_category": null,
+        "module_identity": {
+          "model_name": "truthlens/siglip-cifake-frozen-head",
+          "method": "grad_cam"
+        }
+      },
+      "text_normalization": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "0f95adc3-85fd-51de-bf85-35b1e5530460",
+        "runtime_ms": 3,
+        "error_category": null
+      },
+      "language_identification": {
+        "status": "completed",
+        "outcome": "success",
+        "stage_id": "77a44b05-73ed-5d2e-b323-0ef3cc3c1ea0",
+        "runtime_ms": 5423,
+        "error_category": null,
+        "module_identity": {
+          "model_version": "9865598389ca9d95637462f743f683b51d75b87b",
+          "model_name": "papluca/xlm-roberta-base-language-detection",
+          "model_revision": "9865598389ca9d95637462f743f683b51d75b87b"
+        }
+      },
+      "claim_extraction": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "91568195-d7d9-5c9a-8fb3-5485e33b2da9",
+        "runtime_ms": 9,
+        "error_category": null,
+        "module_identity": {
+          "method": "conservative_rules_v2"
+        }
+      },
+      "fact_check": {
+        "status": "completed",
+        "outcome": "no_results",
+        "stage_id": "e16f5c14-bddd-59a9-be8b-92bdc91c31a9",
+        "runtime_ms": 1383,
+        "error_category": null,
+        "module_identity": {
+          "provider": "google_fact_check_tools"
+        }
+      },
+      "provenance": {
+        "status": "partial",
+        "outcome": "partial",
+        "stage_id": "4a8beb87-9695-5a29-8109-3f109d751e7a",
+        "runtime_ms": 1003,
+        "error_category": null,
+        "module_identity": {
+          "provider": "google_vision_web_detection"
+        }
+      },
+      "hashing": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "57ad12a0-f275-5ed2-b296-5cd0e0cdf59c",
+        "runtime_ms": 129,
+        "error_category": null
+      },
+      "evidence_collection": {
+        "status": "completed",
+        "outcome": null,
+        "stage_id": "2c125c91-2633-5cab-ba6e-e3c0b8c85b17",
+        "runtime_ms": 0,
+        "error_category": null
+      }
+    },
+    "conflicting": false,
+    "limitations": [
+      "The production fusion weights and thresholds predate E11 and have not been independently validated.",
+      "The fused assessment is not calibrated as a probability.",
+      "OCR, language, metadata, forensics, object detection, fact-check, provenance, and XAI findings are informational in E11.",
+      "Third-party ratings and provenance metadata are not TruthLens truth labels or proof of authenticity.",
+      "Most available findings are informational rather than directional."
+    ],
+    "warnings": [
+      "One or more stages were incomplete, unavailable, skipped, or returned no evidence.",
+      "No validated directional evidence was available; the result remains inconclusive."
+    ],
+    "generated_at": "2026-11-23T17:18:35.838533+00:00",
+    "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+    "runtime_ms": 1,
+    "confidence_note": "Fusion confidence is uncalibrated and must not be interpreted as a probability.",
+    "caveat": "This is an AI-assisted assessment based on available evidence. Model predictions can be wrong. This result should not be cited as proof that the image is authentic or fabricated.",
+    "status": "completed"
+  },
+  "summary": {
+    "authenticity": {
+      "status": "completed",
+      "classification": "inconclusive",
+      "evidence_fusion_label": "inconclusive",
+      "note": "Detector classification and evidence-fusion assessment are separate outputs; neither is proof."
+    },
+    "factual_claims": {
+      "status": "no_results",
+      "verdicts": [
+        "INSUFFICIENT_EVIDENCE",
+        "UNVERIFIABLE",
+        "UNVERIFIABLE"
+      ],
+      "note": "Fact-check results are per-claim and source-dependent."
+    },
+    "provenance": {
+      "status": "partial",
+      "note": "Online matches provide context and do not establish authenticity."
+    },
+    "spread": {
+      "assessment_mode": "CONTENT_BASED_HEURISTIC",
+      "regional_data_status": "DATA_UNAVAILABLE",
+      "content_spread_status": "DATA_UNAVAILABLE",
+      "note": "Content indicators are not estimates of actual reach; regional rankings are unavailable; synthetic curves are illustrative only."
+    },
+    "potential_social_impact": {
+      "status": "DATA_UNAVAILABLE",
+      "categories": [],
+      "note": "Topic cues are not observed harm or severity findings."
+    }
+  },
+  "explanation": {
+    "summary": "The available evidence is insufficient or conflicting for a reliable determination. This assessment is based on 13 evidence signals across 8 analysis categories.",
+    "sections": [
+      {
+        "title": "AI Model Assessment",
+        "content": "Primary classifier raw argmax is 'likely_authentic'; application classification is 'inconclusive'. Raw softmax output is not a calibrated probability."
+      },
+      {
+        "title": "Forensic Analysis",
+        "content": "Classical forensic analysis did not detect notable anomalies. Note: forensic signals are informational indicators and many legitimate image operations produce similar patterns."
+      },
+      {
+        "title": "Text Content",
+        "content": "OCR extracted 37 words (en script estimate) with 54.2% average engine confidence."
+      },
+      {
+        "title": "Metadata Analysis",
+        "content": "No EXIF metadata was found. Metadata can be removed by sharing or editing workflows; its absence does not establish authenticity or manipulation."
+      },
+      {
+        "title": "Contextual Analysis",
+        "content": "No objects were detected; absence of detections is not evidence of authenticity or manipulation."
+      },
+      {
+        "title": "Explainable AI",
+        "content": "Grad-CAM attribution map generated for class 'real'. 1 high-activation regions identified."
+      },
+      {
+        "title": "Fact-Check Results",
+        "content": "No matching fact-checks found for extracted claims."
+      },
+      {
+        "title": "Web Provenance",
+        "content": "No C2PA manifest was found; absence of credentials does not establish manipulation."
+      }
+    ],
+    "key_findings": [],
+    "limitations": [
+      "This is an AI-assisted analysis. Model predictions can be wrong.",
+      "No single signal is sufficient to determine image authenticity.",
+      "All confidence scores are uncalibrated unless explicitly stated otherwise."
+    ],
+    "runtime_ms": 0
+  },
+  "virality": {
+    "data_status": "DATA_UNAVAILABLE",
+    "virality_score": 0.28,
+    "assessment_mode": "CONTENT_BASED_HEURISTIC",
+    "historical_prediction_status": "DATA_UNAVAILABLE",
+    "risk_level": "low",
+    "features": [
+      {
+        "name": "has_text_overlay",
+        "value": 1,
+        "weight": 0.1,
+        "present": true,
+        "description": "Image contains embedded text",
+        "available": true
+      },
+      {
+        "name": "urgency_language",
+        "value": 0,
+        "weight": 0.1,
+        "present": false,
+        "description": "No urgency language detected",
+        "available": true
+      },
+      {
+        "name": "emotional_language",
+        "value": 0,
+        "weight": 0.15,
+        "present": false,
+        "description": "No emotional language detected",
+        "available": true
+      },
+      {
+        "name": "has_claims",
+        "value": 1,
+        "weight": 0.1,
+        "present": true,
+        "description": "3 claims detected",
+        "available": true
+      },
+      {
+        "name": "has_numbers",
+        "value": 1,
+        "weight": 0.08,
+        "present": true,
+        "description": "Specific numbers/statistics present",
+        "available": true
+      },
+      {
+        "name": "health_topic",
+        "value": 0,
+        "weight": 0.1,
+        "present": false,
+        "description": "No health topic indicators",
+        "available": true
+      },
+      {
+        "name": "political_topic",
+        "value": 0,
+        "weight": 0.1,
+        "present": false,
+        "description": "No political topic indicators",
+        "available": true
+      },
+      {
+        "name": "religious_topic",
+        "value": 0,
+        "weight": 0.1,
+        "present": false,
+        "description": "No religious topic indicators",
+        "available": true
+      },
+      {
+        "name": "has_faces",
+        "value": 0,
+        "weight": 0.12,
+        "present": false,
+        "description": "No people detected",
+        "available": true
+      },
+      {
+        "name": "multiple_objects",
+        "value": 0,
+        "weight": 0.05,
+        "present": false,
+        "description": "Few or no objects detected",
+        "available": true
+      }
+    ],
+    "contributing_factors": [
+      "Image contains embedded text",
+      "3 claims detected",
+      "Specific numbers/statistics present"
+    ],
+    "methodology": "Heuristic feature-based estimation using known correlates of content virality from academic literature (Vosoughi et al., 2018). Features include text presence, urgency/emotional language, topic sensitivity, and visual characteristics. This is NOT a trained prediction model — no suitable training dataset exists for image-level virality prediction in the Indian context.",
+    "runtime_ms": 0,
+    "warnings": [],
+    "disclaimer": "This is a content indicator score, not a prediction of sharing, reach, or probability. No validated image-level historical dissemination dataset is configured."
+  },
+  "content_spread": null,
+  "regional_spread": {
+    "data_status": "DATA_UNAVAILABLE",
+    "regions": [
+      {
+        "region": "Andhra Pradesh",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Arunachal Pradesh",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Assam",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Bihar",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Chhattisgarh",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Goa",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Gujarat",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Haryana",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Himachal Pradesh",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Jharkhand",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Karnataka",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Kerala",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Madhya Pradesh",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Maharashtra",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Manipur",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Meghalaya",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Mizoram",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Nagaland",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Odisha",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Punjab",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Rajasthan",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Sikkim",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Tamil Nadu",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Telangana",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Tripura",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Uttar Pradesh",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Uttarakhand",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "West Bengal",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Andaman and Nicobar Islands",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Chandigarh",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Dadra and Nagar Haveli and Daman and Diu",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Delhi",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Jammu and Kashmir",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Ladakh",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Lakshadweep",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      },
+      {
+        "region": "Puducherry",
+        "risk_score": null,
+        "confidence": null,
+        "language_compatibility": null,
+        "internet_penetration_per_100": null,
+        "evidence": [
+          "No validated regional dissemination data configured."
+        ],
+        "data_status": "DATA_UNAVAILABLE"
+      }
+    ],
+    "content_language": "en",
+    "top_risk_regions": [],
+    "methodology": "Regional dissemination prediction is disabled until traceable, licensed, geographically compatible outcome data is installed and evaluated.",
+    "runtime_ms": 0,
+    "warnings": [],
+    "disclaimer": "No local, traceable state/UT dissemination or outcome dataset is configured. Regional scores and rankings are unavailable; no state-level prediction is made.",
+    "sources": [
+      {
+        "name": "Census of India C-16, 2011",
+        "status": "REFERENCE_ONLY_NOT_INSTALLED"
+      },
+      {
+        "name": "TRAI Performance Indicator Reports",
+        "status": "REFERENCE_ONLY_NOT_INSTALLED"
+      }
+    ]
+  },
+  "social_impact": {
+    "data_status": "DATA_UNAVAILABLE",
+    "assessment_type": "HEURISTIC_CONTENT_CATEGORIES",
+    "overall_risk": null,
+    "risk_level": "unknown",
+    "categories": [
+      {
+        "category": "communal_harmony",
+        "risk_score": null,
+        "indicators_found": 0,
+        "indicators": [],
+        "description": "Potential content topic; keyword match is not evidence of harm or falsity.",
+        "supporting_claim_ids": [],
+        "verification_statuses": [],
+        "evidence_ids": [],
+        "interpretation": "Potential content category only; no harm outcome or severity inferred."
+      },
+      {
+        "category": "public_health",
+        "risk_score": null,
+        "indicators_found": 0,
+        "indicators": [],
+        "description": "Potential content topic; keyword match is not evidence of harm or falsity.",
+        "supporting_claim_ids": [],
+        "verification_statuses": [],
+        "evidence_ids": [],
+        "interpretation": "Potential content category only; no harm outcome or severity inferred."
+      },
+      {
+        "category": "political_stability",
+        "risk_score": null,
+        "indicators_found": 0,
+        "indicators": [],
+        "description": "Potential content topic; keyword match is not evidence of harm or falsity.",
+        "supporting_claim_ids": [],
+        "verification_statuses": [],
+        "evidence_ids": [],
+        "interpretation": "Potential content category only; no harm outcome or severity inferred."
+      },
+      {
+        "category": "financial_safety",
+        "risk_score": null,
+        "indicators_found": 0,
+        "indicators": [],
+        "description": "Potential content topic; keyword match is not evidence of harm or falsity.",
+        "supporting_claim_ids": [],
+        "verification_statuses": [],
+        "evidence_ids": [],
+        "interpretation": "Potential content category only; no harm outcome or severity inferred."
+      },
+      {
+        "category": "child_safety",
+        "risk_score": null,
+        "indicators_found": 0,
+        "indicators": [],
+        "description": "Potential content topic; keyword match is not evidence of harm or falsity.",
+        "supporting_claim_ids": [],
+        "verification_statuses": [],
+        "evidence_ids": [],
+        "interpretation": "Potential content category only; no harm outcome or severity inferred."
+      }
+    ],
+    "misinformation_severity": "unassessed",
+    "estimated_audience_scale": "unknown",
+    "urgency_level": "no_indicators_detected",
+    "urgency_indicators": [],
+    "observed_public_impact": "UNAVAILABLE",
+    "primary_concerns": [],
+    "methodology": "Exact token matching for transparent category cues; no calibrated severity or outcome model is available.",
+    "runtime_ms": 0,
+    "warnings": [],
+    "disclaimer": "Matched terms identify possible content categories only. They do not establish falsity, intent, severity, audience reach, or observed harm. Claim verification is reported separately."
+  },
+  "illustrative_context": null,
+  "processing_time_ms": 47102,
+  "stages": {
+    "preprocessing": {
+      "name": "preprocessing",
+      "status": "completed",
+      "outcome": null,
+      "runtime_ms": 29,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "runtime_ms": 29,
+        "original_width": 640,
+        "original_height": 480,
+        "format": "JPEG",
+        "has_exif": false,
+        "orientation_corrected": false,
+        "quality_stats": {
+          "brightness": 238.36,
+          "contrast": 21.68,
+          "blur_score": 2252.51,
+          "noise_estimate": 47.46
+        },
+        "thumbnail_available": true,
+        "resized_variants": [
+          "large",
+          "medium",
+          "small"
+        ],
+        "warnings": []
+      },
+      "started_at": "2026-11-23T17:17:48.305572",
+      "completed_at": "2026-11-23T17:17:48.334572",
+      "stage_id": "25619898-d43c-52ca-af6d-5045c03757db",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.preprocessing",
+      "module_identity": null,
+      "warnings": [],
+      "limitations": []
+    },
+    "metadata": {
+      "name": "metadata",
+      "status": "completed",
+      "outcome": null,
+      "runtime_ms": 1,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "MetadataResult"
+      },
+      "started_at": "2026-11-23T17:17:48.861935+00:00",
+      "completed_at": "2026-11-23T17:17:48.874212+00:00",
+      "stage_id": "ee66ca8b-4c63-50aa-af02-d739e8220c2a",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.metadata",
+      "module_identity": null,
+      "warnings": [],
+      "limitations": []
+    },
+    "quality": {
+      "name": "quality",
+      "status": "completed",
+      "outcome": null,
+      "runtime_ms": 13,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "QualityResult"
+      },
+      "started_at": "2026-11-23T17:17:49.003813+00:00",
+      "completed_at": "2026-11-23T17:17:49.025840+00:00",
+      "stage_id": "9c9b7799-f38d-5a6f-ad6a-4e23ca9dde7b",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.quality",
+      "module_identity": null,
+      "warnings": [],
+      "limitations": []
+    },
+    "authenticity": {
+      "name": "authenticity",
+      "status": "completed",
+      "outcome": null,
+      "runtime_ms": 21918,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "AuthenticityResult"
+      },
+      "started_at": "2026-11-23T17:17:51.176095+00:00",
+      "completed_at": "2026-11-23T17:18:13.102267+00:00",
+      "stage_id": "6ec2b07c-c41e-5d44-8402-10ff28171a31",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.authenticity",
+      "module_identity": {
+        "model_name": "truthlens/siglip-cifake-frozen-head",
+        "model_version": "backbone:google/siglip-base-patch16-224@7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed;head_sha256:e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538"
+      },
+      "warnings": [
+        "The tag is selected by comparing raw scores; these are not calibrated probabilities or accuracy estimates."
+      ],
+      "limitations": []
+    },
+    "forensics": {
+      "name": "forensics",
+      "status": "completed",
+      "outcome": "success",
+      "runtime_ms": 239,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "ForensicsResult"
+      },
+      "started_at": "2026-11-23T17:18:13.175508+00:00",
+      "completed_at": "2026-11-23T17:18:13.433411+00:00",
+      "stage_id": "13bbc3a6-c432-5c2b-be24-c4a89750d1f1",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.forensics",
+      "module_identity": null,
+      "warnings": [],
+      "limitations": []
+    },
+    "ocr": {
+      "name": "ocr",
+      "status": "completed",
+      "outcome": "success",
+      "runtime_ms": 12270,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "OCRResult"
+      },
+      "started_at": "2026-11-23T17:18:13.496653+00:00",
+      "completed_at": "2026-11-23T17:18:25.796735+00:00",
+      "stage_id": "e0b2a1ff-190a-5ac4-af31-46230133063d",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.ocr",
+      "module_identity": {
+        "engine": "EasyOCR"
+      },
+      "warnings": [],
+      "limitations": []
+    },
+    "vision": {
+      "name": "vision",
+      "status": "completed",
+      "outcome": "no_results",
+      "runtime_ms": 710,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "VisionResult"
+      },
+      "started_at": "2026-11-23T17:18:25.858565+00:00",
+      "completed_at": "2026-11-23T17:18:26.594424+00:00",
+      "stage_id": "cf3bb367-58b4-55e8-b783-cc60f1888266",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.objects",
+      "module_identity": {
+        "model_name": "yolov8n.pt",
+        "model_sha256": "31e20dde3def09e2cf938c7be6fe23d9150bbbe503982af13345706515f2ef95"
+      },
+      "warnings": [],
+      "limitations": [
+        "Object presence or absence is not proof of authenticity, generation, or manipulation."
+      ]
+    },
+    "xai": {
+      "name": "xai",
+      "status": "completed",
+      "outcome": "success",
+      "runtime_ms": 526,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "XAIResult"
+      },
+      "started_at": "2026-11-23T17:18:26.696929+00:00",
+      "completed_at": "2026-11-23T17:18:27.233347+00:00",
+      "stage_id": "dd0a8a2c-57e1-56c4-aa5e-fdca984d777f",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.xai",
+      "module_identity": {
+        "model_name": "truthlens/siglip-cifake-frozen-head",
+        "method": "grad_cam"
+      },
+      "warnings": [
+        "Attribution highlights regions that influenced this model prediction; it does not prove manipulation or model correctness."
+      ],
+      "limitations": [
+        "Attribution highlights regions that influenced this model prediction; it does not prove manipulation or model correctness."
+      ]
+    },
+    "text_normalization": {
+      "name": "text_normalization",
+      "status": "completed",
+      "outcome": null,
+      "runtime_ms": 3,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "NormalizedTextResult"
+      },
+      "started_at": "2026-11-23T17:18:27.258849+00:00",
+      "completed_at": "2026-11-23T17:18:27.275235+00:00",
+      "stage_id": "0f95adc3-85fd-51de-bf85-35b1e5530460",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.text_normalization",
+      "module_identity": null,
+      "warnings": [],
+      "limitations": []
+    },
+    "language_identification": {
+      "name": "language_identification",
+      "status": "completed",
+      "outcome": "success",
+      "runtime_ms": 5423,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "LanguageDetectionResult"
+      },
+      "started_at": "2026-11-23T17:18:27.293441+00:00",
+      "completed_at": "2026-11-23T17:18:32.727305+00:00",
+      "stage_id": "77a44b05-73ed-5d2e-b323-0ef3cc3c1ea0",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.language_identification",
+      "module_identity": {
+        "model_name": "papluca/xlm-roberta-base-language-detection",
+        "model_version": "9865598389ca9d95637462f743f683b51d75b87b",
+        "model_revision": "9865598389ca9d95637462f743f683b51d75b87b"
+      },
+      "warnings": [],
+      "limitations": [
+        "One document-level prediction is returned; mixed-language regions are not separately identified.",
+        "Softmax confidence is not calibrated and does not measure truthfulness or authenticity."
+      ]
+    },
+    "claim_extraction": {
+      "name": "claim_extraction",
+      "status": "completed",
+      "outcome": null,
+      "runtime_ms": 9,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "ClaimExtractionResult"
+      },
+      "started_at": "2026-11-23T17:18:32.759505+00:00",
+      "completed_at": "2026-11-23T17:18:32.799904+00:00",
+      "stage_id": "91568195-d7d9-5c9a-8fb3-5485e33b2da9",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.claims",
+      "module_identity": {
+        "method": "conservative_rules_v2"
+      },
+      "warnings": [],
+      "limitations": []
+    },
+    "fact_check": {
+      "name": "fact_check",
+      "status": "completed",
+      "outcome": "no_results",
+      "runtime_ms": 1383,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "FactCheckResult"
+      },
+      "started_at": "2026-11-23T17:18:33.110743+00:00",
+      "completed_at": "2026-11-23T17:18:34.510346+00:00",
+      "stage_id": "e16f5c14-bddd-59a9-be8b-92bdc91c31a9",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.fact_checks",
+      "module_identity": {
+        "provider": "google_fact_check_tools"
+      },
+      "warnings": [],
+      "limitations": []
+    },
+    "provenance": {
+      "name": "provenance",
+      "status": "partial",
+      "outcome": "partial",
+      "runtime_ms": 1003,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "ProvenanceResult"
+      },
+      "started_at": "2026-11-23T17:18:34.531288+00:00",
+      "completed_at": "2026-11-23T17:18:35.545030+00:00",
+      "stage_id": "4a8beb87-9695-5a29-8109-3f109d751e7a",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.provenance",
+      "module_identity": {
+        "provider": "google_vision_web_detection"
+      },
+      "warnings": [
+        "Web Detection request failed with HTTP 403.",
+        "No embedded C2PA manifest was found; this is not evidence of manipulation."
+      ],
+      "limitations": []
+    },
+    "hashing": {
+      "name": "hashing",
+      "status": "completed",
+      "outcome": null,
+      "runtime_ms": 129,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "HashResult"
+      },
+      "started_at": "2026-11-23T17:18:35.632169+00:00",
+      "completed_at": "2026-11-23T17:18:35.776021+00:00",
+      "stage_id": "57ad12a0-f275-5ed2-b296-5cd0e0cdf59c",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.hashing",
+      "module_identity": null,
+      "warnings": [],
+      "limitations": []
+    },
+    "evidence_collection": {
+      "name": "evidence_collection",
+      "status": "completed",
+      "outcome": null,
+      "runtime_ms": 0,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "evidence_count": 14
+      },
+      "started_at": "2026-11-23T17:18:35.818702+00:00",
+      "completed_at": "2026-11-23T17:18:35.819276+00:00",
+      "stage_id": "2c125c91-2633-5cab-ba6e-e3c0b8c85b17",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.evidence",
+      "module_identity": null,
+      "warnings": [],
+      "limitations": []
+    },
+    "fusion": {
+      "name": "fusion",
+      "status": "completed",
+      "outcome": null,
+      "runtime_ms": 2,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "FusionAssessment"
+      },
+      "started_at": "2026-11-23T17:18:35.825627+00:00",
+      "completed_at": "2026-11-23T17:18:35.839493+00:00",
+      "stage_id": "f40bd4c5-0d42-55c1-9bd8-8fbe52a8bdb0",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.fusion",
+      "module_identity": null,
+      "warnings": [
+        "One or more stages were incomplete, unavailable, skipped, or returned no evidence.",
+        "No validated directional evidence was available; the result remains inconclusive."
+      ],
+      "limitations": [
+        "The production fusion weights and thresholds predate E11 and have not been independently validated.",
+        "The fused assessment is not calibrated as a probability.",
+        "OCR, language, metadata, forensics, object detection, fact-check, provenance, and XAI findings are informational in E11.",
+        "Third-party ratings and provenance metadata are not TruthLens truth labels or proof of authenticity.",
+        "Most available findings are informational rather than directional."
+      ]
+    },
+    "explanation": {
+      "name": "explanation",
+      "status": "completed",
+      "outcome": null,
+      "runtime_ms": 1,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "Explanation"
+      },
+      "started_at": "2026-11-23T17:18:35.854447+00:00",
+      "completed_at": "2026-11-23T17:18:35.865664+00:00",
+      "stage_id": "0d7f2e94-9ffb-5975-9c3a-d507175ba37e",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.explanation",
+      "module_identity": null,
+      "warnings": [],
+      "limitations": [
+        "This is an AI-assisted analysis. Model predictions can be wrong.",
+        "No single signal is sufficient to determine image authenticity.",
+        "All confidence scores are uncalibrated unless explicitly stated otherwise."
+      ]
+    },
+    "virality": {
+      "name": "virality",
+      "status": "completed",
+      "outcome": null,
+      "runtime_ms": 0,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "ViralityResult"
+      },
+      "started_at": "2026-11-23T17:18:35.881704+00:00",
+      "completed_at": "2026-11-23T17:18:35.892807+00:00",
+      "stage_id": "65909157-3cec-5463-81ee-fbeb717dfeb4",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.virality",
+      "module_identity": null,
+      "warnings": [],
+      "limitations": []
+    },
+    "regional_spread": {
+      "name": "regional_spread",
+      "status": "completed",
+      "outcome": null,
+      "runtime_ms": 0,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "RegionalSpreadResult"
+      },
+      "started_at": "2026-11-23T17:18:35.908430+00:00",
+      "completed_at": "2026-11-23T17:18:35.915982+00:00",
+      "stage_id": "da76307c-974c-5ec8-896a-bc132e0c8786",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.regional_spread",
+      "module_identity": null,
+      "warnings": [],
+      "limitations": []
+    },
+    "social_impact": {
+      "name": "social_impact",
+      "status": "completed",
+      "outcome": null,
+      "runtime_ms": 0,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "available": true,
+        "type": "SocialImpactResult"
+      },
+      "started_at": "2026-11-23T17:18:35.933188+00:00",
+      "completed_at": "2026-11-23T17:18:35.944948+00:00",
+      "stage_id": "1a38c004-07d4-5ef5-bbee-aada06ebbaba",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report.social_impact",
+      "module_identity": null,
+      "warnings": [],
+      "limitations": []
+    },
+    "report_assembly": {
+      "name": "report_assembly",
+      "status": "completed",
+      "outcome": null,
+      "runtime_ms": 16,
+      "error": null,
+      "error_message": null,
+      "result": {
+        "report_created": true
+      },
+      "started_at": "2026-11-23T17:18:35.962457+00:00",
+      "completed_at": "2026-11-23T17:18:35.979195+00:00",
+      "stage_id": "03b7fc93-4b6e-5268-abba-ad2a4f907088",
+      "correlation_id": "543517fb-7642-473f-b61a-6f3251a5b44f",
+      "error_category": null,
+      "output_reference": "report",
+      "module_identity": null,
+      "warnings": [],
+      "limitations": []
+    }
+  },
+  "warnings": [
+    "Stage 'provenance' partial."
+  ],
+  "module_statuses": {
+    "preprocessing": "completed",
+    "metadata": "completed",
+    "quality": "completed",
+    "authenticity": "completed",
+    "forensics": "completed",
+    "ocr": "completed",
+    "vision": "completed",
+    "xai": "completed",
+    "text_normalization": "completed",
+    "language_identification": "completed",
+    "claim_extraction": "completed",
+    "fact_check": "completed",
+    "provenance": "partial",
+    "hashing": "completed",
+    "evidence_collection": "completed",
+    "fusion": "completed",
+    "explanation": "completed",
+    "virality": "completed",
+    "regional_spread": "completed",
+    "social_impact": "completed",
+    "report_assembly": "running",
+    "fact_checks": "no_results",
+    "visual_context": "completed"
+  },
+  "limitations": [
+    "The production fusion weights and thresholds predate E11 and have not been independently validated.",
+    "The fused assessment is not calibrated as a probability.",
+    "OCR, language, metadata, forensics, object detection, fact-check, provenance, and XAI findings are informational in E11.",
+    "Third-party ratings and provenance metadata are not TruthLens truth labels or proof of authenticity.",
+    "Most available findings are informational rather than directional.",
+    "This is an AI-assisted analysis. Model predictions can be wrong.",
+    "No single signal is sufficient to determine image authenticity.",
+    "All confidence scores are uncalibrated unless explicitly stated otherwise.",
+    "This system has NOT been independently validated or peer-reviewed.",
+    "AI-generated content detection is subject to concept drift as new generation techniques emerge.",
+    "Forensic signals can be produced by legitimate image processing operations (resizing, compression, filters).",
+    "The following modules lack validated training data and produce heuristic indicators or unavailable outcomes: virality (DATA_UNAVAILABLE), regional_spread (DATA_UNAVAILABLE), social_impact (DATA_UNAVAILABLE). These are not calibrated predictions and must not be cited as scientific forecasts."
+  ],
+  "disclaimer": "DISCLAIMER: TruthLens is an AI-assisted verification tool. Its outputs represent probabilistic assessments based on computational analysis, not definitive truth. Model predictions can be wrong. AI-generated content detection is an evolving field subject to concept drift. No result from this system should be cited as proof that an image is authentic or fabricated. Always cross-reference findings with additional sources and expert judgment."
+}

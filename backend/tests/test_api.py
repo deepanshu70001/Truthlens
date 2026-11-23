@@ -325,13 +325,13 @@ async def test_factcheck_unavailable_does_not_terminate_analysis(
             "/api/v1/analyze",
             files={"image": ("provider-unavailable.jpg", io.BytesIO(create_test_jpeg()), "image/jpeg")},
         )
-    assert response.status_code == 201
-    analysis_id = response.json()["analysis_id"]
-    for _ in range(100):
-        await asyncio.sleep(0.05)
-        status = (await client.get(f"/api/v1/analysis/{analysis_id}")).json()
-        if status["status"] in {"completed", "partial", "failed"}:
-            break
+        assert response.status_code == 201
+        analysis_id = response.json()["analysis_id"]
+        for _ in range(100):
+            await asyncio.sleep(0.05)
+            status = (await client.get(f"/api/v1/analysis/{analysis_id}")).json()
+            if status["status"] in {"completed", "partial", "failed"}:
+                break
     report = (await client.get(f"/api/v1/analysis/{analysis_id}/report")).json()
     assert report["ocr"]["text"] == raw_text
     assert report["fact_checks"]["status"] == "unavailable"

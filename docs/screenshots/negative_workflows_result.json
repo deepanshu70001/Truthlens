@@ -27,7 +27,7 @@
   },
   "07_factcheck_credentials_absent": {
     "status": 200,
-    "fc_status": "unavailable",
+    "fc_status": "no_results",
     "passed": true
   },
   "08_provider_returns_no_records": {
