@@ -54,6 +54,7 @@ async def test_models_registry_inventory_and_schema(client):
 
     # Verify high-level counters match
     assert validated.loaded_count == sum(1 for m in validated.models if m.loaded)
+    assert validated.available_count == sum(1 for m in validated.models if m.readiness == "available")
     assert validated.ready_count == sum(1 for m in validated.models if m.readiness in ("ready", "available"))
 
 

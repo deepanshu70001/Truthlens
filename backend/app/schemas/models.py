@@ -41,6 +41,7 @@ class ModelRegistryResponse(BaseModel):
     models: List[ModelInfo] = Field(default_factory=list, description="List of configured models and services")
     total_models: int = Field(0, description="Total number of models reported")
     loaded_count: int = Field(0, description="Number of models currently resident in memory")
+    available_count: int = Field(0, description="Number of models verified on disk and available for on-demand loading")
     ready_count: int = Field(0, description="Number of models operational (loaded or ready for immediate on-demand loading)")
     environment: str = Field("development", description="Current application environment")
     message: Optional[str] = Field(None, description="Informational message about the model registry")

@@ -81,6 +81,9 @@ class Settings(BaseSettings):
     CLAIMBUSTER_API_KEY: str = ""
     FACTCHECK_API_TIMEOUT_SECONDS: float = 10.0
     FACTCHECK_MAX_RESPONSE_BYTES: int = 1000000
+    FACTCHECK_CACHE_ENABLED: bool = True
+    FACTCHECK_CACHE_TTL_SECONDS: int = 86400
+    FACTCHECK_CACHE_MAX_ENTRIES: int = 5000
     PROVENANCE_API_TIMEOUT_SECONDS: float = 30.0
     PROVENANCE_RETRY_ATTEMPTS: int = 1
     PROVENANCE_MAX_TOTAL_SECONDS: float = 35.0
@@ -106,6 +109,8 @@ class Settings(BaseSettings):
     RATE_LIMIT_RETRIEVAL_PER_MINUTE: int = 120
     RATE_LIMIT_MODELS_PER_MINUTE: int = 60
     RATE_LIMIT_OCR_PER_MINUTE: int = 20
+    RATE_LIMIT_CLAIMS_PER_MINUTE: int = 30
+    MAX_CLAIM_TEXT_LENGTH: int = 10000
 
     # Durable job lifecycle. A single global worker lease serializes model/GPU work.
     ANALYSIS_QUEUE_MAX_OUTSTANDING: int = 25

@@ -87,52 +87,105 @@ This document details the exact file paths, existing functions/handlers, test su
 
 ---
 
-### Priority 3: Claim Extraction Service & Endpoint (`POST /api/v1/claims`)
+### Priority 3: Claim Extraction Service & Endpoint (`POST /api/v1/claims`) — COMPLETED AND VERIFIED
 
 - **Target Route:** `POST /api/v1/claims`
-- **Current File Path:** Service is located at [backend/app/services/claims/extractor.py](file:///D:/Projects/Truthlens/backend/app/services/claims/extractor.py). No dedicated endpoint exists (claims are currently invoked inside orchestrator pipeline or embedded in `POST /api/v1/fact-check`).
-- **Functions / Handlers:** `extract_claims(...)`, `ClaimExtractionResult`, `ExtractedClaim`
-- **Existing Test Coverage:**
-  - [backend/tests/test_e4_e5_contract.py](file:///D:/Projects/Truthlens/backend/tests/test_e4_e5_contract.py) (Tests claim normalization, deterministic IDs, question/opinion/slogan eligibility gating, date/location/number extraction, and E3 language provenance integration).
-  - [backend/tests/test_stage4.py](file:///D:/Projects/Truthlens/backend/tests/test_stage4.py) (Coverage across diverse sentence inputs).
-  - [backend/tests/test_phase3.py](file:///D:/Projects/Truthlens/backend/tests/test_phase3.py) (Offline coverage).
-- **Missing Implementation:**
-  1. Define dedicated endpoint router in [backend/app/api/v1/endpoints/claims.py](file:///D:/Projects/Truthlens/backend/app/api/v1/endpoints/claims.py).
-  2. Create request model `ClaimExtractionRequest`:
-     ```python
-     class ClaimExtractionRequest(BaseModel):
-         text: Optional[str] = Field(None, max_length=10000)
-         sentences: Optional[List[str]] = Field(None, max_length=50)
-         language_code: Optional[str] = Field(None, max_length=5)
-         max_claims: int = Field(5, ge=1, le=20)
-     ```
-  3. Validate input: Ensure at least one of `text` or `sentences` is supplied.
-  4. Optional language detection chaining: If `language_code` is not provided, invoke `LanguageDetector.detect()` when text length $\ge 20$ chars.
-  5. Rate limiting: `check_rate_limit(scope="claims")`.
-  6. Return `ClaimExtractionResult.to_dict()`.
-- **Dependencies / Blockers:** None. `extract_claims` is purely deterministic CPU text processing.
-- **Estimated Complexity:** Low (0.5 engineering day).
+- **Implementation Path:** [backend/app/api/v1/endpoints/claims.py](file:///D:/Projects/Truthlens/backend/app/api/v1/endpoints/claims.py) (Service: [backend/app/services/claims/extractor.py](file:///D:/Projects/Truthlens/backend/app/services/claims/extractor.py), Schema: [backend/app/schemas/claims.py](file:///D:/Projects/Truthlens/backend/app/schemas/claims.py))
+- **Status:** **COMPLETED AND VERIFIED** (2026-11-23)
+- **Features Implemented:**
+  - Dedicated endpoint `POST /api/v1/claims` exposing the deterministic `conservative_rules_v2` claim extraction engine.
+  - No new model, no fact-check retrieval, no external search calls; pure deterministic candidate extraction.
+  - Robust request validation via `ClaimExtractionRequest` (`text`, `sentences`, `language`, `source`, `ocr_confidence`, `max_claims`, `min_confidence`).
+  - Strict input guards: rejects empty/whitespace-only text, enforces maximum text length (`MAX_CLAIM_TEXT_LENGTH = 10000`), validates ISO 639-1 language codes against supported 20-language catalog.
+  - Accurate 0-based character offset computation (`source_start`, `source_end`) matching exact substring in original input text.
+  - Semantic classification (`FACTUAL`, `QUOTE`, `OPINION`, `QUESTION`, `SLOGAN`, `AMBIGUOUS`) and eligibility gating (`ELIGIBLE` vs `INELIGIBLE`).
+  - Rate limiting via database-backed fixed-window limiter scoped to `"claims"` (`RATE_LIMIT_CLAIMS_PER_MINUTE = 30`).
+  - Authentication via Bearer token (`get_current_principal`).
+  - Sanitized error handling returning HTTP 500 without leaking internal paths, secrets, or stack traces.
+  - Registered in versioned API router `backend/app/api/v1/router.py`.
+- **Test Verification:**
+  - [backend/tests/test_claims_endpoint.py](file:///D:/Projects/Truthlens/backend/tests/test_claims_endpoint.py): 16 passed tests covering:
+    1. Standard extraction of multiple candidates (`test_claims_endpoint_multiple_candidates`)
+    2. Filtering of ineligible statements like questions, opinions, slogans (`test_claims_endpoint_no_eligible_claims`)
+    3. Rejection of empty text strings (`test_claims_endpoint_empty_text`)
+    4. Rejection of whitespace-only text (`test_claims_endpoint_whitespace_only_text`)
+    5. Enforcement of maximum text length (`test_claims_endpoint_max_text_length_exceeded`)
+    6. Schema validation for invalid payloads (`test_claims_endpoint_invalid_schema`)
+    7. Language validation for supported vs unsupported codes (`test_claims_endpoint_supported_and_unsupported_languages`)
+    8. Exact character offset correctness indexing original input (`test_claims_endpoint_character_offset_correctness`)
+    9. Unicode, Hindi, and mixed-language input handling (`test_claims_endpoint_unicode_hindi_and_multilingual`)
+    10. Duplicate normalized candidate deduplication (`test_claims_endpoint_duplicate_claim_deduplication`)
+    11. Clean handling when extractor returns empty/unavailable (`test_claims_endpoint_extractor_empty_or_unavailable`)
+    12. Internal exception sanitization without leakage (`test_claims_endpoint_unexpected_exception_sanitization`)
+    13. Bearer authentication enforcement (`test_claims_endpoint_authentication_enforced`)
+    14. Claims scope rate limiting enforcement (`test_claims_endpoint_rate_limiting_enforced`)
+    15. Response schema and method/version reporting (`test_claims_endpoint_response_schema_and_version`)
+    16. Redaction of sensitive paths, tokens, and secrets (`test_claims_endpoint_no_sensitive_paths_or_secrets_exposed`)
+  - Integration regression verification:
+    - `backend/tests/test_e4_e5_contract.py`: 25 passed
+    - `backend/tests/test_stage4.py`: 46 passed
+    - `backend/tests/test_phase3.py`: 12 passed
+    - `backend/tests/test_ocr_endpoint.py`: 13 passed
+    - `backend/tests/test_ocr_runtime.py`: 25 passed, 2 skipped
+    - `backend/tests/test_models_endpoint.py`: 10 passed
+    - `backend/tests/test_api.py::test_health_models_endpoint`: 1 passed
+    - Bit-exact baseline weight preservation: `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`.
 
 ---
 
-### Priority 4: Fact-Check Service & Endpoint Promotion (`POST /api/v1/fact-check`)
+### Priority 4: Fact-Check Service & Endpoint Promotion (`POST /api/v1/fact-check`) — COMPLETED AND VERIFIED
 
 - **Target Route:** `POST /api/v1/fact-check`
-- **Current File Path:** Service at [backend/app/services/factcheck/service.py](file:///D:/Projects/Truthlens/backend/app/services/factcheck/service.py); Endpoint in [backend/app/api/v1/endpoints/stubs.py](file:///D:/Projects/Truthlens/backend/app/api/v1/endpoints/stubs.py) (Lines 84–184).
-- **Current Handlers:**
-  - `search_fact_checks(...)` in `service.py`.
-  - `async def factcheck_endpoint(...)` in `stubs.py`.
-- **Existing Test Coverage:**
-  - [backend/tests/test_e4_e5_contract.py](file:///D:/Projects/Truthlens/backend/tests/test_e4_e5_contract.py) (Verifies rate limiting, skipping ineligible claims, HTTPS review URL sanitization, credential stripping, provider response truncation, and mock retrieval).
-  - [backend/tests/test_phase3.py](file:///D:/Projects/Truthlens/backend/tests/test_phase3.py).
-  - [backend/tests/test_e11_fusion.py](file:///D:/Projects/Truthlens/backend/tests/test_e11_fusion.py) (Verifies non-directional evidence handling).
-- **Missing Implementation:**
-  1. Move endpoint out of `stubs.py` into a dedicated module [backend/app/api/v1/endpoints/factcheck.py](file:///D:/Projects/Truthlens/backend/app/api/v1/endpoints/factcheck.py).
-  2. Implement local in-memory or database-backed TTL cache for query hashes to prevent redundant third-party Google API quota consumption.
-  3. Add batch claim parallelization: When multiple eligible claims are submitted, search asynchronously up to concurrency limit (e.g., `asyncio.gather` bounded by `asyncio.Semaphore(3)`).
-  4. Ensure graceful degradation: When `GOOGLE_API_KEY` or `FACTCHECK_API_KEY` is not configured, return clean `status="unavailable"` with clear explanatory message rather than throwing exceptions.
-- **Dependencies / Blockers:** Requires valid Google Fact Check Tools API key for live calls; mocked and safe fallback tests pass without key.
-- **Estimated Complexity:** Medium (1 engineering day).
+- **Implementation Path:** [backend/app/api/v1/endpoints/fact_check.py](file:///D:/Projects/Truthlens/backend/app/api/v1/endpoints/fact_check.py) (Service: [backend/app/services/factcheck/service.py](file:///D:/Projects/Truthlens/backend/app/services/factcheck/service.py), Cache: [backend/app/services/factcheck/cache.py](file:///D:/Projects/Truthlens/backend/app/services/factcheck/cache.py), Schema: [backend/app/schemas/factcheck.py](file:///D:/Projects/Truthlens/backend/app/schemas/factcheck.py))
+- **Status:** **COMPLETED AND VERIFIED** (2026-11-23)
+- **Features Implemented:**
+  - Dedicated endpoint `POST /api/v1/fact-check` promoted out of `stubs.py` into dedicated module `backend/app/api/v1/endpoints/fact_check.py` with backward-compatible re-export in `stubs.py`.
+  - Reused existing Google Fact Check Tools integration in `service.py` (`search_fact_checks`) without creating duplicate provider logic or modifying verified URL sanitization and stream bounds.
+  - Implemented persistent SQLite query cache (`FactCheckCache` in `backend/app/services/factcheck/cache.py`) located at `settings.STORAGE_PATH / "cache" / "factcheck_cache.sqlite3"` (with in-memory fallback for testing):
+    - Normalized claim-text hashing key (`"fc_cache_<hex32>"`) combining query, language code, and provider.
+    - Explicit configurable TTL (`FACTCHECK_CACHE_TTL_SECONDS = 86400`, 24 hours) with automatic eviction on read.
+    - In-flight request deduplication via `asyncio.Lock` per cache key (`get_in_flight_lock`) to eliminate redundant simultaneous requests for identical queries.
+    - Capacity-bounded cache (`FACTCHECK_CACHE_MAX_ENTRIES = 5000`) with LRU eviction.
+    - Safe caching policy: refuses to cache errors, timeouts, or rate limits; only caches successful (`success`) and verified clean zero-result (`no_results`) outcomes.
+  - Deterministic claim gating: filters incoming propositions through `extract_claims`; skips ineligible items (questions, opinions, slogans) before provider submission with explicit reasons.
+  - Clean status semantics: cleanly distinguishes `success`, `partial`, `failed`, `no_results`, `unavailable`, and `skipped`.
+  - Attribution preservation: keeps publisher name, site, title, textual rating, and sanitized review URL intact for every matched review item.
+  - Protected with Bearer authentication (`get_current_principal`) and database-backed rate limiting scoped to `"fact-check"` (`RATE_LIMIT_FACTCHECK_PER_MINUTE = 30`).
+- **Test Verification:**
+  - [backend/tests/test_factcheck_endpoint.py](file:///D:/Projects/Truthlens/backend/tests/test_factcheck_endpoint.py): 22 passed tests covering:
+    1. Single eligible claim with successful review (`test_factcheck_endpoint_success_single_claim`)
+    2. Multiple eligible claims in request order (`test_factcheck_endpoint_multiple_eligible_claims`)
+    3. Exclusion of ineligible claims from provider lookup (`test_factcheck_endpoint_ineligible_claims_excluded`)
+    4. All-ineligible claims skipping provider without lookup (`test_factcheck_endpoint_no_eligible_claims`)
+    5. Empty, malformed, and out-of-bounds requests returning 422 (`test_factcheck_endpoint_empty_and_malformed_requests`)
+    6. Clean `no_results` status when provider returns empty (`test_factcheck_endpoint_provider_returns_no_results`)
+    7. Clean `unavailable` status when credentials missing (`test_factcheck_endpoint_missing_credentials`)
+    8. Provider HTTP 403 handling (`test_factcheck_endpoint_provider_http_403`)
+    9. Provider HTTP 429 quota handling (`test_factcheck_endpoint_provider_quota_http_429`)
+    10. Provider timeout handling (`test_factcheck_endpoint_provider_timeout`)
+    11. Provider HTTP 500 server error handling (`test_factcheck_endpoint_provider_server_error`)
+    12. Malformed provider response handling (`test_factcheck_endpoint_malformed_provider_response`)
+    13. Publisher and URL attribution preservation (`test_factcheck_endpoint_publisher_and_url_attribution`)
+    14. Deduplication of identical reviews across claims (`test_factcheck_endpoint_duplicate_review_deduplication`)
+    15. Cache miss then hit lifecycle (`test_factcheck_endpoint_cache_miss_then_hit`)
+    16. Cache TTL expiry and re-query (`test_factcheck_endpoint_cache_expiry`)
+    17. Cache isolation across language codes (`test_factcheck_endpoint_cache_isolation_by_language`)
+    18. In-flight duplicate concurrent request deduplication (`test_factcheck_endpoint_duplicate_concurrent_requests`)
+    19. Rate limiting enforcement returning HTTP 429 (`test_factcheck_endpoint_rate_limiting_enforced`)
+    20. Bearer token authentication enforcement returning HTTP 401 (`test_factcheck_endpoint_authentication_enforced`)
+    21. Non-disclosure of API keys or secrets in responses (`test_factcheck_endpoint_no_sensitive_secrets_exposed`)
+    22. SQLite cache schema, persistence, and eviction (`test_factcheck_cache_sqlite_lifecycle_and_schema`)
+  - Integration regression verification:
+    - `backend/tests/test_e4_e5_contract.py`: 25 passed
+    - `backend/tests/test_stage4.py`: 46 passed
+    - `backend/tests/test_phase3.py`: 12 passed
+    - `backend/tests/test_claims_endpoint.py`: 16 passed
+    - `backend/tests/test_ocr_endpoint.py`: 13 passed
+    - `backend/tests/test_ocr_runtime.py`: 25 passed, 2 skipped
+    - `backend/tests/test_models_endpoint.py`: 10 passed
+    - `backend/tests/test_api.py::test_health_models_endpoint`: 1 passed
+    - `backend/tests/test_e10_database.py`: 5 passed
+    - Bit-exact SigLIP baseline weight preservation: `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`.
 
 ---
 

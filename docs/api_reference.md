@@ -14,7 +14,9 @@ Base prefix: `/api/v1`. FastAPI serves live OpenAPI at `/openapi.json`, Swagger 
 | `GET /health/models` | None | Read-only readiness list for model load state, dependencies, local cache/checkpoint. Does not run inference |
 | `GET /models` | Bearer token auth | Real model registry returning `ModelRegistryResponse`: inventories SigLIP, YOLOv8, EasyOCR, Tesseract, and XLM-RoBERTa status, readiness, and device without eager loading |
 | `POST /ocr` | Multipart form field `image` (JPEG, PNG, WebP, etc.), optional query param `languages` (comma-separated ISO-639) | `200` `OCRResponse` with extracted text, bounding boxes, language, engine, runtime; `413` oversized upload, `422` invalid/empty/corrupt image, `500` OCR execution failure, `504` timeout |
-| `POST /fact-check`, `/provenance` | No request schema implemented | `501 NOT_IMPLEMENTED` stubs; not usable standalone endpoints |
+| `POST /claims` | JSON `ClaimExtractionRequest` (`text`, `sentences`, `language`, `source`, `max_claims`, `ocr_confidence`) | `200` `ClaimExtractionResponse` with extracted claims, offsets, eligibility, confidence, and method; `422` invalid input; `429` rate limit exceeded; `500` internal extraction failure |
+| `POST /fact-check` | JSON `FactCheckRequest` (`claims`, `language_code`, `max_results_per_claim`) | `200` `FactCheckResponse` with third-party reviews, publisher ratings, review URLs, claim verifications, and persistent caching; `401` unauthorized; `422` validation error; `429` rate limit exceeded |
+| `POST /provenance` | No request schema implemented | `501 NOT_IMPLEMENTED` stub; not usable standalone endpoint |
 
 ## Report response
 
@@ -61,6 +63,12 @@ The endpoint distinguishes strictly between memory presence, disk cache, and rea
 | `download_required` | `unavailable` | `false` | The model is configured, but its weights are absent from local storage/cache and would require an external download. |
 | `failed` | `failed` | `false` | The model previously encountered an unrecoverable exception during load/initialization. |
 | `disabled` | `unavailable` | `false` | The model or engine is explicitly disabled in application settings. |
+
+### Readiness and lifecycle counts
+- `total_models`: Total number of configured models reported (5).
+- `loaded_count`: Number of models currently resident in memory (`loaded is True`).
+- `available_count`: Number of models verified on disk or local cache and available for on-demand initialization (`readiness == "available"`).
+- `ready_count`: Total operational count (`readiness in ("ready", "available")`), distinguishing on-disk availability from missing checkpoints or missing dependencies.
 
 ### Security and privacy guarantees
 - **Zero eager loading:** Requesting `GET /api/v1/models` never calls `.load()` on any service or detector.
@@ -209,6 +217,7 @@ The registry reports five core engines:
   ],
   "total_models": 5,
   "loaded_count": 0,
+  "available_count": 5,
   "ready_count": 5,
   "environment": "development",
   "message": "Model registry reports configured services without eager loading."
@@ -330,8 +339,7 @@ The Standalone OCR endpoint provides optical character recognition and text extr
   "no_text_reason": null,
   "warnings": []
 }
-```
-### Example no-text response (`200 OK`)
+```### Example no-text response (`200 OK`)
 ```json
 {
   "status": "no_results",
@@ -344,5 +352,261 @@ The Standalone OCR endpoint provides optical character recognition and text extr
   "has_text": false,
   "no_text_reason": "NO_TEXT_FOUND",
   "warnings": []
+}
+```
+---
+
+## Standalone Claim Extraction endpoint (`POST /api/v1/claims`)
+
+The Standalone Claim Extraction endpoint extracts candidate factual assertions, attributed quotations, and statistical propositions from submitted text using the deterministic TruthLens claim extraction engine (`conservative_rules_v2`).
+
+> [!IMPORTANT]
+> **Explicit Verification Boundary:** Claim extraction identifies candidate statements for downstream review; it does **NOT** decide whether claims are true or false, does not query external fact-check providers, does not call search engines, and does not execute language models.
+
+### Endpoint signature
+- **Method:** `POST`
+- **Path:** `/api/v1/claims`
+- **Authentication:** Bearer token (`Principal = Depends(get_current_principal)`). Development bypass is permitted only when `DEV_AUTH_BYPASS=true` and `APP_ENV` is `development` or `test`.
+- **Rate limiting:** Scoped to `"claims"` using database-backed fixed-window rate limiter (`RATE_LIMIT_CLAIMS_PER_MINUTE`, default 30 requests/min).
+- **Request model:** `ClaimExtractionRequest`
+- **Response model:** `ClaimExtractionResponse`
+
+### Request schema (`ClaimExtractionRequest`)
+
+| Field | Type | Description |
+|---|---|---|
+| `text` | string (optional) | Source text string (max 10,000 characters). Required if `sentences` is omitted. Enables sentence splitting and original character offset computation. |
+| `sentences` | array[string] (optional) | Pre-split list of sentence strings (max 100 items). |
+| `language` / `language_code` | string (optional) | ISO 639-1 language code (e.g. `"en"`, `"hi"`). Validated against supported 20-language catalog. |
+| `source` | string (optional) | Text source modality (defaults to `"text"`). |
+| `ocr_confidence` | float (optional) | Upstream OCR confidence score ($0.0 \dots 1.0$), if extracted from OCR text. |
+| `max_claims` | int (optional) | Maximum candidate claims to extract (clamped between 1 and 50, default 5). |
+| `min_confidence` | float (optional) | Minimum heuristic extraction confidence threshold (default 0.1). |
+
+### Response schema (`ClaimExtractionResponse`)
+
+| Field | Type | Description |
+|---|---|---|
+| `status` | string | Execution status: `"completed"`, `"unavailable"`, or `"failed"`. |
+| `claims` | array[`ClaimResponse`] | List of extracted candidate statements. |
+| `total_claims` / `candidate_count` | int | Total number of candidate claims identified. |
+| `accepted_count` / `eligible_count` | int | Number of claims deemed `ELIGIBLE` for fact-checking. |
+| `method` / `extraction_method` | string | Extraction engine identifier (`"conservative_rules_v2"`). |
+| `runtime_ms` / `processing_time_ms` | int | Processing duration in milliseconds. |
+| `warnings` | array[string] | Operational caveats and non-fatal warnings. |
+
+#### Claim item schema (`ClaimResponse`)
+
+| Field | Type | Description |
+|---|---|---|
+| `claim_id` | string | Stable, deterministic ID derived from SHA-256 of normalized text (`"claim_<hex16>"`). |
+| `claim` / `original_text` | string | Raw extracted sentence/statement. |
+| `normalized_text` | string | NFC Unicode-normalized text with collapsed whitespace. |
+| `classification` | string | Statement type: `"FACTUAL"`, `"QUOTE"`, `"OPINION"`, `"QUESTION"`, `"SLOGAN"`, or `"AMBIGUOUS"`. |
+| `verification_eligibility` | string | Eligibility status: `"ELIGIBLE"` or `"INELIGIBLE"`. |
+| `eligibility_reason` | string | Deterministic explanation for verification eligibility or rejection. |
+| `confidence` | float | Heuristic extraction score ($0.0 \dots 1.0$). **Explicitly not a truth probability.** |
+| `confidence_semantics` | string | Literal string explaining score semantics. |
+| `entities` | array[string] | Proper noun entity candidates identified via capitalization patterns. |
+| `dates` | array[string] | Extracted date expressions. |
+| `locations` | array[string] | Recognized geographical location names. |
+| `numbers` | array[string] | Detected numeric values and percentages. |
+| `source_start` | int or null | 0-based start character offset into the original raw `text` input string. |
+| `source_end` | int or null | 0-based end character offset into the original raw `text` input string. |
+| `language` / `language_code` | string | Pinned language code (e.g. `"en"`, `"hi"`, or `"unknown"`). |
+| `warnings` | array[string] | Claim-specific caveats (e.g. low OCR confidence, unverified language). |
+
+### Offset indexing semantics
+- **Raw input string indexing:** When `text` is supplied as a string, `source_start` and `source_end` index directly into the unmodified input text such that `text[source_start:source_end] == original_text`.
+- **Pre-split sentence lists:** When `sentences` is supplied as a list of strings without raw string context, `source_start` and `source_end` are `null`.
+
+### Eligibility and filtering rules
+1. **Attributed quotations (`QUOTE`):** Sentences with quotes and attribution verbs (`said`, `announced`, `reported`) are marked `ELIGIBLE`. Unattributed quotes are marked `INELIGIBLE`.
+2. **Factual assertions (`FACTUAL`):** Sentences with past/present auxiliary verbs or numbers are marked `ELIGIBLE` if word count $\ge 3$. Short fragments (< 3 words) are marked `AMBIGUOUS` and `INELIGIBLE`.
+3. **Questions (`QUESTION`):** Sentences ending in `?` or starting with question words (`what`, `why`, `क्या`, etc.) are marked `INELIGIBLE`.
+4. **Opinions (`OPINION`):** Sentences with subjective terms (`I think`, `should`, `best`, `worst`, `मुझे लगता है`) are marked `INELIGIBLE`.
+5. **Slogans (`SLOGAN`):** Hashtags, promotional phrases, and calls to action (`#Save...`, `Boycott...`) are marked `INELIGIBLE`.
+
+### Example success response (`200 OK`)
+```json
+{
+  "status": "completed",
+  "claims": [
+    {
+      "claim_id": "claim_a1b2c3d4e5f67890",
+      "claim": "The Health Ministry announced 50 new hospitals in 2025.",
+      "original_text": "The Health Ministry announced 50 new hospitals in 2025.",
+      "normalized_text": "The Health Ministry announced 50 new hospitals in 2025.",
+      "classification": "FACTUAL",
+      "verification_eligibility": "ELIGIBLE",
+      "eligibility_reason": "Text contains a factual assertion candidate.",
+      "claim_type": "factual",
+      "confidence": 0.81,
+      "confidence_semantics": "heuristic extraction score; not truth probability",
+      "entities": ["Health Ministry"],
+      "dates": ["2025"],
+      "locations": [],
+      "numbers": ["50", "2025"],
+      "source": "text",
+      "source_start": 0,
+      "source_end": 55,
+      "source_text_reference": "ocr_sentence_0",
+      "source_region_refs": [],
+      "source_regions": [],
+      "extraction_method": "conservative_rules_v2",
+      "language": "en",
+      "language_code": null,
+      "language_name": null,
+      "language_source": null,
+      "language_model_id": null,
+      "language_model_revision": null,
+      "language_confidence": null,
+      "language_detection_status": "provided_by_client",
+      "language_detection_outcome": "provided_by_client",
+      "ocr_confidence": null,
+      "translated_text": null,
+      "warnings": []
+    }
+  ],
+  "total_claims": 1,
+  "candidate_count": 1,
+  "accepted_count": 1,
+  "eligible_count": 1,
+  "method": "conservative_rules_v2",
+  "extraction_method": "conservative_rules_v2",
+  "runtime_ms": 2,
+  "processing_time_ms": 2,
+  "warnings": []
+}
+```
+
+---
+
+## Standalone Fact-Checking endpoint (`POST /api/v1/fact-check`)
+
+The Standalone Fact-Checking endpoint retrieves published third-party fact-check reviews matching submitted factual propositions using the Google Fact Check Tools API and a persistent, bounded local cache.
+
+> [!IMPORTANT]
+> **Attribution and Non-Fabrication Guarantees:**
+> - TruthLens **NEVER** fabricates fact-check reviews. All reviews originate from external third-party fact-checking organizations indexed by Google Fact Check Tools.
+> - Third-party publisher ratings reflect the independent findings of those organizations and are **NOT** TruthLens assessments or truth probabilities.
+> - Review URLs are strictly sanitized to preserve HTTPS navigation while stripping authentication tokens, tracking tags (`utm_*`, `gclid`), and sensitive parameters.
+
+### Endpoint signature
+- **Method:** `POST`
+- **Path:** `/api/v1/fact-check`
+- **Authentication:** Bearer token (`Principal = Depends(get_current_principal)`). Development bypass is permitted only when `DEV_AUTH_BYPASS=true` and `APP_ENV` is `development` or `test`.
+- **Rate limiting:** Scoped to `"fact-check"` using database-backed fixed-window rate limiter (`RATE_LIMIT_FACTCHECK_PER_MINUTE`, default 30 requests/min).
+- **Request model:** `FactCheckRequest`
+- **Response model:** `FactCheckResponse`
+
+### Request schema (`FactCheckRequest`)
+
+| Field | Type | Description |
+|---|---|---|
+| `claims` | array[string] | List of claim propositions to check (1 to 20 items; each item 5 to 2000 characters). |
+| `language_code` | string (optional) | BCP-47 / ISO 639 language tag (e.g. `"en"`, `"hi"`, `"en-US"`). Must match regex `^[a-z]{2,3}(-[A-Z]{2})?$` and be present in supported language catalog. |
+| `max_results_per_claim` | int (optional) | Maximum reviews to retrieve per claim (clamped between 1 and 10, default 5). |
+
+### Response schema (`FactCheckResponse`)
+
+| Field | Type | Description |
+|---|---|---|
+| `status` | string | Execution status: `"success"`, `"partial"`, `"failed"`, `"no_results"`, `"unavailable"`, or `"skipped"`. |
+| `provider` | string | External provider name (`"google_fact_check_tools"`). |
+| `claims` | array[`FactCheckClaimItem`] | Deduplicated list of third-party fact-check review records. |
+| `total_results` | int | Total number of unique review records returned. |
+| `queries_performed` | int | Count of live external provider queries executed during this call. |
+| `cached_queries_count` | int | Count of queries resolved directly from persistent cache. |
+| `runtime_ms` | int | Total processing duration in milliseconds. |
+| `warnings` | array[string] | Operational caveats, skipped ineligible claim counts, or provider quota alerts. |
+| `claim_verifications` | array[`ClaimVerificationItem`] | Per-claim verification summaries mapped 1-to-1 to input `claims`. |
+| `note` | string | Explicit disclaimer emphasizing third-party attribution. |
+
+#### Claim verification item schema (`ClaimVerificationItem`)
+
+| Field | Type | Description |
+|---|---|---|
+| `request_index` | int | 0-based index matching the claim position in the input request. |
+| `claim_id` | string or null | Deterministic SHA-256 identifier (`"claim_<hex16>"`). |
+| `original_claim` | string | Raw claim proposition submitted in the request. |
+| `normalized_claim` | string | Whitespace-collapsed, normalized claim text. |
+| `eligibility_status` | string | `"ELIGIBLE"` or `"INELIGIBLE"`. |
+| `eligibility_reason` | string or null | Reason why claim was accepted or skipped. |
+| `verification_status` | string | `"COMPLETED"`, `"SKIPPED"`, or `"UNAVAILABLE"`. |
+| `verdict` | string | Aggregate review verdict: `"SUPPORTED"`, `"CONTRADICTED"`, `"INSUFFICIENT_EVIDENCE"`, `"UNVERIFIABLE"`, or `"RETRIEVAL_UNAVAILABLE"`. |
+| `publisher_rating_summary` | string or null | Summary of publisher ratings for this claim. |
+| `verdict_semantics` | string | Explicit semantics notice explaining that verdict summarizes publisher ratings. |
+| `reasoning_summary` | string or null | Plain-language synthesis of available reviews. |
+| `supporting_evidence_ids` | array[string] | Evidence IDs of reviews rating the claim as true/accurate. |
+| `contradicting_evidence_ids` | array[string] | Evidence IDs of reviews rating the claim as false/misleading. |
+| `conflicting_evidence_ids` | array[string] | Evidence IDs of reviews with conflicting ratings. |
+| `cache_hit` | bool | `true` if this claim was resolved from cache; `false` otherwise. |
+| `confidence` | float or null | Confidence score (`null`, explicitly uncalibrated). |
+| `retrieval_error_category` | string or null | Error classification if retrieval failed (`PROVIDER_RATE_LIMIT`, `PROVIDER_TIMEOUT`, etc.). |
+| `limitations` | array[string] | Explicit operational boundaries and limitations. |
+
+### Caching and deduplication architecture
+- **Persistent storage:** SQLite database stored at `settings.STORAGE_PATH / "cache" / "factcheck_cache.sqlite3"`.
+- **Cache key:** SHA-256 hash combining normalized claim query text, language code, and provider name (`"fc_cache_<hex32>"`).
+- **TTL expiration:** Configured via `FACTCHECK_CACHE_TTL_SECONDS` (default: 86,400s / 24 hours). Expired entries are evicted automatically on read.
+- **Bounded capacity:** Configured via `FACTCHECK_CACHE_MAX_ENTRIES` (default: 5,000 entries). LRU eviction discards oldest entries when capacity is exceeded.
+- **In-flight request deduplication:** Concurrent requests for the same query share an `asyncio.Lock` per cache key, guaranteeing that only a single upstream provider request is issued while other concurrent callers await and consume the cached result.
+- **Safe caching policy:** Only successful searches (`success`) and verified clean zero-result searches (`no_results`) are cached. Transient network errors, rate limits, timeouts, and authorization failures are **never** cached.
+
+### Example success response (`200 OK`)
+```json
+{
+  "status": "success",
+  "provider": "google_fact_check_tools",
+  "claims": [
+    {
+      "claim_id": "claim_89445170d105ad36",
+      "evidence_id": "fc_8576d1ad62719a86e92b",
+      "query": "The city opened 25 clinics in 2025.",
+      "claimed_text": "The city opened 25 clinics in 2025.",
+      "claimant": "Public Official",
+      "claim_date": "2025-06-01",
+      "claim_match": "strong_match",
+      "publisher": "FactCheck Organization",
+      "publisher_site": "factcheck.org",
+      "url": "https://factcheck.org/review/123",
+      "title": "Claim regarding 2025 city clinics evaluated",
+      "review_date": "2025-06-02",
+      "textual_rating": "False",
+      "rating_category": "false",
+      "language": "en"
+    }
+  ],
+  "total_results": 1,
+  "queries_performed": 1,
+  "cached_queries_count": 0,
+  "runtime_ms": 142,
+  "warnings": [],
+  "claim_verifications": [
+    {
+      "request_index": 0,
+      "claim_id": "claim_89445170d105ad36",
+      "original_claim": "The city opened 25 clinics in 2025.",
+      "normalized_claim": "The city opened 25 clinics in 2025.",
+      "eligibility_status": "ELIGIBLE",
+      "eligibility_reason": "Text contains a factual assertion candidate.",
+      "verification_status": "COMPLETED",
+      "verdict": "CONTRADICTED",
+      "publisher_rating_summary": "CONTRADICTED",
+      "verdict_semantics": "summary_of_third_party_publisher_ratings_not_truthlens_finding",
+      "reasoning_summary": "Relevant third-party fact-check review(s) rate the claim as false or misleading.",
+      "supporting_evidence_ids": [],
+      "contradicting_evidence_ids": ["fc_8576d1ad62719a86e92b"],
+      "conflicting_evidence_ids": [],
+      "cache_hit": false,
+      "confidence": null,
+      "retrieval_error_category": null,
+      "limitations": [
+        "Verdict summarizes third-party fact-check ratings; it is not an independent TruthLens investigation."
+      ]
+    }
+  ],
+  "note": "Fact-check results come from the Google Fact Check Tools API. They reflect third-party reviews, not TruthLens assessments."
 }
 ```

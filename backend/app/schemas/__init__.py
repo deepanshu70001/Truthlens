@@ -147,3 +147,20 @@ from backend.app.schemas.models import ModelInfo, ModelRegistryResponse
 # ── Standalone OCR ───────────────────────────────────────────────
 
 from backend.app.schemas.ocr import OCRBlockResponse, OCRResponse
+
+# ── Standalone Claims Extraction ─────────────────────────────────
+
+from backend.app.schemas.claims import (
+    ClaimExtractionRequest,
+    ClaimExtractionResponse,
+    ClaimResponse,
+)
+
+# ── Standalone Fact-Checking ─────────────────────────────────────
+
+from backend.app.schemas.factcheck import (
+    ClaimVerificationItem,
+    FactCheckClaimItem,
+    FactCheckRequest,
+    FactCheckResponse,
+)

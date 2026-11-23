@@ -414,6 +414,7 @@ def get_model_registry() -> ModelRegistryResponse:
     ]
 
     loaded_count = sum(1 for m in models if m.loaded)
+    available_count = sum(1 for m in models if m.readiness == "available")
     ready_count = sum(1 for m in models if m.readiness in ("ready", "available"))
 
     return ModelRegistryResponse(
@@ -421,6 +422,7 @@ def get_model_registry() -> ModelRegistryResponse:
         models=models,
         total_models=len(models),
         loaded_count=loaded_count,
+        available_count=available_count,
         ready_count=ready_count,
         environment=settings.APP_ENV,
         message="Model registry reports configured services without eager loading.",

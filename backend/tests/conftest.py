@@ -27,6 +27,7 @@ os.environ["RATE_LIMIT_AUTH_PER_MINUTE"] = "500"
 os.environ["RATE_LIMIT_RETRIEVAL_PER_MINUTE"] = "1000"
 os.environ["RATE_LIMIT_MODELS_PER_MINUTE"] = "500"
 os.environ["RATE_LIMIT_OCR_PER_MINUTE"] = "500"
+os.environ["RATE_LIMIT_CLAIMS_PER_MINUTE"] = "500"
 
 from backend.app.main import app  # noqa: E402
 from backend.app.db.session import engine  # noqa: E402
@@ -67,6 +68,24 @@ async def setup_db():
             db_path.unlink()
         except OSError:
             pass  # File may still be locked on Windows; acceptable
+
+
+@pytest.fixture(autouse=True)
+def reset_factcheck_cache():
+    """Ensure factcheck query cache isolation between test runs."""
+    try:
+        from backend.app.services.factcheck.cache import get_factcheck_cache
+        cache = get_factcheck_cache()
+        cache.clear()
+    except Exception:
+        pass
+    yield
+    try:
+        from backend.app.services.factcheck.cache import get_factcheck_cache
+        cache = get_factcheck_cache()
+        cache.clear()
+    except Exception:
+        pass
 
 
 @pytest.fixture
