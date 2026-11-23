@@ -1,0 +1,10 @@
+{
+  "model_id": "truthlens/siglip-cifake-frozen-head",
+  "backbone_model": "google/siglip-base-patch16-224",
+  "backbone_revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+  "checkpoint_file": "models\\baselines\\siglip_frozen_head.pt",
+  "checkpoint_sha256_initial": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+  "checkpoint_sha256_final": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+  "head_architecture": "torch.nn.Linear(768, 1, bias=True)",
+  "training_provenance": "Trained externally on CIFAKE benchmark; out-of-sample with respect to 6,995 Tiny-GenImage rows"
+}

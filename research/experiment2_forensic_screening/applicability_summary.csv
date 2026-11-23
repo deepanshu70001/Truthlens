@@ -1,0 +1,7 @@
+probe_name,total_samples,valid_samples,valid_coverage_pct,valid_unique_groups,outcomes,reason_codes
+error_level_analysis,6995,3515,50.25,251,"{""not_applicable"": 3480, ""success"": 3515}","{""NOT_APPLICABLE_FORMAT"": 3480, ""OK"": 3515}"
+noise_consistency,6995,6995,100.0,903,"{""success"": 6995}","{""OK"": 6995}"
+jpeg_artifacts,6995,3515,50.25,251,"{""not_applicable"": 3480, ""success"": 3515}","{""JPEG artifact analysis is not applicable to PNG input."": 3480, ""OK"": 3515}"
+edge_consistency,6995,6995,100.0,903,"{""success"": 6995}","{""OK"": 6995}"
+texture_consistency,6995,6995,100.0,903,"{""success"": 6995}","{""OK"": 6995}"
+resampling_clues,6995,6936,99.16,903,"{""success"": 6936, ""not_applicable"": 59}","{""OK"": 6936, ""INSUFFICIENT_TEXTURE_FOR_RESAMPLING"": 59}"

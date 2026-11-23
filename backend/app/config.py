@@ -104,6 +104,7 @@ class Settings(BaseSettings):
     RATE_LIMIT_PROVENANCE_PER_MINUTE: int = 4
     RATE_LIMIT_AUTH_PER_MINUTE: int = 10
     RATE_LIMIT_RETRIEVAL_PER_MINUTE: int = 120
+    RATE_LIMIT_MODELS_PER_MINUTE: int = 60
 
     # Durable job lifecycle. A single global worker lease serializes model/GPU work.
     ANALYSIS_QUEUE_MAX_OUTSTANDING: int = 25

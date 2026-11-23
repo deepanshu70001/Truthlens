@@ -1,0 +1,870 @@
+{
+  "experiment": "Experiment 2: Univariate Forensic Feature Screening",
+  "protocol_version": "1.2.1",
+  "date": "2026-11-23",
+  "status": "COMPLETED_AUDITED",
+  "exp_config": {
+    "experiment_name": "Experiment 2: Univariate Forensic Feature Screening",
+    "protocol_version": "1.2.1",
+    "manifest_path": "experiments\\manifests\\phase4_training_manifest.csv",
+    "manifest_sha256": "22ea2825c7ab75ef110c7a6e2a7c67e69459a3afd3ed6159adbcbed7abc168ed",
+    "checkpoint_path": "models\\baselines\\siglip_frozen_head.pt",
+    "checkpoint_sha256": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+    "seed": 42,
+    "outer_folds": 5,
+    "inner_folds": 4,
+    "regularization_grid": [
+      0.0001,
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0
+    ],
+    "bootstrap_iterations": 2000,
+    "bootstrap_sensitivity_iterations": 5000,
+    "fdr_alpha": 0.05,
+    "probes": [
+      "error_level_analysis",
+      "noise_consistency",
+      "jpeg_artifacts",
+      "edge_consistency",
+      "texture_consistency",
+      "resampling_clues"
+    ]
+  },
+  "manifest_summary": {
+    "manifest_path": "experiments\\manifests\\phase4_training_manifest.csv",
+    "sha256": "22ea2825c7ab75ef110c7a6e2a7c67e69459a3afd3ed6159adbcbed7abc168ed",
+    "total_rows": 6995,
+    "label_counts": {
+      "ai_generated": 3480,
+      "likely_authentic": 3515
+    },
+    "format_counts": {
+      "PNG": 3480,
+      "JPEG": 3515
+    },
+    "format_x_label": {
+      "PNG_ai_generated": 3480,
+      "JPEG_likely_authentic": 3515
+    },
+    "generator_counts": {
+      "ADM": 502,
+      "BigGAN": 482,
+      "GLIDE": 2000,
+      "ImageNet-Camera": 3515,
+      "Stable Diffusion v1.5": 496
+    },
+    "unique_groups": 903
+  },
+  "model_identity": {
+    "model_id": "truthlens/siglip-cifake-frozen-head",
+    "backbone_model": "google/siglip-base-patch16-224",
+    "backbone_revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+    "checkpoint_file": "models\\baselines\\siglip_frozen_head.pt",
+    "checkpoint_sha256_initial": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+    "checkpoint_sha256_final": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+    "head_architecture": "torch.nn.Linear(768, 1, bias=True)",
+    "training_provenance": "Trained externally on CIFAKE benchmark; out-of-sample with respect to 6,995 Tiny-GenImage rows"
+  },
+  "applicability_summary": {
+    "error_level_analysis": {
+      "probe_name": "error_level_analysis",
+      "total_samples": 6995,
+      "valid_samples": 3515,
+      "valid_coverage_pct": 50.25,
+      "outcomes": {
+        "not_applicable": 3480,
+        "success": 3515
+      },
+      "reason_codes": {
+        "NOT_APPLICABLE_FORMAT": 3480,
+        "OK": 3515
+      },
+      "valid_class_distribution": {
+        "likely_authentic": 3515
+      },
+      "valid_format_distribution": {
+        "JPEG": 3515
+      },
+      "valid_unique_groups": 251
+    },
+    "noise_consistency": {
+      "probe_name": "noise_consistency",
+      "total_samples": 6995,
+      "valid_samples": 6995,
+      "valid_coverage_pct": 100.0,
+      "outcomes": {
+        "success": 6995
+      },
+      "reason_codes": {
+        "OK": 6995
+      },
+      "valid_class_distribution": {
+        "ai_generated": 3480,
+        "likely_authentic": 3515
+      },
+      "valid_format_distribution": {
+        "PNG": 3480,
+        "JPEG": 3515
+      },
+      "valid_unique_groups": 903
+    },
+    "jpeg_artifacts": {
+      "probe_name": "jpeg_artifacts",
+      "total_samples": 6995,
+      "valid_samples": 3515,
+      "valid_coverage_pct": 50.25,
+      "outcomes": {
+        "not_applicable": 3480,
+        "success": 3515
+      },
+      "reason_codes": {
+        "JPEG artifact analysis is not applicable to PNG input.": 3480,
+        "OK": 3515
+      },
+      "valid_class_distribution": {
+        "likely_authentic": 3515
+      },
+      "valid_format_distribution": {
+        "JPEG": 3515
+      },
+      "valid_unique_groups": 251
+    },
+    "edge_consistency": {
+      "probe_name": "edge_consistency",
+      "total_samples": 6995,
+      "valid_samples": 6995,
+      "valid_coverage_pct": 100.0,
+      "outcomes": {
+        "success": 6995
+      },
+      "reason_codes": {
+        "OK": 6995
+      },
+      "valid_class_distribution": {
+        "ai_generated": 3480,
+        "likely_authentic": 3515
+      },
+      "valid_format_distribution": {
+        "PNG": 3480,
+        "JPEG": 3515
+      },
+      "valid_unique_groups": 903
+    },
+    "texture_consistency": {
+      "probe_name": "texture_consistency",
+      "total_samples": 6995,
+      "valid_samples": 6995,
+      "valid_coverage_pct": 100.0,
+      "outcomes": {
+        "success": 6995
+      },
+      "reason_codes": {
+        "OK": 6995
+      },
+      "valid_class_distribution": {
+        "ai_generated": 3480,
+        "likely_authentic": 3515
+      },
+      "valid_format_distribution": {
+        "PNG": 3480,
+        "JPEG": 3515
+      },
+      "valid_unique_groups": 903
+    },
+    "resampling_clues": {
+      "probe_name": "resampling_clues",
+      "total_samples": 6995,
+      "valid_samples": 6936,
+      "valid_coverage_pct": 99.16,
+      "outcomes": {
+        "success": 6936,
+        "not_applicable": 59
+      },
+      "reason_codes": {
+        "OK": 6936,
+        "INSUFFICIENT_TEXTURE_FOR_RESAMPLING": 59
+      },
+      "valid_class_distribution": {
+        "ai_generated": 3424,
+        "likely_authentic": 3512
+      },
+      "valid_format_distribution": {
+        "PNG": 3424,
+        "JPEG": 3512
+      },
+      "valid_unique_groups": 903
+    }
+  },
+  "paired_metrics": {
+    "error_level_analysis": {
+      "status": "STATISTICALLY_NON_IDENTIFIABLE",
+      "reason": "Zero class overlap in valid subgroup (Real=3515, AI=0). Native JPEG indicators have 100% missingness on PNG AI images, precluding binary discrimination.",
+      "coverage": {
+        "probe_name": "error_level_analysis",
+        "total_samples": 6995,
+        "valid_samples": 3515,
+        "valid_coverage_pct": 50.25,
+        "outcomes": {
+          "not_applicable": 3480,
+          "success": 3515
+        },
+        "reason_codes": {
+          "NOT_APPLICABLE_FORMAT": 3480,
+          "OK": 3515
+        },
+        "valid_class_distribution": {
+          "likely_authentic": 3515
+        },
+        "valid_format_distribution": {
+          "JPEG": 3515
+        },
+        "valid_unique_groups": 251
+      }
+    },
+    "noise_consistency": {
+      "status": "EVALUATED",
+      "coverage": {
+        "probe_name": "noise_consistency",
+        "total_samples": 6995,
+        "valid_samples": 6995,
+        "valid_coverage_pct": 100.0,
+        "outcomes": {
+          "success": 6995
+        },
+        "reason_codes": {
+          "OK": 6995
+        },
+        "valid_class_distribution": {
+          "ai_generated": 3480,
+          "likely_authentic": 3515
+        },
+        "valid_format_distribution": {
+          "PNG": 3480,
+          "JPEG": 3515
+        },
+        "valid_unique_groups": 903
+      },
+      "m0_metrics": {
+        "log_loss": 0.75789,
+        "balanced_accuracy": 0.425482,
+        "roc_auc": 0.428395,
+        "pr_auc": 0.453018,
+        "brier_score": 0.281025,
+        "fpr": 0.381508,
+        "confusion_matrix": [
+          [
+            2174,
+            1341
+          ],
+          [
+            2671,
+            809
+          ]
+        ]
+      },
+      "m1_metrics": {
+        "log_loss": 0.75961,
+        "balanced_accuracy": 0.425189,
+        "roc_auc": 0.425431,
+        "pr_auc": 0.451661,
+        "brier_score": 0.281848,
+        "fpr": 0.38037,
+        "confusion_matrix": [
+          [
+            2178,
+            1337
+          ],
+          [
+            2677,
+            803
+          ]
+        ]
+      },
+      "deltas": {
+        "delta_log_loss": -0.001721,
+        "delta_balanced_accuracy": -0.000293,
+        "delta_roc_auc": -0.002964,
+        "delta_pr_auc": -0.001357,
+        "delta_brier_score": -0.000823,
+        "delta_fpr": -0.001138
+      }
+    },
+    "jpeg_artifacts": {
+      "status": "STATISTICALLY_NON_IDENTIFIABLE",
+      "reason": "Zero class overlap in valid subgroup (Real=3515, AI=0). Native JPEG indicators have 100% missingness on PNG AI images, precluding binary discrimination.",
+      "coverage": {
+        "probe_name": "jpeg_artifacts",
+        "total_samples": 6995,
+        "valid_samples": 3515,
+        "valid_coverage_pct": 50.25,
+        "outcomes": {
+          "not_applicable": 3480,
+          "success": 3515
+        },
+        "reason_codes": {
+          "JPEG artifact analysis is not applicable to PNG input.": 3480,
+          "OK": 3515
+        },
+        "valid_class_distribution": {
+          "likely_authentic": 3515
+        },
+        "valid_format_distribution": {
+          "JPEG": 3515
+        },
+        "valid_unique_groups": 251
+      }
+    },
+    "edge_consistency": {
+      "status": "EVALUATED",
+      "coverage": {
+        "probe_name": "edge_consistency",
+        "total_samples": 6995,
+        "valid_samples": 6995,
+        "valid_coverage_pct": 100.0,
+        "outcomes": {
+          "success": 6995
+        },
+        "reason_codes": {
+          "OK": 6995
+        },
+        "valid_class_distribution": {
+          "ai_generated": 3480,
+          "likely_authentic": 3515
+        },
+        "valid_format_distribution": {
+          "PNG": 3480,
+          "JPEG": 3515
+        },
+        "valid_unique_groups": 903
+      },
+      "m0_metrics": {
+        "log_loss": 0.75789,
+        "balanced_accuracy": 0.425482,
+        "roc_auc": 0.428395,
+        "pr_auc": 0.453018,
+        "brier_score": 0.281025,
+        "fpr": 0.381508,
+        "confusion_matrix": [
+          [
+            2174,
+            1341
+          ],
+          [
+            2671,
+            809
+          ]
+        ]
+      },
+      "m1_metrics": {
+        "log_loss": 0.76548,
+        "balanced_accuracy": 0.424439,
+        "roc_auc": 0.395246,
+        "pr_auc": 0.436079,
+        "brier_score": 0.284492,
+        "fpr": 0.374111,
+        "confusion_matrix": [
+          [
+            2200,
+            1315
+          ],
+          [
+            2704,
+            776
+          ]
+        ]
+      },
+      "deltas": {
+        "delta_log_loss": -0.00759,
+        "delta_balanced_accuracy": -0.001043,
+        "delta_roc_auc": -0.033149,
+        "delta_pr_auc": -0.016939,
+        "delta_brier_score": -0.003467,
+        "delta_fpr": -0.007397
+      }
+    },
+    "texture_consistency": {
+      "status": "EVALUATED",
+      "coverage": {
+        "probe_name": "texture_consistency",
+        "total_samples": 6995,
+        "valid_samples": 6995,
+        "valid_coverage_pct": 100.0,
+        "outcomes": {
+          "success": 6995
+        },
+        "reason_codes": {
+          "OK": 6995
+        },
+        "valid_class_distribution": {
+          "ai_generated": 3480,
+          "likely_authentic": 3515
+        },
+        "valid_format_distribution": {
+          "PNG": 3480,
+          "JPEG": 3515
+        },
+        "valid_unique_groups": 903
+      },
+      "m0_metrics": {
+        "log_loss": 0.75789,
+        "balanced_accuracy": 0.425482,
+        "roc_auc": 0.428395,
+        "pr_auc": 0.453018,
+        "brier_score": 0.281025,
+        "fpr": 0.381508,
+        "confusion_matrix": [
+          [
+            2174,
+            1341
+          ],
+          [
+            2671,
+            809
+          ]
+        ]
+      },
+      "m1_metrics": {
+        "log_loss": 0.755603,
+        "balanced_accuracy": 0.462347,
+        "roc_auc": 0.454158,
+        "pr_auc": 0.472171,
+        "brier_score": 0.279173,
+        "fpr": 0.369559,
+        "confusion_matrix": [
+          [
+            2216,
+            1299
+          ],
+          [
+            2456,
+            1024
+          ]
+        ]
+      },
+      "deltas": {
+        "delta_log_loss": 0.002287,
+        "delta_balanced_accuracy": 0.036865,
+        "delta_roc_auc": 0.025763,
+        "delta_pr_auc": 0.019153,
+        "delta_brier_score": 0.001852,
+        "delta_fpr": -0.011949
+      }
+    },
+    "resampling_clues": {
+      "status": "EVALUATED",
+      "coverage": {
+        "probe_name": "resampling_clues",
+        "total_samples": 6995,
+        "valid_samples": 6936,
+        "valid_coverage_pct": 99.16,
+        "outcomes": {
+          "success": 6936,
+          "not_applicable": 59
+        },
+        "reason_codes": {
+          "OK": 6936,
+          "INSUFFICIENT_TEXTURE_FOR_RESAMPLING": 59
+        },
+        "valid_class_distribution": {
+          "ai_generated": 3424,
+          "likely_authentic": 3512
+        },
+        "valid_format_distribution": {
+          "PNG": 3424,
+          "JPEG": 3512
+        },
+        "valid_unique_groups": 903
+      },
+      "m0_metrics": {
+        "log_loss": 0.75605,
+        "balanced_accuracy": 0.431852,
+        "roc_auc": 0.433152,
+        "pr_auc": 0.451285,
+        "brier_score": 0.28014,
+        "fpr": 0.367312,
+        "confusion_matrix": [
+          [
+            2222,
+            1290
+          ],
+          [
+            2633,
+            791
+          ]
+        ]
+      },
+      "m1_metrics": {
+        "log_loss": 0.767281,
+        "balanced_accuracy": 0.426212,
+        "roc_auc": 0.399864,
+        "pr_auc": 0.433926,
+        "brier_score": 0.284237,
+        "fpr": 0.382973,
+        "confusion_matrix": [
+          [
+            2167,
+            1345
+          ],
+          [
+            2618,
+            806
+          ]
+        ]
+      },
+      "deltas": {
+        "delta_log_loss": -0.011231,
+        "delta_balanced_accuracy": -0.00564,
+        "delta_roc_auc": -0.033288,
+        "delta_pr_auc": -0.01736,
+        "delta_brier_score": -0.004097,
+        "delta_fpr": 0.015661
+      }
+    }
+  },
+  "bootstrap_results": {
+    "noise_consistency": {
+      "bootstrap_2000": {
+        "n_boot_effective": 2000,
+        "delta_log_loss": {
+          "mean": -0.001497,
+          "std_err": 0.000896,
+          "ci_95": [
+            -0.003023,
+            6.8e-05
+          ],
+          "two_tailed_p_val": 0.073
+        },
+        "delta_roc_auc": {
+          "mean": -0.002129,
+          "std_err": 0.001792,
+          "ci_95": [
+            -0.004726,
+            0.001171
+          ]
+        },
+        "delta_balanced_accuracy": {
+          "mean": -0.000454,
+          "std_err": 0.001688,
+          "ci_95": [
+            -0.004217,
+            0.002663
+          ]
+        }
+      },
+      "bootstrap_5000_sensitivity": {
+        "n_boot_effective": 5000,
+        "delta_log_loss": {
+          "mean": -0.001504,
+          "std_err": 0.000909,
+          "ci_95": [
+            -0.003076,
+            5.3e-05
+          ],
+          "two_tailed_p_val": 0.066
+        },
+        "delta_roc_auc": {
+          "mean": -0.002125,
+          "std_err": 0.001816,
+          "ci_95": [
+            -0.004732,
+            0.001229
+          ]
+        },
+        "delta_balanced_accuracy": {
+          "mean": -0.000404,
+          "std_err": 0.001649,
+          "ci_95": [
+            -0.003972,
+            0.002764
+          ]
+        }
+      },
+      "monte_carlo_sensitivity_delta_loss_ci": [
+        -5.3e-05,
+        -1.5e-05
+      ]
+    },
+    "edge_consistency": {
+      "bootstrap_2000": {
+        "n_boot_effective": 2000,
+        "delta_log_loss": {
+          "mean": -0.006461,
+          "std_err": 0.00453,
+          "ci_95": [
+            -0.014074,
+            0.00233
+          ],
+          "two_tailed_p_val": 0.206
+        },
+        "delta_roc_auc": {
+          "mean": -0.025908,
+          "std_err": 0.014984,
+          "ci_95": [
+            -0.04815,
+            0.000592
+          ]
+        },
+        "delta_balanced_accuracy": {
+          "mean": -0.002523,
+          "std_err": 0.005789,
+          "ci_95": [
+            -0.015538,
+            0.007524
+          ]
+        }
+      },
+      "bootstrap_5000_sensitivity": {
+        "n_boot_effective": 5000,
+        "delta_log_loss": {
+          "mean": -0.006634,
+          "std_err": 0.004497,
+          "ci_95": [
+            -0.014244,
+            0.002084
+          ],
+          "two_tailed_p_val": 0.1716
+        },
+        "delta_roc_auc": {
+          "mean": -0.026379,
+          "std_err": 0.014805,
+          "ci_95": [
+            -0.048058,
+            -0.00052
+          ]
+        },
+        "delta_balanced_accuracy": {
+          "mean": -0.002642,
+          "std_err": 0.005864,
+          "ci_95": [
+            -0.015684,
+            0.007562
+          ]
+        }
+      },
+      "monte_carlo_sensitivity_delta_loss_ci": [
+        -0.00017,
+        -0.000246
+      ]
+    },
+    "texture_consistency": {
+      "bootstrap_2000": {
+        "n_boot_effective": 2000,
+        "delta_log_loss": {
+          "mean": 0.003419,
+          "std_err": 0.004609,
+          "ci_95": [
+            -0.004348,
+            0.012509
+          ],
+          "two_tailed_p_val": 0.498
+        },
+        "delta_roc_auc": {
+          "mean": 0.024699,
+          "std_err": 0.005697,
+          "ci_95": [
+            0.013368,
+            0.035638
+          ]
+        },
+        "delta_balanced_accuracy": {
+          "mean": 0.032988,
+          "std_err": 0.009381,
+          "ci_95": [
+            0.013062,
+            0.046629
+          ]
+        }
+      },
+      "bootstrap_5000_sensitivity": {
+        "n_boot_effective": 5000,
+        "delta_log_loss": {
+          "mean": 0.003329,
+          "std_err": 0.004667,
+          "ci_95": [
+            -0.004535,
+            0.012431
+          ],
+          "two_tailed_p_val": 0.542
+        },
+        "delta_roc_auc": {
+          "mean": 0.024769,
+          "std_err": 0.00559,
+          "ci_95": [
+            0.013846,
+            0.035472
+          ]
+        },
+        "delta_balanced_accuracy": {
+          "mean": 0.033112,
+          "std_err": 0.009185,
+          "ci_95": [
+            0.01379,
+            0.046771
+          ]
+        }
+      },
+      "monte_carlo_sensitivity_delta_loss_ci": [
+        -0.000187,
+        -7.8e-05
+      ]
+    },
+    "resampling_clues": {
+      "bootstrap_2000": {
+        "n_boot_effective": 2000,
+        "delta_log_loss": {
+          "mean": -0.009037,
+          "std_err": 0.008344,
+          "ci_95": [
+            -0.023516,
+            0.003665
+          ],
+          "two_tailed_p_val": 0.469
+        },
+        "delta_roc_auc": {
+          "mean": -0.023836,
+          "std_err": 0.019178,
+          "ci_95": [
+            -0.050451,
+            0.004217
+          ]
+        },
+        "delta_balanced_accuracy": {
+          "mean": -0.004873,
+          "std_err": 0.002545,
+          "ci_95": [
+            -0.009283,
+            0.000735
+          ]
+        }
+      },
+      "bootstrap_5000_sensitivity": {
+        "n_boot_effective": 5000,
+        "delta_log_loss": {
+          "mean": -0.0092,
+          "std_err": 0.008441,
+          "ci_95": [
+            -0.023856,
+            0.003533
+          ],
+          "two_tailed_p_val": 0.48
+        },
+        "delta_roc_auc": {
+          "mean": -0.024151,
+          "std_err": 0.019279,
+          "ci_95": [
+            -0.050789,
+            0.004657
+          ]
+        },
+        "delta_balanced_accuracy": {
+          "mean": -0.004939,
+          "std_err": 0.002515,
+          "ci_95": [
+            -0.009358,
+            0.000732
+          ]
+        }
+      },
+      "monte_carlo_sensitivity_delta_loss_ci": [
+        -0.00034,
+        -0.000132
+      ]
+    }
+  },
+  "multiple_testing": {
+    "alpha_fdr": 0.05,
+    "total_probes_configured": 6,
+    "total_probes_evaluated": 4,
+    "probe_results": {
+      "noise_consistency": {
+        "delta_log_loss": -0.001721,
+        "ci_95": [
+          -0.003023,
+          6.8e-05
+        ],
+        "raw_p_value": 0.073,
+        "adjusted_q_value": 0.292,
+        "significant_fdr_05": false,
+        "verdict": "STATISTICALLY_INCONCLUSIVE"
+      },
+      "edge_consistency": {
+        "delta_log_loss": -0.00759,
+        "ci_95": [
+          -0.014074,
+          0.00233
+        ],
+        "raw_p_value": 0.206,
+        "adjusted_q_value": 0.412,
+        "significant_fdr_05": false,
+        "verdict": "STATISTICALLY_INCONCLUSIVE"
+      },
+      "texture_consistency": {
+        "delta_log_loss": 0.002287,
+        "ci_95": [
+          -0.004348,
+          0.012509
+        ],
+        "raw_p_value": 0.498,
+        "adjusted_q_value": 0.498,
+        "significant_fdr_05": false,
+        "verdict": "STATISTICALLY_INCONCLUSIVE"
+      },
+      "resampling_clues": {
+        "delta_log_loss": -0.011231,
+        "ci_95": [
+          -0.023516,
+          0.003665
+        ],
+        "raw_p_value": 0.469,
+        "adjusted_q_value": 0.498,
+        "significant_fdr_05": false,
+        "verdict": "STATISTICALLY_INCONCLUSIVE"
+      }
+    }
+  },
+  "subgroup_analysis": {
+    "container_format_breakdown": {
+      "PNG": 3480,
+      "JPEG": 3515
+    },
+    "container_format_x_label": {
+      "PNG_ai_generated": 3480,
+      "JPEG_likely_authentic": 3515
+    },
+    "native_jpeg_subgroup": {
+      "total_samples": 3515,
+      "real_samples": 3515,
+      "ai_samples": 0,
+      "class_overlap": "0.0% (Zero AI representation)",
+      "impact_on_jpeg_probes": "error_level_analysis and jpeg_artifacts are STATISTICALLY NON-IDENTIFIABLE on this manifest."
+    },
+    "native_png_subgroup": {
+      "total_samples": 3480,
+      "real_samples": 0,
+      "ai_samples": 3480,
+      "class_overlap": "0.0% (Zero Real representation)",
+      "impact_on_jpeg_probes": "All PNG samples return outcome='not_applicable' for ELA and JPEG block artifacts."
+    },
+    "resampling_safeguard_breakdown": {
+      "total_samples": 6995,
+      "passed_energy_safeguard": 6936,
+      "abstained_energy_safeguard": 59
+    }
+  },
+  "environment": {
+    "os": "Windows-11-10.0.26300-SP0",
+    "python_version": "3.12.10",
+    "pytorch_version": "2.7.1+cu118",
+    "cuda_available": true,
+    "cuda_device_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "opencv_version": "4.12.0",
+    "numpy_version": "2.2.6",
+    "scipy_version": "scipy.stats",
+    "sklearn_version": "1.6+",
+    "total_runtime_seconds": 462.33
+  }
+}

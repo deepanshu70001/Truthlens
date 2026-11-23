@@ -571,6 +571,107 @@ def test_c2pa_malformed_store_and_missing_dependency_are_safe(monkeypatch):
     assert "private path" not in json.dumps(missing.to_dict())
 
 
+def test_c2pa_real_runtime_verification():
+    """Verify real C2PA SDK against genuine signed fixture, trust anchors, tampering, and fusion exclusion."""
+    from pathlib import Path
+    import pytest
+    from backend.app.config import settings
+    from backend.app.services.provenance.c2pa_verifier import verify_content_credentials
+    from backend.app.services.evidence.schema import build_evidence_from_provenance, EvidenceCollection
+    from backend.app.services.fusion.engine import fuse_evidence
+    from backend.app.services.provenance.service import search_provenance
+
+    try:
+        import c2pa
+    except ImportError:
+        pytest.skip("c2pa-python is not installed")
+
+    fixture_path = Path(__file__).parent / "fixtures" / "c2pa" / "C.jpg"
+    if not fixture_path.is_file():
+        pytest.skip("C2PA signed fixture C.jpg is not present on disk")
+
+    signed_bytes = fixture_path.read_bytes()
+
+    # 1. Real cryptographic verification without trust anchors
+    old_anchors = settings.C2PA_TRUST_ANCHORS_PATH
+    settings.C2PA_TRUST_ANCHORS_PATH = ""
+    try:
+        res = verify_content_credentials(signed_bytes)
+        assert res.status == "completed"
+        assert res.outcome == "success"
+        assert res.verification_outcome == "verified"
+        assert res.manifest_present is True
+        assert res.manifest_readable is True
+        assert res.signature_status == "valid"
+        assert res.content_binding_status == "valid"
+        assert res.signer_trust_status == "unverified"
+        assert res.trust_check_configured is False
+        assert res.signer_identity is not None
+        assert res.signer_identity.get("common_name") == "C2PA Signer"
+        assert res.signer_identity.get("issuer") == "C2PA Test Signing Cert"
+        assert res.referenced_resources_status == "available"
+        assert res.referenced_resources_available is not None and res.referenced_resources_available >= 1
+
+        # 2. Tampered payload (data hash mismatch)
+        tampered_bytes = bytearray(signed_bytes)
+        tampered_bytes[50000] ^= 0xFF
+        res_tampered = verify_content_credentials(bytes(tampered_bytes))
+        assert res_tampered.status == "completed"
+        assert res_tampered.verification_outcome == "verification_failed"
+        assert res_tampered.signature_status == "valid"
+        assert res_tampered.content_binding_status == "mismatch"
+        assert "assertion.dataHash.mismatch" in res_tampered.validation_codes
+
+        # 3. Trust anchor verification: production trust list (untrusted test cert)
+        prod_tl = Path(__file__).parent / "fixtures" / "c2pa" / "C2PA-TRUST-LIST.pem"
+        if prod_tl.is_file():
+            settings.C2PA_TRUST_ANCHORS_PATH = str(prod_tl)
+            res_prod = verify_content_credentials(signed_bytes)
+            assert res_prod.trust_check_configured is True
+            assert res_prod.signer_trust_status == "untrusted"
+            assert "signingCredential.untrusted" in res_prod.validation_codes
+
+        # 4. Trust anchor verification: test cert root bundle (trusted)
+        test_bundle = Path(__file__).parent / "fixtures" / "c2pa" / "test_cert_root_bundle.pem"
+        if test_bundle.is_file():
+            settings.C2PA_TRUST_ANCHORS_PATH = str(test_bundle)
+            res_test = verify_content_credentials(signed_bytes)
+            assert res_test.trust_check_configured is True
+            assert res_test.signer_trust_status == "trusted"
+            assert "signingCredential.trusted" in res_test.validation_codes
+    finally:
+        settings.C2PA_TRUST_ANCHORS_PATH = old_anchors
+
+    # 5. Negative check: real unsigned image
+    unsigned_path = Path(__file__).parent / "fixtures" / "test_photo.jpg"
+    assert unsigned_path.is_file()
+    unsigned_bytes = unsigned_path.read_bytes()
+    res_unsigned = verify_content_credentials(unsigned_bytes)
+    assert res_unsigned.status == "completed"
+    assert res_unsigned.outcome == "no_results"
+    assert res_unsigned.verification_outcome == "no_manifest"
+    assert res_unsigned.manifest_present is False
+    assert res_unsigned.manifest_readable is None
+
+    # 6. Negative check: corrupted and empty inputs
+    res_corrupt = verify_content_credentials(b"invalid raw bytes not an image")
+    assert res_corrupt.status == "failed"
+    assert res_corrupt.error_category in {"C2PA_VERIFICATION_ERROR", "INVALID_IMAGE_BYTES"}
+
+    res_empty = verify_content_credentials(b"")
+    assert res_empty.status == "failed"
+    assert res_empty.error_category == "INVALID_IMAGE_BYTES"
+
+    # 7. Evidence builder and fusion non-voting contract
+    prov_res = search_provenance(signed_bytes)
+    evidence_items = build_evidence_from_provenance(prov_res)
+    assert any(e.source == "c2pa_content_credentials" and e.direction == "informational" for e in evidence_items)
+    fusion = fuse_evidence(EvidenceCollection(items=evidence_items))
+    assert fusion.evidence_summary["synthetic_signals"] == 0
+    assert fusion.evidence_summary["authentic_signals"] == 0
+    assert fusion.label == "inconclusive"
+
+
 def test_provenance_original_hash_metadata_and_partial_status(monkeypatch):
     from backend.app.services.provenance import service
 

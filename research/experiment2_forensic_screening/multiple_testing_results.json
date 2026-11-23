@@ -1,0 +1,51 @@
+{
+  "alpha_fdr": 0.05,
+  "total_probes_configured": 6,
+  "total_probes_evaluated": 4,
+  "probe_results": {
+    "noise_consistency": {
+      "delta_log_loss": -0.001721,
+      "ci_95": [
+        -0.003023,
+        6.8e-05
+      ],
+      "raw_p_value": 0.073,
+      "adjusted_q_value": 0.292,
+      "significant_fdr_05": false,
+      "verdict": "STATISTICALLY_INCONCLUSIVE"
+    },
+    "edge_consistency": {
+      "delta_log_loss": -0.00759,
+      "ci_95": [
+        -0.014074,
+        0.00233
+      ],
+      "raw_p_value": 0.206,
+      "adjusted_q_value": 0.412,
+      "significant_fdr_05": false,
+      "verdict": "STATISTICALLY_INCONCLUSIVE"
+    },
+    "texture_consistency": {
+      "delta_log_loss": 0.002287,
+      "ci_95": [
+        -0.004348,
+        0.012509
+      ],
+      "raw_p_value": 0.498,
+      "adjusted_q_value": 0.498,
+      "significant_fdr_05": false,
+      "verdict": "STATISTICALLY_INCONCLUSIVE"
+    },
+    "resampling_clues": {
+      "delta_log_loss": -0.011231,
+      "ci_95": [
+        -0.023516,
+        0.003665
+      ],
+      "raw_p_value": 0.469,
+      "adjusted_q_value": 0.498,
+      "significant_fdr_05": false,
+      "verdict": "STATISTICALLY_INCONCLUSIVE"
+    }
+  }
+}

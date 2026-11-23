@@ -1,0 +1,22 @@
+{
+  "pipeline_name": "siglip-frozen-v1",
+  "color_space": "RGB",
+  "resize_dimension": 224,
+  "interpolation": "bicubic",
+  "crop_dimension": 224,
+  "crop_type": "center_crop",
+  "mean_normalization": [
+    0.5,
+    0.5,
+    0.5
+  ],
+  "std_normalization": [
+    0.5,
+    0.5,
+    0.5
+  ],
+  "class_mapping": {
+    "0": "real",
+    "1": "ai_generated"
+  }
+}

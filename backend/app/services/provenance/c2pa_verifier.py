@@ -81,9 +81,12 @@ class C2PAResult:
 
 
 def _mime_type(image_data: bytes) -> str:
-    with Image.open(io.BytesIO(image_data)) as image:
-        fmt = (image.format or "").upper()
-    return Image.MIME.get(fmt, "application/octet-stream")
+    try:
+        with Image.open(io.BytesIO(image_data)) as image:
+            fmt = (image.format or "").upper()
+        return Image.MIME.get(fmt, "application/octet-stream")
+    except Exception:
+        return "application/octet-stream"
 
 
 def _safe_text(value: Any, limit: int = 300) -> str:
@@ -201,12 +204,18 @@ def verify_content_credentials(image_data: bytes, sdk_module=None) -> C2PAResult
                     for ref in refs[:20]:
                         checked += 1
                         try:
-                            resource = reader.resource_to_stream(ref)
-                            if resource is not None:
-                                resource.read(1)
-                                available += 1
-                                if hasattr(resource, "close"):
-                                    resource.close()
+                            out_stream = io.BytesIO()
+                            try:
+                                res = reader.resource_to_stream(ref, out_stream)
+                                if out_stream.tell() > 0 or (isinstance(res, int) and res > 0):
+                                    available += 1
+                            except TypeError:
+                                resource = reader.resource_to_stream(ref)
+                                if resource is not None:
+                                    resource.read(1)
+                                    available += 1
+                                    if hasattr(resource, "close"):
+                                        resource.close()
                         except Exception:
                             continue
                 resource_status = "available" if checked and available == checked else "partial" if available else "unavailable" if checked else "not_checked"
@@ -230,6 +239,13 @@ def verify_content_credentials(image_data: bytes, sdk_module=None) -> C2PAResult
         return C2PAResult(status="unavailable", outcome="unavailable", verification_outcome="unavailable", error_category="VERIFIER_DEPENDENCY_MISSING",
             runtime_ms=int((time.perf_counter()-started)*1000), warnings=["C2PA verification library is not installed."])
     except Exception as exc:
+        err_name = type(exc).__name__.lower()
+        err_msg = str(exc).lower()
+        if "manifestnotfound" in err_name or "no jumbf" in err_msg or "manifest not found" in err_msg:
+            return C2PAResult(status="completed", outcome="no_results", verification_outcome="no_manifest", manifest_present=False,
+                manifest_readable=None, implementation_version=locals().get("version", None),
+                runtime_ms=int((time.perf_counter()-started)*1000),
+                warnings=["No embedded C2PA manifest was found; this is not evidence of manipulation."])
         log.warning("C2PA verification could not complete (%s)", type(exc).__name__)
         return C2PAResult(status="failed", outcome="failed", verification_outcome="failed", error_category="C2PA_VERIFICATION_ERROR",
             runtime_ms=int((time.perf_counter()-started)*1000), warnings=["C2PA manifest could not be read or verified."])

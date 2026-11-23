@@ -1,0 +1,31 @@
+{
+  "experiment_name": "Experiment 2: Univariate Forensic Feature Screening",
+  "protocol_version": "1.2.1",
+  "manifest_path": "experiments\\manifests\\phase4_training_manifest.csv",
+  "manifest_sha256": "22ea2825c7ab75ef110c7a6e2a7c67e69459a3afd3ed6159adbcbed7abc168ed",
+  "checkpoint_path": "models\\baselines\\siglip_frozen_head.pt",
+  "checkpoint_sha256": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+  "seed": 42,
+  "outer_folds": 5,
+  "inner_folds": 4,
+  "regularization_grid": [
+    0.0001,
+    0.001,
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0
+  ],
+  "bootstrap_iterations": 2000,
+  "bootstrap_sensitivity_iterations": 5000,
+  "fdr_alpha": 0.05,
+  "probes": [
+    "error_level_analysis",
+    "noise_consistency",
+    "jpeg_artifacts",
+    "edge_consistency",
+    "texture_consistency",
+    "resampling_clues"
+  ]
+}

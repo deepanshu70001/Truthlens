@@ -1,0 +1,326 @@
+{
+  "error_level_analysis": {
+    "status": "STATISTICALLY_NON_IDENTIFIABLE",
+    "reason": "Zero class overlap in valid subgroup (Real=3515, AI=0). Native JPEG indicators have 100% missingness on PNG AI images, precluding binary discrimination.",
+    "coverage": {
+      "probe_name": "error_level_analysis",
+      "total_samples": 6995,
+      "valid_samples": 3515,
+      "valid_coverage_pct": 50.25,
+      "outcomes": {
+        "not_applicable": 3480,
+        "success": 3515
+      },
+      "reason_codes": {
+        "NOT_APPLICABLE_FORMAT": 3480,
+        "OK": 3515
+      },
+      "valid_class_distribution": {
+        "likely_authentic": 3515
+      },
+      "valid_format_distribution": {
+        "JPEG": 3515
+      },
+      "valid_unique_groups": 251
+    }
+  },
+  "noise_consistency": {
+    "status": "EVALUATED",
+    "coverage": {
+      "probe_name": "noise_consistency",
+      "total_samples": 6995,
+      "valid_samples": 6995,
+      "valid_coverage_pct": 100.0,
+      "outcomes": {
+        "success": 6995
+      },
+      "reason_codes": {
+        "OK": 6995
+      },
+      "valid_class_distribution": {
+        "ai_generated": 3480,
+        "likely_authentic": 3515
+      },
+      "valid_format_distribution": {
+        "PNG": 3480,
+        "JPEG": 3515
+      },
+      "valid_unique_groups": 903
+    },
+    "m0_metrics": {
+      "log_loss": 0.75789,
+      "balanced_accuracy": 0.425482,
+      "roc_auc": 0.428395,
+      "pr_auc": 0.453018,
+      "brier_score": 0.281025,
+      "fpr": 0.381508,
+      "confusion_matrix": [
+        [
+          2174,
+          1341
+        ],
+        [
+          2671,
+          809
+        ]
+      ]
+    },
+    "m1_metrics": {
+      "log_loss": 0.75961,
+      "balanced_accuracy": 0.425189,
+      "roc_auc": 0.425431,
+      "pr_auc": 0.451661,
+      "brier_score": 0.281848,
+      "fpr": 0.38037,
+      "confusion_matrix": [
+        [
+          2178,
+          1337
+        ],
+        [
+          2677,
+          803
+        ]
+      ]
+    },
+    "deltas": {
+      "delta_log_loss": -0.001721,
+      "delta_balanced_accuracy": -0.000293,
+      "delta_roc_auc": -0.002964,
+      "delta_pr_auc": -0.001357,
+      "delta_brier_score": -0.000823,
+      "delta_fpr": -0.001138
+    }
+  },
+  "jpeg_artifacts": {
+    "status": "STATISTICALLY_NON_IDENTIFIABLE",
+    "reason": "Zero class overlap in valid subgroup (Real=3515, AI=0). Native JPEG indicators have 100% missingness on PNG AI images, precluding binary discrimination.",
+    "coverage": {
+      "probe_name": "jpeg_artifacts",
+      "total_samples": 6995,
+      "valid_samples": 3515,
+      "valid_coverage_pct": 50.25,
+      "outcomes": {
+        "not_applicable": 3480,
+        "success": 3515
+      },
+      "reason_codes": {
+        "JPEG artifact analysis is not applicable to PNG input.": 3480,
+        "OK": 3515
+      },
+      "valid_class_distribution": {
+        "likely_authentic": 3515
+      },
+      "valid_format_distribution": {
+        "JPEG": 3515
+      },
+      "valid_unique_groups": 251
+    }
+  },
+  "edge_consistency": {
+    "status": "EVALUATED",
+    "coverage": {
+      "probe_name": "edge_consistency",
+      "total_samples": 6995,
+      "valid_samples": 6995,
+      "valid_coverage_pct": 100.0,
+      "outcomes": {
+        "success": 6995
+      },
+      "reason_codes": {
+        "OK": 6995
+      },
+      "valid_class_distribution": {
+        "ai_generated": 3480,
+        "likely_authentic": 3515
+      },
+      "valid_format_distribution": {
+        "PNG": 3480,
+        "JPEG": 3515
+      },
+      "valid_unique_groups": 903
+    },
+    "m0_metrics": {
+      "log_loss": 0.75789,
+      "balanced_accuracy": 0.425482,
+      "roc_auc": 0.428395,
+      "pr_auc": 0.453018,
+      "brier_score": 0.281025,
+      "fpr": 0.381508,
+      "confusion_matrix": [
+        [
+          2174,
+          1341
+        ],
+        [
+          2671,
+          809
+        ]
+      ]
+    },
+    "m1_metrics": {
+      "log_loss": 0.76548,
+      "balanced_accuracy": 0.424439,
+      "roc_auc": 0.395246,
+      "pr_auc": 0.436079,
+      "brier_score": 0.284492,
+      "fpr": 0.374111,
+      "confusion_matrix": [
+        [
+          2200,
+          1315
+        ],
+        [
+          2704,
+          776
+        ]
+      ]
+    },
+    "deltas": {
+      "delta_log_loss": -0.00759,
+      "delta_balanced_accuracy": -0.001043,
+      "delta_roc_auc": -0.033149,
+      "delta_pr_auc": -0.016939,
+      "delta_brier_score": -0.003467,
+      "delta_fpr": -0.007397
+    }
+  },
+  "texture_consistency": {
+    "status": "EVALUATED",
+    "coverage": {
+      "probe_name": "texture_consistency",
+      "total_samples": 6995,
+      "valid_samples": 6995,
+      "valid_coverage_pct": 100.0,
+      "outcomes": {
+        "success": 6995
+      },
+      "reason_codes": {
+        "OK": 6995
+      },
+      "valid_class_distribution": {
+        "ai_generated": 3480,
+        "likely_authentic": 3515
+      },
+      "valid_format_distribution": {
+        "PNG": 3480,
+        "JPEG": 3515
+      },
+      "valid_unique_groups": 903
+    },
+    "m0_metrics": {
+      "log_loss": 0.75789,
+      "balanced_accuracy": 0.425482,
+      "roc_auc": 0.428395,
+      "pr_auc": 0.453018,
+      "brier_score": 0.281025,
+      "fpr": 0.381508,
+      "confusion_matrix": [
+        [
+          2174,
+          1341
+        ],
+        [
+          2671,
+          809
+        ]
+      ]
+    },
+    "m1_metrics": {
+      "log_loss": 0.755603,
+      "balanced_accuracy": 0.462347,
+      "roc_auc": 0.454158,
+      "pr_auc": 0.472171,
+      "brier_score": 0.279173,
+      "fpr": 0.369559,
+      "confusion_matrix": [
+        [
+          2216,
+          1299
+        ],
+        [
+          2456,
+          1024
+        ]
+      ]
+    },
+    "deltas": {
+      "delta_log_loss": 0.002287,
+      "delta_balanced_accuracy": 0.036865,
+      "delta_roc_auc": 0.025763,
+      "delta_pr_auc": 0.019153,
+      "delta_brier_score": 0.001852,
+      "delta_fpr": -0.011949
+    }
+  },
+  "resampling_clues": {
+    "status": "EVALUATED",
+    "coverage": {
+      "probe_name": "resampling_clues",
+      "total_samples": 6995,
+      "valid_samples": 6936,
+      "valid_coverage_pct": 99.16,
+      "outcomes": {
+        "success": 6936,
+        "not_applicable": 59
+      },
+      "reason_codes": {
+        "OK": 6936,
+        "INSUFFICIENT_TEXTURE_FOR_RESAMPLING": 59
+      },
+      "valid_class_distribution": {
+        "ai_generated": 3424,
+        "likely_authentic": 3512
+      },
+      "valid_format_distribution": {
+        "PNG": 3424,
+        "JPEG": 3512
+      },
+      "valid_unique_groups": 903
+    },
+    "m0_metrics": {
+      "log_loss": 0.75605,
+      "balanced_accuracy": 0.431852,
+      "roc_auc": 0.433152,
+      "pr_auc": 0.451285,
+      "brier_score": 0.28014,
+      "fpr": 0.367312,
+      "confusion_matrix": [
+        [
+          2222,
+          1290
+        ],
+        [
+          2633,
+          791
+        ]
+      ]
+    },
+    "m1_metrics": {
+      "log_loss": 0.767281,
+      "balanced_accuracy": 0.426212,
+      "roc_auc": 0.399864,
+      "pr_auc": 0.433926,
+      "brier_score": 0.284237,
+      "fpr": 0.382973,
+      "confusion_matrix": [
+        [
+          2167,
+          1345
+        ],
+        [
+          2618,
+          806
+        ]
+      ]
+    },
+    "deltas": {
+      "delta_log_loss": -0.011231,
+      "delta_balanced_accuracy": -0.00564,
+      "delta_roc_auc": -0.033288,
+      "delta_pr_auc": -0.01736,
+      "delta_brier_score": -0.004097,
+      "delta_fpr": 0.015661
+    }
+  }
+}

@@ -4,7 +4,6 @@ TruthLens — API endpoint stubs for future stages.
 POST /api/v1/ocr
 POST /api/v1/fact-check
 POST /api/v1/provenance
-GET  /api/v1/models
 """
 
 from __future__ import annotations
@@ -216,13 +215,5 @@ async def provenance_endpoint(
     return result.to_dict()
 
 
-@router.get(
-    "/models",
-    summary="List available models",
-    description="Returns available ML models. (Will be implemented in Stage 3.)",
-)
-async def list_models():
-    return {
-        "models": [],
-        "message": "ML models will be available in Stage 3.",
-    }
+# Re-exported from dedicated models endpoint module for backward compatibility
+from backend.app.api.v1.endpoints.models import list_models

@@ -138,3 +138,8 @@ class HealthResponse(BaseModel):
 class ErrorResponse(BaseModel):
     detail: str
     error_code: Optional[str] = None
+
+
+# ── Models Registry ──────────────────────────────────────────────
+
+from backend.app.schemas.models import ModelInfo, ModelRegistryResponse

@@ -1,0 +1,20 @@
+{
+  "k_outer": 5,
+  "k_inner": 4,
+  "group_aware": true,
+  "stratification": "class_balanced_greedy",
+  "classifier": "LogisticRegression(penalty='l2', solver='lbfgs', max_iter=1000)",
+  "feature_scaling": "StandardScaler(fit_on_inner_train_only)",
+  "hyperparameter_grid": {
+    "C": [
+      0.0001,
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0
+    ]
+  },
+  "selection_metric": "binary_cross_entropy_log_loss"
+}

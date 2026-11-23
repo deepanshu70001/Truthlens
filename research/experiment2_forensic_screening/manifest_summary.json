@@ -1,0 +1,25 @@
+{
+  "manifest_path": "experiments\\manifests\\phase4_training_manifest.csv",
+  "sha256": "22ea2825c7ab75ef110c7a6e2a7c67e69459a3afd3ed6159adbcbed7abc168ed",
+  "total_rows": 6995,
+  "label_counts": {
+    "ai_generated": 3480,
+    "likely_authentic": 3515
+  },
+  "format_counts": {
+    "PNG": 3480,
+    "JPEG": 3515
+  },
+  "format_x_label": {
+    "PNG_ai_generated": 3480,
+    "JPEG_likely_authentic": 3515
+  },
+  "generator_counts": {
+    "ADM": 502,
+    "BigGAN": 482,
+    "GLIDE": 2000,
+    "ImageNet-Camera": 3515,
+    "Stable Diffusion v1.5": 496
+  },
+  "unique_groups": 903
+}

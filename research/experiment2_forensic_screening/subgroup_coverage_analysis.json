@@ -1,0 +1,29 @@
+{
+  "container_format_breakdown": {
+    "PNG": 3480,
+    "JPEG": 3515
+  },
+  "container_format_x_label": {
+    "PNG_ai_generated": 3480,
+    "JPEG_likely_authentic": 3515
+  },
+  "native_jpeg_subgroup": {
+    "total_samples": 3515,
+    "real_samples": 3515,
+    "ai_samples": 0,
+    "class_overlap": "0.0% (Zero AI representation)",
+    "impact_on_jpeg_probes": "error_level_analysis and jpeg_artifacts are STATISTICALLY NON-IDENTIFIABLE on this manifest."
+  },
+  "native_png_subgroup": {
+    "total_samples": 3480,
+    "real_samples": 0,
+    "ai_samples": 3480,
+    "class_overlap": "0.0% (Zero Real representation)",
+    "impact_on_jpeg_probes": "All PNG samples return outcome='not_applicable' for ELA and JPEG block artifacts."
+  },
+  "resampling_safeguard_breakdown": {
+    "total_samples": 6995,
+    "passed_energy_safeguard": 6936,
+    "abstained_energy_safeguard": 59
+  }
+}

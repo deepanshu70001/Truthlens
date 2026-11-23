@@ -1,0 +1,130 @@
+{
+  "error_level_analysis": {
+    "probe_name": "error_level_analysis",
+    "total_samples": 6995,
+    "valid_samples": 3515,
+    "valid_coverage_pct": 50.25,
+    "outcomes": {
+      "not_applicable": 3480,
+      "success": 3515
+    },
+    "reason_codes": {
+      "NOT_APPLICABLE_FORMAT": 3480,
+      "OK": 3515
+    },
+    "valid_class_distribution": {
+      "likely_authentic": 3515
+    },
+    "valid_format_distribution": {
+      "JPEG": 3515
+    },
+    "valid_unique_groups": 251
+  },
+  "noise_consistency": {
+    "probe_name": "noise_consistency",
+    "total_samples": 6995,
+    "valid_samples": 6995,
+    "valid_coverage_pct": 100.0,
+    "outcomes": {
+      "success": 6995
+    },
+    "reason_codes": {
+      "OK": 6995
+    },
+    "valid_class_distribution": {
+      "ai_generated": 3480,
+      "likely_authentic": 3515
+    },
+    "valid_format_distribution": {
+      "PNG": 3480,
+      "JPEG": 3515
+    },
+    "valid_unique_groups": 903
+  },
+  "jpeg_artifacts": {
+    "probe_name": "jpeg_artifacts",
+    "total_samples": 6995,
+    "valid_samples": 3515,
+    "valid_coverage_pct": 50.25,
+    "outcomes": {
+      "not_applicable": 3480,
+      "success": 3515
+    },
+    "reason_codes": {
+      "JPEG artifact analysis is not applicable to PNG input.": 3480,
+      "OK": 3515
+    },
+    "valid_class_distribution": {
+      "likely_authentic": 3515
+    },
+    "valid_format_distribution": {
+      "JPEG": 3515
+    },
+    "valid_unique_groups": 251
+  },
+  "edge_consistency": {
+    "probe_name": "edge_consistency",
+    "total_samples": 6995,
+    "valid_samples": 6995,
+    "valid_coverage_pct": 100.0,
+    "outcomes": {
+      "success": 6995
+    },
+    "reason_codes": {
+      "OK": 6995
+    },
+    "valid_class_distribution": {
+      "ai_generated": 3480,
+      "likely_authentic": 3515
+    },
+    "valid_format_distribution": {
+      "PNG": 3480,
+      "JPEG": 3515
+    },
+    "valid_unique_groups": 903
+  },
+  "texture_consistency": {
+    "probe_name": "texture_consistency",
+    "total_samples": 6995,
+    "valid_samples": 6995,
+    "valid_coverage_pct": 100.0,
+    "outcomes": {
+      "success": 6995
+    },
+    "reason_codes": {
+      "OK": 6995
+    },
+    "valid_class_distribution": {
+      "ai_generated": 3480,
+      "likely_authentic": 3515
+    },
+    "valid_format_distribution": {
+      "PNG": 3480,
+      "JPEG": 3515
+    },
+    "valid_unique_groups": 903
+  },
+  "resampling_clues": {
+    "probe_name": "resampling_clues",
+    "total_samples": 6995,
+    "valid_samples": 6936,
+    "valid_coverage_pct": 99.16,
+    "outcomes": {
+      "success": 6936,
+      "not_applicable": 59
+    },
+    "reason_codes": {
+      "OK": 6936,
+      "INSUFFICIENT_TEXTURE_FOR_RESAMPLING": 59
+    },
+    "valid_class_distribution": {
+      "ai_generated": 3424,
+      "likely_authentic": 3512
+    },
+    "valid_format_distribution": {
+      "PNG": 3424,
+      "JPEG": 3512
+    },
+    "valid_unique_groups": 903
+  }
+}

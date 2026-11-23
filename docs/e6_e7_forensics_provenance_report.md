@@ -190,3 +190,11 @@ The excluded test files above were not run; no calibration or protected evaluati
 | Google Vision credentials | Blocked by missing credentials (API key and application credentials are unset) | No provider request was made. |
 
 Mocked YOLO, fake-SDK C2PA, and toy Grad-CAM tests remain mock evidence only. No commit or push was made.
+
+### Subsequent real-runtime verification update — 2026-11-23
+
+Following the baseline audit above, three targeted runtime verification tasks were executed and documented in dedicated reports:
+1. **Real YOLO Object Detection (`docs/yolo_verification_report.md`):** Ultralytics 8.4.216 and local checkpoint `models/baselines/yolov8n.pt` (SHA-256 `31e20dde3def09e2cf938c7be6fe23d9150bbbe503982af13345706515f2ef95`) verified on GPU with zero-detection valid completion and strict informational fusion isolation. Status: `VERIFIED — REAL YOLO RUNTIME INTEGRATION`.
+2. **Production SigLIP Grad-CAM (`docs/siglip_gradcam_verification_report.md`):** Production `FineTunedSiglipClassifier` (`truthlens/siglip-cifake-frozen-head`) loaded on GPU. Resolved target layer `encoder.layers[11].layer_norm2`. Verified 0.0 logit difference, bit-exact parameter preservation across all 86 tensors, full hook/gradient cleanup, and finite overlay dimensions. Status: `VERIFIED — PRODUCTION SIGLIP GRAD-CAM`.
+3. **Real C2PA Cryptographic Verification (`docs/c2pa_verification_report.md`):** Installed `c2pa-python==0.39.0` (Rust `0.92.0`) verified against official signed fixture `C.jpg` (SHA-256 `a2d14755db55de67a47c04090340d8266e892367be4104a45626d7a6fa6e9ffd`), official conformance trust list `C2PA-TRUST-LIST.pem`, and test root bundle `test_cert_root_bundle.pem`. Verified manifest parsing, valid claim signature, valid data hash binding, tamper detection, thumbnail extraction, and unsigned/corrupt boundaries. Status: `VERIFIED — REAL C2PA CRYPTOGRAPHIC VERIFICATION`.
+4. **Remaining Boundaries:** Dedicated manipulation detector in Module 6 remains unimplemented. Live Google Cloud Vision Web Detection provider requests remain unexercised due to absent credentials. Signer trust for `C.jpg` is verified as untrusted against production trust list and trusted only with test CA root bundle. All forensic and provenance evidence remains strictly informational and excluded from authenticity voting.
