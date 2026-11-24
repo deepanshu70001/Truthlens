@@ -56,5 +56,5 @@ jobs:
           git add research/experiment3_multivariate_screening
           if ! git diff --cached --quiet; then
             git commit -m "research: record experiment 3 multivariate screening results"
-            git push origin research/experiment3-multivariate-screening
+            git push origin HEAD:research/experiment3-multivariate-screening
           fi
