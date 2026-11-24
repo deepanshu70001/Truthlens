@@ -1,12 +1,13 @@
 {
   "experiment": "TruthLens Experiment 3",
   "protocol_status": "exploratory_post_hoc",
-  "generated_utc": "2026-11-24T11:56:39Z",
-  "source_commit": "f4baf15e67d2e837a17df7da0383cd0ede1a8b0a",
+  "generated_utc": "2026-11-24T11:59:22Z",
+  "input_baseline_commit": "f4baf15e67d2e837a17df7da0383cd0ede1a8b0a",
+  "implementation_commit": "8981f8b052cb08e2cffb6c130b5b2fdd44f8290b",
   "artifacts": {
     "bootstrap_confidence_intervals.json": {
-      "sha256": "2bce4c85138e514d3bfd8cb35bacd1d41d1523fadafc6346cfeff056d8f10f2f",
-      "byte_size": 1390
+      "sha256": "dca889ad5aeaa74c7b93fbe273cdc72366ac2e7765c008577e1de6f156d6cf32",
+      "byte_size": 1393
     },
     "correlation_clusters_by_outer_fold.json": {
       "sha256": "c9abad60546557c0af69bd09fc92d93f5ae1b9435ae562352744d1ec210242d1",
@@ -21,20 +22,24 @@
       "byte_size": 882
     },
     "environment_versions.json": {
-      "sha256": "2a8dcd7d0cbbde5e6e7f70af71784ee9147354ef6e51b5e8427af52f188ec827",
-      "byte_size": 201
+      "sha256": "ef40abd5549152be7b364b04bde78e0731d3881f1c6675e49cd454b2088dfde7",
+      "byte_size": 202
     },
     "execution.log": {
-      "sha256": "ebac691adb666c018d0db139f95e3629c707750cde8acb3400f3227515fc7050",
-      "byte_size": 280
+      "sha256": "c9931db408065f8200446c0b13125fbe3a3ffc39d16e86d0e3add8f1dfee7f36",
+      "byte_size": 281
     },
     "experiment3_config.json": {
       "sha256": "f70e35d22ff02763d47679fdb5ba138d2e13e7b7ba949af3490d26453b21608b",
       "byte_size": 2055
     },
     "experiment3_report.md": {
-      "sha256": "01f9989ce3b00bc7cd2fa8aa854194ab79e8a6e35e7eb5e369fb1dde126cc3b4",
-      "byte_size": 5342
+      "sha256": "7998c6e9bb88e032108f010808b256b9f774e1e0a90e9be174faf335f30fa12e",
+      "byte_size": 5369
+    },
+    "experiment3_results.json": {
+      "sha256": "8e63af4d4723432a05714e040043a4f48c41d6024329821641e94d464b060189",
+      "byte_size": 32780
     },
     "fold_summary.json": {
       "sha256": "f3c17d6d9811ea1c9b41eb27bf3b58123c5513fcc582c192ec81e4cde81d245e",
@@ -45,24 +50,24 @@
       "byte_size": 3678
     },
     "model_fit_details.json": {
-      "sha256": "6a1e7079ba7d3d2e2e82d042e713cb60e42d6a87107bfdc4a62819931edfb7b0",
-      "byte_size": 23753
+      "sha256": "c9c77268f55588a1c9c7eb1b64ce171ed64825cf1c5812556ca12295fe52bc4e",
+      "byte_size": 23759
     },
     "multiple_testing_results.json": {
       "sha256": "6eb3ace624073d1fa0c36aba0964b6076d25f48acf34b2d5a0a0ce65fd2ab40e",
       "byte_size": 815
     },
     "oof_predictions.csv": {
-      "sha256": "c4529d4642b5951b08994000743fe4264758c7627362daf1d11b9c3c7595c565",
-      "byte_size": 1262092
+      "sha256": "fda476dba49d54142a5123fa4f13fc316fd06a04eee2a5d879ac57d3b7258fca",
+      "byte_size": 1262153
     },
     "paired_metrics.json": {
-      "sha256": "26f58445e689bcc9e038fbb8f73a601b40a0b054b89f3d10789341239fe76b0a",
-      "byte_size": 20562
+      "sha256": "ab9251b7d4bc285157e0a2b377bc0ee81c6b10c9ce2d72042b16f750ce1fbb56",
+      "byte_size": 20566
     },
     "permutation_results.json": {
-      "sha256": "b630fd63dd0de81bb62a9e228c876e45a4ded435156ccd8733cee0078bc38684",
-      "byte_size": 1289
+      "sha256": "f097f6d83281a56073b8e4daa32d123442115718b98932de212158af7318d317",
+      "byte_size": 1288
     },
     "protocol.md": {
       "sha256": "1d35b1228502c038dec7afded0bd4e2f869243a03da99ad77875fe3caa9537b7",

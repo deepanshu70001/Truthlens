@@ -81,6 +81,6 @@ paired_metrics.json includes pooled log-loss and Brier score, macro outer-fold R
 
 ## 8. Reproducibility
 
-See experiment3_config.json, input_integrity.json, dataset_integrity.json, coverage.json, fold_summary.json, model_fit_details.json, oof_predictions.csv, paired_metrics.json, bootstrap_confidence_intervals.json, permutation_results.json, multiple_testing_results.json, environment_versions.json, and reproducibility_manifest.json.
+See experiment3_results.json, experiment3_config.json, input_integrity.json, dataset_integrity.json, coverage.json, fold_summary.json, model_fit_details.json, oof_predictions.csv, paired_metrics.json, bootstrap_confidence_intervals.json, permutation_results.json, multiple_testing_results.json, environment_versions.json, and reproducibility_manifest.json.
 
-Runtime: 5.621 seconds.
+Runtime: 11.366 seconds.

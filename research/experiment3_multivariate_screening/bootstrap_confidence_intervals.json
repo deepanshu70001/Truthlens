@@ -3,44 +3,44 @@
     "method": "paired group-cluster bootstrap, sampling groups with replacement within fixed outer folds",
     "replicates": 5000,
     "seed": 314859,
-    "mean": -0.007668066724801358,
-    "standard_error": 0.004105400835803117,
+    "mean": -0.007668066724801354,
+    "standard_error": 0.004105400835803107,
     "ci_95_percentile": [
-      -0.014551838485428532,
-      0.0003002319913206576
+      -0.014551838485428516,
+      0.0003002319913206439
     ]
   },
   "M2_texture_resampling": {
     "method": "paired group-cluster bootstrap, sampling groups with replacement within fixed outer folds",
     "replicates": 5000,
     "seed": 314859,
-    "mean": -0.008047441995535285,
-    "standard_error": 0.013425160563851894,
+    "mean": -0.008047441995535287,
+    "standard_error": 0.013425160563851886,
     "ci_95_percentile": [
-      -0.03131193999396087,
-      0.01235119092297272
+      -0.031311939993960855,
+      0.012351190922972705
     ]
   },
   "M3_all_four": {
     "method": "paired group-cluster bootstrap, sampling groups with replacement within fixed outer folds",
     "replicates": 5000,
     "seed": 314859,
-    "mean": -0.011892244336785441,
-    "standard_error": 0.013451758732111341,
+    "mean": -0.011892244336785424,
+    "standard_error": 0.013451758732111336,
     "ci_95_percentile": [
-      -0.03533996952416263,
-      0.009455110913583028
+      -0.03533996952416261,
+      0.009455110913583042
     ]
   },
   "M4_correlation_adjusted": {
     "method": "paired group-cluster bootstrap, sampling groups with replacement within fixed outer folds",
     "replicates": 5000,
     "seed": 314859,
-    "mean": -0.011892244336785438,
-    "standard_error": 0.013451758732111347,
+    "mean": -0.011892244336785433,
+    "standard_error": 0.013451758732111352,
     "ci_95_percentile": [
       -0.03533996952416265,
-      0.00945511091358306
+      0.009455110913583071
     ]
   }
 }
