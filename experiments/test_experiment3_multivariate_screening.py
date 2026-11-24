@@ -47,3 +47,14 @@ def test_signflip_p_value_is_valid():
     result = signflip_test(groups, n_perm=500, seed=9)
     assert 0.0 < result["p_value_two_sided"] <= 1.0
     assert result["replicates"] == 500
+
+def test_non_adjacent_correlated_features_keep_original_column_sign_indices():
+    rng = np.random.default_rng(13)
+    x = rng.normal(size=600)
+    independent = rng.normal(size=600)
+    inverse_x = -x + rng.normal(scale=0.02, size=600)
+    values = np.column_stack([x, independent, inverse_x])
+    groups = correlation_clusters(values, ["x", "independent", "inverse_x"])
+    signs, _ = align_cluster_signs(values, ["x", "independent", "inverse_x"], groups)
+    assert groups == [[0, 2], [1]]
+    assert signs == [1, 1, -1]
