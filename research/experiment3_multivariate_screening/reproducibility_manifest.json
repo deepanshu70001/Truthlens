@@ -1,7 +1,7 @@
 {
   "experiment": "TruthLens Experiment 3",
   "protocol_status": "exploratory_post_hoc",
-  "generated_utc": "2026-11-24T11:55:52Z",
+  "generated_utc": "2026-11-24T11:56:39Z",
   "source_commit": "f4baf15e67d2e837a17df7da0383cd0ede1a8b0a",
   "artifacts": {
     "bootstrap_confidence_intervals.json": {
@@ -21,11 +21,11 @@
       "byte_size": 882
     },
     "environment_versions.json": {
-      "sha256": "158fe65a2a8c0bbd513957ad6ec13922968918273fdfa50b89b8c3a7f958effa",
+      "sha256": "2a8dcd7d0cbbde5e6e7f70af71784ee9147354ef6e51b5e8427af52f188ec827",
       "byte_size": 201
     },
     "execution.log": {
-      "sha256": "eaf7840cd464e034771c397018123b49d02abe8b3c2f68e2147afb3f8b3e2b13",
+      "sha256": "ebac691adb666c018d0db139f95e3629c707750cde8acb3400f3227515fc7050",
       "byte_size": 280
     },
     "experiment3_config.json": {
@@ -33,7 +33,7 @@
       "byte_size": 2055
     },
     "experiment3_report.md": {
-      "sha256": "43596330d4b1cee9cfd333e74bbf6f00a125d82a114eafb11631178a567ee0c5",
+      "sha256": "01f9989ce3b00bc7cd2fa8aa854194ab79e8a6e35e7eb5e369fb1dde126cc3b4",
       "byte_size": 5342
     },
     "fold_summary.json": {
