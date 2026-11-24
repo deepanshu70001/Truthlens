@@ -316,13 +316,14 @@ def align_cluster_signs(x_train, feature_names, clusters):
     ranks = np.column_stack([rankdata(x_train[:, j], method="average") for j in range(x_train.shape[1])])
     corr = np.corrcoef(ranks, rowvar=False)
     corr = np.nan_to_num(corr, nan=0.0, posinf=0.0, neginf=0.0)
-    signs, metadata = [], []
+    signs = [1 for _ in feature_names]
+    metadata = []
     for cluster in clusters:
         anchor = min(cluster)
         cluster_signs = []
         for member in cluster:
             sign = 1 if member == anchor or corr[anchor, member] >= 0 else -1
-            signs.append(sign)
+            signs[member] = sign
             cluster_signs.append({"feature": feature_names[member], "sign_aligned_to_anchor": sign})
         metadata.append({"anchor": feature_names[anchor], "members": cluster_signs})
     return signs, metadata
