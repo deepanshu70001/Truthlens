@@ -1,0 +1,34 @@
+{
+  "M1_noise_edge": {
+    "method": "two-sided paired group-cluster sign-flip test, group signs independently flipped within fixed outer folds",
+    "replicates": 20000,
+    "seed": 315059,
+    "observed_delta": -0.008602913975395506,
+    "extreme_permutations": 1680,
+    "p_value_two_sided": 0.0840457977101145
+  },
+  "M2_texture_resampling": {
+    "method": "two-sided paired group-cluster sign-flip test, group signs independently flipped within fixed outer folds",
+    "replicates": 20000,
+    "seed": 315059,
+    "observed_delta": -0.011358220347479608,
+    "extreme_permutations": 19900,
+    "p_value_two_sided": 0.9950002499875006
+  },
+  "M3_all_four": {
+    "method": "two-sided paired group-cluster sign-flip test, group signs independently flipped within fixed outer folds",
+    "replicates": 20000,
+    "seed": 315059,
+    "observed_delta": -0.015188033190715551,
+    "extreme_permutations": 16771,
+    "p_value_two_sided": 0.8385580720963952
+  },
+  "M4_correlation_adjusted": {
+    "method": "two-sided paired group-cluster sign-flip test, group signs independently flipped within fixed outer folds",
+    "replicates": 20000,
+    "seed": 315059,
+    "observed_delta": -0.015188033190715548,
+    "extreme_permutations": 16771,
+    "p_value_two_sided": 0.8385580720963952
+  }
+}

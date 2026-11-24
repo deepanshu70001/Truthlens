@@ -1,0 +1,64 @@
+{
+  "experiment2_protocol_version": "1.2.1",
+  "experiment2_reproducibility_manifest": "research/experiment2_forensic_screening/reproducibility_manifest.json",
+  "authorized_manifest_sha256": "22ea2825c7ab75ef110c7a6e2a7c67e69459a3afd3ed6159adbcbed7abc168ed",
+  "authorized_row_count": 6995,
+  "baseline_model_identity": {
+    "model_id": "truthlens/siglip-cifake-frozen-head",
+    "backbone_model": "google/siglip-base-patch16-224",
+    "backbone_revision": "7fd15f0689c79d79e38b1c2e2e2370a7bf2761ed",
+    "checkpoint_file": "models\\baselines\\siglip_frozen_head.pt",
+    "checkpoint_sha256_initial": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+    "checkpoint_sha256_final": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+    "head_architecture": "torch.nn.Linear(768, 1, bias=True)",
+    "training_provenance": "Trained externally on CIFAKE benchmark; out-of-sample with respect to 6,995 Tiny-GenImage rows"
+  },
+  "verified_inputs": {
+    "training_manifest": {
+      "path": "experiments/manifests/phase4_training_manifest.csv",
+      "expected_sha256": "22ea2825c7ab75ef110c7a6e2a7c67e69459a3afd3ed6159adbcbed7abc168ed",
+      "actual_sha256": "823cfec384f38ae868a11aa0aad49a5141a29a8134f331474997d6372b7bda0e",
+      "crlf_reconstructed_sha256": "22ea2825c7ab75ef110c7a6e2a7c67e69459a3afd3ed6159adbcbed7abc168ed",
+      "actual_byte_size": 4158816,
+      "expected_original_byte_size": null,
+      "status": "verified_after_crlf_reconstruction"
+    },
+    "baseline_checkpoint": {
+      "path": "models/baselines/siglip_frozen_head.pt",
+      "expected_sha256": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+      "actual_sha256": "e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538",
+      "crlf_reconstructed_sha256": "0b6277b0cd5979c9905c011b442bf3ae720dc73a32ac7117b847e10afbad6d5a",
+      "actual_byte_size": 5053,
+      "expected_original_byte_size": null,
+      "status": "exact"
+    },
+    "forensic_features.csv": {
+      "path": "research/experiment2_forensic_screening/forensic_features.csv",
+      "expected_sha256": "78ac957bc584da322b8bb26a6d2b9d5e0b5749510eb5007c447faa901a3e259e",
+      "actual_sha256": "e046c770f892a3a194d902850748caa4526b97375815435bbbe15b5904ce3047",
+      "crlf_reconstructed_sha256": "78ac957bc584da322b8bb26a6d2b9d5e0b5749510eb5007c447faa901a3e259e",
+      "actual_byte_size": 2843971,
+      "expected_original_byte_size": 2850967,
+      "status": "verified_after_crlf_reconstruction"
+    },
+    "fold_assignments.csv": {
+      "path": "research/experiment2_forensic_screening/fold_assignments.csv",
+      "expected_sha256": "5e63f2d651e0d46a4b989fc28fa60d7f48c48ddd7be353a4c2f239ca003d3a7b",
+      "actual_sha256": "c8d3e254d3c78c9a155ab32d5bd5ab5fbb1ec966ac1036c6d1ce6806fa2ec7b9",
+      "crlf_reconstructed_sha256": "5e63f2d651e0d46a4b989fc28fa60d7f48c48ddd7be353a4c2f239ca003d3a7b",
+      "actual_byte_size": 487348,
+      "expected_original_byte_size": 494344,
+      "status": "verified_after_crlf_reconstruction"
+    },
+    "siglip_logits.csv": {
+      "path": "research/experiment2_forensic_screening/siglip_logits.csv",
+      "expected_sha256": "63b05a001136b74b4408b5094a0e7e9cde80657eb7b931d666c2159ef50a1dd2",
+      "actual_sha256": "a0c51f9969ea1fa53505dbb789b300a60f8154791a23e7414b91802ed12068df",
+      "crlf_reconstructed_sha256": "63b05a001136b74b4408b5094a0e7e9cde80657eb7b931d666c2159ef50a1dd2",
+      "actual_byte_size": 739547,
+      "expected_original_byte_size": 746543,
+      "status": "verified_after_crlf_reconstruction"
+    }
+  },
+  "hash_policy": "Accept exact bytes or CRLF reconstruction only; otherwise fail closed."
+}

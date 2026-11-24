@@ -1,0 +1,937 @@
+{
+  "M0_siglip_baseline": {
+    "1": {
+      "selected_C": 100.0,
+      "n_train": 4291,
+      "n_test": 2645,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.6444098323403515,
+          "0.001": 0.6421001980945473,
+          "0.01": 0.6407068099214144,
+          "0.1": 0.6406439324539693,
+          "1.0": 0.6406430963792561,
+          "10.0": 0.6406430842665305,
+          "100.0": 0.6406430837911754
+        },
+        "selected_C": 100.0,
+        "transform": {
+          "clusters": [],
+          "dimensions_after_adjustment": 0
+        }
+      }
+    },
+    "2": {
+      "selected_C": 1.0,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8164115945339304,
+          "0.001": 0.7921809375473712,
+          "0.01": 0.780534972347813,
+          "0.1": 0.7794422688395346,
+          "1.0": 0.7793284044871598,
+          "10.0": 0.7793506739108267,
+          "100.0": 0.7793496504726962
+        },
+        "selected_C": 1.0,
+        "transform": {
+          "clusters": [],
+          "dimensions_after_adjustment": 0
+        }
+      }
+    },
+    "3": {
+      "selected_C": 100.0,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8212448870957074,
+          "0.001": 0.8025927424438521,
+          "0.01": 0.7943228796273266,
+          "0.1": 0.7936445478165615,
+          "1.0": 0.7936079173267233,
+          "10.0": 0.793602256657336,
+          "100.0": 0.7936016907862604
+        },
+        "selected_C": 100.0,
+        "transform": {
+          "clusters": [],
+          "dimensions_after_adjustment": 0
+        }
+      }
+    },
+    "4": {
+      "selected_C": 1.0,
+      "n_train": 5864,
+      "n_test": 1072,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.827059050701818,
+          "0.001": 0.8126819086020391,
+          "0.01": 0.8072401721514142,
+          "0.1": 0.806973028653762,
+          "1.0": 0.806945788409905,
+          "10.0": 0.8069792883147995,
+          "100.0": 0.8069791237755501
+        },
+        "selected_C": 1.0,
+        "transform": {
+          "clusters": [],
+          "dimensions_after_adjustment": 0
+        }
+      }
+    },
+    "5": {
+      "selected_C": 0.01,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8221863217561691,
+          "0.001": 0.8129347934972868,
+          "0.01": 0.8122304306408229,
+          "0.1": 0.812838728573805,
+          "1.0": 0.8129547154988885,
+          "10.0": 0.8129638118043353,
+          "100.0": 0.8129647236715425
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [],
+          "dimensions_after_adjustment": 0
+        }
+      }
+    }
+  },
+  "M1_noise_edge": {
+    "1": {
+      "selected_C": 0.01,
+      "n_train": 4291,
+      "n_test": 2645,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.6445377431050823,
+          "0.001": 0.6427758649247394,
+          "0.01": 0.6420283363044569,
+          "0.1": 0.6422320514177519,
+          "1.0": 0.6422679890321893,
+          "10.0": 0.642271750020581,
+          "100.0": 0.642272127793495
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ]
+          ],
+          "dimensions_after_adjustment": 2
+        }
+      }
+    },
+    "2": {
+      "selected_C": 0.01,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8163150253414362,
+          "0.001": 0.7946459141096739,
+          "0.01": 0.7871451225178816,
+          "0.1": 0.7876610912139147,
+          "1.0": 0.7877830881855982,
+          "10.0": 0.7877961826945602,
+          "100.0": 0.7877975006406832
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ]
+          ],
+          "dimensions_after_adjustment": 2
+        }
+      }
+    },
+    "3": {
+      "selected_C": 0.01,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.820003427044041,
+          "0.001": 0.8008273091725817,
+          "0.01": 0.7947442192101302,
+          "0.1": 0.7951779491442275,
+          "1.0": 0.7952907071582523,
+          "10.0": 0.7953024148402563,
+          "100.0": 0.7953035913659097
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ]
+          ],
+          "dimensions_after_adjustment": 2
+        }
+      }
+    },
+    "4": {
+      "selected_C": 0.01,
+      "n_train": 5864,
+      "n_test": 1072,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8259952660919053,
+          "0.001": 0.8103994181614396,
+          "0.01": 0.8054878420690013,
+          "0.1": 0.8057694978412994,
+          "1.0": 0.805850035531739,
+          "10.0": 0.8058589804485148,
+          "100.0": 0.8058598833996294
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ]
+          ],
+          "dimensions_after_adjustment": 2
+        }
+      }
+    },
+    "5": {
+      "selected_C": 0.001,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8219662358889988,
+          "0.001": 0.8140568874319531,
+          "0.01": 0.8161543801558939,
+          "0.1": 0.8180720326046745,
+          "1.0": 0.8183195213973844,
+          "10.0": 0.8183461280052284,
+          "100.0": 0.8183487972536669
+        },
+        "selected_C": 0.001,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ]
+          ],
+          "dimensions_after_adjustment": 2
+        }
+      }
+    }
+  },
+  "M2_texture_resampling": {
+    "1": {
+      "selected_C": 0.1,
+      "n_train": 4291,
+      "n_test": 2645,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.6426476376569914,
+          "0.001": 0.6332068039928247,
+          "0.01": 0.6275288288610187,
+          "0.1": 0.6273685649276488,
+          "1.0": 0.627394174643263,
+          "10.0": 0.6273971374361806,
+          "100.0": 0.627397440839363
+        },
+        "selected_C": 0.1,
+        "transform": {
+          "clusters": [
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "dimensions_after_adjustment": 2
+        }
+      }
+    },
+    "2": {
+      "selected_C": 0.01,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8147129903101176,
+          "0.001": 0.7860627399781657,
+          "0.01": 0.777511841406985,
+          "0.1": 0.77959148550872,
+          "1.0": 0.7800060883282796,
+          "10.0": 0.7800512597475937,
+          "100.0": 0.780055817512838
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "dimensions_after_adjustment": 2
+        }
+      }
+    },
+    "3": {
+      "selected_C": 0.01,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8196557640073471,
+          "0.001": 0.797061351822941,
+          "0.01": 0.7935871676345664,
+          "0.1": 0.7978432468250516,
+          "1.0": 0.7987164300341494,
+          "10.0": 0.7988135513996637,
+          "100.0": 0.7988233716955648
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "dimensions_after_adjustment": 2
+        }
+      }
+    },
+    "4": {
+      "selected_C": 0.01,
+      "n_train": 5864,
+      "n_test": 1072,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8256079598177857,
+          "0.001": 0.8072225885617347,
+          "0.01": 0.8034943012870701,
+          "0.1": 0.8052146483873022,
+          "1.0": 0.8055534292420021,
+          "10.0": 0.8055855994713036,
+          "100.0": 0.8055888361205064
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "dimensions_after_adjustment": 2
+        }
+      }
+    },
+    "5": {
+      "selected_C": 0.001,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8222624896327481,
+          "0.001": 0.8151121215524108,
+          "0.01": 0.8230569833442685,
+          "0.1": 0.8296835394326786,
+          "1.0": 0.8311368733530049,
+          "10.0": 0.8312895223020578,
+          "100.0": 0.8313049850131125
+        },
+        "selected_C": 0.001,
+        "transform": {
+          "clusters": [
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "dimensions_after_adjustment": 2
+        }
+      }
+    }
+  },
+  "M3_all_four": {
+    "1": {
+      "selected_C": 0.01,
+      "n_train": 4291,
+      "n_test": 2645,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.6427754347195778,
+          "0.001": 0.6339307783303707,
+          "0.01": 0.6290404683102147,
+          "0.1": 0.6291375517352233,
+          "1.0": 0.6291900641172582,
+          "10.0": 0.6291960064941646,
+          "100.0": 0.6291966079885266
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ],
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "dimensions_after_adjustment": 4
+        }
+      }
+    },
+    "2": {
+      "selected_C": 0.01,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8145780613075048,
+          "0.001": 0.7881256930818037,
+          "0.01": 0.7823067567578296,
+          "0.1": 0.7853039288676934,
+          "1.0": 0.7858496443964903,
+          "10.0": 0.7859082869301213,
+          "100.0": 0.7859141946577362
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ],
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "dimensions_after_adjustment": 4
+        }
+      }
+    },
+    "3": {
+      "selected_C": 0.01,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8183980498432315,
+          "0.001": 0.794888285456149,
+          "0.01": 0.7921043716559318,
+          "0.1": 0.7966944498229425,
+          "1.0": 0.7976070706810543,
+          "10.0": 0.7977080927429834,
+          "100.0": 0.7977183056041955
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ],
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "dimensions_after_adjustment": 4
+        }
+      }
+    },
+    "4": {
+      "selected_C": 0.01,
+      "n_train": 5864,
+      "n_test": 1072,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8245388038659496,
+          "0.001": 0.8049062171425974,
+          "0.01": 0.8012484598299678,
+          "0.1": 0.8032887668896054,
+          "1.0": 0.8036530298616537,
+          "10.0": 0.8036882071446074,
+          "100.0": 0.8036917395643031
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ],
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "dimensions_after_adjustment": 4
+        }
+      }
+    },
+    "5": {
+      "selected_C": 0.001,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8220112280604335,
+          "0.001": 0.8158089419958421,
+          "0.01": 0.8251223359752287,
+          "0.1": 0.83232686395402,
+          "1.0": 0.833700704909106,
+          "10.0": 0.8338562245907366,
+          "100.0": 0.833871974435519
+        },
+        "selected_C": 0.001,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ],
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "dimensions_after_adjustment": 4
+        }
+      }
+    }
+  },
+  "M4_correlation_adjusted": {
+    "1": {
+      "selected_C": 0.01,
+      "n_train": 4291,
+      "n_test": 2645,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.6427754347195778,
+          "0.001": 0.6339307783303708,
+          "0.01": 0.6290404683102147,
+          "0.1": 0.6291375517352233,
+          "1.0": 0.6291900641172583,
+          "10.0": 0.6291960064941646,
+          "100.0": 0.6291966079885266
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ],
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "sign_alignment": [
+            {
+              "anchor": "noise_consistency",
+              "members": [
+                {
+                  "feature": "noise_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "edge_consistency",
+              "members": [
+                {
+                  "feature": "edge_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "texture_consistency",
+              "members": [
+                {
+                  "feature": "texture_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "resampling_clues",
+              "members": [
+                {
+                  "feature": "resampling_clues",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            }
+          ],
+          "dimensions_after_adjustment": 4,
+          "threshold_abs_spearman": 0.85,
+          "clustering": "complete_linkage"
+        }
+      }
+    },
+    "2": {
+      "selected_C": 0.01,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8145780613075048,
+          "0.001": 0.7881256930818037,
+          "0.01": 0.7823067567578296,
+          "0.1": 0.7853039288676933,
+          "1.0": 0.7858496443964903,
+          "10.0": 0.7859082869301214,
+          "100.0": 0.7859141946577363
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ],
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "sign_alignment": [
+            {
+              "anchor": "noise_consistency",
+              "members": [
+                {
+                  "feature": "noise_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "edge_consistency",
+              "members": [
+                {
+                  "feature": "edge_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "texture_consistency",
+              "members": [
+                {
+                  "feature": "texture_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "resampling_clues",
+              "members": [
+                {
+                  "feature": "resampling_clues",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            }
+          ],
+          "dimensions_after_adjustment": 4,
+          "threshold_abs_spearman": 0.85,
+          "clustering": "complete_linkage"
+        }
+      }
+    },
+    "3": {
+      "selected_C": 0.01,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.818398049843199,
+          "0.001": 0.7948882854561489,
+          "0.01": 0.7921043716559318,
+          "0.1": 0.7966944498229422,
+          "1.0": 0.7976070706810543,
+          "10.0": 0.7977080927429834,
+          "100.0": 0.7977183056041955
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ],
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "sign_alignment": [
+            {
+              "anchor": "noise_consistency",
+              "members": [
+                {
+                  "feature": "noise_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "edge_consistency",
+              "members": [
+                {
+                  "feature": "edge_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "texture_consistency",
+              "members": [
+                {
+                  "feature": "texture_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "resampling_clues",
+              "members": [
+                {
+                  "feature": "resampling_clues",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            }
+          ],
+          "dimensions_after_adjustment": 4,
+          "threshold_abs_spearman": 0.85,
+          "clustering": "complete_linkage"
+        }
+      }
+    },
+    "4": {
+      "selected_C": 0.01,
+      "n_train": 5864,
+      "n_test": 1072,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8245388038659496,
+          "0.001": 0.8049062171425974,
+          "0.01": 0.8012484598299677,
+          "0.1": 0.8032887668896054,
+          "1.0": 0.8036530298616537,
+          "10.0": 0.8036882071446074,
+          "100.0": 0.8036917395643031
+        },
+        "selected_C": 0.01,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ],
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "sign_alignment": [
+            {
+              "anchor": "noise_consistency",
+              "members": [
+                {
+                  "feature": "noise_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "edge_consistency",
+              "members": [
+                {
+                  "feature": "edge_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "texture_consistency",
+              "members": [
+                {
+                  "feature": "texture_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "resampling_clues",
+              "members": [
+                {
+                  "feature": "resampling_clues",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            }
+          ],
+          "dimensions_after_adjustment": 4,
+          "threshold_abs_spearman": 0.85,
+          "clustering": "complete_linkage"
+        }
+      }
+    },
+    "5": {
+      "selected_C": 0.001,
+      "n_train": 5863,
+      "n_test": 1073,
+      "fit": {
+        "inner_cv_mean_log_loss_by_C": {
+          "0.0001": 0.8220112280604334,
+          "0.001": 0.8158089419958421,
+          "0.01": 0.8251223359752285,
+          "0.1": 0.83232686395402,
+          "1.0": 0.8337007049091061,
+          "10.0": 0.8338562245907368,
+          "100.0": 0.833871974435519
+        },
+        "selected_C": 0.001,
+        "transform": {
+          "clusters": [
+            [
+              "noise_consistency"
+            ],
+            [
+              "edge_consistency"
+            ],
+            [
+              "texture_consistency"
+            ],
+            [
+              "resampling_clues"
+            ]
+          ],
+          "sign_alignment": [
+            {
+              "anchor": "noise_consistency",
+              "members": [
+                {
+                  "feature": "noise_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "edge_consistency",
+              "members": [
+                {
+                  "feature": "edge_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "texture_consistency",
+              "members": [
+                {
+                  "feature": "texture_consistency",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            },
+            {
+              "anchor": "resampling_clues",
+              "members": [
+                {
+                  "feature": "resampling_clues",
+                  "sign_aligned_to_anchor": 1
+                }
+              ]
+            }
+          ],
+          "dimensions_after_adjustment": 4,
+          "threshold_abs_spearman": 0.85,
+          "clustering": "complete_linkage"
+        }
+      }
+    }
+  }
+}

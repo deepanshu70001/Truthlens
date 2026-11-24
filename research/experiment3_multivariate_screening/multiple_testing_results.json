@@ -1,0 +1,28 @@
+{
+  "method": "Benjamini-Hochberg",
+  "family": [
+    "M1_noise_edge",
+    "M2_texture_resampling",
+    "M3_all_four",
+    "M4_correlation_adjusted"
+  ],
+  "alpha": 0.05,
+  "raw_p_values": {
+    "M1_noise_edge": 0.0840457977101145,
+    "M2_texture_resampling": 0.9950002499875006,
+    "M3_all_four": 0.8385580720963952,
+    "M4_correlation_adjusted": 0.8385580720963952
+  },
+  "adjusted_q_values": {
+    "M2_texture_resampling": 0.9950002499875006,
+    "M4_correlation_adjusted": 0.9950002499875006,
+    "M3_all_four": 0.9950002499875006,
+    "M1_noise_edge": 0.336183190840458
+  },
+  "verdicts": {
+    "M1_noise_edge": "EXPLORATORY_INCONCLUSIVE",
+    "M2_texture_resampling": "EXPLORATORY_INCONCLUSIVE",
+    "M3_all_four": "EXPLORATORY_INCONCLUSIVE",
+    "M4_correlation_adjusted": "EXPLORATORY_INCONCLUSIVE"
+  }
+}

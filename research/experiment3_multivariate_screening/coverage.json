@@ -1,0 +1,17 @@
+{
+  "definition": "Common intersection where all four continuous probes are successful and finite.",
+  "n": 6936,
+  "coverage_pct": 99.1565,
+  "class_counts": {
+    "ai_generated": 3424,
+    "likely_authentic": 3512
+  },
+  "unique_groups": 903,
+  "excluded_n": 59,
+  "exclusion_reason_combinations": {
+    "resampling_clues_outcome_not_applicable;resampling_clues_score_missing_or_nonfinite": 59
+  },
+  "imputation": "none",
+  "ela_included": false,
+  "jpeg_artifacts_included": false
+}

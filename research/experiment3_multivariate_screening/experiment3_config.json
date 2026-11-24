@@ -1,0 +1,86 @@
+{
+  "experiment": "Experiment 3: Multivariate Forensic Complementarity Screening",
+  "protocol_version": "1.0.0-exploratory",
+  "study_status": "EXPLORATORY_POST_HOC_AFTER_EXPERIMENT2_GATE_FAILURE",
+  "authorization_date": "2026-11-24",
+  "seed": 314159,
+  "authorized_training_rows": 6995,
+  "outer_folds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "outer_fold_source": "Experiment 2 immutable group-aware assignments",
+  "inner_folds": 4,
+  "inner_splitter": "StratifiedGroupKFold",
+  "classifier": "L2 LogisticRegression(lbfgs, max_iter=3000)",
+  "regularization_grid_C": [
+    0.0001,
+    0.001,
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0
+  ],
+  "feature_scaling": "training-fold StandardScaler only",
+  "correlation_adjustment": {
+    "method": "absolute Spearman, complete linkage, signed alignment to deterministic cluster anchor",
+    "threshold": 0.85,
+    "fit_scope": "inner and outer training folds only"
+  },
+  "no_imputation": true,
+  "primary_endpoint": "paired OOF delta log-loss improvement = log_loss(M0) - log_loss(Mj)",
+  "bootstrap_replicates": 5000,
+  "signflip_replicates": 20000,
+  "multiple_testing": "Benjamini-Hochberg over M1-M4",
+  "fdr_alpha": 0.05,
+  "models": {
+    "M0_siglip_baseline": [
+      [],
+      false
+    ],
+    "M1_noise_edge": [
+      [
+        "noise_consistency",
+        "edge_consistency"
+      ],
+      false
+    ],
+    "M2_texture_resampling": [
+      [
+        "texture_consistency",
+        "resampling_clues"
+      ],
+      false
+    ],
+    "M3_all_four": [
+      [
+        "noise_consistency",
+        "edge_consistency",
+        "texture_consistency",
+        "resampling_clues"
+      ],
+      false
+    ],
+    "M4_correlation_adjusted": [
+      [
+        "noise_consistency",
+        "edge_consistency",
+        "texture_consistency",
+        "resampling_clues"
+      ],
+      true
+    ]
+  },
+  "not_accessed": [
+    "diagnostic validation partition",
+    "calibration partition",
+    "held-out benchmark",
+    "protected reserve",
+    "source images",
+    "Phase 9 validation features"
+  ]
+}

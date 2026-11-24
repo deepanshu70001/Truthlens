@@ -1,0 +1,287 @@
+{
+  "1": {
+    "fit_scope": "outer training fold only",
+    "threshold_abs_spearman": 0.85,
+    "clusters": [
+      [
+        "noise_consistency"
+      ],
+      [
+        "edge_consistency"
+      ],
+      [
+        "texture_consistency"
+      ],
+      [
+        "resampling_clues"
+      ]
+    ],
+    "sign_alignment": [
+      {
+        "anchor": "noise_consistency",
+        "members": [
+          {
+            "feature": "noise_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "edge_consistency",
+        "members": [
+          {
+            "feature": "edge_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "texture_consistency",
+        "members": [
+          {
+            "feature": "texture_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "resampling_clues",
+        "members": [
+          {
+            "feature": "resampling_clues",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      }
+    ],
+    "reduced_dimensions": 4
+  },
+  "2": {
+    "fit_scope": "outer training fold only",
+    "threshold_abs_spearman": 0.85,
+    "clusters": [
+      [
+        "noise_consistency"
+      ],
+      [
+        "edge_consistency"
+      ],
+      [
+        "texture_consistency"
+      ],
+      [
+        "resampling_clues"
+      ]
+    ],
+    "sign_alignment": [
+      {
+        "anchor": "noise_consistency",
+        "members": [
+          {
+            "feature": "noise_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "edge_consistency",
+        "members": [
+          {
+            "feature": "edge_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "texture_consistency",
+        "members": [
+          {
+            "feature": "texture_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "resampling_clues",
+        "members": [
+          {
+            "feature": "resampling_clues",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      }
+    ],
+    "reduced_dimensions": 4
+  },
+  "3": {
+    "fit_scope": "outer training fold only",
+    "threshold_abs_spearman": 0.85,
+    "clusters": [
+      [
+        "noise_consistency"
+      ],
+      [
+        "edge_consistency"
+      ],
+      [
+        "texture_consistency"
+      ],
+      [
+        "resampling_clues"
+      ]
+    ],
+    "sign_alignment": [
+      {
+        "anchor": "noise_consistency",
+        "members": [
+          {
+            "feature": "noise_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "edge_consistency",
+        "members": [
+          {
+            "feature": "edge_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "texture_consistency",
+        "members": [
+          {
+            "feature": "texture_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "resampling_clues",
+        "members": [
+          {
+            "feature": "resampling_clues",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      }
+    ],
+    "reduced_dimensions": 4
+  },
+  "4": {
+    "fit_scope": "outer training fold only",
+    "threshold_abs_spearman": 0.85,
+    "clusters": [
+      [
+        "noise_consistency"
+      ],
+      [
+        "edge_consistency"
+      ],
+      [
+        "texture_consistency"
+      ],
+      [
+        "resampling_clues"
+      ]
+    ],
+    "sign_alignment": [
+      {
+        "anchor": "noise_consistency",
+        "members": [
+          {
+            "feature": "noise_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "edge_consistency",
+        "members": [
+          {
+            "feature": "edge_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "texture_consistency",
+        "members": [
+          {
+            "feature": "texture_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "resampling_clues",
+        "members": [
+          {
+            "feature": "resampling_clues",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      }
+    ],
+    "reduced_dimensions": 4
+  },
+  "5": {
+    "fit_scope": "outer training fold only",
+    "threshold_abs_spearman": 0.85,
+    "clusters": [
+      [
+        "noise_consistency"
+      ],
+      [
+        "edge_consistency"
+      ],
+      [
+        "texture_consistency"
+      ],
+      [
+        "resampling_clues"
+      ]
+    ],
+    "sign_alignment": [
+      {
+        "anchor": "noise_consistency",
+        "members": [
+          {
+            "feature": "noise_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "edge_consistency",
+        "members": [
+          {
+            "feature": "edge_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "texture_consistency",
+        "members": [
+          {
+            "feature": "texture_consistency",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      },
+      {
+        "anchor": "resampling_clues",
+        "members": [
+          {
+            "feature": "resampling_clues",
+            "sign_aligned_to_anchor": 1
+          }
+        ]
+      }
+    ],
+    "reduced_dimensions": 4
+  }
+}
