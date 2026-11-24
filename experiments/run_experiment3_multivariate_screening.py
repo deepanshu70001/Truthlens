@@ -667,6 +667,28 @@ def run():
     }
     (OUT / "environment_versions.json").write_text(json.dumps(environment, indent=2), encoding="utf-8")
 
+    results_payload = {
+        "experiment": "TruthLens Experiment 3: Multivariate Forensic Complementarity Screening",
+        "status": "COMPLETED_EXPLORATORY",
+        "study_status": "EXPLORATORY_POST_HOC_AFTER_EXPERIMENT2_GATE_FAILURE",
+        "cohort": coverage,
+        "dataset_integrity": integrity,
+        "model_metrics": metrics,
+        "paired_comparisons": paired,
+        "bootstrap_confidence_intervals": bootstraps,
+        "permutation_tests": permutations,
+        "multiple_testing": {"family": COMPARISONS, "alpha": FDR_ALPHA, "raw_p_values": p_values, "adjusted_q_values": q_values},
+        "correlation_clusters_by_outer_fold": corr_details,
+        "environment": environment,
+        "interpretation_guardrails": [
+            "Exploratory post hoc analysis; not an independent confirmatory replication.",
+            "All authorized real images are JPEG and all authorized AI images are PNG; label and format are perfectly confounded.",
+            "No result authorizes directional forensic voting in production fusion.",
+            "Held-out benchmark, calibration and reserve partitions were not accessed.",
+        ],
+    }
+    (OUT / "experiment3_results.json").write_text(json.dumps(results_payload, indent=2), encoding="utf-8")
+
     rows = []
     for name in COMPARISONS:
         item = paired[name]
@@ -756,7 +778,7 @@ paired_metrics.json includes pooled log-loss and Brier score, macro outer-fold R
 
 ## 8. Reproducibility
 
-See experiment3_config.json, input_integrity.json, dataset_integrity.json, coverage.json, fold_summary.json, model_fit_details.json, oof_predictions.csv, paired_metrics.json, bootstrap_confidence_intervals.json, permutation_results.json, multiple_testing_results.json, environment_versions.json, and reproducibility_manifest.json.
+See experiment3_results.json, experiment3_config.json, input_integrity.json, dataset_integrity.json, coverage.json, fold_summary.json, model_fit_details.json, oof_predictions.csv, paired_metrics.json, bootstrap_confidence_intervals.json, permutation_results.json, multiple_testing_results.json, environment_versions.json, and reproducibility_manifest.json.
 
 Runtime: {environment['runtime_seconds']:.3f} seconds.
 """
@@ -774,7 +796,8 @@ Runtime: {environment['runtime_seconds']:.3f} seconds.
         "experiment": "TruthLens Experiment 3",
         "protocol_status": "exploratory_post_hoc",
         "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "source_commit": "f4baf15e67d2e837a17df7da0383cd0ede1a8b0a",
+        "input_baseline_commit": "f4baf15e67d2e837a17df7da0383cd0ede1a8b0a",
+        "implementation_commit": os.environ.get("GITHUB_SHA", "local_or_unknown"),
         "artifacts": {
             p.name: {"sha256": sha256_file(p), "byte_size": p.stat().st_size}
             for p in artifacts
