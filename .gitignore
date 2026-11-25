@@ -107,6 +107,7 @@ tmp/
 # --- Logs ---
 logs/
 *.log
+!research/experiment3_multivariate_screening/execution.log
 
 # --- Test & Coverage ---
 .coverage

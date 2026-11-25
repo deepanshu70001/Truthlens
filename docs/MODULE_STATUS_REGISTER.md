@@ -130,6 +130,20 @@ No status change is made for R11–R13. Production SigLIP checkpoint, calibratio
 5. **Unauthorized Status of Experiment 4:** Final benchmark evaluation (Experiment 4) is **UNAUTHORIZED**. The 10,385-sample held-out partition and 2,999-sample retained reserve partition remain locked and unaccessed.
 6. **Integrity and Production Safety:** Production SigLIP checkpoint (`models/baselines/siglip_frozen_head.pt`, SHA-256 `e39afc5536a0de44dd07fd33fa911bbd58d8799b85e680eb08d532222d974538`) is completely unchanged. All 53 regression tests pass. Full audit details in `research/experiment2_forensic_screening/experiment2_closeout_audit.md`.
 
+## Research update — Experiment 3: Multivariate Forensic Complementarity Screening (2026-11-24)
+
+| Experiment | Status | Evidence and governance boundary |
+|---|---|---|
+| Experiment 3 — Multivariate Forensic Screening | **`EXPLORATORY_POST_HOC_AFTER_EXPERIMENT2_GATE_FAILURE`** | Evaluated 4 multivariate fusion candidates ($M_1$ noise+edge, $M_2$ texture+resampling, $M_3$ all four, $M_4$ correlation-adjusted) against SigLIP-logit-only logistic reference model ($M_0$) across 6,936 complete-case samples (3,512 Real, 3,424 AI, 903 groups) in nested 5-fold group-aware CV. Formally failed to reject null hypothesis (all BH FDR $q \ge 0.336183$). Point estimates uniformly negative ($\Delta\mathcal{L} \in [-0.015188, -0.008603]$). Reaffirms rejection of directional forensic fusion. Implementation commit: `8981f8b052cb08e2cffb6c130b5b2fdd44f8290b`; results-artifact commit: `c02c1d7218b59e615c4e79409bd936bafb25d430`. Experiment 4 remains **UNAUTHORIZED**. See [research/experiment3_multivariate_screening/experiment3_closeout_audit.md](file:///D:/Projects/Truthlens/research/experiment3_multivariate_screening/experiment3_closeout_audit.md). |
+
+### Key empirical findings and governance decisions:
+1. **Multivariate Fusion Performance Degradation:** Adding classical forensic indicators to the SigLIP reference model degraded pooled out-of-fold log-loss from $0.755336$ ($M_0$) to $0.763939$ ($M_1$), $0.766694$ ($M_2$), and $0.770524$ ($M_3$/$M_4$).
+2. **Non-Monotonicity of Secondary Metrics:** While log loss degrades monotonically across candidate models, secondary ranking/classification metrics exhibit non-monotonic behavior ($M_2$ macro PR-AUC 0.506612 vs 0.505718 for $M_0$; $M_2$ macro balanced accuracy 0.554586 vs 0.529410 for $M_0$), but none achieve statistical significance (all bootstrap intervals span zero).
+3. **Severe Outer-Fold and Group-Size Imbalance:** Outer Fold 1 contains 2,703 samples across 51 groups (73.99% AI), whereas Folds 2–5 each contain 1,073 samples across 212–214 groups (34.48% AI), causing cross-fold base-rate shifts that distort pooled ranking metrics.
+4. **Correlation Clustering Equivalence ($M_3 \equiv M_4$ on training folds):** Complete-linkage clustering at $|r_s| \ge 0.85$ across all outer folds yielded 4 singleton clusters, making $M_4$ mathematically equivalent to standardized $M_3$ on this dataset.
+5. **Format Confounding and Generator Diversity:** 100% of authentic images are JPEG, 100% of AI images are PNG (ELA/JPEG non-identifiable and excluded). AI class dominated by specific generative families.
+6. **Final Forensic Disposition:** Classical forensics remain strictly non-directional, contextual heuristics in `backend/app/services/fusion/engine.py`. Production weights and thresholds frozen.
+
 ## Package B amendment — current status (2026-11-24)
 
 Package B implementation, hardening, and verification is completed across all 6 workstreams. Full details are documented in [docs/PACKAGE_B_EXECUTIVE_REPORT.md](file:///D:/Projects/Truthlens/docs/PACKAGE_B_EXECUTIVE_REPORT.md).

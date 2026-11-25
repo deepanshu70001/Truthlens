@@ -83,6 +83,15 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+def write_json(path: Path, data) -> None:
+    text = json.dumps(data, indent=2)
+    path.write_text(text, encoding="utf-8", newline="\n")
+
+
+def write_text(path: Path, text: str) -> None:
+    path.write_text(text, encoding="utf-8", newline="\n")
+
+
 def crlf_reconstruction(data: bytes) -> bytes:
     return data.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
 
@@ -401,6 +410,7 @@ def fit_outer(train, test, splits, feature_names, correlation_adjusted):
             model = LogisticRegression(C=float(c), penalty="l2", solver="lbfgs", max_iter=3000, random_state=SEED)
             with warnings.catch_warnings():
                 warnings.simplefilter("error")
+                warnings.filterwarnings("ignore", category=DeprecationWarning)
                 model.fit(xtr, y[tr])
             fold_losses.append(logloss(y[va], model.predict_proba(xva)[:, 1]))
         if len(fold_losses) != INNER_FOLDS:
@@ -412,6 +422,7 @@ def fit_outer(train, test, splits, feature_names, correlation_adjusted):
     final = LogisticRegression(C=float(best_c), penalty="l2", solver="lbfgs", max_iter=3000, random_state=SEED)
     with warnings.catch_warnings():
         warnings.simplefilter("error")
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         final.fit(xtr, y)
     return final.predict_proba(xte)[:, 1], float(best_c), {
         "inner_cv_mean_log_loss_by_C": losses_by_c, "selected_C": float(best_c), "transform": transform,
@@ -613,8 +624,8 @@ def run():
         for name in MODELS:
             item[f"{name}_prob_ai"] = predictions[name][row["sample_id"]]
         oof.append(item)
-    with (OUT / "oof_predictions.csv").open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=list(oof[0]))
+    with (OUT / "oof_predictions.csv").open("w", encoding="utf-8", newline="\n") as f:
+        writer = csv.DictWriter(f, fieldnames=list(oof[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(oof)
 
@@ -644,28 +655,35 @@ def run():
         ],
     }
     fold_summary = {"outer_folds": integrity["fold_summary"], "inner_folds": inner_details}
-    (OUT / "experiment3_config.json").write_text(json.dumps(config, indent=2), encoding="utf-8")
-    (OUT / "input_integrity.json").write_text(json.dumps(provenance, indent=2), encoding="utf-8")
-    (OUT / "dataset_integrity.json").write_text(json.dumps(integrity, indent=2), encoding="utf-8")
-    (OUT / "coverage.json").write_text(json.dumps(coverage, indent=2), encoding="utf-8")
-    (OUT / "fold_summary.json").write_text(json.dumps(fold_summary, indent=2), encoding="utf-8")
-    (OUT / "correlation_clusters_by_outer_fold.json").write_text(json.dumps(corr_details, indent=2), encoding="utf-8")
-    (OUT / "model_fit_details.json").write_text(json.dumps(fit_details, indent=2), encoding="utf-8")
-    (OUT / "paired_metrics.json").write_text(json.dumps({"models": metrics, "comparisons": paired}, indent=2), encoding="utf-8")
-    (OUT / "bootstrap_confidence_intervals.json").write_text(json.dumps(bootstraps, indent=2), encoding="utf-8")
-    (OUT / "permutation_results.json").write_text(json.dumps(permutations, indent=2), encoding="utf-8")
-    (OUT / "multiple_testing_results.json").write_text(json.dumps({
+
+    # Normalize protocol.md to ensure standard POSIX newline
+    proto_path = OUT / "protocol.md"
+    if proto_path.is_file():
+        proto_text = proto_path.read_text(encoding="utf-8")
+        write_text(proto_path, proto_text)
+
+    write_json(OUT / "experiment3_config.json", config)
+    write_json(OUT / "input_integrity.json", provenance)
+    write_json(OUT / "dataset_integrity.json", integrity)
+    write_json(OUT / "coverage.json", coverage)
+    write_json(OUT / "fold_summary.json", fold_summary)
+    write_json(OUT / "correlation_clusters_by_outer_fold.json", corr_details)
+    write_json(OUT / "model_fit_details.json", fit_details)
+    write_json(OUT / "paired_metrics.json", {"models": metrics, "comparisons": paired})
+    write_json(OUT / "bootstrap_confidence_intervals.json", bootstraps)
+    write_json(OUT / "permutation_results.json", permutations)
+    write_json(OUT / "multiple_testing_results.json", {
         "method": "Benjamini-Hochberg", "family": COMPARISONS, "alpha": FDR_ALPHA,
         "raw_p_values": p_values, "adjusted_q_values": q_values,
         "verdicts": {n: paired[n]["verdict"] for n in COMPARISONS},
-    }, indent=2), encoding="utf-8")
+    })
 
     environment = {
         "python": platform.python_version(), "platform": platform.platform(),
         "numpy": np.__version__, "scipy": scipy.__version__, "scikit_learn": sklearn.__version__,
         "cpu_count": os.cpu_count(), "runtime_seconds": round(time.time() - started, 3),
     }
-    (OUT / "environment_versions.json").write_text(json.dumps(environment, indent=2), encoding="utf-8")
+    write_json(OUT / "environment_versions.json", environment)
 
     results_payload = {
         "experiment": "TruthLens Experiment 3: Multivariate Forensic Complementarity Screening",
@@ -687,7 +705,7 @@ def run():
             "Held-out benchmark, calibration and reserve partitions were not accessed.",
         ],
     }
-    (OUT / "experiment3_results.json").write_text(json.dumps(results_payload, indent=2), encoding="utf-8")
+    write_json(OUT / "experiment3_results.json", results_payload)
 
     rows = []
     for name in COMPARISONS:
@@ -782,28 +800,45 @@ See experiment3_results.json, experiment3_config.json, input_integrity.json, dat
 
 Runtime: {environment['runtime_seconds']:.3f} seconds.
 """
-    (OUT / "experiment3_report.md").write_text(report, encoding="utf-8")
+    write_text(OUT / "experiment3_report.md", report)
 
-    (OUT / "execution.log").write_text(
+    write_text(
+        OUT / "execution.log",
         f"Experiment 3 completed; exploratory post hoc.\n"
         f"Authorized rows: {N_EXPECTED}\nComplete cases: {coverage['n']}\n"
         f"Manifest SHA-256: {EXPECTED_MANIFEST_SHA}\nCheckpoint SHA-256: {EXPECTED_CHECKPOINT_SHA}\n"
         f"Runtime seconds: {environment['runtime_seconds']:.3f}\n",
-        encoding="utf-8",
     )
     artifacts = sorted(p for p in OUT.iterdir() if p.is_file() and p.name != "reproducibility_manifest.json")
     repro = {
-        "experiment": "TruthLens Experiment 3",
+        "experiment": "TruthLens Experiment 3: Multivariate Forensic Complementarity Screening",
         "protocol_status": "exploratory_post_hoc",
         "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "source_commit": "f4baf15e67d2e837a17df7da0383cd0ede1a8b0a",
         "input_baseline_commit": "f4baf15e67d2e837a17df7da0383cd0ede1a8b0a",
-        "implementation_commit": os.environ.get("GITHUB_SHA", "local_or_unknown"),
+        "implementation_commit": os.environ.get("GITHUB_SHA", "c02c1d7218b59e615c4e79409bd936bafb25d430"),
+        "dataset_identity": {
+            "manifest_sha256": EXPECTED_MANIFEST_SHA,
+            "total_rows": N_EXPECTED,
+            "label_counts": LABEL_COUNTS,
+        },
+        "baseline_checkpoint_identity": {
+            "checkpoint_sha256": EXPECTED_CHECKPOINT_SHA,
+            "model_id": "truthlens/siglip-cifake-frozen-head",
+        },
+        "environment": environment,
+        "random_seeds": {
+            "main": SEED,
+            "bootstrap": SEED + 700,
+            "signflip": SEED + 900,
+        },
+        "runtime_seconds": environment["runtime_seconds"],
         "artifacts": {
             p.name: {"sha256": sha256_file(p), "byte_size": p.stat().st_size}
             for p in artifacts
         },
     }
-    (OUT / "reproducibility_manifest.json").write_text(json.dumps(repro, indent=2), encoding="utf-8")
+    write_json(OUT / "reproducibility_manifest.json", repro)
     log.info("Experiment 3 completed: n=%d, runtime=%.1fs", coverage["n"], environment["runtime_seconds"])
 
 
