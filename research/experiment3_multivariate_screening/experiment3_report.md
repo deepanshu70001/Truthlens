@@ -2,7 +2,7 @@
 
 ## Exploratory Research Protocol 1.0.0
 
-**Execution date:** 2026-11-24 UTC  
+**Execution date:** 2026-11-25 UTC  
 **Status:** COMPLETED — EXPLORATORY  
 **Authorized partition:** experiments/manifests/phase4_training_manifest.csv (N=6995)  
 **Common complete-case cohort:** 6936 (99.16% coverage)  
@@ -83,4 +83,4 @@ paired_metrics.json includes pooled log-loss and Brier score, macro outer-fold R
 
 See experiment3_results.json, experiment3_config.json, input_integrity.json, dataset_integrity.json, coverage.json, fold_summary.json, model_fit_details.json, oof_predictions.csv, paired_metrics.json, bootstrap_confidence_intervals.json, permutation_results.json, multiple_testing_results.json, environment_versions.json, and reproducibility_manifest.json.
 
-Runtime: 11.366 seconds.
+Runtime: 8.653 seconds.

@@ -3,7 +3,7 @@
     "method": "two-sided paired group-cluster sign-flip test, group signs independently flipped within fixed outer folds",
     "replicates": 20000,
     "seed": 315059,
-    "observed_delta": -0.008602913975395499,
+    "observed_delta": -0.008602913975395506,
     "extreme_permutations": 1680,
     "p_value_two_sided": 0.0840457977101145
   },
@@ -19,7 +19,7 @@
     "method": "two-sided paired group-cluster sign-flip test, group signs independently flipped within fixed outer folds",
     "replicates": 20000,
     "seed": 315059,
-    "observed_delta": -0.01518803319071553,
+    "observed_delta": -0.015188033190715551,
     "extreme_permutations": 16771,
     "p_value_two_sided": 0.8385580720963952
   },
@@ -27,7 +27,7 @@
     "method": "two-sided paired group-cluster sign-flip test, group signs independently flipped within fixed outer folds",
     "replicates": 20000,
     "seed": 315059,
-    "observed_delta": -0.015188033190715544,
+    "observed_delta": -0.015188033190715548,
     "extreme_permutations": 16771,
     "p_value_two_sided": 0.8385580720963952
   }
